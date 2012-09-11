@@ -1,0 +1,53 @@
+====================================================================
+      OOMidi  ---  Open Octave Midi and Audio Editor
+====================================================================
+
+Welcome to OOMidi, the open source MIDI/Audio sequencer.
+
+OOMidi is distributed under the GNU General Public License (GPL).
+Please check out the file COPYING in this directory for more
+details.
+
+OOM2 is developed from the base code of MusE (Muse Sequencer) written by Werner Schweer. 
+
+Additional developers for attribution:
+
+Nils Geisweiller
+
+Frank Neumann
+
+Mathias Lundgren
+
+Joachim Schiele
+
+Robert Jonsson
+
+Orcan Ogetbil
+
+Tim Donnelly
+
+______________________
+
+OOM2 uses icons from the SILK icon set developed by Mark James. We duly attribute Mark 
+with credit for these icons which are licensed under the CC attribution license 3.0.
+
+Legal confirmation done, we'd like to thank Mark from the OOP team for this amazing set, 
+and the work that has gone into it. Great stuff Mark, and thanks.
+
+http://www.famfamfam.com/lab/icons/silk/
+
+====================================================================
+
+
+     
+ - See this URL for OOMidi requirements, compilation, and run details:
+
+        https://github.com/ccherrett/oom/wiki/Installing-OOM
+
+      
+ 
+====================================================================
+Let us know whether OOMidi works for you !!!
+Have a look at the webpage http://www.openoctave.org for details.
+
+

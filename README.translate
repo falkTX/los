@@ -1,0 +1,85 @@
+OOM2 is developed from the base code of MusE (Muse Sequencer) written by the mighty Werner Schweer,
+and maintained and modified to the present day, by the current Muse2 maintainer Robert Jonsson and his team.
+
+We not only willingly credit Werner for his code, but add our deepest respect and admiration as well.
+
+Additional developers for attribution:
+
+Nils Geisweiller
+
+Frank Neumann
+
+Mathias Lundgren
+
+Joachim Schiele
+
+Robert Jonsson
+
+Orcan Ogetbil
+
+Tim Donnelly
+
+
+
+Internationalisation
+
+If you want to contribute a translation the following hints
+may be of help to you:
+
+Step 1:
+      If you want to update an existing translation, skip to step 2.
+
+      If you want to do a new translation, start with creating an
+      empty translation file:
+
+            touch share/locale/oom_fr.ts
+
+Step 2:
+      If you want to update an existing translation and you downloaded
+      a stable release (not a snapshot) of OOMidi, skip to step 3.
+
+      Populate your .ts file with the newest strings
+
+            mkdir build
+            cd build
+            cmake -DUPDATE_TRANSLATIONS=ON ..
+            make translations
+            cmake -DUPDATE_TRANSLATIONS=OFF ..
+            cd ..
+
+      Your file share/locale/oom_fr.ts is now ready for translation. It
+      is recommended that you copy this file to some other place and
+      and work on the copy.
+      
+Step 3:
+      Edit "oom_fr.ts" manually or use the Qt "linguist" tool:
+
+            linguist oom_fr.ts
+
+Step 4:
+     Save the edited file "oom_fr.ts" from linguist and
+     start File->Release. This generates the file "oom_fr.qm".
+     Copy this file into your oom installation folder,
+     <prefix>/share/oom-2.0/locale/
+
+      or
+
+      Copy your edited "oom_fr.ts" into share/locale in the source tree
+      and rebuild/install oom
+
+            cd build
+            cmake -DUPDATE_TRANSLATIONS=OFF ..
+            make
+            sudo make install
+
+Step 5:
+      Test:
+            If your system locale is set to the same language as your 
+            translation, simply start OOMidi:
+
+                  oom2
+
+            Otherwise, start OOMidi with the desired locale using the -l flag
+
+                  oom2 -l fr
+

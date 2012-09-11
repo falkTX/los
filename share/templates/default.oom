@@ -1,0 +1,154 @@
+<?xml version="1.0"?>
+<oom version="2.0">
+  <configuration>
+    <midiInputDevice>0</midiInputDevice>
+    <midiInputChannel>0</midiInputChannel>
+    <midiRecordType>0</midiRecordType>
+    <midiThruType>0</midiThruType>
+    <midiFilterCtrl1>0</midiFilterCtrl1>
+    <midiFilterCtrl2>0</midiFilterCtrl2>
+    <midiFilterCtrl3>0</midiFilterCtrl3>
+    <midiFilterCtrl4>0</midiFilterCtrl4>
+    <mtctype>1</mtctype>
+    <mtcoffset>00:00:00:00:00</mtcoffset>
+    <sendClockDelay>1</sendClockDelay>
+    <useJackTransport>1</useJackTransport>
+    <jackTransportMaster>1</jackTransportMaster>
+    <extSync>0</extSync>
+    <composer>
+      <arsplit>418 751 </arsplit>
+      <xpos>0</xpos>
+      <xmag>266</xmag>
+      <ypos>0</ypos>
+    </composer>
+    <sequencer>
+      <metronom>
+        <premeasures>2</premeasures>
+        <measurepitch>63</measurepitch>
+        <measurevelo>127</measurevelo>
+        <beatpitch>63</beatpitch>
+        <beatvelo>70</beatvelo>
+        <channel>9</channel>
+        <port>0</port>
+        <precountEnable>0</precountEnable>
+        <fromMastertrack>0</fromMastertrack>
+        <signatureZ>4</signatureZ>
+        <signatureN>4</signatureN>
+        <prerecord>0</prerecord>
+        <preroll>0</preroll>
+        <midiClickEnable>0</midiClickEnable>
+        <audioClickEnable>1</audioClickEnable>
+        <audioClickVolume>0.5</audioClickVolume>
+      </metronom>
+    </sequencer>
+  </configuration>
+  <song>
+    <info></info>
+    <masterTrackId>1328921206007395620</masterTrackId>
+    <oomVerbAuxId>1328922385699435425</oomVerbAuxId>
+    <automation>1</automation>
+    <cpos>0</cpos>
+    <rpos>0</rpos>
+    <lpos>0</lpos>
+    <master>1</master>
+    <loop>0</loop>
+    <punchin>0</punchin>
+    <punchout>0</punchout>
+    <record>0</record>
+    <solo>0</solo>
+    <type>0</type>
+    <recmode>0</recmode>
+    <cycle>0</cycle>
+    <click>0</click>
+    <quantize>0</quantize>
+    <len>405504</len>
+    <follow>1</follow>
+	<associatedRoute></associatedRoute>
+    <AudioAux>
+      <name>OOStudio Verb</name>
+      <trackId>1328922385699435425</trackId>
+      <record>0</record>
+      <mute>0</mute>
+      <solo>0</solo>
+      <off>0</off>
+      <channels>2</channels>
+      <height>78</height>
+      <locked>0</locked>
+      <reminder1>0</reminder1>
+      <reminder2>0</reminder2>
+      <reminder3>0</reminder3>
+      <collapsed>1</collapsed>
+      <mixertab>0</mixertab>
+      <partcolor>1</partcolor>
+      <MidiAssign port="0" channel="0" enabled="0" preset="0" midimap="0:0:7:-1:0:0 0:0:262148:-1:0:0 0:0:262149:-1:0:0 0:0:10:-1:0:0 " />
+      <prefader>0</prefader>
+      <sendMetronome>0</sendMetronome>
+      <automation>0</automation>
+      <controller id="0" cur="1" color="#ff5a00" visible="0">
+        0 1,         
+      </controller>
+      <controller id="1" cur="0" color="#00db05" visible="0">
+      </controller>
+      <controller id="2" cur="0" color="#db0000" visible="0">
+      </controller>
+    </AudioAux>
+    <AudioOutput>
+      <name>Master</name>
+      <trackId>1328921206007395620</trackId>
+      <record>0</record>
+      <mute>0</mute>
+      <solo>0</solo>
+      <off>0</off>
+      <channels>2</channels>
+      <height>78</height>
+      <locked>0</locked>
+      <selected>1</selected>
+      <reminder1>0</reminder1>
+      <reminder2>0</reminder2>
+      <reminder3>0</reminder3>
+      <collapsed>1</collapsed>
+      <mixertab>0</mixertab>
+      <partcolor>1</partcolor>
+      <MidiAssign port="0" channel="0" enabled="0" preset="0" midimap="0:0:262147:-1:0:0 0:0:7:-1:0:0 0:0:262148:-1:0:0 0:0:262149:-1:0:0 0:0:10:-1:0:0 " />
+      <prefader>0</prefader>
+      <sendMetronome>1</sendMetronome>
+      <automation>0</automation>
+      <controller id="0" cur="1">
+        0 1,         
+      </controller>
+      <controller id="1" cur="0">
+        0 0,         
+      </controller>
+      <controller id="2" cur="0">
+        0 0,         
+      </controller>
+    </AudioOutput>
+    <Route>
+      <source name="OOStudio Verb"/>
+      <dest name="Master"/>
+    </Route>
+    <Route channel="0">
+      <source name="Master"/>
+      <dest type="1" name="system:playback_1"/>
+    </Route>
+    <Route channel="1">
+      <source name="Master"/>
+      <dest type="1" name="system:playback_2"/>
+    </Route>
+    <tempolist fix="500000">
+      <tempo at="21474837">
+        <tick>0</tick>
+        <val>500000</val>
+      </tempo>
+    </tempolist>
+    <siglist>
+      <sig at="21474836">
+        <tick>0</tick>
+        <nom>4</nom>
+        <denom>4</denom>
+      </sig>
+    </siglist>
+    <drummap>
+    </drummap>
+  </song>
+</oom>
