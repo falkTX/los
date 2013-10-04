@@ -160,8 +160,8 @@ include_directories(${SAMPLERATE_INCLUDE_DIRS})
 ##
 ## find libuuid
 ##
-# PKG_CHECK_MODULES(UUID REQUIRED uuid>=0.0.1)
-# include_directories(${UUID_INCLUDE_DIRS})
+PKG_CHECK_MODULES(UUID REQUIRED uuid>=0.0.1)
+include_directories(${UUID_INCLUDE_DIRS})
 
 ##
 ## find jack >= 0.103.0
