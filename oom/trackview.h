@@ -17,6 +17,7 @@
 #include "key.h"
 #include "node.h"
 #include "globaldefs.h"
+#include <QHash>
 #include <QMap>
 
 class Xml;

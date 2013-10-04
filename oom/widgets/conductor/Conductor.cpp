@@ -323,47 +323,6 @@ void Conductor::heartBeat()/*{{{*/
             
             if (mp->device() && mp->device()->isSynthPlugin())
             {
-                SynthPluginDevice* synth = (SynthPluginDevice*)mp->device();
-                
-                int nprogram = mp->hwCtrlState(outChannel, CTRL_PROGRAM);
-                
-                if (nprogram == program)
-                {
-                    nprogram = synth->getCurrentProgram();
-                    if (nprogram == -1)
-                        nprogram = CTRL_VAL_UNKNOWN;
-                    if (nprogram != program)
-                        mp->setHwCtrlState(outChannel, CTRL_PROGRAM, nprogram);
-                }
-                
-                if (nprogram != program)
-                {
-                    if (nprogram == CTRL_VAL_UNKNOWN)
-                    {
-                        const QString n(tr("Select Patch"));
-                        emit updateCurrentPatch(n);
-                    }
-                    else
-                    {
-                        MidiInstrument* instr = mp->instrument();
-                        QString name = instr->getPatchName(outChannel, nprogram, song->mtype(), track->type() == Track::DRUM);
-                        if (name.isEmpty())
-                        {
-                            name = "???";
-                        }
-                        Patch *patch = instr->getPatch(outChannel, nprogram, song->mtype(), track->type() == Track::DRUM);
-                        if(patch)
-                        {
-                            emit patchChanged(patch);
-                        }
-                        else
-                        {
-                            emit patchChanged(new Patch);
-                        }
-                        emit updateCurrentPatch(name);
-                    }
-                    program = nprogram;
-                }
             }
             else
             {
@@ -527,26 +486,6 @@ void Conductor::heartBeat()/*{{{*/
     		    if (port->device() && port->device()->isSynthPlugin())
     		    {
                     btnShowGui->setEnabled(true);
-					SynthPluginDevice* synth = (SynthPluginDevice*)port->device();
-                    //Update the state as it was set elsewhere or the track was changed
-                    if (synth->hasNativeGui())
-                    {
-                        if (btnShowGui->isChecked() != synth->nativeGuiVisible())
-                        {
-                            btnShowGui->blockSignals(true);
-                            btnShowGui->setChecked(synth->nativeGuiVisible());
-                            btnShowGui->blockSignals(false);
-                        }
-                    }
-                    else
-                    {
-                        if (btnShowGui->isChecked() != synth->guiVisible())
-                        {
-                            btnShowGui->blockSignals(true);
-                            btnShowGui->setChecked(synth->guiVisible());
-                            btnShowGui->blockSignals(false);
-                        }
-                    }
     		    }
 				else
 				{
@@ -577,11 +516,7 @@ void Conductor::toggleSynthGui(bool on)
 
         if (port->device() && port->device()->isSynthPlugin())
         {
-			SynthPluginDevice* synth = (SynthPluginDevice*)port->device();
-            if(synth->hasNativeGui())
-				audio->msgShowInstrumentNativeGui(port->instrument(), on);
-            else
-                audio->msgShowInstrumentGui(port->instrument(), on);
+		audio->msgShowInstrumentGui(port->instrument(), on);
         }
 	}/*}}}*/
 }
@@ -1590,26 +1525,6 @@ void Conductor::updateConductor(int flags)
 
         if (port->device() && port->device()->isSynthPlugin())
         {
-			SynthPluginDevice* synth = (SynthPluginDevice*)port->device();
-            //Update the state as it was set elsewhere or the track was changed
-            if (synth->hasNativeGui())
-            {
-                if (btnShowGui->isChecked() != synth->nativeGuiVisible())
-                {
-                    btnShowGui->blockSignals(true);
-                    btnShowGui->setChecked(synth->nativeGuiVisible());
-                    btnShowGui->blockSignals(false);
-                }
-            }
-            else
-            {
-                if (btnShowGui->isChecked() != synth->guiVisible())
-                {
-                    btnShowGui->blockSignals(true);
-                    btnShowGui->setChecked(synth->guiVisible());
-                    btnShowGui->blockSignals(false);
-                }
-            }
         }
 		else
 		{

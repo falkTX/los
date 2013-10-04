@@ -30,7 +30,6 @@
 #include "sync.h"
 #include "midiseq.h"
 #include "gconfig.h"
-#include "ticksynth.h"
 
 extern void dump(const unsigned char* p, int n);
 
@@ -707,11 +706,6 @@ void Audio::panic()
         MPEventList* sel = 0;//synth->stuckNotes();
         if (dev && dev->isSynthPlugin())
         {
-            SynthPluginDevice* synth = (SynthPluginDevice*)dev;
-            if (!synth->plugin())
-                continue;
-            el  = synth->playEvents();
-            sel = synth->stuckNotes();
 		}
 		else
 		{
@@ -1375,6 +1369,7 @@ void Audio::processMidi()
 		stuckNotes->erase(stuckNotes->begin(), k);
 	}
 
+#if 0
 	//---------------------------------------------------
 	//    insert metronome clicks
 	//---------------------------------------------------
@@ -1451,6 +1446,7 @@ void Audio::processMidi()
 			}
 		}
 	}
+#endif
 
 	if (state == STOP)
 	{

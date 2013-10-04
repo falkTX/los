@@ -2045,24 +2045,6 @@ void Song::beat()
 	}
 	if(!invalid)
 	{
-		if(lsClient)
-		{
-			lsClientStarted = lsClient->isClientStarted();
-			if(!lsClientStarted)
-			{
-				if(lsClient->startClient())
-					lsClientStarted = true;
-				else
-				{
-					lsClientStarted = false;
-					lsClient = 0;
-				}
-			}
-		}
-		else
-		{
-			lsClientStarted = false;
-		}
 	}
 }
 
@@ -2596,13 +2578,6 @@ void Song::clear(bool signal)
 		{
 			case MidiDevice::SYNTH_MIDI:
 			{//Properly handle synths
-				SynthPluginDevice* synth = (SynthPluginDevice*)md;
-				if (synth && synth->duplicated())
-				{
-				    midiDevices.remove(md);
-				    synth->close();
-				    //delete synth;
-				}
 			}
 			break;
 			case MidiDevice::JACK_MIDI:

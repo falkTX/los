@@ -47,8 +47,7 @@ class PluginDialog : public QDialog
     QRadioButton* onlySM;
     QPushButton *okB;
     QComboBox* m_cmbType;
-    PluginType m_display_type;
-	int m_trackType;
+    int m_trackType;
 
 public:
     PluginDialog(int type, QWidget* parent = 0);
@@ -60,7 +59,7 @@ public slots:
     void fillPlugs(QAbstractButton*);
     void fillPlugs(int i);
     void fillPlugs(const QString& sortValue);
-	void typeChanged(int);
+    void typeChanged(int);
 
 private slots:
     void enableOkB();
@@ -71,9 +70,9 @@ private:
     static QStringList sortItems;
 
 protected:
-	virtual void showEvent(QShowEvent*);
-	virtual void closeEvent(QCloseEvent*);
-	virtual void hideEvent(QHideEvent*);
+    virtual void showEvent(QShowEvent*);
+    virtual void closeEvent(QCloseEvent*);
+    virtual void hideEvent(QHideEvent*);
 };
 
 #endif

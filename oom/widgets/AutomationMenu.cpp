@@ -81,14 +81,7 @@ QWidget* AutomationMenu::createWidget(QWidget* parent)
        		MidiPort* mp = &midiPorts[((MidiTrack*) m_track)->outPort()];
 			if (mp->device() && mp->device()->isSynthPlugin())
 			{
-				SynthPluginDevice* synth = (SynthPluginDevice*)mp->device();
-				if (synth->audioTrack())
-				{
-					m_controllers = synth->audioTrack()->controller();
-					m_synthTrack = synth->audioTrack();
-				}
-				else
-					return 0;
+				return 0;
 			}
 			else
 				return 0;

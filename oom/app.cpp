@@ -59,7 +59,6 @@
 #include "shortcuts.h"
 #include "shortcutconfig.h"
 #include "songinfo.h"
-#include "ticksynth.h"
 #include "transport.h"
 #include "transpose.h"
 #include "widgets/projectcreateimpl.h"
@@ -75,16 +74,8 @@
 #include "utils.h"
 
 #include "ccinfo.h"
-#ifdef DSSI_SUPPORT
-#include "dssihost.h"
-#endif
-
-#ifdef VST_SUPPORT
-#include "vst.h"
-#endif
 
 #include "traverso_shared/TConfig.h"
-#include "network/LSThread.h"
 
 //extern void cacheJackRouteNames();
 
@@ -113,7 +104,6 @@ static const char* infoPanicButton = QT_TRANSLATE_NOOP("@default", "send note of
 #define PROJECT_LIST_LEN  6
 static QString* projectList[PROJECT_LIST_LEN];
 
-extern void initMidiSynth();
 extern void exitJackAudio();
 extern void exitDummyAudio();
 // p3.3.39
@@ -378,54 +368,6 @@ bool OOMidi::seqRestart()
 	audioDevice->graphChanged();
 	return true;
 }
-
-bool OOMidi::startServer()
-{
-	if(!server.listen(QHostAddress::Any, OOCMD_PORT))
-	{
-		printf("OOMidi CMS Error: %s\n",server.errorString().toLatin1().constData());
-		return false;
-	}
-	else
-	{
-		printf("OOMidi Command Server Listening on port: %d\n", OOCMD_PORT);
-		return true;
-	}
-}
-
-void OOMidi::stopServer()
-{
-	if(server.isListening())
-	{
-		server.close();
-	}
-}
-
-#ifdef LSCP_SUPPORT
-void OOMidi::restartLSCPSubscribe()
-{
-	emit lscpStopListener();
-	emit lscpStartListener();
-}
-
-
-void OOMidi::startLSCPClient()
-{
-	lsclient = new LSClient();
-	connect(lsclient, SIGNAL(channelInfoChanged(const LSCPChannelInfo&)), SIGNAL(channelInfoChanged(const LSCPChannelInfo&)));
-	connect(oom, SIGNAL(lscpStartListener()), lsclient, SLOT(subscribe()));
-	connect(oom, SIGNAL(lscpStopListener()), lsclient, SLOT(unsubscribe()));
-	//lsclient->start();
-}
-
-void OOMidi::stopLSCPClient()
-{
-	if(lsclient)
-	{
-		lsclient->stopClient();
-	}
-}
-#endif
 
 void OOMidi::pipelineStateChanged(int state)
 {
@@ -1308,8 +1250,6 @@ OOMidi::OOMidi(int argc, char** argv) : QMainWindow()
 			projectList[i] = 0;
 	}
 
-	initMidiSynth();
-
 	QActionGroup *grp = populateAddTrack(addTrack);
 
 	trackMidiAction = grp->actions()[0];
@@ -1358,23 +1298,7 @@ OOMidi::OOMidi(int argc, char** argv) : QMainWindow()
 		m_initProjectName = config.startSong;
 	}/*}}}*/
 
-	/**
-	 * Load linuxsampler 
-	 */
-	if(config.lsClientStartLS)
-	{
-		if(gSamplerStarted)
-			loadInitialProject();
-		else
-			lsStartupFailed();
-		//connect(&gLSThread, SIGNAL(startupSuccess()), this, SLOT(loadInitialProject()));
-		//connect(&gLSThread, SIGNAL(startupFailed()), this, SLOT(lsStartupFailed()));
-		//gLSThread.start();
-	}
-	else
-	{
-		loadInitialProject();
-	}
+	loadInitialProject();
 
 	QSize defaultScreenSize = tconfig().get_property("Interface", "size", QSize(0, 0)).toSize();
 	int dw = qApp->desktop()->width();
@@ -1417,28 +1341,6 @@ OOMidi::~OOMidi()
 void OOMidi::loadInitialProject()
 {
 	//qDebug("Entering OOMidi::loadInitialProject~~~~~~~~~~~~~~~~~~~~~~~~~~");
-	if(config.lsClientAutoStart)
-	{
-		bool started = false;
-		int retry = 0;
-		while(!started && retry <= 10)
-		{
-			lsClient = new LSClient(config.lsClientHost, config.lsClientPort);
-			lsClientStarted = lsClient->startClient();
-			if(config.lsClientResetOnStart && lsClientStarted)
-			{
-				lsClient->resetSampler();
-			}
-			started = lsClient && lsClient->isClientStarted();
-			sleep(1);
-			retry++;
-		}
-		if(retry >= 10 && !started)
-		{
-			QMessageBox::critical(this, tr("LinuxSampler Client Failed!!"), tr("You have configured OOStudio to start a LinuxSampler\n however the LinuxSampler client failed to start"));
-		}
-	}
-
 	song->blockSignals(false);
 	loadProjectFile(m_initProjectName, m_useTemplate, true);
 	changeConfig(false);
@@ -1670,45 +1572,7 @@ void OOMidi::loadProjectFile1(const QString& name, bool songTemplate, bool loadA
 		return;
 	}
 
-	//Reset Linuxsampler if user selected reset on song load
-	if(config.lsClientResetOnSongStart && !firstrun)
-	{
-		//Start Linuxsampler
-		if(config.lsClientStartLS)
-		{
-			if(gLSThread)
-			{
-				if(lsClient)
-					lsClient->stopClient();
-				lsClient = 0;
-				gLSThread->quit();
-				gLSThread = 0;
-				gSamplerStarted = false;
-			}
-			gLSThread = new LSThread();
-			gLSThread->start();
-		}
-		bool started = false;
-		int retry = 0;
-		while(!started && retry <= 10)
-		{
-			lsClient = new LSClient(config.lsClientHost, config.lsClientPort);
-			lsClientStarted = lsClient->startClient();
-			if(config.lsClientResetOnStart && lsClientStarted)
-			{
-				lsClient->resetSampler();
-			}
-			started = lsClient && lsClient->isClientStarted();
-			sleep(1);
-			retry++;
-		}
-		if(retry >= 10 && !started)
-		{
-			QMessageBox::critical(this, tr("LinuxSampler Client Failed!!"), tr("You have configured OOStudio to start a LinuxSampler\n however the LinuxSampler client failed to start"));
-		}
-	}
 	//Configure the my input list
-
 	QFileInfo fi(name);
 	if (songTemplate)
 	{
@@ -2380,11 +2244,6 @@ void OOMidi::closeEvent(QCloseEvent* event)
 	}
 	seqStop();
 
-	if(config.lsClientStartLS)
-	{
-		if(gLSThread)
-			gLSThread->quit();
-	}
 	WaveTrackList* wt = song->waves();
 	for (iWaveTrack iwt = wt->begin(); iwt != wt->end(); ++iwt)
 	{
@@ -2414,9 +2273,7 @@ void OOMidi::closeEvent(QCloseEvent* event)
 	if (debugMsg)
 		printf("OOStudio: Exiting DummyAudio\n");
 	exitDummyAudio();
-	if (debugMsg)
-		printf("OOStudio: Exiting Metronome\n");
-	exitMetronome();
+
 
 	// Make sure to clear the menu, which deletes any sub menus.
 	if (routingPopupMenu)

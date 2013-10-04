@@ -21,7 +21,6 @@
 #include "audio.h"
 #include "wave.h"
 #include "utils.h"      //debug
-#include "ticksynth.h"  // metronome
 #include "al/dsp.h"
 #include "midictrl.h"
 #include "mididev.h"
@@ -33,16 +32,12 @@
 //#define NODE_DEBUG 
 //#define FIFO_DEBUG 
 
-//#define METRONOME_DEBUG 
-
 //---------------------------------------------------------
 //   isMute
 //---------------------------------------------------------
 
 bool MidiTrack::isMute() const
 {
-	if(this == (MidiTrack*)metronome)
-		return false;
 	if (_solo || (_internalSolo && !_mute))
 		return false;
 
@@ -54,8 +49,6 @@ bool MidiTrack::isMute() const
 
 bool AudioTrack::isMute() const
 {
-	if(this == metronome)
-		return false;
 	if (_solo || (_internalSolo && !_mute))
 		return false;
 
@@ -71,8 +64,6 @@ bool AudioTrack::isMute() const
 
 void MidiTrack::setSolo(bool val, bool monitor)
 {
-	if(this == (MidiTrack*)metronome)
-		return;
 	if (_solo != val)
 	{
 		_solo = val;
@@ -87,9 +78,6 @@ void MidiTrack::setSolo(bool val, bool monitor)
 
 void AudioTrack::setSolo(bool val, bool monitor)
 {
-	if(this == metronome)
-		return;
-	
 	if (_solo != val)
 	{
 		_solo = val;
@@ -111,8 +99,6 @@ void AudioTrack::setSolo(bool val, bool monitor)
 
 void Track::setInternalSolo(unsigned int val)
 {
-	if(this == metronome)
-		return;
         _internalSolo = val;
 }
 
@@ -133,8 +119,6 @@ void Track::clearSoloRefCounts()
 
 void Track::updateSoloState()
 {
-	if(this == metronome)
-		return;
 	if (_solo)
 		_soloRefCnt++;
 	else
@@ -148,8 +132,6 @@ void Track::updateSoloState()
 
 void Track::updateInternalSoloStates()
 {
-	if(this == metronome)
-		return;
 	if (_tmpSoloChainTrack->solo())
 	{
 		_internalSolo++;
@@ -171,7 +153,7 @@ void Track::updateInternalSoloStates()
 
 void MidiTrack::updateInternalSoloStates()
 {
-	if ((this == _tmpSoloChainTrack) || this == (MidiTrack*)metronome)
+	if (this == _tmpSoloChainTrack)
 		return;
 
 	Track::updateInternalSoloStates();
@@ -183,7 +165,7 @@ void MidiTrack::updateInternalSoloStates()
 
 void AudioTrack::updateInternalSoloStates()
 {
-	if ((this == _tmpSoloChainTrack) || this == metronome)
+	if (this == _tmpSoloChainTrack)
 		return;
 
 	Track::updateInternalSoloStates();
@@ -192,13 +174,6 @@ void AudioTrack::updateInternalSoloStates()
 	{
 		if (type() == AUDIO_SOFTSYNTH)
 		{
-			const MidiTrackList* ml = song->midis();
-			for (ciMidiTrack im = ml->begin(); im != ml->end(); ++im)
-			{
-				MidiTrack* mt = *im;
-				if (mt->outPort() >= 0 && mt->outPort() == ((SynthI*)this)->midiPort())
-					mt->updateInternalSoloStates();
-			}
 		}
 
 		const RouteList* rl = inRoutes();
@@ -226,7 +201,7 @@ void AudioTrack::updateInternalSoloStates()
 void MidiTrack::updateSoloStates(bool noDec)
 {
 	//if (noDec && !_solo)
-	if ((noDec && !_solo) || this == (MidiTrack*)metronome)
+	if (noDec && !_solo)
 		return;
 
         _tmpSoloChainTrack = this;
@@ -251,7 +226,7 @@ void MidiTrack::updateSoloStates(bool noDec)
 void AudioTrack::updateSoloStates(bool noDec)
 {
 	//if (noDec && !_solo)
-	if ((noDec && !_solo) || this == metronome)
+	if (noDec && !_solo)
 		return;
 
 	_tmpSoloChainTrack = this;
@@ -261,13 +236,6 @@ void AudioTrack::updateSoloStates(bool noDec)
 	_tmpSoloChainDoIns = true;
         if (type() == AUDIO_SOFTSYNTH)
         {
-                const MidiTrackList* ml = song->midis();
-                for (ciMidiTrack im = ml->begin(); im != ml->end(); ++im)
-                {
-                        MidiTrack* mt = *im;
-                        if (mt->outPort() >= 0 && mt->outPort() == ((SynthI*)this)->midiPort())
-                                mt->updateInternalSoloStates();
-                }
         }
 
         {
@@ -341,7 +309,7 @@ void AudioTrack::copyData(unsigned pos, int dstChannels, int srcStartChan, int s
 	// We can't tell how many output tracks call it, so we can only assume there might be more than one.
 	// Not strictly necessary here because only addData is ever called, but just to be consistent...
 	//bool usedirectbuf = (outRoutes()->size() <= 1) || (type() == AUDIO_OUTPUT);
-	bool usedirectbuf = ((outRoutes()->size() <= 1) || (type() == AUDIO_OUTPUT)) && (this != metronome);
+	bool usedirectbuf = ((outRoutes()->size() <= 1) || (type() == AUDIO_OUTPUT)) && false; //(this != metronome);
 
 	int i;
 
@@ -709,7 +677,7 @@ void AudioTrack::addData(unsigned pos, int dstChannels, int srcStartChan, int sr
 	// Special consideration for metronome: It is not part of the track list,
 	//  and it has no in or out routes, yet multiple output tracks may call addData on it !
 	// We can't tell how many output tracks call it, so we can only assume there might be more than one.
-	bool usedirectbuf = ((outRoutes()->size() <= 1) || (type() == AUDIO_OUTPUT)) && (this != metronome);
+	bool usedirectbuf = ((outRoutes()->size() <= 1) || (type() == AUDIO_OUTPUT)) && false; //(this != metronome);
 
 	int i;
 
@@ -1469,14 +1437,6 @@ void AudioOutput::processWrite()
 			if (recordFlag() && recFile())
 				putFifo(_channels, _nframes, buffer);
 		}
-	}
-	if (sendMetronome() && audioClickFlag && song->click())
-	{
-
-#ifdef METRONOME_DEBUG
-		printf("OOMidi: AudioOutput::processWrite Calling metronome->addData frame:%u channels:%d frames:%lu\n", audio->pos().frame(), _channels, _nframes);
-#endif
-		metronome->addData(audio->pos().frame(), _channels, -1, -1, _nframes, buffer);
 	}
 }
 //---------------------------------------------------------

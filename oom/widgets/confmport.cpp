@@ -660,28 +660,15 @@ _redisplay:
                     
 					// Is it the current device? Reset it to <none>.
                     // falkTX, handle synths properly here
-					if (sdev == dev)
+                    if (sdev == dev)
                     {
-                        if (typ == MidiDevice::SYNTH_MIDI)
-                        {
-                            SynthPluginDevice* synth = (SynthPluginDevice*)sdev;
-                            if (synth->duplicated())
-                            {
-                                synth->close();
-                                midiDevices.remove(sdev);
-                                //delete synth;
-                            }
-                        }
-						sdev = 0;
+                        sdev = 0;
                     }
                     else
                     {
                         // create a new synth device if needed
                         if (typ == MidiDevice::SYNTH_MIDI)
                         {
-                            SynthPluginDevice* oldSynth = (SynthPluginDevice*)sdev;
-                            if (oldSynth->duplicated() == false)
-                                sdev = oldSynth->clone();
                         }
                     }
 				}

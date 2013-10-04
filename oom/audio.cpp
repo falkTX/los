@@ -30,7 +30,7 @@
 #include "event.h"
 #include "gconfig.h"
 #include "pos.h"
-#include "ticksynth.h"
+#include "midiport.h"
 
 extern double curTime();
 Audio* audio;
@@ -564,8 +564,6 @@ void Audio::process1(unsigned samplePos, unsigned offset, unsigned frames)
 		// This will also reset the track's processed flag.
 		track->preProcessAlways();
 	}
-	// Pre-process the metronome.
-	((AudioTrack*) metronome)->preProcessAlways();
 
 	OutputList* ol = song->outputs();
 	for (ciAudioOutput i = ol->begin(); i != ol->end(); ++i)
@@ -689,7 +687,6 @@ void Audio::processMsg(AudioMsg* msg)
             {
                 if ((*i)->deviceType() == MidiDevice::SYNTH_MIDI)
                 {
-                    ((SynthPluginDevice*)(*i))->segmentSizeChanged(segmentSize);
                 }
             }
 

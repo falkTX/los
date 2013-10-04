@@ -170,50 +170,8 @@ void EffectRack::segmentSizeChanged(int size)
     }*/
 }
 
-void EffectRack::choosePlugin(QListWidgetItem* it, bool replace)/*{{{*/
+void EffectRack::choosePlugin(QListWidgetItem* /*it*/, bool /*replace*/)/*{{{*/
 {
-    PluginI* plugi = PluginDialog::getPlugin(track->type(), this);
-    if (plugi)
-    {
-        BasePlugin* nplug = 0;
-
-        if (plugi->type() == PLUGIN_LADSPA)
-            nplug = new LadspaPlugin();
-        else if (plugi->type() == PLUGIN_LV2)
-            nplug = new Lv2Plugin();
-        else if (plugi->type() == PLUGIN_VST)
-            nplug = new VstPlugin();
-        
-        if (nplug)
-        {
-            if (nplug->init(plugi->filename(), plugi->label()))
-            {
-                // just in case is needed later
-                //if (!audioDevice || audioDevice->deviceType() != AudioDevice::JACK_AUDIO)
-                //    nplug->aboutToRemove();
-
-                int idx = row(it);
-                if (replace)
-                {
-                    audio->msgAddPlugin(track, idx, 0);
-                    //Do this part from the GUI context so user interfaces can be properly deleted
-                    // track->efxPipe()->insert(0, idx); was set on lv2 only
-                }
-                audio->msgAddPlugin(track, idx, nplug);
-                nplug->setChannels(track->channels());
-                nplug->setActive(true);
-                song->dirty = true;
-            }
-            else
-            {
-                QMessageBox::warning(this, tr("Failed to load plugin"), tr("Plugin '%1'' failed to initialize properly, error was:\n%2").arg(plugi->name()).arg(get_last_error()));
-                nplug->deleteMe();
-                return;
-            }
-        }
-
-        updateContents();
-    }
 }/*}}}*/
 
 //---------------------------------------------------------
@@ -325,14 +283,9 @@ void EffectRack::menuRequested(QListWidgetItem* it)/*{{{*/
 		}
 		case REMOVE:
 		{
-            BasePlugin* oldPlugin = (*epipe)[idx];
-            oldPlugin->setActive(false);
-            oldPlugin->aboutToRemove();
-
-            if(debugMsg)
+			if(debugMsg)
 				qCritical("Plugin to remove now and here");
-
-            audio->msgAddPlugin(track, idx, 0);
+			audio->msgAddPlugin(track, idx, 0);
 			song->dirty = true;
 			break;
 		}
@@ -439,7 +392,6 @@ void EffectRack::savePreset(int idx)/*{{{*/
 		{
 			xml.header();
 			xml.tag(0, "oom version=\"2.0\"");
-			(*pipe)[idx]->writeConfiguration(1, xml);
 			xml.tag(0, "/oom");
 		}
 		else
@@ -488,7 +440,6 @@ void EffectRack::startDrag(int idx)
 		{
 			xml.header();
 			xml.tag(0, "oom version=\"2.0\"");
-			(*pipe)[idx]->writeConfiguration(1, xml);
 			xml.tag(0, "/oom");
 		}
 		else
@@ -664,7 +615,7 @@ void EffectRack::mouseMoveEvent(QMouseEvent *event)
 	QListWidget::mouseMoveEvent(event);
 }
 
-void EffectRack::initPlugin(Xml xml, int idx)/*{{{*/
+void EffectRack::initPlugin(Xml xml, int /*idx*/)/*{{{*/
 {
     for (;;)
     {
@@ -678,48 +629,12 @@ void EffectRack::initPlugin(Xml xml, int idx)/*{{{*/
             case Xml::TagStart:
                 if (tag == "LadspaPlugin" || tag == "plugin")
                 {
-                    LadspaPlugin* ladplug = new LadspaPlugin();
-                    if (ladplug->readConfiguration(xml, false))
-                    {
-                        printf("cannot instantiate plugin\n");
-                        delete ladplug;
-                    }
-                    else
-                    {
-                        audio->msgAddPlugin(track, idx, ladplug);
-                        song->update(SC_RACK);
-                        return;
-                    }
                 }
                 else if (tag == "Lv2Plugin")
                 {
-                    Lv2Plugin* lv2plug = new Lv2Plugin();
-                    if (lv2plug->readConfiguration(xml, false))
-                    {
-                        printf("cannot instantiate plugin\n");
-                        delete lv2plug;
-                    }
-                    else
-                    {
-                        audio->msgAddPlugin(track, idx, lv2plug);
-                        song->update(SC_RACK);
-                        return;
-                    }
                 }
                 else if (tag == "VstPlugin")
                 {
-                    VstPlugin* vstplug = new VstPlugin();
-                    if (vstplug->readConfiguration(xml, false))
-                    {
-                        printf("cannot instantiate plugin\n");
-                        delete vstplug;
-                    }
-                    else
-                    {
-                        audio->msgAddPlugin(track, idx, vstplug);
-                        song->update(SC_RACK);
-                        return;
-                    }
                 }
                 else if (tag == "oom")
                     break;

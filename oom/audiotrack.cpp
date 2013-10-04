@@ -150,62 +150,7 @@ void AudioTrack::idlePlugin(BasePlugin* plugin)
 
 void AudioTrack::addPlugin(BasePlugin* plugin, int idx)/*{{{*/
 {
-	if(debugMsg)
-    	qDebug("AudioTrack::addPlugin(%p, %d) \n", plugin, idx);
-    if (!plugin)
-    {
-        BasePlugin* oldPlugin = (*_efxPipe)[idx];
-        if (oldPlugin)
-        {
-            oldPlugin->setId(-1);
-            oldPlugin->setTrack(0);
-
-            uint32_t paramCount = oldPlugin->getParameterCount();
-            for (uint32_t i = 0; i < paramCount; i++)
-            {
-                ParameterPort* paramPort = oldPlugin->getParameterPort(i);
-                if (! paramPort || paramPort->type != PARAMETER_INPUT || (paramPort->hints & PARAMETER_IS_AUTOMABLE) == 0)
-                    continue;
-
-                int id = genACnum(idx, i);
-                removeController(id);
-            }
-			_efxPipe->remove(idx);
-        }
-    }
-
-    if (plugin)
-    {
-        idx = efxPipe()->addPlugin(plugin, idx);
-        plugin->setId(idx);
-        plugin->setTrack(this);
-
-        uint32_t paramCount = plugin->getParameterCount();
-        for (uint32_t i = 0; i < paramCount; i++)
-        {
-            ParameterPort* paramPort = plugin->getParameterPort(i);
-            if (! paramPort || paramPort->type != PARAMETER_INPUT || (paramPort->hints & PARAMETER_IS_AUTOMABLE) == 0)
-                continue;
-
-            int id = genACnum(idx, i);
-
-            CtrlValueType t = plugin->valueType();
-            CtrlList* cl = new CtrlList(id);
-            cl->setRange(paramPort->ranges.min, paramPort->ranges.max);
-            cl->setName(plugin->getParameterName(i));
-            cl->setPluginName(plugin->name());
-            cl->setUnit(plugin->getParameterUnit(i));
-            cl->setValueType(t);
-
-            if (paramPort->hints & PARAMETER_IS_TOGGLED)
-                cl->setMode(CtrlList::DISCRETE);
-            else
-                cl->setMode(CtrlList::INTERPOLATE);
-
-            cl->setCurVal(plugin->getParameterValue(i));
-            addController(cl);
-        }
-    }
+    qDebug("AudioTrack::addPlugin(%p, %d) \n", plugin, idx);
 }/*}}}*/
 
 //---------------------------------------------------------
@@ -829,11 +774,6 @@ void AudioTrack::writeProperties(int level, Xml& xml) const
     if (_wantsAutomation == false)
     {
         // _wantsAutomation is only set on fake midi automation tracks. on those, we don't need to save the plugins (synth) config
-        for (ciPluginI ip = _efxPipe->begin(); ip != _efxPipe->end(); ++ip)
-        {
-            if (*ip)
-                (*ip)->writeConfiguration(level, xml);
-        }
     }
 	for (ciCtrlList icl = _controller.begin(); icl != _controller.end(); ++icl)
 	{
@@ -919,33 +859,12 @@ bool AudioTrack::readProperties(Xml& xml, const QString& tag)
 {
     if (tag == "LadspaPlugin" || tag == "plugin")
     {
-         BasePlugin* pi = new LadspaPlugin();
-         pi->setTrack(this);
-         pi->setId((int)_efxPipe->size());
-         if (pi->readConfiguration(xml, false))
-            delete pi;
-         else
-            _efxPipe->addPlugin(pi, -1);
     }
     else if (tag == "Lv2Plugin")
     {
-         Lv2Plugin* pi = new Lv2Plugin();
-         pi->setTrack(this);
-         pi->setId((int)_efxPipe->size());
-         if (pi->readConfiguration(xml, false))
-            delete pi;
-         else
-            _efxPipe->addPlugin(pi, -1);
     }
     else if (tag == "VstPlugin")
     {
-         VstPlugin* pi = new VstPlugin();
-         pi->setTrack(this);
-         pi->setId((int)_efxPipe->size());
-         if (pi->readConfiguration(xml, false))
-            delete pi;
-         else
-            _efxPipe->addPlugin(pi, -1);
     }
     else if (tag == "auxSend")
         readAuxSend(xml);
@@ -967,21 +886,7 @@ bool AudioTrack::readProperties(Xml& xml, const QString& tag)
         //  controls would all be set to zero.
         // But we will allow for the (unintended, useless) possibility of a controller
         //  with no matching plugin control.
-        BasePlugin* p = 0;
         bool ctlfound = false;
-        int m = l->id() & AC_PLUGIN_CTL_ID_MASK;
-        int n = (l->id() >> AC_PLUGIN_CTL_BASE_POW) - 1;
-		int pdepth = _efxPipe->size();
-        if (n >= 0 && n < pdepth)
-        {
-            p = (*_efxPipe)[n];
-            if (p)
-            {
-                ParameterPort* cport = p->getParameterPort(m);
-                if (cport && cport->type == PARAMETER_INPUT && (cport->hints & PARAMETER_IS_AUTOMABLE) > 0)
-                    ctlfound = true;
-            }
-        }
 
         iCtrlList icl = _controller.find(l->id());
         if (icl == _controller.end())
@@ -1000,16 +905,6 @@ bool AudioTrack::readProperties(Xml& xml, const QString& tag)
             d->setDefault(l->getDefault());
             delete l;
             l = d;
-        }
-
-        if (ctlfound)
-        {
-            l->setCurVal(p->getParameterValue(m));
-            ParameterPort* cport = p->getParameterPort(m);
-            if (cport && cport->hints & PARAMETER_IS_TOGGLED)
-                l->setMode(CtrlList::DISCRETE);
-            else
-                l->setMode(CtrlList::INTERPOLATE);
         }
     }
     else
@@ -1036,89 +931,7 @@ void AudioTrack::showPendingPluginNativeGuis()
 
 void AudioTrack::mapRackPluginsToControllers()
 {
-	// Iterate all possible plugin controller indexes...
 	int pdepth = _efxPipe->size();
-	for (int idx = pdepth - 1; idx >= 0; idx--)
-	{
-		iCtrlList icl = _controller.lower_bound((idx + 1) * AC_PLUGIN_CTL_BASE);
-		if (icl == _controller.end() || ((icl->second->id() >> AC_PLUGIN_CTL_BASE_POW) - 1) != idx)
-			continue;
-
-		// We found some controllers with that index. Now iterate the plugin rack...
-		for (int i = idx; i >= 0; i--)
-		{
-			BasePlugin* p = (*_efxPipe)[i];
-			if (!p)
-				continue;
-
-			// We found a plugin at a rack position. If the rack position is not the same as the controller index...
-			if (i != idx)
-			{
-				(*_efxPipe)[i] = 0;
-				(*_efxPipe)[idx] = p;
-			}
-			p->setId(idx);
-
-			// It is now safe to update the controllers.
-			p->updateControllers();
-
-			break;
-		}
-	}
-
-	// No matter of the outcome of the above - rack position is not too critical -
-	//  making sure that each control has a controller is important. Otherwise they
-	//  are stuck at zero can't be adjusted.
-	// OOMidi oom files created before the automation patches (before 0.9pre1) may have broken
-	//  controller sections, so this will allow more tolerance of them.
-	pdepth = _efxPipe->size();
-	for (int idx = 0; idx < pdepth; idx++)
-	{
-		BasePlugin* p = (*_efxPipe)[idx];
-		if (!p)
-			continue;
-
-		if (p->id() != idx)
-			p->setId(idx);
-
-		uint32_t portCount = p->getParameterCount();
-		for (uint32_t i = 0; i < portCount; i++)
-		{
-            ParameterPort* paramPort = p->getParameterPort(i);
-            if (! paramPort || paramPort->type != PARAMETER_INPUT || (paramPort->hints & PARAMETER_IS_AUTOMABLE) == 0)
-                continue;
-
-			int id = genACnum(idx, i);
-			CtrlList* l = 0;
-
-			ciCtrlList icl = _controller.find(id);
-			if (icl == _controller.end())
-			{
-				l = new CtrlList(id);
-				addController(l);
-			}
-			else
-				l = icl->second;
-
-			// Force all of these now, even though they may have already been set. With a pre-
-			//  0.9pre1 oom file with broken controller sections they may not be set correct.
-
-			CtrlValueType t = p->valueType();
-			l->setRange(paramPort->ranges.min, paramPort->ranges.max);
-			l->setName(p->getParameterName(i));
-			l->setPluginName(p->name());
-            l->setUnit(p->getParameterUnit(i));
-			l->setValueType(t);
-
-			if (paramPort->hints & PARAMETER_IS_TOGGLED)
-				l->setMode(CtrlList::DISCRETE);
-			else
-				l->setMode(CtrlList::INTERPOLATE);
-
-			l->setCurVal(paramPort->value);
-			l->setDefault(paramPort->ranges.def);
-		}
-	}
 
 	// The loop is a safe way to delete while iterating 'non-linear' lists.
 	QList<int> delList;
@@ -1137,14 +950,6 @@ void AudioTrack::mapRackPluginsToControllers()
 		}
 		else
 		{
-			BasePlugin* p = (*_efxPipe)[idx];
-			// If there's no plugin at that rack position, or the param is out of range of
-			//  the number of controls in the plugin, then it's a stray controller. Delete it.
-			// Future: Leave room for possible bypass controller at AC_PLUGIN_CTL_ID_MASK -1.
-			if (param >= (int)p->getParameterCount())
-			{
-				delList.append(id);
-			}
 		}
 	}
 

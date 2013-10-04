@@ -31,7 +31,6 @@ set (SubDirs
       driver
       instruments
       liste
-      network
       marker
       master
       midiedit
@@ -66,20 +65,18 @@ QT4_WRAP_CPP ( oom_moc_headers
       traverso_shared/AddRemoveCtrlValues.h
       traverso_shared/CommandGroup.h
       traverso_shared/OOMCommand.h
-	  AddRemoveTrackCommand.h
-      cthread.h
-      cserver.h
       midimonitor.h
       ccinfo.h
       FadeCurve.h
-	  TrackManager.h
-	  NameValidator.h
+      AddRemoveTrackCommand.h
+      TrackManager.h
+      NameValidator.h
       )
 
 ##
 ## Resource files
 ##
-QT4_ADD_RESOURCES (oom_qrc_files 
+QT4_ADD_RESOURCES (oom_qrc_files
 		  oom.qrc
 		  )
 
@@ -117,9 +114,6 @@ file (GLOB core_source_files
       osc.cpp
       part.cpp
       plugin.cpp
-      plugin_ladspa.cpp
-      plugin_lv2.cpp
-      plugin_vst.cpp
       pos.cpp
       route.cpp
       seqmsg.cpp
@@ -129,10 +123,8 @@ file (GLOB core_source_files
       songfile.cpp
       stringparam.cpp
       sync.cpp
-      synth.cpp
       tempo.cpp
       thread.cpp
-      ticksynth.cpp
       track.cpp
       trackview.cpp
       transport.cpp
@@ -148,15 +140,12 @@ file (GLOB core_source_files
       traverso_shared/AddRemoveCtrlValues.cpp
       traverso_shared/CommandGroup.cpp
       traverso_shared/OOMCommand.cpp
-	  AddRemoveTrackCommand.cpp
-      cthread.cpp
-      cserver.cpp
       midimonitor.cpp
       ccinfo.cpp
       FadeCurve.cpp
-	  TrackManager.cpp
-	  NameValidator.cpp
-      lib_functions.cpp
+      AddRemoveTrackCommand.cpp
+      TrackManager.cpp
+      NameValidator.cpp
       )
 file (GLOB main_source_files
       main.cpp
@@ -245,16 +234,13 @@ target_link_libraries(core
       icons
       instruments
       liste
-      network
       marker
       master
       midiedit
       mixer
       mplugins
-      synti
       widgets
       ${QT_LIBRARIES}
-      ${QT_QTNETWORK_LIBRARY}
       ${SNDFILE_LIBRARIES}
       ${SAMPLERATE_LIBRARIES}
       ${UUID_LIBRARIES}
@@ -263,27 +249,9 @@ target_link_libraries(core
       dl
       )
 
-if(HAVE_LASH)
-      target_link_libraries(core ${LASH_LIBRARIES})
-endif(HAVE_LASH)
-
-if(OSC_SUPPORT)
-      target_link_libraries(core ${LIBLO_LIBRARIES})
-endif(OSC_SUPPORT)
-
-if (ENABLE_LILV_STATIC)
-        if(LILV_SUPPORT)
-              target_link_libraries(core lilv_bundle)
-        endif(LILV_SUPPORT)
-else (ENABLE_LILV_STATIC)
-        if(LILV_SUPPORT)
-              target_link_libraries(core ${LIBLILV_LIBRARIES})
-        endif(LILV_SUPPORT)
-endif (ENABLE_LILV_STATIC)
-
-if(GTK2UI_SUPPORT)
-        target_link_libraries(core ${GTK2_LIBRARIES})
-endif(GTK2UI_SUPPORT)
+# if(OSC_SUPPORT)
+#       target_link_libraries(core ${LIBLO_LIBRARIES})
+# endif(OSC_SUPPORT)
 
 target_link_libraries(oom
       midiedit
@@ -292,7 +260,6 @@ target_link_libraries(oom
 
 target_link_libraries(icons
       ${QT_LIBRARIES}
-      ${QT_QTNETWORK_LIBRARY}
       )
 
 ##

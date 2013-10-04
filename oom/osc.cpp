@@ -21,7 +21,7 @@
 
 #include "config.h"
 
-#ifdef OSC_SUPPORT
+#if 0 //def OSC_SUPPORT
 
 // Turn on debugging messages
 //#define OSC_DEBUG 

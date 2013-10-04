@@ -19,7 +19,6 @@
 #include "app.h"
 #include "gconfig.h"
 #include "midiseq.h"
-#include "network/LSThread.h"
 #include "midiport.h"
 #include "mididev.h"
 #include "audio.h"
@@ -87,7 +86,6 @@ GlobalSettingsConfig::GlobalSettingsConfig(QWidget* parent)
 	m_inputsModel = new QStandardItemModel(this);
 	inputView->setModel(m_inputsModel);
 	populateInputs();
-	btnBrowseLS->setIcon(QIcon(*browseIconSet3));
 	btnRefreshInput->setIcon(QIcon(*refreshIconSet3));
 	selectInstrumentsDirButton->setIcon(QIcon(*browseIconSet3));
 	defaultInstrumentsDirButton->setIcon(QIcon(*refreshIconSet3));
@@ -114,45 +112,12 @@ GlobalSettingsConfig::GlobalSettingsConfig(QWidget* parent)
 	oldStyleStopCheckBox->setChecked(config.useOldStyleStopShortCut);
 	moveArmedCheckBox->setChecked(config.moveArmedCheckBox);
 	projectSaveCheckBox->setChecked(config.useProjectSaveDialog);
-	
-	m_chkAutofade->setChecked(config.useAutoCrossFades);
-	chkStartLSClient->setChecked(config.lsClientAutoStart);
-	btnStartLSClient->setText(lsClientStarted ? tr("Stop Now") : tr("Start Now"));
-	btnStartStopLS->setText(gSamplerStarted ? tr("Stop Now") : tr("Start Now"));
-	btnResetLSNow->setEnabled(lsClientStarted);
-	chkResetLSOnStartup->setChecked(config.lsClientResetOnStart);
-	chkResetLSOnSongLoad->setChecked(config.lsClientResetOnSongStart);
-	chkStartLS->setChecked(config.lsClientStartLS);
-	txtLSPath->setText(config.lsClientLSPath);
-	btnStartStopLS->hide();
 
-	chkLoadLV2->setChecked(config.loadLV2);
-	chkLoadLADSPA->setChecked(config.loadLADSPA);
-	chkLoadVST->setChecked(config.loadVST);
-	txtVSTPaths->setText(config.vstPaths);
-	txtLADSPAPaths->setText(config.ladspaPaths);
+	m_chkAutofade->setChecked(config.useAutoCrossFades);
 
 	connect(applyButton, SIGNAL(clicked()), SLOT(apply()));
 	connect(okButton, SIGNAL(clicked()), SLOT(ok()));
 	connect(cancelButton, SIGNAL(clicked()), SLOT(cancel()));
-	connect(btnStartLSClient, SIGNAL(clicked()), SLOT(startLSClientNow()));
-	connect(btnResetLSNow, SIGNAL(clicked()), SLOT(resetLSNow()));
-	connect(btnRefreshInput, SIGNAL(clicked()), this, SLOT(populateInputs()));
-	connect(btnStartStopLS, SIGNAL(clicked()), SLOT(startStopSampler()));
-	connect(btnBrowseLS, SIGNAL(clicked()), SLOT(selectedSamplerPath()));
-}
-
-void GlobalSettingsConfig::startStopSampler()
-{
-}
-
-void GlobalSettingsConfig::selectedSamplerPath()
-{
-	QString ls = QFileDialog::getOpenFileName(this, tr("Locate LinuxSampler binary"));
-	if(!ls.isNull())
-	{
-		txtLSPath->setText(ls);
-	}
 }
 
 void GlobalSettingsConfig::populateInputs()/*{{{*/
@@ -260,20 +225,6 @@ void GlobalSettingsConfig::updateSettings()
 	oldStyleStopCheckBox->setChecked(config.useOldStyleStopShortCut);
 	moveArmedCheckBox->setChecked(config.moveArmedCheckBox);
 	projectSaveCheckBox->setChecked(config.useProjectSaveDialog);
-	chkStartLSClient->setChecked(config.lsClientAutoStart);
-	btnStartLSClient->setText(lsClientStarted ? tr("Stop Now") : tr("Start Now"));
-	btnStartStopLS->setText(gSamplerStarted ? tr("Stop Now") : tr("Start Now"));
-	btnResetLSNow->setEnabled(lsClientStarted);
-	chkResetLSOnStartup->setChecked(config.lsClientResetOnStart);
-	chkResetLSOnSongLoad->setChecked(config.lsClientResetOnSongStart);
-	chkStartLS->setChecked(config.lsClientStartLS);
-	txtLSPath->setText(config.lsClientLSPath);
-
-	chkLoadLV2->setChecked(config.loadLV2);
-	chkLoadLADSPA->setChecked(config.loadLADSPA);
-	chkLoadVST->setChecked(config.loadVST);
-	txtVSTPaths->setText(config.vstPaths);
-	txtLADSPAPaths->setText(config.ladspaPaths);
 
 	populateInputs();
 	//TODO: Set icon for status of lsClient
@@ -287,58 +238,6 @@ void GlobalSettingsConfig::showEvent(QShowEvent* e)
 {
 	QDialog::showEvent(e);
 	//updateSettings();     // TESTING
-}
-
-//---------------------------------------------------------
-//   startLSClientNow Start and restart the LS Client
-//---------------------------------------------------------
-
-void GlobalSettingsConfig::startLSClientNow()
-{
-	if(!lsClient)
-	{
-		lsClient = new LSClient(config.lsClientHost, config.lsClientPort);
-		lsClientStarted = lsClient->startClient();
-		if(config.lsClientResetOnStart && lsClientStarted)
-		{
-			lsClient->resetSampler();
-		}
-
-		if(!lsClientStarted)
-		{
-			lsClient = 0;
-		}
-	}
-	else
-	{
-		lsClientStarted = false;
-		lsClient->stopClient();
-		lsClient = 0;
-	}
-	btnStartLSClient->setText(lsClientStarted ? tr("Stop Now") : tr("Start Now"));
-	btnResetLSNow->setEnabled(lsClientStarted);
-}
-
-//---------------------------------------------------------
-//   resetLSNow Resets LinuxSampler configuration
-//---------------------------------------------------------
-
-void GlobalSettingsConfig::resetLSNow()
-{
-	if(QMessageBox::critical(this,
-			tr("Reset LinuxSampler?"),
-			tr("This action will cause LinuxSampler to reset."
-				"Deleting all MIDI Mappings, Devices and any Audio channels created in JACK"
-			),
-			QMessageBox::Ok|QMessageBox::Cancel,
-			QMessageBox::Cancel) == QMessageBox::Ok)
-	{
-		if(lsClient && lsClientStarted)
-		{
-			lsClient->resetSampler();
-			btnResetLSNow->setEnabled(lsClientStarted);
-		}
-	}
 }
 
 //---------------------------------------------------------
@@ -371,19 +270,8 @@ void GlobalSettingsConfig::apply()
 	config.moveArmedCheckBox = moveArmedCheckBox->isChecked();
 	config.useProjectSaveDialog = projectSaveCheckBox->isChecked();
 	config.useAutoCrossFades = m_chkAutofade->isChecked();
-	config.lsClientAutoStart = chkStartLSClient->isChecked();
 
 	oomUserInstruments = config.userInstrumentsDir;
-	config.lsClientResetOnStart = chkResetLSOnStartup->isChecked();
-	config.lsClientResetOnSongStart = chkResetLSOnSongLoad->isChecked();
-	config.lsClientStartLS = chkStartLS->isChecked();
-	config.lsClientLSPath = txtLSPath->text();
-
-	config.loadLV2 = chkLoadLV2->isChecked();
-	config.loadLADSPA = chkLoadLADSPA->isChecked();
-	config.ladspaPaths = txtLADSPAPaths->text();
-	config.loadVST = chkLoadVST->isChecked();
-	config.vstPaths = txtVSTPaths->text();
 
 	//QList<QPair<int, QString> > oldList(gInputList);
 	bool hasPorts = !gInputListPorts.isEmpty();

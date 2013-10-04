@@ -27,14 +27,11 @@
 #include "globals.h"
 #include "icons.h"
 #include "sync.h"
-#include "network/LSThread.h"
 
 extern bool initDummyAudio();
 extern void initIcons();
 extern bool initJackAudio();
 extern void initMidiController();
-extern void initMetronome();
-extern void initPlugins(bool ladspa, bool lv2, bool vst);
 extern void initShortCuts();
 extern void readConfiguration();
 
@@ -334,23 +331,10 @@ int main(int argc, char* argv[])
 			stimer->start(6000);
 		}
 	}
-	
-	//Start Linuxsampler
-	if(config.lsClientStartLS)
-	{
-		gLSThread = new LSThread();
-		gLSThread->start();
-	}
 
 	int i;
 
 	QString optstr("ahvdDmMsP:Y:l:py");
-#ifdef HAVE_LASH
-	optstr += QString("L");
-#endif
-#ifdef JACK_SESSION_SUPPORT
-	optstr += QString("U");
-#endif
 
 	while ((i = getopt(argc, argv, optstr.toLatin1().constData())) != EOF)
 	{
@@ -377,10 +361,6 @@ int main(int argc, char* argv[])
 			case 'P': realTimePriority = atoi(optarg);
 				break;
 			case 'Y': midiRTPrioOverride = atoi(optarg);
-				break;
-			case 'p': loadPlugins = false;
-				break;
-			case 'L': useLASH = false;
 				break;
 			case 'y': usePythonBridge = true;
 				break;
@@ -482,12 +462,7 @@ int main(int argc, char* argv[])
 		hIsB = false;
 	}
 
-	if (loadPlugins)
-		initPlugins(config.loadLADSPA, config.loadLV2, config.loadVST);
-
 	initIcons();
-
-	initMetronome();
 
 	QApplication::addLibraryPath(oomGlobalLib + "/qtplugins");
 	if (debugMsg)
@@ -515,27 +490,6 @@ int main(int argc, char* argv[])
 	oom->show();
 	oom->seqStart();
 	//Finally launch the server on port 8415
-	oom->startServer();
-
-#ifdef HAVE_LASH
-	{
-		lash_client = 0;
-		if (useLASH)
-		{
-			int lash_flags = LASH_Config_File;
-			const char *oom_name = PACKAGE_NAME;
-			lash_client = lash_init(lash_args, oom_name, lash_flags, LASH_PROTOCOL(2, 0));
-			lash_alsa_client_id(lash_client, snd_seq_client_id(alsaSeq));
-			if (!noAudio)
-			{
-				// p3.3.38
-				//char *jack_name = ((JackAudioDevice*)audioDevice)->getJackName();
-				const char *jack_name = audioDevice->clientName();
-				lash_jack_client_name(lash_client, jack_name);
-			}
-		}
-	}
-#endif /* HAVE_LASH */
 
 	// ladish L1
 	signal(SIGUSR1, ladish_l1_save);
@@ -546,11 +500,7 @@ int main(int argc, char* argv[])
 	int rv = app.exec();
 	if (debugMsg)
 		printf("app.exec() returned:%d\nDeleting main OOMidi object\n", rv);
-	if(lsClient && lsClientStarted)
-	{
-		lsClient->stopClient();
-	}
-	oom->stopServer();
+
 	delete oom;
 	if (debugMsg)
 		printf("Finished! Exiting main, return value:%d\n", rv);

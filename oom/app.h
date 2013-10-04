@@ -12,10 +12,6 @@
 #include "config.h"
 #include "cobject.h"
 #include "toolbars/tools.h"
-#include "cserver.h"
-#ifdef LSCP_SUPPORT
-#include "network/lsclient.h"
-#endif
 #include "trackview.h"
 #include <QFileInfo>
 #include <QPair>
@@ -229,12 +225,7 @@ class OOMidi : public QMainWindow
     QSignalMapper *editSignalMapper;
     QSignalMapper *midiPluginSignalMapper;
     QSignalMapper *followSignalMapper;
-	OOMCommandServer server;
-#ifdef LSCP_SUPPORT
-	LSClient *lsclient;
-	bool lscpRestart;
-#endif
-	
+
 	QString m_initProjectName;
 	bool m_useTemplate;
 	int m_rasterVal;
@@ -423,17 +414,11 @@ public slots:
 
     void routingPopupMenuAboutToHide();
     void configMidiAssign(int tab = -1);
-	bool startServer();
-	void stopServer();
-#ifdef LSCP_SUPPORT
-	void startLSCPClient();
-	void stopLSCPClient();
-	void restartLSCPSubscribe();
-#endif
+
 	void pipelineStateChanged(int);
 	void connectDefaultSongPorts();
 	void showUndoView();
-    
+
     Tool getCurrentTool();
 	void setRaster(int r)
 	{

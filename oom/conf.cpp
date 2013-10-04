@@ -365,16 +365,6 @@ static void readConfigMidiPort(Xml& xml)/*{{{*/
                 {
                     if (dev && type == MidiDevice::SYNTH_MIDI)
                     {
-                        SynthPluginDevice* oldSynth = (SynthPluginDevice*)dev;
-                        SynthPluginDevice* synth = oldSynth->clone(device);
-                        synth->open();
-
-                        // get into the plugin type
-                        xml.parse();
-                        // now load state
-                        synth->read(xml);
-
-                        dev = synth;
                     }
                     else
                         xml.parse1();
@@ -1138,11 +1128,6 @@ static void writeSeqConfiguration(int level, Xml& xml, bool writePortInfo)/*{{{*
                 // save state of synth plugin
                 if (dev->isSynthPlugin())
                 {
-                    SynthPluginDevice* synth = (SynthPluginDevice*)dev;
-                    xml.tag(level++, "plugin");
-                    synth->write(level++, xml);
-                    level -= 2; // adjust indentation
-                    xml.tag(level, "/plugin");
                 }
 			}
 			mport->syncInfo().write(level, xml);

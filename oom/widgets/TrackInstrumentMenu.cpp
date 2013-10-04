@@ -121,32 +121,6 @@ QWidget* TrackInstrumentMenu::createWidget(QWidget* parent)/*{{{*/
 			}
         }
 
-        for (iMidiDevice i = midiDevices.begin(); i != midiDevices.end(); ++i)
-        {
-            if ((*i)->isSynthPlugin())
-			{
-                if (((SynthPluginDevice*)(*i))->duplicated() == false)
-                {
-					QString name(QString("(SYNTH) ").append((*i)->name()));/*{{{*/
-					baseHeight += 18;
-					if(name.length() > lstr)
-					{
-						lstr = name.length();
-						longest = name;
-					}
-					QStandardItem* item = new QStandardItem(name);
-    			    item->setCheckable(true);
-					item->setData((*i)->name());
-					item->setData(TrackManager::SYNTH_INSTRUMENT, Qt::UserRole+2);
-        			if (mp->instrument()->iname() == (*i)->name())
-					{
-    			    	item->setCheckState(Qt::Checked);
-					}
-					m_listModel->appendRow(item);/*}}}*/
-            	}
-			}
-        }
-
 		if(baseHeight > desktopHeight)
 			baseHeight = (desktopHeight-50);
 		w->setFixedHeight(baseHeight);

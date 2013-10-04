@@ -723,19 +723,6 @@ void TrackHeader::generatePopupMenu()/*{{{*/
 
         if (port->device() && port->device()->isSynthPlugin())
         {
-            SynthPluginDevice* synth = (SynthPluginDevice*)port->device();
-            
-            QAction* mact = p->addAction(tr("Show Gui"));
-            mact->setCheckable(true);
-            mact->setChecked(synth->guiVisible());
-            mact->setData(3);
-
-            QAction* mactn = p->addAction(tr("Show Native Gui"));
-            mactn->setCheckable(true);
-            mactn->setEnabled(synth->hasNativeGui());
-            mactn->setChecked(synth->nativeGuiVisible());
-            mactn->setData(16);
-			mactn->setShortcut(shortcuts[SHRT_SHOW_PLUGIN_GUI].key);
         }
 	}
 
@@ -949,12 +936,7 @@ void TrackHeader::generatePopupMenu()/*{{{*/
 			}
             case 16:
             {
-                int oPort = ((MidiTrack*) m_track)->outPort();
-                MidiPort* port = &midiPorts[oPort];
-                SynthPluginDevice* synth = (SynthPluginDevice*)port->device();
-                bool show = !synth->nativeGuiVisible();
-                audio->msgShowInstrumentNativeGui(port->instrument(), show);
-            }   
+            }
             break;
 			case 20 ... NUM_PARTCOLORS + 20:
 			{

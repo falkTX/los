@@ -570,15 +570,6 @@ void Track::clearRecAutomation(bool clearList)
 		return;
 
 	AudioTrack *t = (AudioTrack*)this;
-	Pipeline *pl = t->efxPipe();
-	BasePlugin *p;
-	for (iPluginI i = pl->begin(); i != pl->end(); ++i)
-	{
-		p = *i;
-		if (!p)
-			continue;
-		p->enableAllControllers(true);
-	}
 
 	if (clearList)
 		t->recEvents()->clear();
@@ -636,11 +627,6 @@ MidiTrack::~MidiTrack()
 	{
     	if (_outPort >= 0 && _outPort < MIDI_PORTS)
     	{
-    	    if (midiPorts[_outPort].device() && midiPorts[_outPort].device()->isSynthPlugin())
-    	    {
-    	        SynthPluginDevice* dev = (SynthPluginDevice*)midiPorts[_outPort].device();
-				dev->close();
-    	    }
 			midiPorts[_outPort].inRoutes()->clear();
 			midiPorts[_outPort].outRoutes()->clear();
 			midiPorts[_outPort].patchSequences()->clear();
@@ -704,14 +690,8 @@ void MidiTrack::setOutPort(int i)
     _outPort = i;
 
 	MidiPort* mp = &midiPorts[i];
-	if(mp)
-		_outPortId = mp->id();
-    if (i >= 0 && i < MIDI_PORTS)
-    {
-        _wantsAutomation = (midiPorts[i].device() && midiPorts[i].device()->isSynthPlugin());
-        if (_wantsAutomation)
-            ((SynthPluginDevice*)midiPorts[i].device())->setTrackId(m_id);
-    }
+	if(mp) _outPortId = mp->id();
+
 }
 
 void MidiTrack::setOutPortId(qint64 i)
@@ -722,9 +702,6 @@ void MidiTrack::setOutPortId(qint64 i)
 	{
 		MidiPort* mp = oomMidiPorts.value(i);
 		_outPort = mp->portno();
-		_wantsAutomation = (mp->device() && mp->device()->isSynthPlugin());
-        if (_wantsAutomation)
-            ((SynthPluginDevice*)mp->device())->setTrackId(m_id);
 	}
 }
 
@@ -748,13 +725,6 @@ void MidiTrack::setOutChanAndUpdate(int i)
 
 void MidiTrack::setOutPortAndUpdate(int i)/*{{{*/
 {
-    if (i >= 0 && i < MIDI_PORTS)
-    {
-        _wantsAutomation = (midiPorts[i].device() && midiPorts[i].device()->isSynthPlugin());
-        if (_wantsAutomation)
-            ((SynthPluginDevice*)midiPorts[i].device())->setTrackId(m_id);
-    }
-
 	MidiPort* mp = &midiPorts[i];
 	if(mp)
 		_outPortId = mp->id();
@@ -828,14 +798,6 @@ void MidiTrack::setInPortAndChannelMask(unsigned int portmask, int chanmask)
 
 AudioTrack* MidiTrack::getAutomationTrack()
 {
-    if (_outPort >= 0 && _outPort < MIDI_PORTS)
-    {
-        if (midiPorts[_outPort].device() && midiPorts[_outPort].device()->isSynthPlugin())
-        {
-            SynthPluginDevice* dev = (SynthPluginDevice*)midiPorts[_outPort].device();
-            return dev->audioTrack();
-        }
-    }
     return 0;
 }
 
@@ -1191,19 +1153,6 @@ void MidiTrack::write(int level, Xml& xml) const/*{{{*/
     if (_wantsAutomation)
     {
         int atype = 0;
-
-        // FIXME - cannot use 'getAutomationTrack()' here
-        if (_outPort >= 0 && _outPort < MIDI_PORTS)
-        {
-            if (midiPorts[_outPort].device() && midiPorts[_outPort].device()->isSynthPlugin())
-            {
-                SynthPluginDevice* dev = (SynthPluginDevice*)midiPorts[_outPort].device();
-                AudioTrack* atrack = dev->audioTrack();
-                if (atrack)
-                    atype = atrack->automationType();
-            }
-        }
-
         xml.intTag(level, "automation", atype);
     }
     else

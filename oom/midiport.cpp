@@ -23,11 +23,6 @@
 #include "app.h"
 #include "song.h"
 #include "utils.h"
-#include "network/lsclient.h"
-
-//#ifdef DSSI_SUPPORT
-//#include "dssihost.h"
-//#endif
 
 MidiPort midiPorts[MIDI_PORTS];
 QHash<qint64, MidiPort*> oomMidiPorts;
@@ -140,9 +135,7 @@ void MidiPort::setMidiDevice(MidiDevice* dev)
 		_device = dev;
         if (_device->isSynthPlugin())
 		{
-            SynthPluginDevice* s = (SynthPluginDevice*) _device;
-			_instrument = s;
-            //_instrument = genericMidiInstrument;
+            _instrument = genericMidiInstrument; // falktx. was commented out
 		}
 		_state = _device->open();
 		_device->setPort(portno());
@@ -264,22 +257,6 @@ void MidiPort::tryCtrlInitVal(int chan, int ctl, int val)
 void MidiPort::setInstrument(MidiInstrument* i)
 {
 	_instrument = i;
-	if(i && i->isOOMInstrument())
-	{
-		if(!lsClient)
-		{
-			lsClient = new LSClient(config.lsClientHost, config.lsClientPort);
-			lsClientStarted = lsClient->startClient();
-			if(config.lsClientResetOnStart && lsClientStarted)
-			{
-				lsClient->resetSampler();
-			}
-		}
-		if(lsClientStarted)
-		{
-			lsClient->loadInstrument(i);
-		}
-	}
 }
 
 

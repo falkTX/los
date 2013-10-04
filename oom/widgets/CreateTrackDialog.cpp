@@ -20,7 +20,6 @@
 #include "driver/jackaudio.h"
 #include "driver/jackmidi.h"
 #include "driver/alsamidi.h"
-#include "network/lsclient.h"
 #include "icons.h"
 #include "midimonitor.h"
 #include "plugin.h"
@@ -477,20 +476,6 @@ void CreateTrackDialog::cleanup()/*{{{*/
 		{
 			case TrackManager::LS_INSTRUMENT:
 			{
-				if(!lsClient)
-				{
-					lsClient = new LSClient(config.lsClientHost, config.lsClientPort);
-					lsClientStarted = lsClient->startClient();
-				}
-				else if(!lsClientStarted)
-				{
-					lsClientStarted = lsClient->startClient();
-				}
-				if(lsClientStarted && m_instrumentLoaded && !m_existingMap)
-				{
-					//lsClient->removeMidiMap(m_instrumentMap);
-					//lsClient->removeLastChannel();
-				}
 				m_instrumentLoaded = false;
 			}
 			break;
@@ -555,69 +540,6 @@ void CreateTrackDialog::updateInstrument(int index)/*{{{*/
 					if(m_instrumentLoaded)
 					{//unload the last one
 						cleanup();
-					}
-					if(!lsClient)
-					{
-						lsClient = new LSClient(config.lsClientHost, config.lsClientPort);
-						lsClientStarted = lsClient->startClient();
-						if(config.lsClientResetOnStart && lsClientStarted)
-						{
-							lsClient->resetSampler();
-						}
-					}
-					else if(!lsClientStarted)
-					{
-						lsClientStarted = lsClient->startClient();
-					}
-					if(lsClientStarted)
-					{
-						m_instrumentMap = lsClient->findMidiMap((*i)->iname().toUtf8().constData());
-						if(m_instrumentMap >= 0)
-							m_existingMap = true;
-						else
-							m_existingMap = false;
-						if(debugMsg)
-							qDebug("CreateTrackDialog::updateInstrument: Searching for Instrument loaded found: %d", m_instrumentMap);
-						if(!m_existingMap)
-						{
-							if(debugMsg)
-								qDebug("CreateTrackDialog::updateInstrument: Loading Instrument to LinuxSampler");
-							if(lsClient->loadInstrument(*i))
-							{
-								m_instrumentMap = lsClient->findMidiMap((*i)->iname().toUtf8().constData());
-								m_instrumentLoaded = true;
-								if(debugMsg)
-									qDebug("CreateTrackDialog::updateInstrument: Instrument Map Loaded");
-								//reload input/output list and select the coresponding ports respectively
-								updateVisibleElements();
-                    			chkInput->setChecked(true);
-                    			chkInput->setEnabled(true);
-                    			chkOutput->setChecked(false);
-                    			chkOutput->setEnabled(false);
-                    			midiBox->setChecked(true);
-                    			midiBox->setEnabled(true);
-								cmbMonitor->setEnabled(false);
-							}
-							else
-							{//TODO: BIG ERROR Here cant connect to LinuxSampler for whatever reason this is show stopper error
-								qDebug("CreateTrackDialog::updateInstrument: ERROR: Faild to load instrument into LinuxSampler");
-							}
-						}
-						else
-						{
-							updateVisibleElements();
-                    		chkInput->setChecked(true);
-                    		chkInput->setEnabled(true);
-                    		chkOutput->setChecked(false);
-                    		chkOutput->setEnabled(false);
-                    		midiBox->setChecked(true);
-                    		midiBox->setEnabled(true);
-							cmbMonitor->setEnabled(false);
-						}
-					}
-					else
-					{//TODO: BIG ERROR Here cant connect to LinuxSampler for whatever reason this is show stopper error
-						qDebug("CreateTrackDialog::updateInstrument: FATAL ERROR: Faild to connect to LinuxSampler~~~~~~~~~~~~~~~~~~~~~");
 					}
 					break;
 				}
@@ -1091,19 +1013,6 @@ void CreateTrackDialog::populateInstrumentList()/*{{{*/
             	cmbInstrument->addItem(QString("(LS) ").append((*i)->iname()));
 				cmbInstrument->setItemData(cmbInstrument->count()-1, (*i)->iname(), CTDInstrumentNameRole);
 				cmbInstrument->setItemData(cmbInstrument->count()-1, TrackManager::LS_INSTRUMENT, CTDInstrumentTypeRole);
-			}
-        }
-
-        for (iMidiDevice i = midiDevices.begin(); i != midiDevices.end(); ++i)
-        {
-            if ((*i)->isSynthPlugin())
-			{
-                if (((SynthPluginDevice*)(*i))->duplicated() == false)
-                {
-                    cmbInstrument->addItem(QString("(SYNTH) ").append((*i)->name()));
-                    cmbInstrument->setItemData(cmbInstrument->count()-1, (*i)->name(), CTDInstrumentNameRole);
-                    cmbInstrument->setItemData(cmbInstrument->count()-1, TrackManager::SYNTH_INSTRUMENT, CTDInstrumentTypeRole);
-                }
 			}
         }
 

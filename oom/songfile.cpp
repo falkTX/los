@@ -662,43 +662,6 @@ void Song::read(Xml& xml)/*{{{*/
 						MidiInstrument *ins = mp->instrument();
 						if(ins && ins->isOOMInstrument())
 						{//Load her up
-							if(!lsClient)
-							{
-								lsClient = new LSClient(config.lsClientHost, config.lsClientPort);
-								lsClientStarted = lsClient->startClient();
-								if(config.lsClientResetOnStart && lsClientStarted)
-								{
-									lsClient->resetSampler();
-								}
-							}
-							else if(!lsClientStarted)
-							{
-								lsClientStarted = lsClient->startClient();
-								if(config.lsClientResetOnStart && lsClientStarted)
-								{
-									lsClient->resetSampler();
-								}
-							}
-							if(lsClientStarted)
-							{
-								//qDebug("Loading Instrument to LinuxSampler");
-								if(lsClient->loadInstrument(ins))
-								{
-									//qDebug("Instrument Map Loaded");
-									int map = lsClient->findMidiMap(ins->iname().toUtf8().constData());
-									Patch* p = ins->getDefaultPatch();
-									if(p && map >= 0)
-									{
-										SamplerData* data;
-										if(lsClient->createInstrumentChannel(track->name().toUtf8().constData(), p->engine.toUtf8().constData(), p->filename.toUtf8().constData(), p->index, map, &data))
-										{
-											if(data)
-												track->setSamplerData(data);
-											//qDebug("Created Channel for track");
-										}
-									}
-								}
-							}
 						}
 					}
 				}
