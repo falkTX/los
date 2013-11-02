@@ -23,11 +23,6 @@ file (GLOB instruments_files
 	gm.idf
 	gs.idf
 	xg.idf
-	*-sonatina.idf
-	Guitar.idf
-	Piano-maestro.idf
-	acoustic-guitar-FREE.idf
-	classical-guitar-FREE.idf
 	)
 
 install( FILES ${instruments_files}
