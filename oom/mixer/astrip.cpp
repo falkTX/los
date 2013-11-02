@@ -66,15 +66,18 @@ AudioStrip::AudioStrip(QWidget* parent, Track* at)
     if(at->isMidiTrack())
     {
         m_track = (AudioTrack*)at->inputTrack();
-        if(!m_track)
-        {//MAJOR ERROR condition
-        }
     }
     else
     {
         m_track = (AudioTrack*)track;
     }
-    AudioTrack* t = (AudioTrack*) m_track;
+    AudioTrack* t = m_track;
+
+    if(!t)
+    {//MAJOR ERROR condition
+        return;
+    }
+
     channel = t->channels();
 
     int ch = 0;

@@ -321,10 +321,13 @@ void TrackHeader::setSelected(bool sel, bool force)/*{{{*/
             m_trackName->setStyleSheet(m_selectedStyle[m_tracktype]);
             setStyleSheet(trackHeaderStyleSelected);
             //m_slider->setSliderBackground(g_trackColorListSelected.value(m_track->type()));
+            if (m_slider)
+            {
             if(usePixmap)
                 m_slider->setUsePixmap();
             else
                 m_slider->setSliderBackground(sliderBgColor);
+            }
             m_colorLine->setStyleSheet(lineStyleTemplate.arg(g_trackColorListLine.value(m_track->type()).name()));
         }
         else
@@ -1958,6 +1961,9 @@ void TrackHeader::initVolume()/*{{{*/
         connect(m, SIGNAL(mousePress(bool)), this, SLOT(resetPeaks(bool)));
         connect(m, SIGNAL(mousePress(bool)), this, SLOT(updateSelection(bool)));*/
         Track *in = m_track->inputTrack();
+
+        if (! in) return;
+
         int channels = ((AudioTrack*)in)->channels();/*{{{*/
         m_slider = new Slider(this, "vol", Qt::Horizontal, Slider::None, Slider::BgSlot, sliderBgColor, usePixmap);
         m_slider->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed));
