@@ -1,9 +1,10 @@
 #=============================================================================
-#  OOMidi
-#  OpenOctave Midi and Audio Editor
+#  LOS
+#  Libre Octave Studio
 #  $Id:$
 #
 #  Copyright (C) 2002-2006 by Werner Schweer and others
+#  Copyright (C) 2012-2013 by Filipe Coelho
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License version 2.
@@ -18,14 +19,12 @@
 #  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #=============================================================================
 
-#file (GLOB instruments_files *.idf)
-file (GLOB instruments_files 
-	gm.idf
-	gs.idf
-	xg.idf
-	)
+file(GLOB instruments_files 
+    gm.idf
+    gs.idf
+    xg.idf
+)
 
-install( FILES ${instruments_files}
-      DESTINATION ${OOMidi_SHARE_DIR}/instruments
-      )
-
+install(FILES ${instruments_files}
+    DESTINATION ${LOS_SHARE_DIR}/instruments
+)

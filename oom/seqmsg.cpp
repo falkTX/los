@@ -22,7 +22,6 @@
 #include "alsamidi.h"
 #include "audio.h"
 #include "Composer.h"
-#include "plugin.h"
 #include "driver/jackmidi.h"
 
 //---------------------------------------------------------

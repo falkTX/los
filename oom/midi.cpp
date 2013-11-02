@@ -20,7 +20,6 @@
 #include "midiport.h"
 #include "midictrl.h"
 #include "audio.h"
-#include "plugin.h"
 #include "mididev.h"
 #include "driver/alsamidi.h"
 #include "driver/jackmidi.h"
@@ -28,6 +27,7 @@
 #include "sync.h"
 #include "midiseq.h"
 #include "gconfig.h"
+#include "minstrument.h"
 
 extern void dump(const unsigned char* p, int n);
 

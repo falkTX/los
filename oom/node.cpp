@@ -16,7 +16,6 @@
 #include "gconfig.h"
 #include "song.h"
 #include "xml.h"
-#include "plugin.h"
 #include "audiodev.h"
 #include "audio.h"
 #include "wave.h"

@@ -1,5 +1,5 @@
 #=============================================================================
-#  OOMidi
+#  LOS
 #  OpenOctave Midi and Audio Editor
 #  $Id:$
 #
@@ -21,6 +21,6 @@
 file (GLOB oom_files *.oom)
 
 install( FILES ${oom_files}
-      DESTINATION ${OOMidi_SHARE_DIR}/demos
+      DESTINATION ${LOS_SHARE_DIR}/demos
       )
 

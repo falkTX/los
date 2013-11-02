@@ -1,9 +1,10 @@
 #=============================================================================
-#  OOMidi
-#  OpenOctave Midi and Audio Editor
+#  LOS
+#  Libre Octave Studio
 #  $Id:$
 #
 #  Copyright (C) 2002-2006 by Werner Schweer and others
+#  Copyright (C) 2012-2013 by Filipe Coelho
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License version 2.
@@ -19,10 +20,9 @@
 #=============================================================================
 
 file(GLOB utils_files
-      oom-find-unused-wavs
-      oom-song-convert.py
-      )
+    los-find-unused-wavs
+)
 
-install (PROGRAMS ${utils_files}
-      DESTINATION ${OOMidi_SHARE_DIR}/utils/
-      )
+install(PROGRAMS ${utils_files}
+    DESTINATION ${LOS_SHARE_DIR}/utils/
+)

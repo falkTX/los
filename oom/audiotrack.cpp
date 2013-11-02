@@ -19,12 +19,12 @@
 #include "audio.h"
 #include "wave.h"
 #include "xml.h"
-#include "plugin.h"
 #include "audiodev.h"
 #include "midictrl.h"
 #include "mididev.h"
 #include "midiport.h"
 #include "midimonitor.h"
+#include "globals.h"
 
 
 //---------------------------------------------------------

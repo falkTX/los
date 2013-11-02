@@ -29,9 +29,6 @@ struct VirtualTrack {
     int type;
     QString name;
     QString instrumentName;
-    double instrumentPan;
-    double instrumentVerb;
-    bool autoCreateInstrument;
     bool createMidiInputDevice;
     bool createMidiOutputDevice;
     bool useInput;

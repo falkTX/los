@@ -16,7 +16,6 @@
 #include "midiport.h"
 #include "song.h"
 #include "xml.h"
-#include "plugin.h"
 #include "audio.h"
 #include "globaldefs.h"
 #include "route.h"

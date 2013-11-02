@@ -24,7 +24,6 @@
 #include "app.h"
 #include "midiport.h"
 #include "mididev.h"
-#include "plugin.h"
 #include "minstrument.h"
 #include "TrackManager.h"
 #include "TrackInstrumentMenu.h"

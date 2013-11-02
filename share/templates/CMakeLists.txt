@@ -1,10 +1,11 @@
 #=============================================================================
-#  OOMidi
-#  OpenOctave Midi and Audio Editor
+#  LOS
+#  Libre Octave Studio
 #  $Id:$
 #
 #  Copyright (C) 2002-2006 by Werner Schweer and others
 #  Copyright (C) 2011 by Andrew Williams and Christopher Cherrett
+#  Copyright (C) 2012-2013 by Filipe Coelho
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License version 2.
@@ -20,30 +21,9 @@
 #=============================================================================
 
 file (GLOB templates_files 
-	default.oom
-	default.lscp
-	oomidi-template.oom
-	oomidi-template.lscp
-	oomidi-extended-template.oom
-	oomidi-extended-template.lscp
-	Classical_Guitar.sfz
-	AcousticGuitar.sfz
-	)
-
-configure_file (
-      oomidi-template.oos.in
-      ${PROJECT_BINARY_DIR}/share/templates/oomidi-template.oos
-      )
-
-configure_file (
-      oomidi-extended-template.oos.in
-      ${PROJECT_BINARY_DIR}/share/templates/oomidi-extended-template.oos
-      )
-
+    default.los
+)
 
 install( FILES ${templates_files} 
-	${PROJECT_BINARY_DIR}/share/templates/oomidi-template.oos
-    ${PROJECT_BINARY_DIR}/share/templates/oomidi-extended-template.oos
-    DESTINATION ${OOMidi_SHARE_DIR}/templates
-    )
-
+    DESTINATION ${LOS_SHARE_DIR}/templates
+)

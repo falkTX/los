@@ -1253,7 +1253,7 @@ OOMidi::OOMidi(int argc, char** argv) : QMainWindow()
     else if (config.startMode == 1)
     {
         printf("starting with default template\n");
-        m_initProjectName = oomGlobalShare + QString("/templates/default.oom");
+        m_initProjectName = oomGlobalShare + QString("/templates/default.los");
         m_useTemplate = true;
     }
     else if (config.startMode == 2)
@@ -1562,7 +1562,7 @@ void OOMidi::loadProjectFile1(const QString& name, bool songTemplate, bool loadA
     if ((mex == "gz") || (mex == "bz2"))
         mex = ex.section('.', -2, -2);
 
-    if (ex.isEmpty() || mex == "oom")
+    if (ex.isEmpty() || mex == "oom" || mex == "los") //XXX temp only
     {
         //
         //  read *.oom file

@@ -1,9 +1,10 @@
 #=============================================================================
-#  OOMidi
-#  OpenOctave Midi and Audio Editor
+#  LOS
+#  Libre Octave Studio
 #  $Id:$
 #
 #  Copyright (C) 2002-2006 by Werner Schweer and others
+#  Copyright (C) 2012-2013 by Filipe Coelho
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License version 2.
@@ -18,47 +19,47 @@
 #  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #=============================================================================
 
-file (GLOB TRANSLATIONS_FILES *.ts)
+file(GLOB TRANSLATIONS_FILES *.ts)
 
 if (UPDATE_TRANSLATIONS)
-      qt4_create_translation(QM_FILES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
+    qt4_create_translation(QM_FILES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
 else (UPDATE_TRANSLATIONS)
-      qt4_add_translation(QM_FILES ${TRANSLATIONS_FILES})
+    qt4_add_translation(QM_FILES ${TRANSLATIONS_FILES})
 endif (UPDATE_TRANSLATIONS)
 
-add_custom_target (translations ALL DEPENDS ${QM_FILES})
+add_custom_target(translations ALL DEPENDS ${QM_FILES})
 
 # If we are updating the translations, make sure that these targets
 # are scanned first
 if (UPDATE_TRANSLATIONS)
-      add_dependencies(translations
-            oom
-            Composer
-            cliplist
-            ctrl
-            driver
-            instruments
-            liste
-            marker
-            master
-            midiedit
-            mixer
-            mplugins
-            remote
-            waveedit
-            widgets
-            awl
-            deicsonze
-            fluid
-            fluidsynth
-            libsynti
-            organ
-            s1
-            simpledrums2
-            vam
-            )
+    add_dependencies(translations
+        oom
+        Composer
+        cliplist
+        ctrl
+        driver
+        instruments
+        liste
+        marker
+        master
+        midiedit
+        mixer
+        mplugins
+        remote
+        waveedit
+        widgets
+        awl
+        deicsonze
+        fluid
+        fluidsynth
+        libsynti
+        organ
+        s1
+        simpledrums2
+        vam
+    )
 endif (UPDATE_TRANSLATIONS)
 
 install(FILES ${QM_FILES}
-      DESTINATION ${OOMidi_SHARE_DIR}/locale
-      )
+    DESTINATION ${LOS_SHARE_DIR}/locale
+)

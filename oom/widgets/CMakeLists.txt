@@ -110,8 +110,6 @@ QT4_WRAP_CPP (widget_mocs
           mixerdock.h
           ccdelegate.h
           ccedit.h
-          plugingui.h
-          plugindialog.h
           CreateTrackDialog.h
           ClipList/BookmarkList.h
           ClipList/AudioClipList.h
@@ -265,8 +263,6 @@ file (GLOB widgets_source_files
           mixerdock.cpp
           ccdelegate.cpp
           ccedit.cpp
-          plugingui.cpp
-          plugindialog.cpp
           CreateTrackDialog.cpp
           ClipList/BookmarkList.cpp
           ClipList/AudioClipList.cpp

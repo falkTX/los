@@ -15,7 +15,6 @@
 #include "app.h"
 #include "song.h"
 #include "audio.h"
-#include "plugin.h"
 #include "knob.h"
 #include "popupmenu.h"
 #include "globals.h"

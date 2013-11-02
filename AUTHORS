@@ -1,28 +1,30 @@
-OOMidi
+LOS
 This software has been brought to you by:
 
-Name:                     user:   <user> <at> openoctave <dot> org
----------------          ---------
-Christopher Cherrett	ccherrett
-Andrew Williams			mistik1
-Remon Sijrier			remon
-Filipe Coelho			falktx
+Filipe Coelho, aka falkTX
 
-###
-Former Team Members:
-Alex Stone		
 
-###
+########################################################
 ladish L1 support by:
 Nedko Arnaudov
 
-Special Thanks to the MusE developers
-Werner Schweer           
-Nil Geisweiller         
-Frank Neumann          
-Mathias Lundgren      
-Joachim Schiele      
-Robert Jonsson      
-Tim Donnelly       
-Orcan Ogetbil     
+########################################################
+Special Thanks to the OOMidi developers
+Christopher Cherrett
+Andrew Williams
+Remon Sijrier
 
+Former Team Members:
+Alex Stone
+Filipe Coelho
+
+########################################################
+Special Thanks to the MusE developers
+Werner Schweer
+Nil Geisweiller
+Frank Neumann
+Mathias Lundgren
+Joachim Schiele
+Robert Jonsson
+Tim Donnelly
+Orcan Ogetbil

@@ -35,13 +35,13 @@
 #include "genset.h"
 #include "midiitransform.h"
 #include "audio.h"
-#include "plugin.h"
 #include "sync.h"
 #include "wave.h"
 #include "midiseq.h"
 #include "AudioMixer.h"
 #include "TrackManager.h"
 #include "utils.h"
+#include "minstrument.h"
 
 extern void writeMidiTransforms(int level, Xml& xml);
 extern void readMidiTransform(Xml&);

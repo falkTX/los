@@ -36,7 +36,6 @@
 #include "route.h"
 #include "popupmenu.h"
 #include "pctable.h"
-#include "plugin.h"
 #include "shortcuts.h"
 #include "TrackManager.h"
 #include "TrackInstrumentMenu.h"

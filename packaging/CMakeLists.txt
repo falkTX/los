@@ -1,9 +1,10 @@
 #=============================================================================
-#  OOMidi
-#  OpenOctave Midi and Audio Editor
+#  LOS
+#  Libre Octave Studio
 #  $Id:$
 #
 #  Copyright (C) 2002-2006 by Werner Schweer and others
+#  Copyright (C) 2012-2013 by Filipe Coelho
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License version 2.
@@ -19,23 +20,26 @@
 #=============================================================================
 
 #
-# produce the .desktop file
+# produce the desktop file
 #
-configure_file (
-      oom.desktop.in
-      ${PROJECT_BINARY_DIR}/packaging/oom.desktop
-      )
+
+configure_file(
+    los.desktop.in
+    ${PROJECT_BINARY_DIR}/packaging/los.desktop
+)
 
 #
 # install the desktop and mime files
 #
-install( FILES oom_icon.png
-      DESTINATION ${SHARE_INSTALL_PREFIX}/icons/hicolor/64x64/apps/
-      )
-install( FILES ${PROJECT_BINARY_DIR}/packaging/oom.desktop
-      DESTINATION ${SHARE_INSTALL_PREFIX}/applications/
-      )
-install( FILES oom.xml
-      DESTINATION ${SHARE_INSTALL_PREFIX}/mime/packages/
-      )
 
+install(FILES los_icon.png
+    DESTINATION ${SHARE_INSTALL_PREFIX}/pixmaps/
+)
+
+install(FILES ${PROJECT_BINARY_DIR}/packaging/los.desktop
+    DESTINATION ${SHARE_INSTALL_PREFIX}/applications/
+)
+
+install(FILES los.xml
+    DESTINATION ${SHARE_INSTALL_PREFIX}/mime/packages/
+)

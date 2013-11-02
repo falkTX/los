@@ -20,7 +20,6 @@
 #include "alsamidi.h"
 //#include "driver/alsamidi.h"   // p4.0.2
 #include "audioprefetch.h"
-#include "plugin.h"
 #include "audio.h"
 #include "wave.h"
 #include "midictrl.h"
@@ -31,6 +30,8 @@
 #include "gconfig.h"
 #include "pos.h"
 #include "midiport.h"
+#include "globals.h"
+#include "minstrument.h"
 
 extern double curTime();
 Audio* audio;

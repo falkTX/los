@@ -1,10 +1,11 @@
 //=============================================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id:$
 //
 //  Copyright (C) 2002-2006 by Werner Schweer and others
 //  Copyright (C) 2011-2012 by The OpenOctave Project
+//  Copyright (C) 2012-2013 by Filipe Coelho
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License version 2.
@@ -20,17 +21,16 @@
 //=============================================================================
 
 #cmakedefine USE_SSE
-#cmakedefine JACK2_SUPPORT
-#cmakedefine JACK_SESSION_SUPPORT
 
-#define VERSION          "${OOMidi_VERSION_FULL}"
-#define PACKAGE_NAME     "OOMidi"
-#define DOCDIR           "${OOMidi_DOC_DIR}"
-#define SHAREDIR         "${OOMidi_SHARE_DIR}"
-#define LIBDIR           "${OOMidi_LIB_DIR}"
-#define OOM_INSTALL_BIN  "${OOMidi_INSTALL_PATH}"
-#define OOM_DEFAULT_TEMPLATE "${OOMidi_SHARE_DIR}/templates/oomidi-template.oos"
-#define OOM_EXT_DEFAULT_TEMPLATE "${OOMidi_SHARE_DIR}/templates/oomidi-extended-template.oos"
-#define MIDI_FIFO_SIZE	${OOM_MIDI_FIFO_SIZE}
+#define PACKAGE_NAME "LibreOctave Studio"
+#define VERSION      "${LOS_VERSION}"
+
+#define DOCDIR       "${LOS_DOC_DIR}"
+#define LIBDIR       "${LOS_LIB_DIR}"
+#define SHAREDIR     "${LOS_SHARE_DIR}"
+
+#define MIDI_FIFO_SIZE     ${OOM_MIDI_FIFO_SIZE}
 #define MIDI_REC_FIFO_SIZE ${OOM_MIDI_REC_FIFO_SIZE}
 
+// #define OOM_INSTALL_BIN          "${LOS_INSTALL_PATH}"
+// #define OOM_DEFAULT_TEMPLATE     "${LOS_SHARE_DIR}/templates/oomidi-template.oos"

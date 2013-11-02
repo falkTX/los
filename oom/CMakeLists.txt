@@ -1,5 +1,5 @@
 #=============================================================================
-#  OOMidi
+#  LOS
 #  OpenOctave Midi and Audio Editor
 #  $Id:$
 #
@@ -41,7 +41,7 @@ set (SubDirs
 
 if (ENABLE_PYTHON)
       set ( PYREM_CPP_FLAGS "-DENABLE_PYTHON" )
-      set ( PYLIBS ${PYTHON_LIB} remote) 
+      set ( PYLIBS ${PYTHON_LIB} remote)
       set ( SubDirs ${SubDirs} remote )
 endif (ENABLE_PYTHON)
 
@@ -50,7 +50,7 @@ subdirs (${SubDirs})
 ##
 ## Expand Qt macros in source files
 ##
-QT4_WRAP_CPP ( oom_moc_headers
+QT4_WRAP_CPP ( los_moc_headers
       app.h
       cobject.h
       conf.h
@@ -76,9 +76,9 @@ QT4_WRAP_CPP ( oom_moc_headers
 ##
 ## Resource files
 ##
-QT4_ADD_RESOURCES (oom_qrc_files
-		  oom.qrc
-		  )
+QT4_ADD_RESOURCES(los_qrc_files
+                  los.qrc
+)
 
 file (GLOB core_source_files
       app.cpp
@@ -113,7 +113,6 @@ file (GLOB core_source_files
       node.cpp
       osc.cpp
       part.cpp
-      plugin.cpp
       pos.cpp
       route.cpp
       seqmsg.cpp
@@ -158,11 +157,11 @@ file (GLOB icons_source_files
 ## Define target
 ##
 add_library ( core STATIC
-      ${oom_qrc_files}
-      ${oom_moc_headers}
+      ${los_qrc_files}
+      ${los_moc_headers}
       ${core_source_files}
       )
-add_executable ( oom
+add_executable ( los
       ${main_source_files}
       )
 add_library ( icons STATIC
@@ -189,7 +188,6 @@ include_directories (
       mplugins
       remote
       widgets
-      ${OOMIDI_LV2_INCLUDES}
       )
 
 # Make sure to include the uic generated headers paths.
@@ -200,9 +198,9 @@ include_directories(
       ${CMAKE_CURRENT_BINARY_DIR}/liste
       ${CMAKE_CURRENT_BINARY_DIR}/midiedit
       ${CMAKE_CURRENT_BINARY_DIR}/mixer
-      ${CMAKE_CURRENT_BINARY_DIR}/mplugins 
+      ${CMAKE_CURRENT_BINARY_DIR}/mplugins
       ${CMAKE_CURRENT_BINARY_DIR}/remote
-      ${CMAKE_CURRENT_BINARY_DIR}/widgets 
+      ${CMAKE_CURRENT_BINARY_DIR}/widgets
       )
 
 ##
@@ -212,13 +210,13 @@ set_target_properties( core
       #PROPERTIES COMPILE_FLAGS "${PYREM_CPP_FLAGS} -include ${PROJECT_BINARY_DIR}/all.h -fPIC"
       PROPERTIES COMPILE_FLAGS "${PYREM_CPP_FLAGS} -include ${PROJECT_BINARY_DIR}/all.h -fPIC -fopenmp"
       LINK_FLAGS "-fopenmp"
-      OUTPUT_NAME oom_core
+      OUTPUT_NAME los_core
       )
-set_target_properties( oom
-      PROPERTIES OUTPUT_NAME ${OOMidi_EXEC_NAME}
+set_target_properties( los
+      PROPERTIES OUTPUT_NAME ${LOS_EXEC_NAME}
       )
 set_target_properties( icons
-      PROPERTIES OUTPUT_NAME oom_icons
+      PROPERTIES OUTPUT_NAME los_icons
       )
 
 ##
@@ -253,7 +251,7 @@ target_link_libraries(core
 #       target_link_libraries(core ${LIBLO_LIBRARIES})
 # endif(OSC_SUPPORT)
 
-target_link_libraries(oom
+target_link_libraries(los
       midiedit
       core
       )
@@ -265,11 +263,11 @@ target_link_libraries(icons
 ##
 ## Install location
 ##
-install( TARGETS oom 
+install( TARGETS los
       RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/
       )
   #install(TARGETS core icons
   #   DESTINATION
-  #   ${OOMidi_MODULES_DIR}
+  #   ${LOS_MODULES_DIR}
   #   )
 

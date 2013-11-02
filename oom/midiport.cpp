@@ -19,7 +19,6 @@
 #include "globals.h"
 #include "gconfig.h"
 #include "mpevent.h"
-#include "plugin.h"
 #include "app.h"
 #include "song.h"
 #include "utils.h"

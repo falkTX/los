@@ -19,7 +19,6 @@
 #include "gconfig.h"
 #include "config.h"
 #include "midiport.h"
-#include "plugin.h"
 #include "mididev.h"
 
 AutomationMenu::AutomationMenu(QMenu* parent, Track *t)

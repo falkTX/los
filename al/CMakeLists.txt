@@ -1,6 +1,6 @@
 #=============================================================================
-#  OOMidi
-#  OpenOctave Midi and Audio Editor
+#  LOS
+#  Libre Octave Studio
 #  $Id:$
 #
 #  Copyright (C) 2002-2006 by Werner Schweer and others
@@ -23,57 +23,49 @@ include(${PROJECT_SOURCE_DIR}/pch.txt)
 ##
 ## List of source files to compile
 ##
-file (GLOB al_source_files
-      al.cpp
-      dsp.cpp
-      sig.cpp
-      xml.cpp
-      )
+
+file(GLOB al_source_files
+    al.cpp
+    dsp.cpp
+    sig.cpp
+    xml.cpp
+)
+
 if (USE_SSE)
-      file (GLOB al_source_files
-      ${al_source_files}
-      dspSSE.cpp
-      dspXMM.cpp
-      )
+    file(GLOB al_source_files
+        ${al_source_files}
+        dspSSE.cpp
+        dspXMM.cpp
+    )
 endif (USE_SSE)
 
 ##
 ## Define target
 ##
+
 add_library(al STATIC
-      ${PROJECT_BINARY_DIR}/all.h.pch
-      ${al_source_files}
-      )
+    ${PROJECT_BINARY_DIR}/all.h.pch
+    ${al_source_files}
+)
 
 ##
 ## Compilation flags and target name
 ##
-set_target_properties( al
-      PROPERTIES OUTPUT_NAME oom_al
-      )
+     
 set_source_files_properties(
-      al.cpp
-      dsp.cpp 
-      dspXMM.cpp
-      sig.cpp
-      xml.cpp
-      PROPERTIES COMPILE_FLAGS "-fPIC -include ${PROJECT_BINARY_DIR}/all.h"
-      )
+    al.cpp
+    dsp.cpp 
+    dspXMM.cpp
+    sig.cpp
+    xml.cpp
+    PROPERTIES COMPILE_FLAGS "-fPIC -DPIC -include ${PROJECT_BINARY_DIR}/all.h"
+)
+
 set_source_files_properties(
-      dspSSE.cpp
-      PROPERTIES COMPILE_FLAGS "-x assembler"
-      )
+    dspSSE.cpp
+    PROPERTIES COMPILE_FLAGS "-x assembler"
+)
 
-##
-## Linkage
-##
-target_link_libraries ( al
-      ${QT_LIBRARIES}
-      )
-
-##
-## Install location
-##
-#install(TARGETS al 
-#     DESTINATION ${OOMidi_MODULES_DIR}
-#     )
+set_target_properties(al
+    PROPERTIES OUTPUT_NAME los_al
+)

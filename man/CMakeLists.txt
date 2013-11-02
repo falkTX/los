@@ -1,9 +1,10 @@
 #=============================================================================
-#  OOMidi
-#  OpenOctave Midi and Audio Editor
+#  LOS
+#  Libre Octave Studio
 #  $Id:$
 #
 #  Copyright (C) 2002-2006 by Werner Schweer and others
+#  Copyright (C) 2012-2013 by Filipe Coelho
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License version 2.
@@ -21,17 +22,13 @@
 #
 # produce the manpages
 #
-configure_file (
-      oom.1.in
-      ${PROJECT_BINARY_DIR}/man/${OOMidi_EXEC_NAME}.1
-      )
-  #configure_file (
-  #      grepmidi.1.in
-  #      ${PROJECT_BINARY_DIR}/man/grepmidi.1
-  #      )
 
-install( FILES 
-      ${PROJECT_BINARY_DIR}/man/${OOMidi_EXEC_NAME}.1
-	  #      ${PROJECT_BINARY_DIR}/man/grepmidi.1
-      DESTINATION ${SHARE_INSTALL_PREFIX}/man/man1/
-      )
+configure_file(
+    los.1.in
+    ${PROJECT_BINARY_DIR}/man/${LOS_EXEC_NAME}.1
+)
+
+install(FILES 
+    ${PROJECT_BINARY_DIR}/man/${LOS_EXEC_NAME}.1
+    DESTINATION ${SHARE_INSTALL_PREFIX}/man/man1/
+)

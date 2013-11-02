@@ -10,20 +10,19 @@ details.
 
 LOS is developed from the base code of OOM2 (OpenOctaveMidi2) and MusE (Muse Sequencer) written by Werner Schweer.
 
-Additional developers for attribution:
+Additional developers for attribution (OOMidi):
+Christopher Cherrett
+Andrew Williams
+Remon Sijrier
 
+Additional developers for attribution (MusE):
+Werner Schweer
 Nils Geisweiller
-
 Frank Neumann
-
 Mathias Lundgren
-
 Joachim Schiele
-
 Robert Jonsson
-
 Orcan Ogetbil
-
 Tim Donnelly
 
 ______________________

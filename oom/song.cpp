@@ -47,11 +47,11 @@
 #include "trackview.h"
 #include "mpevent.h"
 #include "midimonitor.h"
-#include "plugin.h"
 #include "traverso_shared/OOMCommand.h"
 #include "traverso_shared/TConfig.h"
 #include "CreateTrackDialog.h"
 //#include <omp.h>
+#include "minstrument.h"
 
 extern void clearMidiTransforms();
 extern void clearMidiInputTransforms();

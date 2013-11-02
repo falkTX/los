@@ -1,10 +1,10 @@
 [Desktop Entry]
-Name=OOMidi
+Name=LibreOctave Studio
 GenericName=Audio/MIDI Sequencer
 Comment=Midi Music Editor
-Icon=oom_icon
+Icon=los_icon
 Type=Application
-Exec=${OOMidi_EXEC_NAME}
+Exec=${LOS_EXEC_NAME}
 Terminal=false
 Categories=Sequencer;Midi;X-Jack;X-Sequencers;X-MIDI;Audio;AudioVideo;
-MimeType=audio/midi;application/x-oom;application/xml;
+MimeType=application/x-los;

@@ -1,9 +1,10 @@
 #=============================================================================
-#  OOMidi
-#  OpenOctave Midi and Audio Editor
+#  LOS
+#  Libre Octave Studio
 #  $Id:$
 #
 #  Copyright (C) 2002-2006 by Werner Schweer and others
+#  Copyright (C) 2012-2013 by Filipe Coelho
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License version 2.
@@ -19,14 +20,13 @@
 #=============================================================================
 
 file(GLOB script_files
-      DoNothing 
-      RemoveShortEvents 
-      DoubleSpeed 
-      ConstantLength 
-      SwingQuantize1
-      )
+    DoNothing 
+    RemoveShortEvents 
+    DoubleSpeed 
+    ConstantLength 
+    SwingQuantize1
+)
 
-install (PROGRAMS ${script_files}
-      DESTINATION ${OOMidi_SHARE_DIR}/scripts
-      )
-
+install(PROGRAMS ${script_files}
+    DESTINATION ${LOS_SHARE_DIR}/scripts
+)

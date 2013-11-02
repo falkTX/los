@@ -21,7 +21,6 @@
 #include "driver/alsamidi.h"
 #include "icons.h"
 #include "midimonitor.h"
-#include "plugin.h"
 #include "xml.h"
 #include "utils.h"
 
@@ -36,9 +35,6 @@ VirtualTrack::VirtualTrack()
     useGlobalInputs = false;
     inputChannel = 0;
     outputChannel = 0;
-    instrumentPan = 0.0;
-    instrumentVerb = 0.0;
-    autoCreateInstrument = false;
     createMidiInputDevice = false;
     createMidiOutputDevice = false;
 }/*}}}*/
@@ -52,11 +48,10 @@ void VirtualTrack::write(int level, Xml& xml) const/*{{{*/
     xml.nput("type=\"%d\" useGlobalInputs=\"%d\" name=\"%s\" useInput=\"%d\" useOutput=\"%d\" ", type, useGlobalInputs, name.toUtf8().constData(), useInput, useOutput);
     if(!instrumentName.isEmpty() && type == Track::MIDI)
     {
-        xml.nput("autoCreateInstrument=\"%d\" createMidiInputDevice=\"%d\" createMidiOutputDevice=\"%d\" ",
-                autoCreateInstrument, createMidiInputDevice, createMidiOutputDevice);
-        xml.nput("instrumentName=\"%s\" instrumentPan=\"%f\" instrumentVerb=\"%f\" ",
-                instrumentName.toUtf8().constData(), instrumentPan, instrumentVerb);
-
+        xml.nput("createMidiInputDevice=\"%d\" createMidiOutputDevice=\"%d\" ",
+                createMidiInputDevice, createMidiOutputDevice);
+        xml.nput("instrumentName=\"%s\" ",
+                instrumentName.toUtf8().constData());
         xml.nput("inputChannel=\"%d\" outputChannel=\"%d\" ",
                 inputChannel, outputChannel);
     }
@@ -105,18 +100,6 @@ void VirtualTrack::read(Xml &xml)/*{{{*/
                 else if(tag == "instrumentName")
                 {
                     instrumentName = xml.s2();
-                }
-                else if(tag == "instrumentPan")
-                {
-                    instrumentPan = xml.s2().toDouble();
-                }
-                else if(tag == "instrumentVerb")
-                {
-                    instrumentVerb = xml.s2().toDouble();
-                }
-                else if(tag == "autoCreateInstrument")
-                {
-                    autoCreateInstrument = xml.s2().toInt();
                 }
                 else if(tag == "createMidiInputDevice")
                 {

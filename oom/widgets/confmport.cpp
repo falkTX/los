@@ -25,12 +25,10 @@
 #include "midiport.h"
 #include "mididev.h"
 #include "xml.h"
-//#include "midisyncimpl.h"
-//#include "midifilterimpl.h"
+
 #include "ctrlcombo.h"
 #include "minstrument.h"
 #include "audio.h"
-#include "plugin.h"
 #include "midiseq.h"
 #include "driver/alsamidi.h"
 #include "driver/jackmidi.h"

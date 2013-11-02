@@ -4,51 +4,41 @@
 //  (C) Copyright 2011 Andrew Williams & Christopher Cherrett
 //===========================================================
 
-#include <QMessageBox>
 #include "CreateTrackDialog.h"
 #include "NameValidator.h"
-#include "globals.h"
+
+#include "audio.h"
+#include "audiodev.h"
 #include "gconfig.h"
-#include "track.h"
-#include "song.h"
-#include "app.h"
+#include "genset.h"
+#include "globals.h"
+#include "icons.h"
 #include "mididev.h"
 #include "midiport.h"
 #include "minstrument.h"
-#include "audio.h"
-#include "midiseq.h"
-#include "driver/jackaudio.h"
-#include "driver/jackmidi.h"
-#include "driver/alsamidi.h"
-#include "icons.h"
-#include "midimonitor.h"
-#include "plugin.h"
-#include "utils.h"
-#include "genset.h"
-#include "knob.h"
-#include "doublelabel.h"
+#include "song.h"
+#include "track.h"
 
+#include <QMessageBox>
 
 CreateTrackDialog::CreateTrackDialog(int type, int pos, QWidget* parent)
-: QDialog(parent),
-m_insertType(type),
-m_insertPosition(pos),
-m_templateMode(false)
+    : QDialog(parent),
+      m_insertType(type),
+      m_insertPosition(pos),
+      m_templateMode(false)
 {
     initDefaults();
     m_vtrack = new VirtualTrack;
-    //m_lastSynth = 0;
 }
 
 CreateTrackDialog::CreateTrackDialog(VirtualTrack** vt, int type, int pos, QWidget* parent)
-: QDialog(parent),
-m_insertType(type),
-m_insertPosition(pos),
-m_templateMode(true)
+    : QDialog(parent),
+      m_insertType(type),
+      m_insertPosition(pos),
+      m_templateMode(true)
 {
     initDefaults();
     m_vtrack = new VirtualTrack;
-    //m_lastSynth = 0;
     *vt = m_vtrack;
 }
 
@@ -60,7 +50,6 @@ void CreateTrackDialog::initDefaults()
     m_createMidiOutputDevice = false;
 
     m_midiSameIO = false;
-    m_createTrackOnly = false;
     m_instrumentLoaded = false;
     m_showJackAliases = -1;
 
@@ -97,66 +86,8 @@ void CreateTrackDialog::initDefaults()
     int row = cmbType->findData(m_insertType);
     cmbType->setCurrentIndex(row);
 
-    m_panKnob = new Knob(this);/*{{{*/
-    m_panKnob->setRange(-1.0, +1.0);
-    m_panKnob->setId(9);
-    m_panKnob->setKnobImage(QString(":images/knob_buss_new.png"));
-
-    m_panKnob->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed));
-    m_panKnob->setBackgroundRole(QPalette::Mid);
-    m_panKnob->setToolTip("Panorama");
-    m_panKnob->setEnabled(true);
-    m_panKnob->setIgnoreWheel(false);
-
-    m_panLabel = new DoubleLabel(0, -1.0, +1.0, this);
-    m_panLabel->setSlider(m_panKnob);
-    m_panLabel->setFont(config.fonts[1]);
-    m_panLabel->setBackgroundRole(QPalette::Mid);
-    m_panLabel->setFrame(true);
-    m_panLabel->setAlignment(Qt::AlignCenter);
-    m_panLabel->setPrecision(2);
-    m_panLabel->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
-
-    connect(m_panKnob, SIGNAL(valueChanged(double, int)), m_panLabel, SLOT(setValue(double)));
-    connect(m_panLabel, SIGNAL(valueChanged(double, int)), m_panKnob, SLOT(setValue(double)));
-    QLabel *pl = new QLabel(tr("Pan"));
-    pl->setAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
-
-    panBox->addWidget(m_panKnob);
-    panBox->addWidget(m_panLabel);
-    panBox->addWidget(pl);
-
-
-    m_auxKnob = new Knob(this);
-    m_auxKnob->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed));
-
-    m_auxKnob->setRange(config.minSlider - 0.1, 10.0);
-    m_auxKnob->setKnobImage(":images/knob_aux_new.png");
-    m_auxKnob->setToolTip(tr("Reverb Sends level"));
-    m_auxKnob->setBackgroundRole(QPalette::Mid);
-    m_auxKnob->setValue(config.minSlider);
-
-    m_auxLabel = new DoubleLabel(config.minSlider, config.minSlider, 10.1, this);
-    m_auxLabel->setSlider(m_auxKnob);
-    m_auxLabel->setFont(config.fonts[1]);
-    m_auxLabel->setBackgroundRole(QPalette::Mid);
-    m_auxLabel->setFrame(true);
-    m_auxLabel->setAlignment(Qt::AlignCenter);
-    m_auxLabel->setPrecision(0);
-    m_auxLabel->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
-
-    connect(m_auxKnob, SIGNAL(valueChanged(double, int)), m_auxLabel, SLOT(setValue(double)));
-    connect(m_auxLabel, SIGNAL(valueChanged(double, int)), m_auxKnob, SLOT(setValue(double)));
-    QLabel *al = new QLabel(tr("Verb"));
-    al->setAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
-
-    auxBox->addWidget(m_auxKnob);
-    auxBox->addWidget(m_auxLabel);
-    auxBox->addWidget(al);/*}}}*/
-
     connect(chkInput, SIGNAL(toggled(bool)), this, SLOT(updateInputSelected(bool)));
     connect(chkOutput, SIGNAL(toggled(bool)), this, SLOT(updateOutputSelected(bool)));
-    connect(chkBuss, SIGNAL(toggled(bool)), this, SLOT(updateBussSelected(bool)));
     connect(cmbType, SIGNAL(currentIndexChanged(int)), this, SLOT(trackTypeChanged(int)));
     //connect(cmbInstrument, SIGNAL(currentIndexChanged(int)), this, SLOT(updateInstrument(int)));
     connect(cmbInstrument, SIGNAL(activated(int)), this, SLOT(updateInstrument(int)));
@@ -179,7 +110,6 @@ void CreateTrackDialog::addTrack()/*{{{*/
     int monitorIndex = cmbMonitor->currentIndex();
     int inChanIndex = cmbInChannel->currentIndex();
     int outChanIndex = cmbOutChannel->currentIndex();
-    int bussIndex = cmbBuss->currentIndex();
     bool valid = true;
 
     m_vtrack->name = txtName->text();
@@ -187,136 +117,128 @@ void CreateTrackDialog::addTrack()/*{{{*/
     Track::TrackType type = (Track::TrackType)m_insertType;
     switch(type)
     {
-        case Track::MIDI:
-        {
-            int outChan = cmbOutChannel->itemData(outChanIndex).toInt();
-            QString instrumentName = cmbInstrument->itemData(instrumentIndex, CTDInstrumentNameRole).toString();
-            QString selectedInput, selectedInput2;
+    case Track::MIDI:
+    {
+        int outChan = cmbOutChannel->itemData(outChanIndex).toInt();
+        QString instrumentName = cmbInstrument->itemData(instrumentIndex, CTDInstrumentNameRole).toString();
+        QString selectedInput, selectedInput2;
 
-            m_vtrack->autoCreateInstrument = chkAutoCreate->isChecked();
-            //Process Input connections
-            if(inputIndex >= 0 && chkInput->isChecked())/*{{{*/
+        //Process Input connections
+        if(inputIndex >= 0 && chkInput->isChecked())/*{{{*/
+        {
+            m_vtrack->useInput = true;
+            int chanbit = cmbInChannel->itemData(inChanIndex).toInt();
+            if(inputIndex == 0)
             {
-                m_vtrack->useInput = true;
-                int chanbit = cmbInChannel->itemData(inChanIndex).toInt();
-                if(inputIndex == 0)
+                m_vtrack->useGlobalInputs = true;
+                m_vtrack->inputChannel = chanbit;
+            }
+            else
+            {
+                QString devname = cmbInput->itemText(inputIndex);
+                int inDevType = cmbInput->itemData(inputIndex).toInt();
+                if(m_currentMidiInputList.isEmpty())
                 {
-                    m_vtrack->useGlobalInputs = true;
-                    m_vtrack->inputChannel = chanbit;
+                    m_createMidiInputDevice = true;
                 }
                 else
                 {
-                    QString devname = cmbInput->itemText(inputIndex);
-                    int inDevType = cmbInput->itemData(inputIndex).toInt();
-                    if(m_currentMidiInputList.isEmpty())
-                    {
-                        m_createMidiInputDevice = true;
-                    }
-                    else
-                    {
-                        m_createMidiInputDevice = !(m_currentMidiInputList.contains(inputIndex) && m_currentMidiInputList.value(inputIndex) == devname);
-                    }
-                    m_vtrack->createMidiInputDevice = m_createMidiInputDevice;
-                    m_vtrack->inputConfig = qMakePair(inDevType, devname);
-                    m_vtrack->inputChannel = chanbit;
+                    m_createMidiInputDevice = !(m_currentMidiInputList.contains(inputIndex) && m_currentMidiInputList.value(inputIndex) == devname);
                 }
-            }/*}}}*/
+                m_vtrack->createMidiInputDevice = m_createMidiInputDevice;
+                m_vtrack->inputConfig = qMakePair(inDevType, devname);
+                m_vtrack->inputChannel = chanbit;
+            }
+        }/*}}}*/
 
+        {
+            if(outputIndex >= 0 && chkOutput->isChecked())
             {
-                if(outputIndex >= 0 && chkOutput->isChecked())
+                m_vtrack->useOutput = true;
+                QString devname = cmbOutput->itemText(outputIndex);
+                int devtype = cmbOutput->itemData(outputIndex).toInt();
+                if(m_currentMidiOutputList.isEmpty())
                 {
-                    m_vtrack->useOutput = true;
-                    QString devname = cmbOutput->itemText(outputIndex);
-                    int devtype = cmbOutput->itemData(outputIndex).toInt();
-                    if(m_currentMidiOutputList.isEmpty())
-                    {
-                        m_createMidiOutputDevice = true;
-                    }
-                    else
-                    {
-                        m_createMidiOutputDevice = !(m_currentMidiOutputList.contains(outputIndex) && m_currentMidiOutputList.value(outputIndex) == devname);
-                    }
-                    m_vtrack->createMidiOutputDevice = m_createMidiOutputDevice;
-                    m_vtrack->outputConfig = qMakePair(devtype, devname);
-                    m_vtrack->outputChannel = outChan;
-                    if(m_createMidiOutputDevice)
-                    {
-                        //QString instrumentName = cmbInstrument->itemData(instrumentIndex, CTDInstrumentNameRole).toString();
-                        m_vtrack->instrumentName = instrumentName;
-                    }
-                }
-
-                if(monitorIndex >= 0 && midiBox->isChecked())
-                {
-                    if (selectedInput.isEmpty())
-                        selectedInput = cmbMonitor->itemText(monitorIndex);
-                    if (selectedInput2.isEmpty())
-                        selectedInput2 = selectedInput;
-                    m_vtrack->instrumentPan = m_panKnob->value();
-                    m_vtrack->instrumentVerb = m_auxKnob->value();
+                    m_createMidiOutputDevice = true;
                 }
                 else
                 {
-                    m_vtrack->instrumentPan = 0.0;
-                    m_vtrack->instrumentVerb = config.minSlider;
+                    m_createMidiOutputDevice = !(m_currentMidiOutputList.contains(outputIndex) && m_currentMidiOutputList.value(outputIndex) == devname);
+                }
+                m_vtrack->createMidiOutputDevice = m_createMidiOutputDevice;
+                m_vtrack->outputConfig = qMakePair(devtype, devname);
+                m_vtrack->outputChannel = outChan;
+                if(m_createMidiOutputDevice)
+                {
+                    //QString instrumentName = cmbInstrument->itemData(instrumentIndex, CTDInstrumentNameRole).toString();
+                    m_vtrack->instrumentName = instrumentName;
                 }
             }
-        }
-        break;
-        case Track::WAVE:
-        {
-            if(inputIndex >= 0 && chkInput->isChecked())
-            {
-                QString selectedInput = cmbInput->itemText(inputIndex);
-                int addNewRoute = cmbInput->itemData(inputIndex).toInt();
-                m_vtrack->useInput = true;
-                m_vtrack->inputConfig = qMakePair(addNewRoute, selectedInput);
-            }
-            if(outputIndex >= 0 && chkOutput->isChecked())
-            {
-                //Route to the Output or Buss
-                QString selectedOutput = cmbOutput->itemText(outputIndex);
-                m_vtrack->useOutput = true;
-                m_vtrack->outputConfig = qMakePair(0, selectedOutput);
-            }
-        }
-        break;
-        case Track::AUDIO_OUTPUT:
-        {
-            if(inputIndex >= 0 && chkInput->isChecked())
-            {
-                QString selectedInput = cmbInput->itemText(inputIndex);
-                m_vtrack->useInput = true;
-                m_vtrack->inputConfig = qMakePair(0, selectedInput);
-            }
 
-            if(outputIndex >= 0 && chkOutput->isChecked())
+            if(monitorIndex >= 0 && midiBox->isChecked())
             {
-                QString jackPlayback("system:playback");
-                QString selectedOutput = cmbOutput->itemText(outputIndex);
-                m_vtrack->useOutput = true;
-                m_vtrack->outputConfig = qMakePair(0, selectedOutput);
+                if (selectedInput.isEmpty())
+                    selectedInput = cmbMonitor->itemText(monitorIndex);
+                if (selectedInput2.isEmpty())
+                    selectedInput2 = selectedInput;
             }
         }
+    }
         break;
-        case Track::AUDIO_INPUT:
+    case Track::WAVE:
+    {
+        if(inputIndex >= 0 && chkInput->isChecked())
         {
-            if(inputIndex >= 0 && chkInput->isChecked())
-            {
-                QString selectedInput = cmbInput->itemText(inputIndex);
-                m_vtrack->useInput = true;
-                m_vtrack->inputConfig = qMakePair(0, selectedInput);
-            }
-            if(outputIndex >= 0 && chkOutput->isChecked())
-            {
-                QString selectedOutput = cmbOutput->itemText(outputIndex);
-                m_vtrack->useOutput = true;
-                m_vtrack->outputConfig = qMakePair(0, selectedOutput);
-            }
+            QString selectedInput = cmbInput->itemText(inputIndex);
+            int addNewRoute = cmbInput->itemData(inputIndex).toInt();
+            m_vtrack->useInput = true;
+            m_vtrack->inputConfig = qMakePair(addNewRoute, selectedInput);
         }
+        if(outputIndex >= 0 && chkOutput->isChecked())
+        {
+            //Route to the Output or Buss
+            QString selectedOutput = cmbOutput->itemText(outputIndex);
+            m_vtrack->useOutput = true;
+            m_vtrack->outputConfig = qMakePair(0, selectedOutput);
+        }
+    }
         break;
-        default:
-            valid = false;
+    case Track::AUDIO_OUTPUT:
+    {
+        if(inputIndex >= 0 && chkInput->isChecked())
+        {
+            QString selectedInput = cmbInput->itemText(inputIndex);
+            m_vtrack->useInput = true;
+            m_vtrack->inputConfig = qMakePair(0, selectedInput);
+        }
+
+        if(outputIndex >= 0 && chkOutput->isChecked())
+        {
+            QString jackPlayback("system:playback");
+            QString selectedOutput = cmbOutput->itemText(outputIndex);
+            m_vtrack->useOutput = true;
+            m_vtrack->outputConfig = qMakePair(0, selectedOutput);
+        }
+    }
+        break;
+    case Track::AUDIO_INPUT:
+    {
+        if(inputIndex >= 0 && chkInput->isChecked())
+        {
+            QString selectedInput = cmbInput->itemText(inputIndex);
+            m_vtrack->useInput = true;
+            m_vtrack->inputConfig = qMakePair(0, selectedInput);
+        }
+        if(outputIndex >= 0 && chkOutput->isChecked())
+        {
+            QString selectedOutput = cmbOutput->itemText(outputIndex);
+            m_vtrack->useOutput = true;
+            m_vtrack->outputConfig = qMakePair(0, selectedOutput);
+        }
+    }
+        break;
+    default:
+        valid = false;
     }
     if(valid)
     {
@@ -399,21 +321,6 @@ void CreateTrackDialog::updateOutputSelected(bool raw)/*{{{*/
     cmbOutChannel->setEnabled(raw);
 }/*}}}*/
 
-void CreateTrackDialog::updateBussSelected(bool raw)/*{{{*/
-{
-    cmbBuss->setEnabled(raw);
-    if(raw)
-    {
-        m_panKnob->setKnobImage(QString(":images/knob_buss_new.png"));
-    }
-    else
-    {
-        //m_panKnob->setKnobImage(QString(":images/knob_midi_new.png"));
-        m_panKnob->setKnobImage(QString(":images/knob_audio_new.png"));
-    }
-    m_panKnob->update();
-}/*}}}*/
-
 //Track type combo slot
 void CreateTrackDialog::trackTypeChanged(int type)/*{{{*/
 {
@@ -439,84 +346,84 @@ void CreateTrackDialog::populateInputList()/*{{{*/
     Track::TrackType type = (Track::TrackType)m_insertType;
     switch(type)
     {
-        case Track::MIDI:
+    case Track::MIDI:
+    {
+        m_currentMidiInputList.clear();
+        m_currentInput.clear();
+        cmbInput->addItem(tr("My Inputs"), 1025);
+        for (int i = 0; i < MIDI_PORTS; ++i)
         {
-            m_currentMidiInputList.clear();
-            m_currentInput.clear();
-            cmbInput->addItem(tr("My Inputs"), 1025);
-            for (int i = 0; i < MIDI_PORTS; ++i)
+            MidiPort* mp = &midiPorts[i];
+            MidiDevice* md = mp->device();
+
+            if (!md)
+                continue;
+
+            if ((md->openFlags() & 2))
             {
-                MidiPort* mp = &midiPorts[i];
-                MidiDevice* md = mp->device();
-
-                if (!md)
-                    continue;
-
-                if ((md->openFlags() & 2))
-                {
-                    QString mdname(md->name());
-                    m_currentInput.append(mdname);
-                    //if(md->deviceType() == MidiDevice::ALSA_MIDI)
-                    //{
-                        //Put it in the alsa list
-                    //}
-                    mdname = QString("(OOStudio) ").append(mdname);
-                    cmbInput->addItem(mdname, i);
-                    m_currentMidiInputList.insert(cmbInput->count()-1, mdname);
-                }
-            }
-            populateNewInputList();
-
-            if (!cmbInput->count())
-            {
-                chkInput->setChecked(false);
-                chkInput->setEnabled(false);
+                QString mdname(md->name());
+                m_currentInput.append(mdname);
+                //if(md->deviceType() == MidiDevice::ALSA_MIDI)
+                //{
+                //Put it in the alsa list
+                //}
+                mdname = QString("(OOStudio) ").append(mdname);
+                cmbInput->addItem(mdname, i);
+                m_currentMidiInputList.insert(cmbInput->count()-1, mdname);
             }
         }
-        break;
-        case Track::WAVE:
+        populateNewInputList();
+
+        if (!cmbInput->count())
         {
-            //The track now has its own input on creation so dont bother showing other input
-            //to connect to it
-            /*for(iTrack it = song->inputs()->begin(); it != song->inputs()->end(); ++it)
+            chkInput->setChecked(false);
+            chkInput->setEnabled(false);
+        }
+    }
+        break;
+    case Track::WAVE:
+    {
+        //The track now has its own input on creation so dont bother showing other input
+        //to connect to it
+        /*for(iTrack it = song->inputs()->begin(); it != song->inputs()->end(); ++it)
             {
                 cmbInput->addItem((*it)->name(), 0);
             }*/
-            importOutputs();
-            if (!cmbInput->count())
-            {//TODO: Not sure what we could do here except notify the user
-                chkInput->setChecked(false);
-                chkInput->setEnabled(false);
-            }
+        importOutputs();
+        if (!cmbInput->count())
+        {//TODO: Not sure what we could do here except notify the user
+            chkInput->setChecked(false);
+            chkInput->setEnabled(false);
         }
+    }
         break;
-        case Track::AUDIO_OUTPUT:
+    case Track::AUDIO_OUTPUT:
+    {
+        for(iTrack t = song->tracks()->begin(); t != song->tracks()->end(); ++t)
         {
-            for(iTrack t = song->tracks()->begin(); t != song->tracks()->end(); ++t)
-            {
-                if((*t)->isMidiTrack() || (*t)->type() == Track::AUDIO_OUTPUT)
-                    continue;
-                AudioTrack* track = (AudioTrack*) (*t);
-                Route r(track, -1);
-                cmbInput->addItem(r.name());
-            }
+            if((*t)->isMidiTrack() || (*t)->type() == Track::AUDIO_OUTPUT)
+                continue;
+            AudioTrack* track = (AudioTrack*) (*t);
+            Route r(track, -1);
+            cmbInput->addItem(r.name());
+        }
 
-            if (!cmbInput->count())
-            {//TODO: Not sure what we could do here except notify the user
-                chkInput->setChecked(false);
-                chkInput->setEnabled(false);
-            }
+        if (!cmbInput->count())
+        {//TODO: Not sure what we could do here except notify the user
+            chkInput->setChecked(false);
+            chkInput->setEnabled(false);
         }
+    }
         break;
-        case Track::AUDIO_INPUT:
-        {
-            importOutputs();
-            if (!cmbInput->count())
-            {//TODO: Not sure what we could do here except notify the user
-                chkInput->setChecked(false);
-                chkInput->setEnabled(false);
-            }
+    case Track::AUDIO_INPUT:
+    {
+        importOutputs();
+        if (!cmbInput->count())
+        {//TODO: Not sure what we could do here except notify the user
+            chkInput->setChecked(false);
+            chkInput->setEnabled(false);
         }
+    }
         break;
     }
 }/*}}}*/
@@ -528,91 +435,91 @@ void CreateTrackDialog::populateOutputList()/*{{{*/
     Track::TrackType type = (Track::TrackType)m_insertType;
     switch(type)
     {
-        case Track::MIDI:
+    case Track::MIDI:
+    {
+        m_currentMidiOutputList.clear();
+        m_currentOutput.clear();
+        for (int i = 0; i < MIDI_PORTS; ++i)
         {
-            m_currentMidiOutputList.clear();
-            m_currentOutput.clear();
-            for (int i = 0; i < MIDI_PORTS; ++i)
-            {
-                MidiPort* mp = &midiPorts[i];
-                MidiDevice* md = mp->device();
+            MidiPort* mp = &midiPorts[i];
+            MidiDevice* md = mp->device();
 
-                if (!md)
-                    continue;
+            if (!md)
+                continue;
 
-                if((md->openFlags() & 1))
-                {
-                    QString mdname(md->name());
-                    m_currentOutput.append(mdname);
-                    //if(md->deviceType() == MidiDevice::ALSA_MIDI)
-                    //{
-                    //}
-                    mdname = QString("(OOStudio) ").append(mdname);
-                    cmbOutput->addItem(mdname, i);
-                    m_currentMidiOutputList.insert(cmbOutput->count()-1, mdname);
-                }
+            if((md->openFlags() & 1))
+            {
+                QString mdname(md->name());
+                m_currentOutput.append(mdname);
+                //if(md->deviceType() == MidiDevice::ALSA_MIDI)
+                //{
+                //}
+                mdname = QString("(OOStudio) ").append(mdname);
+                cmbOutput->addItem(mdname, i);
+                m_currentMidiOutputList.insert(cmbOutput->count()-1, mdname);
             }
+        }
 
-            populateNewOutputList();
-            if (!cmbOutput->count())
-            {
-                chkOutput->setChecked(false);
-                chkOutput->setEnabled(false);
-            }
-        }
-        break;
-        case Track::WAVE:
+        populateNewOutputList();
+        if (!cmbOutput->count())
         {
-            for(iTrack t = song->tracks()->begin(); t != song->tracks()->end(); ++t)
-            {
-                if((*t)->isMidiTrack())
-                    continue;
-                AudioTrack* track = (AudioTrack*) (*t);
-                if(track->type() == Track::AUDIO_OUTPUT)
-                {
-                    cmbOutput->addItem(Route(track, -1).name());
-                }
-            }
-            if (!cmbOutput->count())
-            {
-                chkOutput->setChecked(false);
-                chkOutput->setEnabled(false);
-            }
+            chkOutput->setChecked(false);
+            chkOutput->setEnabled(false);
         }
+    }
         break;
-        case Track::AUDIO_OUTPUT:
+    case Track::WAVE:
+    {
+        for(iTrack t = song->tracks()->begin(); t != song->tracks()->end(); ++t)
         {
-            importInputs();
-            if (!cmbOutput->count())
+            if((*t)->isMidiTrack())
+                continue;
+            AudioTrack* track = (AudioTrack*) (*t);
+            if(track->type() == Track::AUDIO_OUTPUT)
             {
-                chkOutput->setChecked(false);
-                chkOutput->setEnabled(false);
+                cmbOutput->addItem(Route(track, -1).name());
             }
         }
+        if (!cmbOutput->count())
+        {
+            chkOutput->setChecked(false);
+            chkOutput->setEnabled(false);
+        }
+    }
         break;
-        case Track::AUDIO_INPUT:
+    case Track::AUDIO_OUTPUT:
+    {
+        importInputs();
+        if (!cmbOutput->count())
         {
-            for(iTrack t = song->tracks()->begin(); t != song->tracks()->end(); ++t)
+            chkOutput->setChecked(false);
+            chkOutput->setEnabled(false);
+        }
+    }
+        break;
+    case Track::AUDIO_INPUT:
+    {
+        for(iTrack t = song->tracks()->begin(); t != song->tracks()->end(); ++t)
+        {
+            if((*t)->isMidiTrack())
+                continue;
+            AudioTrack* track = (AudioTrack*) (*t);
+            switch(track->type())
             {
-                if((*t)->isMidiTrack())
-                    continue;
-                AudioTrack* track = (AudioTrack*) (*t);
-                switch(track->type())
-                {
-                    case Track::AUDIO_OUTPUT:
-                    case Track::WAVE:
-                        cmbOutput->addItem(Route(track, -1).name());
-                    break;
-                    default:
-                    break;
-                }
-            }
-            if (!cmbOutput->count())
-            {
-                chkOutput->setChecked(false);
-                chkOutput->setEnabled(false);
+            case Track::AUDIO_OUTPUT:
+            case Track::WAVE:
+                cmbOutput->addItem(Route(track, -1).name());
+                break;
+            default:
+                break;
             }
         }
+        if (!cmbOutput->count())
+        {
+            chkOutput->setChecked(false);
+            chkOutput->setEnabled(false);
+        }
+    }
         break;
     }
 }/*}}}*/
@@ -732,101 +639,107 @@ void CreateTrackDialog::updateVisibleElements()/*{{{*/
     chkOutput->setEnabled(true);
     chkInput->setChecked(true);
     chkOutput->setChecked(true);
-    chkBuss->setChecked(false);
-    chkAutoCreate->setChecked(true);
     cmbMonitor->setEnabled(true);
     trackNameEdited();
 
     Track::TrackType type = (Track::TrackType)m_insertType;
+
+    if (type == Track::MIDI)
+    {
+        chkInput->setText("MIDI Input");
+        chkOutput->setText("MIDI Output");
+    }
+    else
+    {
+        chkInput->setText("Audio Input");
+        chkOutput->setText("Audio Output");
+    }
+
     switch (type)
     {
-        case Track::MIDI:
-        {
-            cmbInChannel->setVisible(true);
-            cmbOutChannel->setVisible(true);
-            lblInstrument->setVisible(true);
-            cmbInstrument->setVisible(true);
-            cmbInstrument->setEnabled(true);
-            cmbMonitor->setVisible(true);
-            cmbInput->setVisible(true);
-            chkInput->setVisible(true);
-            cmbOutput->setVisible(true);
-            chkOutput->setVisible(true);
-            midiBoxFrame->setVisible(true);
-            midiBoxLabelFrame->setVisible(true);
-            chkAutoCreate->setVisible(true);
-            trackNameEdited();
+    case Track::MIDI:
+    {
+        cmbInChannel->setVisible(true);
+        cmbOutChannel->setVisible(true);
+        lblInstrument->setVisible(true);
+        cmbInstrument->setVisible(true);
+        cmbInstrument->setEnabled(true);
+        cmbMonitor->setVisible(true);
+        cmbInput->setVisible(true);
+        chkInput->setVisible(true);
+        cmbOutput->setVisible(true);
+        chkOutput->setVisible(true);
+        midiBoxFrame->setVisible(true);
+        midiBoxLabelFrame->setVisible(true);
+        trackNameEdited();
 
-            //m_height = 290;
-            m_height = 400;
-            m_width = width();
-        }
+        //m_height = 290;
+        m_height = 400;
+        m_width = width();
+    }
         break;
-        case Track::AUDIO_OUTPUT:
-        {
-            cmbInChannel->setVisible(false);
-            cmbOutChannel->setVisible(false);
-            lblInstrument->setVisible(false);
-            cmbInstrument->setVisible(false);
-            cmbMonitor->setVisible(false);
-            midiBoxFrame->setVisible(false);
-            midiBoxLabelFrame->setVisible(false);
-            chkAutoCreate->setVisible(false);
+    case Track::AUDIO_OUTPUT:
+    {
+        cmbInChannel->setVisible(false);
+        cmbOutChannel->setVisible(false);
+        lblInstrument->setVisible(false);
+        cmbInstrument->setVisible(false);
+        cmbMonitor->setVisible(false);
+        midiBoxFrame->setVisible(false);
+        midiBoxLabelFrame->setVisible(false);
 
-            cmbInput->setVisible(true);
-            chkInput->setVisible(true);
-            cmbOutput->setVisible(true);
-            chkOutput->setVisible(true);
+        cmbInput->setVisible(true);
+        chkInput->setVisible(true);
+        cmbOutput->setVisible(true);
+        chkOutput->setVisible(true);
 
-            //m_height = 160;
-            m_height = 260;
-            m_width = width();
-        }
+        //m_height = 160;
+        m_height = 260;
+        m_width = width();
+    }
         break;
-        case Track::AUDIO_INPUT:
-        {
-            cmbInChannel->setVisible(false);
-            cmbOutChannel->setVisible(false);
-            lblInstrument->setVisible(false);
-            cmbInstrument->setVisible(false);
-            cmbMonitor->setVisible(false);
-            midiBoxFrame->setVisible(false);
-            midiBoxLabelFrame->setVisible(false);
-            chkAutoCreate->setVisible(false);
+    case Track::AUDIO_INPUT:
+    {
+        cmbInChannel->setVisible(false);
+        cmbOutChannel->setVisible(false);
+        lblInstrument->setVisible(false);
+        cmbInstrument->setVisible(false);
+        cmbMonitor->setVisible(false);
+        midiBoxFrame->setVisible(false);
+        midiBoxLabelFrame->setVisible(false);
 
-            cmbInput->setVisible(true);
-            chkInput->setVisible(true);
-            cmbOutput->setVisible(true);
-            chkOutput->setVisible(true);
+        cmbInput->setVisible(true);
+        chkInput->setVisible(true);
+        cmbOutput->setVisible(true);
+        chkOutput->setVisible(true);
 
-            //m_height = 160;
-            m_height = 260;
-            m_width = width();
-        }
+        //m_height = 160;
+        m_height = 260;
+        m_width = width();
+    }
         break;
-        case Track::WAVE:
-        {
-            cmbInChannel->setVisible(false);
-            cmbOutChannel->setVisible(false);
-            lblInstrument->setVisible(false);
-            cmbInstrument->setVisible(false);
-            cmbMonitor->setVisible(false);
-            midiBoxFrame->setVisible(false);
-            midiBoxLabelFrame->setVisible(false);
-            chkAutoCreate->setVisible(false);
+    case Track::WAVE:
+    {
+        cmbInChannel->setVisible(false);
+        cmbOutChannel->setVisible(false);
+        lblInstrument->setVisible(false);
+        cmbInstrument->setVisible(false);
+        cmbMonitor->setVisible(false);
+        midiBoxFrame->setVisible(false);
+        midiBoxLabelFrame->setVisible(false);
 
-            cmbInput->setVisible(true);
-            chkInput->setVisible(true);
-            cmbOutput->setVisible(true);
-            chkOutput->setVisible(true);
-            chkInput->setChecked(false);
+        cmbInput->setVisible(true);
+        chkInput->setVisible(true);
+        cmbOutput->setVisible(true);
+        chkOutput->setVisible(true);
+        chkInput->setChecked(false);
 
-            //m_height = 160;
-            m_height = 260;
-            m_width = width();
-        }
+        //m_height = 160;
+        m_height = 260;
+        m_width = width();
+    }
         break;
-        default:
+    default:
         break;
     }
     setFixedHeight(m_height);

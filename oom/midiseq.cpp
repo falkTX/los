@@ -23,7 +23,6 @@
 #include "mididev.h"
 #include "midictrl.h"
 #include "audio.h"
-#include "plugin.h"
 #include "driver/alsamidi.h"
 #include "driver/jackmidi.h"
 #include "sync.h"

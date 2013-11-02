@@ -1,9 +1,10 @@
 #=============================================================================
-#  OOMidi
-#  OpenOctave Midi and Audio Editor
+#  LOS
+#  Libre Octave Studio
 #  $Id:$
 #
 #  Copyright (C) 2002-2006 by Werner Schweer and others
+#  Copyright (C) 2012-2013 by Filipe Coelho
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License version 2.
@@ -21,17 +22,8 @@
 # NOTE: locale/ directory needs to be at the end so that the translations
 #       are scanned before coming to share/locale
 subdirs(
-	#drummaps
-	  #      html
-      instruments
-      plugins
-      pybridge
-      scripts
-      templates
-#      wallpapers
-      locale
-      )
-
-# We don't have a splash image for OOMidi2 yet. When we do, the
-# following line can be uncommented:
-#install (FILES splash.png DESTINATION ${OOMidi_SHARE_DIR} )
+    instruments
+    scripts
+    templates
+    locale
+)
