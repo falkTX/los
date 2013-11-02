@@ -105,7 +105,7 @@ void TrackViewDock::populateTable(int flag, bool)/*{{{*/
 		_autoTableModel->clear();
 		int icon_index = 0;
 		QList<int> list;
-		list << Track::MIDI << Track::AUDIO_INPUT << Track::AUDIO_OUTPUT << Track::AUDIO_BUSS << Track::AUDIO_AUX << Track::WAVE;
+        list << Track::MIDI << Track::AUDIO_INPUT << Track::AUDIO_OUTPUT << Track::WAVE;
 		idlist = song->autoTrackViewIndexList();
 		tvlist = song->autoviews();
 		for(int i = 0; i < idlist->size(); ++i)
@@ -655,12 +655,6 @@ void TrackViewDock::selectStaticView(int n)/*{{{*/
 		    break;
 		case Track::AUDIO_OUTPUT:
 			item = _autoTableModel->item(2, 0);
-		    break;
-		case Track::AUDIO_BUSS:
-			item = _autoTableModel->item(3, 0);
-		    break;
-		case Track::AUDIO_AUX:
-			item = _autoTableModel->item(4, 0);
 		    break;
 		default:
 		break;

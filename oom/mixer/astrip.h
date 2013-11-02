@@ -28,34 +28,34 @@ class DoubleLabel;
 
 /*class AuxCheckBox : public QCheckBox
 {
-	Q_OBJECT
-	
-	qint64 m_index;
+    Q_OBJECT
+
+    qint64 m_index;
 
 public:
-	AuxCheckBox(QString label, qint64 index, QWidget *parent = 0)
-	:QCheckBox(label, parent)
-	{
-		m_index = index;
-		QObject::connect(this, SIGNAL(toggled(bool)), this, SLOT(checkToggled(bool)));
-	}
-	qint64 index()
-	{
-		return m_index;
-	}
-	void setIndex(qint64 i)
-	{
-		m_index = i;
-	}
+    AuxCheckBox(QString label, qint64 index, QWidget *parent = 0)
+    :QCheckBox(label, parent)
+    {
+        m_index = index;
+        QObject::connect(this, SIGNAL(toggled(bool)), this, SLOT(checkToggled(bool)));
+    }
+    qint64 index()
+    {
+        return m_index;
+    }
+    void setIndex(qint64 i)
+    {
+        m_index = i;
+    }
 
 private slots:
-	void checkToggled(bool state)
-	{
-		emit toggled(m_index, state);
-	}
+    void checkToggled(bool state)
+    {
+        emit toggled(m_index, state);
+    }
 
 signals:
-	void toggled(qint64, bool);
+    void toggled(qint64, bool);
 };*/
 
 //---------------------------------------------------------
@@ -71,15 +71,15 @@ class AudioStrip : public Strip
     DoubleLabel* sl;
     //EffectRack* rack;
 
-	AudioTrack* m_track;
+    AudioTrack* m_track;
 
     Knob* pan;
     DoubleLabel* panl;
-	
-	//QHash<int, qint64> auxIndexList;
-	//QHash<qint64, Knob*> auxKnobList;
-	//QHash<qint64, DoubleLabel*> auxLabelList;
-	//QHash<qint64, QLabel*> auxNameLabelList;
+
+    //QHash<int, qint64> auxIndexList;
+    //QHash<qint64, Knob*> auxKnobList;
+    //QHash<qint64, DoubleLabel*> auxLabelList;
+    //QHash<qint64, QLabel*> auxNameLabelList;
 
     double volume;
     double panVal;
@@ -93,9 +93,9 @@ class AudioStrip : public Strip
     void updateVolume();
     void updatePan();
     void updateChannels();
-	//void updateAuxNames();
+    //void updateAuxNames();
 protected:
-	void trackChanged();
+    void trackChanged();
 
 private slots:
     void stereoToggled(bool);
@@ -130,8 +130,6 @@ public slots:
 public:
     AudioStrip(QWidget* parent, Track*);
     virtual ~AudioStrip();
-
-    void toggleShowEffectsRack(bool);
 };
 
 #endif

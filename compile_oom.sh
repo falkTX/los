@@ -1,11 +1,10 @@
 #!/bin/bash
 
-if [ -d build ]; then
+if [ -d build-debug ]; then
         echo "Build dir already exists"
 else
 	echo "Create build dir"
-	mkdir build
+	mkdir build-debug
 fi
-cd build
+cd build-debug
 cmake -DCMAKE_BUILD_TYPE=Debug .. && make -j 4 && echo "Build was OK, now enter the 'build' dir and run 'make install' as root"
-

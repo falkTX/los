@@ -33,15 +33,15 @@ QHash<qint64, MidiPort*> oomMidiPorts;
 
 void initMidiPorts()
 {
-	//TODO: Remove the need for this code
-	//We should populate the oomMidiPort hash with ports as we create them
-	for (int i = 0; i < MIDI_PORTS; ++i)
-	{
-		MidiPort* port = &midiPorts[i];
-		///port->setInstrument(genericMidiInstrument);
-		port->setInstrument(registerMidiInstrument("GM")); // Changed by Tim.
-		port->syncInfo().setPort(i);
-	}
+    //TODO: Remove the need for this code
+    //We should populate the oomMidiPort hash with ports as we create them
+    for (int i = 0; i < MIDI_PORTS; ++i)
+    {
+        MidiPort* port = &midiPorts[i];
+        ///port->setInstrument(genericMidiInstrument);
+        port->setInstrument(registerMidiInstrument("GM")); // Changed by Tim.
+        port->syncInfo().setPort(i);
+    }
 }
 
 //---------------------------------------------------------
@@ -51,26 +51,26 @@ void initMidiPorts()
 MidiPort::MidiPort()
 : _state("not configured")
 {
-	_defaultInChannels = 0;
-	_defaultOutChannels = 0;
-	_device = 0;
-	_instrument = 0;
-	_controller = new MidiCtrlValListList();
-	_foundInSongFile = false;
-	_patchSequences = QList<PatchSequence*>();
-	m_portId = create_id();
+    _defaultInChannels = 0;
+    _defaultOutChannels = 0;
+    _device = 0;
+    _instrument = 0;
+    _controller = new MidiCtrlValListList();
+    _foundInSongFile = false;
+    _patchSequences = QList<PatchSequence*>();
+    m_portId = create_id();
 
-	//
-	// create minimum set of managed controllers
-	// to make midi mixer operational
-	//
-	for (int i = 0; i < MIDI_CHANNELS; ++i)
-	{
-		addManagedController(i, CTRL_PROGRAM);
-		addManagedController(i, CTRL_VOLUME);
-		addManagedController(i, CTRL_PANPOT);
-		_automationType[i] = AUTO_READ;
-	}
+    //
+    // create minimum set of managed controllers
+    // to make midi mixer operational
+    //
+    for (int i = 0; i < MIDI_CHANNELS; ++i)
+    {
+        addManagedController(i, CTRL_PROGRAM);
+        addManagedController(i, CTRL_VOLUME);
+        addManagedController(i, CTRL_PANPOT);
+        _automationType[i] = AUTO_READ;
+    }
 }
 
 //---------------------------------------------------------
@@ -79,7 +79,7 @@ MidiPort::MidiPort()
 
 MidiPort::~MidiPort()
 {
-	delete _controller;
+    delete _controller;
 }
 
 //---------------------------------------------------------
@@ -88,7 +88,7 @@ MidiPort::~MidiPort()
 
 bool MidiPort::guiVisible() const
 {
-	return _instrument ? _instrument->guiVisible() : false;
+    return _instrument ? _instrument->guiVisible() : false;
 }
 
 //---------------------------------------------------------
@@ -97,7 +97,7 @@ bool MidiPort::guiVisible() const
 
 bool MidiPort::hasGui() const
 {
-	return _instrument ? _instrument->hasGui() : false;
+    return _instrument ? _instrument->hasGui() : false;
 }
 
 //---------------------------------------------------------
@@ -107,42 +107,32 @@ bool MidiPort::hasGui() const
 void MidiPort::setMidiDevice(MidiDevice* dev)
 {
     // close old device
-	if (_device)
-	{
-        if (_device->isSynthPlugin())
-		{
-			_instrument = genericMidiInstrument;
-		}
-		_device->setPort(-1);
-		_device->close();
-	}
+    if (_device)
+    {
+        _device->setPort(-1);
+        _device->close();
+    }
     // set-up new device
-	if (dev)
-	{
-		for (int i = 0; i < MIDI_PORTS; ++i)
-		{
-			MidiPort* mp = &midiPorts[i];
-			if (mp->device() == dev)
-			{
-                if (dev->isSynthPlugin())
-					mp->setInstrument(genericMidiInstrument);
-				// move device
-				_state = mp->state();
-				mp->clearDevice();
-				break;
-			}
-		}
-		_device = dev;
-        if (_device->isSynthPlugin())
-		{
-            _instrument = genericMidiInstrument; // falktx. was commented out
-		}
-		_state = _device->open();
-		_device->setPort(portno());
-	}
-	else
+    if (dev)
+    {
+        for (int i = 0; i < MIDI_PORTS; ++i)
+        {
+            MidiPort* mp = &midiPorts[i];
+            if (mp->device() == dev)
+            {
+                // move device
+                _state = mp->state();
+                mp->clearDevice();
+                break;
+            }
+        }
+        _device = dev;
+        _state = _device->open();
+        _device->setPort(portno());
+    }
+    else
         // dev is null, clear this device
-		clearDevice();
+        clearDevice();
 }
 
 //---------------------------------------------------------
@@ -151,8 +141,8 @@ void MidiPort::setMidiDevice(MidiDevice* dev)
 
 void MidiPort::clearDevice()
 {
-	_device = 0;
-	_state = "not configured";
+    _device = 0;
+    _state = "not configured";
 }
 
 //---------------------------------------------------------
@@ -161,12 +151,12 @@ void MidiPort::clearDevice()
 
 int MidiPort::portno() const
 {
-	for (int i = 0; i < MIDI_PORTS; ++i)
-	{
-		if (&midiPorts[i] == this)
-			return i;
-	}
-	return -1;
+    for (int i = 0; i < MIDI_PORTS; ++i)
+    {
+        if (&midiPorts[i] == this)
+            return i;
+    }
+    return -1;
 }
 
 //---------------------------------------------------------
@@ -177,19 +167,19 @@ int MidiPort::portno() const
 
 QMenu* midiPortsPopup(QWidget* parent, int checkPort)
 {
-	QMenu* p = new QMenu(parent);
-	for (int i = 0; i < MIDI_PORTS; ++i)
-	{
-		MidiPort* port = &midiPorts[i];
-		QString name;
-		name.sprintf("%d:%s", port->portno() + 1, port->portname().toLatin1().constData());
-		QAction *act = p->addAction(name);
-		act->setData(i);
+    QMenu* p = new QMenu(parent);
+    for (int i = 0; i < MIDI_PORTS; ++i)
+    {
+        MidiPort* port = &midiPorts[i];
+        QString name;
+        name.sprintf("%d:%s", port->portno() + 1, port->portname().toLatin1().constData());
+        QAction *act = p->addAction(name);
+        act->setData(i);
 
-		if (i == checkPort)
-			act->setChecked(true);
-	}
-	return p;
+        if (i == checkPort)
+            act->setChecked(true);
+    }
+    return p;
 }
 
 //---------------------------------------------------------
@@ -198,12 +188,12 @@ QMenu* midiPortsPopup(QWidget* parent, int checkPort)
 
 const QString& MidiPort::portname() const
 {
-	//static const QString none("<none>");
-	static const QString none(QT_TRANSLATE_NOOP("@default", "<none>"));
-	if (_device)
-		return _device->name();
-	else
-		return none;
+    //static const QString none("<none>");
+    static const QString none(QT_TRANSLATE_NOOP("@default", "<none>"));
+    if (_device)
+        return _device->name();
+    else
+        return none;
 }
 
 //---------------------------------------------------------
@@ -212,42 +202,42 @@ const QString& MidiPort::portname() const
 
 void MidiPort::tryCtrlInitVal(int chan, int ctl, int val)
 {
-	//printf("Entering: MidiPort::tryCtrlInitVal\n");
-	if (_instrument)
-	{
-		MidiControllerList* cl = _instrument->controller();
-		ciMidiController imc = cl->find(ctl);
-		if (imc != cl->end())
-		{
-			MidiController* mc = imc->second;
-			int initval = mc->initVal();
+    //printf("Entering: MidiPort::tryCtrlInitVal\n");
+    if (_instrument)
+    {
+        MidiControllerList* cl = _instrument->controller();
+        ciMidiController imc = cl->find(ctl);
+        if (imc != cl->end())
+        {
+            MidiController* mc = imc->second;
+            int initval = mc->initVal();
 
-			// Initialize from either the instrument controller's initial value, or the supplied value.
-			if (initval != CTRL_VAL_UNKNOWN)
-			{
-				if (_device)
-				{
-					MidiPlayEvent ev(0, portno(), chan, ME_CONTROLLER, ctl, initval + mc->bias());
-					_device->putEvent(ev);
-				}
-				setHwCtrlStates(chan, ctl, CTRL_VAL_UNKNOWN, initval + mc->bias());
+            // Initialize from either the instrument controller's initial value, or the supplied value.
+            if (initval != CTRL_VAL_UNKNOWN)
+            {
+                if (_device)
+                {
+                    MidiPlayEvent ev(0, portno(), chan, ME_CONTROLLER, ctl, initval + mc->bias());
+                    _device->putEvent(ev);
+                }
+                setHwCtrlStates(chan, ctl, CTRL_VAL_UNKNOWN, initval + mc->bias());
 
-				return;
-			}
-		}
-	}
+                return;
+            }
+        }
+    }
 
-	if (_device)
-	{
-		//MidiPlayEvent ev(song->cpos(), portno(), chan, ME_CONTROLLER, ctl, val);
-		MidiPlayEvent ev(0, portno(), chan, ME_CONTROLLER, ctl, val);
-		_device->putEvent(ev);
-	}
-	// Set it once so the 'last HW value' is set, and control knobs are positioned at the value...
-	//setHwCtrlState(chan, ctl, val);
-	// Set it again so that control labels show 'off'...
-	//setHwCtrlState(chan, ctl, CTRL_VAL_UNKNOWN);
-	setHwCtrlStates(chan, ctl, CTRL_VAL_UNKNOWN, val);
+    if (_device)
+    {
+        //MidiPlayEvent ev(song->cpos(), portno(), chan, ME_CONTROLLER, ctl, val);
+        MidiPlayEvent ev(0, portno(), chan, ME_CONTROLLER, ctl, val);
+        _device->putEvent(ev);
+    }
+    // Set it once so the 'last HW value' is set, and control knobs are positioned at the value...
+    //setHwCtrlState(chan, ctl, val);
+    // Set it again so that control labels show 'off'...
+    //setHwCtrlState(chan, ctl, CTRL_VAL_UNKNOWN);
+    setHwCtrlStates(chan, ctl, CTRL_VAL_UNKNOWN, val);
 }
 
 //---------------------------------------------------------
@@ -256,7 +246,7 @@ void MidiPort::tryCtrlInitVal(int chan, int ctl, int val)
 
 void MidiPort::setInstrument(MidiInstrument* i)
 {
-	_instrument = i;
+    _instrument = i;
 }
 
 
@@ -266,18 +256,18 @@ void MidiPort::setInstrument(MidiInstrument* i)
 
 void MidiPort::sendGmInitValues()
 {
-	for (int i = 0; i < MIDI_CHANNELS; ++i)
-	{
-		// By T356. Initialize from instrument controller if it has an initial value, otherwise use the specified value.
-		// Tested: Ultimately, a track's controller stored values take priority by sending any 'zero time' value
-		//  AFTER these GM/GS/XG init routines are called via initDevices().
-		//tryCtrlInitVal(i, CTRL_PROGRAM, 0);
-		tryCtrlInitVal(i, CTRL_PITCH, 0);
-		tryCtrlInitVal(i, CTRL_VOLUME, 100);
-		tryCtrlInitVal(i, CTRL_PANPOT, 64);
-		tryCtrlInitVal(i, CTRL_REVERB_SEND, 40);
-		tryCtrlInitVal(i, CTRL_CHORUS_SEND, 0);
-	}
+    for (int i = 0; i < MIDI_CHANNELS; ++i)
+    {
+        // By T356. Initialize from instrument controller if it has an initial value, otherwise use the specified value.
+        // Tested: Ultimately, a track's controller stored values take priority by sending any 'zero time' value
+        //  AFTER these GM/GS/XG init routines are called via initDevices().
+        //tryCtrlInitVal(i, CTRL_PROGRAM, 0);
+        tryCtrlInitVal(i, CTRL_PITCH, 0);
+        tryCtrlInitVal(i, CTRL_VOLUME, 100);
+        tryCtrlInitVal(i, CTRL_PANPOT, 64);
+        tryCtrlInitVal(i, CTRL_REVERB_SEND, 40);
+        tryCtrlInitVal(i, CTRL_CHORUS_SEND, 0);
+    }
 }
 
 //---------------------------------------------------------
@@ -286,7 +276,7 @@ void MidiPort::sendGmInitValues()
 
 void MidiPort::sendGsInitValues()
 {
-	sendGmInitValues();
+    sendGmInitValues();
 }
 
 //---------------------------------------------------------
@@ -295,27 +285,27 @@ void MidiPort::sendGsInitValues()
 
 void MidiPort::sendXgInitValues()
 {
-	for (int i = 0; i < MIDI_CHANNELS; ++i)
-	{
-		// By T356. Initialize from instrument controller if it has an initial value, otherwise use the specified value.
-		tryCtrlInitVal(i, CTRL_PROGRAM, 0);
-		tryCtrlInitVal(i, CTRL_MODULATION, 0);
-		tryCtrlInitVal(i, CTRL_PORTAMENTO_TIME, 0);
-		tryCtrlInitVal(i, CTRL_VOLUME, 0x64);
-		tryCtrlInitVal(i, CTRL_PANPOT, 0x40);
-		tryCtrlInitVal(i, CTRL_EXPRESSION, 0x7f);
-		tryCtrlInitVal(i, CTRL_SUSTAIN, 0x0);
-		tryCtrlInitVal(i, CTRL_PORTAMENTO, 0x0);
-		tryCtrlInitVal(i, CTRL_SOSTENUTO, 0x0);
-		tryCtrlInitVal(i, CTRL_SOFT_PEDAL, 0x0);
-		tryCtrlInitVal(i, CTRL_HARMONIC_CONTENT, 0x40);
-		tryCtrlInitVal(i, CTRL_RELEASE_TIME, 0x40);
-		tryCtrlInitVal(i, CTRL_ATTACK_TIME, 0x40);
-		tryCtrlInitVal(i, CTRL_BRIGHTNESS, 0x40);
-		tryCtrlInitVal(i, CTRL_REVERB_SEND, 0x28);
-		tryCtrlInitVal(i, CTRL_CHORUS_SEND, 0x0);
-		tryCtrlInitVal(i, CTRL_VARIATION_SEND, 0x0);
-	}
+    for (int i = 0; i < MIDI_CHANNELS; ++i)
+    {
+        // By T356. Initialize from instrument controller if it has an initial value, otherwise use the specified value.
+        tryCtrlInitVal(i, CTRL_PROGRAM, 0);
+        tryCtrlInitVal(i, CTRL_MODULATION, 0);
+        tryCtrlInitVal(i, CTRL_PORTAMENTO_TIME, 0);
+        tryCtrlInitVal(i, CTRL_VOLUME, 0x64);
+        tryCtrlInitVal(i, CTRL_PANPOT, 0x40);
+        tryCtrlInitVal(i, CTRL_EXPRESSION, 0x7f);
+        tryCtrlInitVal(i, CTRL_SUSTAIN, 0x0);
+        tryCtrlInitVal(i, CTRL_PORTAMENTO, 0x0);
+        tryCtrlInitVal(i, CTRL_SOSTENUTO, 0x0);
+        tryCtrlInitVal(i, CTRL_SOFT_PEDAL, 0x0);
+        tryCtrlInitVal(i, CTRL_HARMONIC_CONTENT, 0x40);
+        tryCtrlInitVal(i, CTRL_RELEASE_TIME, 0x40);
+        tryCtrlInitVal(i, CTRL_ATTACK_TIME, 0x40);
+        tryCtrlInitVal(i, CTRL_BRIGHTNESS, 0x40);
+        tryCtrlInitVal(i, CTRL_REVERB_SEND, 0x28);
+        tryCtrlInitVal(i, CTRL_CHORUS_SEND, 0x0);
+        tryCtrlInitVal(i, CTRL_VARIATION_SEND, 0x0);
+    }
 }
 
 //---------------------------------------------------------
@@ -326,7 +316,7 @@ void MidiPort::sendXgInitValues()
 
 void MidiPort::sendGmOn()
 {
-	sendSysex(gmOnMsg, gmOnMsgLen);
+    sendSysex(gmOnMsg, gmOnMsgLen);
 }
 
 //---------------------------------------------------------
@@ -337,8 +327,8 @@ void MidiPort::sendGmOn()
 
 void MidiPort::sendGsOn()
 {
-	sendSysex(gsOnMsg2, gsOnMsg2Len);
-	sendSysex(gsOnMsg3, gsOnMsg3Len);
+    sendSysex(gsOnMsg2, gsOnMsg2Len);
+    sendSysex(gsOnMsg3, gsOnMsg3Len);
 }
 
 //---------------------------------------------------------
@@ -349,7 +339,7 @@ void MidiPort::sendGsOn()
 
 void MidiPort::sendXgOn()
 {
-	sendSysex(xgOnMsg, xgOnMsgLen);
+    sendSysex(xgOnMsg, xgOnMsgLen);
 }
 
 //---------------------------------------------------------
@@ -359,11 +349,11 @@ void MidiPort::sendXgOn()
 
 void MidiPort::sendSysex(const unsigned char* p, int n)
 {
-	if (_device)
-	{
-		MidiPlayEvent event(0, 0, ME_SYSEX, p, n);
-		_device->putEvent(event);
-	}
+    if (_device)
+    {
+        MidiPlayEvent event(0, 0, ME_SYSEX, p, n);
+        _device->putEvent(event);
+    }
 }
 
 //---------------------------------------------------------
@@ -372,18 +362,18 @@ void MidiPort::sendSysex(const unsigned char* p, int n)
 
 void MidiPort::sendMMCLocate(unsigned char ht, unsigned char m, unsigned char s, unsigned char f, unsigned char sf, int devid)
 {
-	unsigned char msg[mmcLocateMsgLen];
-	memcpy(msg, mmcLocateMsg, mmcLocateMsgLen);
-	if (devid != -1)
-		msg[1] = devid;
-	else
-		msg[1] = _syncInfo.idOut();
-	msg[6] = ht;
-	msg[7] = m;
-	msg[8] = s;
-	msg[9] = f;
-	msg[10] = sf;
-	sendSysex(msg, mmcLocateMsgLen);
+    unsigned char msg[mmcLocateMsgLen];
+    memcpy(msg, mmcLocateMsg, mmcLocateMsgLen);
+    if (devid != -1)
+        msg[1] = devid;
+    else
+        msg[1] = _syncInfo.idOut();
+    msg[6] = ht;
+    msg[7] = m;
+    msg[8] = s;
+    msg[9] = f;
+    msg[10] = sf;
+    sendSysex(msg, mmcLocateMsgLen);
 }
 
 //---------------------------------------------------------
@@ -392,13 +382,13 @@ void MidiPort::sendMMCLocate(unsigned char ht, unsigned char m, unsigned char s,
 
 void MidiPort::sendMMCStop(int devid)
 {
-	unsigned char msg[mmcStopMsgLen];
-	memcpy(msg, mmcStopMsg, mmcStopMsgLen);
-	if (devid != -1)
-		msg[1] = devid;
-	else
-		msg[1] = _syncInfo.idOut();
-	sendSysex(msg, mmcStopMsgLen);
+    unsigned char msg[mmcStopMsgLen];
+    memcpy(msg, mmcStopMsg, mmcStopMsgLen);
+    if (devid != -1)
+        msg[1] = devid;
+    else
+        msg[1] = _syncInfo.idOut();
+    sendSysex(msg, mmcStopMsgLen);
 }
 
 //---------------------------------------------------------
@@ -407,13 +397,13 @@ void MidiPort::sendMMCStop(int devid)
 
 void MidiPort::sendMMCDeferredPlay(int devid)
 {
-	unsigned char msg[mmcDeferredPlayMsgLen];
-	memcpy(msg, mmcDeferredPlayMsg, mmcDeferredPlayMsgLen);
-	if (devid != -1)
-		msg[1] = devid;
-	else
-		msg[1] = _syncInfo.idOut();
-	sendSysex(msg, mmcDeferredPlayMsgLen);
+    unsigned char msg[mmcDeferredPlayMsgLen];
+    memcpy(msg, mmcDeferredPlayMsg, mmcDeferredPlayMsgLen);
+    if (devid != -1)
+        msg[1] = devid;
+    else
+        msg[1] = _syncInfo.idOut();
+    sendSysex(msg, mmcDeferredPlayMsgLen);
 }
 
 //---------------------------------------------------------
@@ -422,11 +412,11 @@ void MidiPort::sendMMCDeferredPlay(int devid)
 
 void MidiPort::sendStart()
 {
-	if (_device)
-	{
-		MidiPlayEvent event(0, 0, 0, ME_START, 0, 0);
-		_device->putEvent(event);
-	}
+    if (_device)
+    {
+        MidiPlayEvent event(0, 0, 0, ME_START, 0, 0);
+        _device->putEvent(event);
+    }
 }
 
 //---------------------------------------------------------
@@ -435,11 +425,11 @@ void MidiPort::sendStart()
 
 void MidiPort::sendStop()
 {
-	if (_device)
-	{
-		MidiPlayEvent event(0, 0, 0, ME_STOP, 0, 0);
-		_device->putEvent(event);
-	}
+    if (_device)
+    {
+        MidiPlayEvent event(0, 0, 0, ME_STOP, 0, 0);
+        _device->putEvent(event);
+    }
 }
 
 //---------------------------------------------------------
@@ -448,11 +438,11 @@ void MidiPort::sendStop()
 
 void MidiPort::sendClock()
 {
-	if (_device)
-	{
-		MidiPlayEvent event(0, 0, 0, ME_CLOCK, 0, 0);
-		_device->putEvent(event);
-	}
+    if (_device)
+    {
+        MidiPlayEvent event(0, 0, 0, ME_CLOCK, 0, 0);
+        _device->putEvent(event);
+    }
 }
 
 //---------------------------------------------------------
@@ -461,11 +451,11 @@ void MidiPort::sendClock()
 
 void MidiPort::sendContinue()
 {
-	if (_device)
-	{
-		MidiPlayEvent event(0, 0, 0, ME_CONTINUE, 0, 0);
-		_device->putEvent(event);
-	}
+    if (_device)
+    {
+        MidiPlayEvent event(0, 0, 0, ME_CONTINUE, 0, 0);
+        _device->putEvent(event);
+    }
 }
 
 //---------------------------------------------------------
@@ -474,11 +464,11 @@ void MidiPort::sendContinue()
 
 void MidiPort::sendSongpos(int pos)
 {
-	if (_device)
-	{
-		MidiPlayEvent event(0, 0, 0, ME_SONGPOS, pos, 0);
-		_device->putEvent(event);
-	}
+    if (_device)
+    {
+        MidiPlayEvent event(0, 0, 0, ME_SONGPOS, pos, 0);
+        _device->putEvent(event);
+    }
 }
 
 //---------------------------------------------------------
@@ -487,15 +477,15 @@ void MidiPort::sendSongpos(int pos)
 
 MidiCtrlValList* MidiPort::addManagedController(int channel, int ctrl)
 {
-	iMidiCtrlValList cl = _controller->find(channel, ctrl);
-	if (cl == _controller->end())
-	{
-		MidiCtrlValList* pvl = new MidiCtrlValList(ctrl);
-		_controller->add(channel, pvl);
-		return pvl;
-	}
-	else
-		return cl->second;
+    iMidiCtrlValList cl = _controller->find(channel, ctrl);
+    if (cl == _controller->end())
+    {
+        MidiCtrlValList* pvl = new MidiCtrlValList(ctrl);
+        _controller->add(channel, pvl);
+        return pvl;
+    }
+    else
+        return cl->second;
 }
 
 //---------------------------------------------------------
@@ -504,51 +494,51 @@ MidiCtrlValList* MidiPort::addManagedController(int channel, int ctrl)
 
 int MidiPort::limitValToInstrCtlRange(MidiController* mc, int val)
 {
-	if (!_instrument || !mc || val == CTRL_VAL_UNKNOWN)
-		return val;
+    if (!_instrument || !mc || val == CTRL_VAL_UNKNOWN)
+        return val;
 
-	int mn = mc->minVal();
-	int mx = mc->maxVal();
-	int bias = mc->bias();
+    int mn = mc->minVal();
+    int mx = mc->maxVal();
+    int bias = mc->bias();
 
-	// Subtract controller bias from value.
-	val -= bias;
+    // Subtract controller bias from value.
+    val -= bias;
 
-	// Limit value to controller range.
-	if (val < mn)
-		val = mn;
-	else
-		if (val > mx)
-		val = mx;
+    // Limit value to controller range.
+    if (val < mn)
+        val = mn;
+    else
+        if (val > mx)
+        val = mx;
 
-	// Re-add controller bias to value.
-	val += bias;
+    // Re-add controller bias to value.
+    val += bias;
 
-	return val;
+    return val;
 }
 
 int MidiPort::limitValToInstrCtlRange(int ctl, int val)
 {
-	if (!_instrument || val == CTRL_VAL_UNKNOWN)
-		return val;
+    if (!_instrument || val == CTRL_VAL_UNKNOWN)
+        return val;
 
-	MidiControllerList* cl = _instrument->controller();
+    MidiControllerList* cl = _instrument->controller();
 
-	// Is it a drum controller?
-	MidiController *mc = drumController(ctl);
-	if (!mc)
-	{
-		// It's not a drum controller. Find it as a regular controller instead.
-		iMidiController imc = cl->find(ctl);
-		if (imc != cl->end())
-			mc = imc->second;
-	}
+    // Is it a drum controller?
+    MidiController *mc;
 
-	// If it's a valid controller, limit the value to the instrument controller range.
-	if (mc)
-		return limitValToInstrCtlRange(mc, val);
+    {
+        // It's not a drum controller. Find it as a regular controller instead.
+        iMidiController imc = cl->find(ctl);
+        if (imc != cl->end())
+            mc = imc->second;
+    }
 
-	return val;
+    // If it's a valid controller, limit the value to the instrument controller range.
+    if (mc)
+        return limitValToInstrCtlRange(mc, val);
+
+    return val;
 }
 
 //---------------------------------------------------------
@@ -558,57 +548,57 @@ int MidiPort::limitValToInstrCtlRange(int ctl, int val)
 
 bool MidiPort::sendEvent(const MidiPlayEvent& ev, bool forceSend)
 {
-	if (ev.type() == ME_CONTROLLER)
-	{
-		//TODO: This is where PC are added
-		//      printf("current sustain %d %d %d\n", hwCtrlState(ev.channel(),CTRL_SUSTAIN), CTRL_SUSTAIN, ev.dataA());
+    if (ev.type() == ME_CONTROLLER)
+    {
+        //TODO: This is where PC are added
+        //      printf("current sustain %d %d %d\n", hwCtrlState(ev.channel(),CTRL_SUSTAIN), CTRL_SUSTAIN, ev.dataA());
 
-		// Added by T356.
-		int da = ev.dataA();
-		int db = ev.dataB();
-		db = limitValToInstrCtlRange(da, db);
-
-
-		// Removed by T356.
-		//
-		//  optimize controller settings
-		//
-		if (!setHwCtrlState(ev.channel(), da, db))
-		{
-			if (debugMsg)
-				printf("setHwCtrlState failed\n");
-			if (!forceSend)
-				return false;
-		}
-	}
-	else if (ev.type() == ME_PITCHBEND)
-	{
-		int da = limitValToInstrCtlRange(CTRL_PITCH, ev.dataA());
-
-		if (!setHwCtrlState(ev.channel(), CTRL_PITCH, da)) 
-		{
-			if(!forceSend)
-				return false;
-		}
-	}
-	else if (ev.type() == ME_PROGRAM)
-	{
-		if (!setHwCtrlState(ev.channel(), CTRL_PROGRAM, ev.dataA()))
-		{
-			if(!forceSend)
-				return false;
-		}
-	}
+        // Added by T356.
+        int da = ev.dataA();
+        int db = ev.dataB();
+        db = limitValToInstrCtlRange(da, db);
 
 
-	if (!_device)
-	{
-		if (debugMsg)
-			printf("no device for this midi port\n");
-		return true;
-	}
-	//printf("MidiPort::sendEvent\n");
-	return _device->putEvent(ev);
+        // Removed by T356.
+        //
+        //  optimize controller settings
+        //
+        if (!setHwCtrlState(ev.channel(), da, db))
+        {
+            if (debugMsg)
+                printf("setHwCtrlState failed\n");
+            if (!forceSend)
+                return false;
+        }
+    }
+    else if (ev.type() == ME_PITCHBEND)
+    {
+        int da = limitValToInstrCtlRange(CTRL_PITCH, ev.dataA());
+
+        if (!setHwCtrlState(ev.channel(), CTRL_PITCH, da))
+        {
+            if(!forceSend)
+                return false;
+        }
+    }
+    else if (ev.type() == ME_PROGRAM)
+    {
+        if (!setHwCtrlState(ev.channel(), CTRL_PROGRAM, ev.dataA()))
+        {
+            if(!forceSend)
+                return false;
+        }
+    }
+
+
+    if (!_device)
+    {
+        if (debugMsg)
+            printf("no device for this midi port\n");
+        return true;
+    }
+    //printf("MidiPort::sendEvent\n");
+    return _device->putEvent(ev);
 }
 
 //---------------------------------------------------------
@@ -617,14 +607,14 @@ bool MidiPort::sendEvent(const MidiPlayEvent& ev, bool forceSend)
 
 int MidiPort::lastValidHWCtrlState(int ch, int ctrl) const
 {
-	ch &= 0xff;
-	iMidiCtrlValList cl = _controller->find(ch, ctrl);
-	if (cl == _controller->end())
-	{
-		return CTRL_VAL_UNKNOWN;
-	}
-	MidiCtrlValList* vl = cl->second;
-	return vl->lastValidHWVal();
+    ch &= 0xff;
+    iMidiCtrlValList cl = _controller->find(ch, ctrl);
+    if (cl == _controller->end())
+    {
+        return CTRL_VAL_UNKNOWN;
+    }
+    MidiCtrlValList* vl = cl->second;
+    return vl->lastValidHWVal();
 }
 
 //---------------------------------------------------------
@@ -633,16 +623,16 @@ int MidiPort::lastValidHWCtrlState(int ch, int ctrl) const
 
 int MidiPort::hwCtrlState(int ch, int ctrl) const
 {
-	ch &= 0xff;
-	iMidiCtrlValList cl = _controller->find(ch, ctrl);
-	if (cl == _controller->end())
-	{
-		//if (debugMsg)
-		//      printf("hwCtrlState: chan %d ctrl 0x%x not found\n", ch, ctrl);
-		return CTRL_VAL_UNKNOWN;
-	}
-	MidiCtrlValList* vl = cl->second;
-	return vl->hwVal();
+    ch &= 0xff;
+    iMidiCtrlValList cl = _controller->find(ch, ctrl);
+    if (cl == _controller->end())
+    {
+        //if (debugMsg)
+        //      printf("hwCtrlState: chan %d ctrl 0x%x not found\n", ch, ctrl);
+        return CTRL_VAL_UNKNOWN;
+    }
+    MidiCtrlValList* vl = cl->second;
+    return vl->hwVal();
 }
 
 //---------------------------------------------------------
@@ -652,47 +642,47 @@ int MidiPort::hwCtrlState(int ch, int ctrl) const
 
 bool MidiPort::setHwCtrlState(int ch, int ctrl, int val)
 {
-	MidiCtrlValList* vl = addManagedController(ch, ctrl);
+    MidiCtrlValList* vl = addManagedController(ch, ctrl);
 
-	return vl->setHwVal(val);
+    return vl->setHwVal(val);
 }
 
 //---------------------------------------------------------
 //   setHwCtrlStates
 //   Sets current and last HW values.
-//   Handy for forcing labels to show 'off' and knobs to show specific values 
+//   Handy for forcing labels to show 'off' and knobs to show specific values
 //    without having to send two messages.
 //   Returns false if both values are already set, true if either value is changed.
 //---------------------------------------------------------
 
 bool MidiPort::setHwCtrlStates(int ch, int ctrl, int val, int lastval)
 {
-	// This will create a new value list if necessary, otherwise it returns the existing list.
-	MidiCtrlValList* vl = addManagedController(ch, ctrl);
+    // This will create a new value list if necessary, otherwise it returns the existing list.
+    MidiCtrlValList* vl = addManagedController(ch, ctrl);
 
-	return vl->setHwVals(val, lastval);
+    return vl->setHwVals(val, lastval);
 }
 
 //---------------------------------------------------------
 //   setControllerVal
-//   This function sets a controller value, 
+//   This function sets a controller value,
 //   creating the controller if necessary.
 //   Returns true if a value was actually added or replaced.
 //---------------------------------------------------------
 
 bool MidiPort::setControllerVal(int ch, int tick, int ctrl, int val, Part* part)
 {
-	MidiCtrlValList* pvl;
-	iMidiCtrlValList cl = _controller->find(ch, ctrl);
-	if (cl == _controller->end())
-	{
-		pvl = new MidiCtrlValList(ctrl);
-		_controller->add(ch, pvl);
-	}
-	else
-		pvl = cl->second;
+    MidiCtrlValList* pvl;
+    iMidiCtrlValList cl = _controller->find(ch, ctrl);
+    if (cl == _controller->end())
+    {
+        pvl = new MidiCtrlValList(ctrl);
+        _controller->add(ch, pvl);
+    }
+    else
+        pvl = cl->second;
 
-	return pvl->addMCtlVal(tick, val, part);
+    return pvl->addMCtlVal(tick, val, part);
 }
 
 //---------------------------------------------------------
@@ -701,28 +691,28 @@ bool MidiPort::setControllerVal(int ch, int tick, int ctrl, int val, Part* part)
 
 int MidiPort::getCtrl(int ch, int tick, int ctrl) const
 {
-	iMidiCtrlValList cl = _controller->find(ch, ctrl);
-	if (cl == _controller->end())
-	{
-		//if (debugMsg)
-		//      printf("getCtrl: controller %d(0x%x) for channel %d not found size %zd\n",
-		//         ctrl, ctrl, ch, _controller->size());
-		return CTRL_VAL_UNKNOWN;
-	}
-	return cl->second->value(tick);
+    iMidiCtrlValList cl = _controller->find(ch, ctrl);
+    if (cl == _controller->end())
+    {
+        //if (debugMsg)
+        //      printf("getCtrl: controller %d(0x%x) for channel %d not found size %zd\n",
+        //         ctrl, ctrl, ch, _controller->size());
+        return CTRL_VAL_UNKNOWN;
+    }
+    return cl->second->value(tick);
 }
 
 int MidiPort::getCtrl(int ch, int tick, int ctrl, Part* part) const
 {
-	iMidiCtrlValList cl = _controller->find(ch, ctrl);
-	if (cl == _controller->end())
-	{
-		//if (debugMsg)
-		//      printf("getCtrl: controller %d(0x%x) for channel %d not found size %zd\n",
-		//         ctrl, ctrl, ch, _controller->size());
-		return CTRL_VAL_UNKNOWN;
-	}
-	return cl->second->value(tick, part);
+    iMidiCtrlValList cl = _controller->find(ch, ctrl);
+    if (cl == _controller->end())
+    {
+        //if (debugMsg)
+        //      printf("getCtrl: controller %d(0x%x) for channel %d not found size %zd\n",
+        //         ctrl, ctrl, ch, _controller->size());
+        return CTRL_VAL_UNKNOWN;
+    }
+    return cl->second->value(tick, part);
 }
 //---------------------------------------------------------
 //   deleteController
@@ -730,16 +720,16 @@ int MidiPort::getCtrl(int ch, int tick, int ctrl, Part* part) const
 
 void MidiPort::deleteController(int ch, int tick, int ctrl, Part* part)
 {
-	iMidiCtrlValList cl = _controller->find(ch, ctrl);
-	if (cl == _controller->end())
-	{
-		if (debugMsg)
-			printf("deleteController: controller %d(0x%x) for channel %d not found size %zd\n",
-				ctrl, ctrl, ch, _controller->size());
-		return;
-	}
+    iMidiCtrlValList cl = _controller->find(ch, ctrl);
+    if (cl == _controller->end())
+    {
+        if (debugMsg)
+            printf("deleteController: controller %d(0x%x) for channel %d not found size %zd\n",
+                ctrl, ctrl, ch, _controller->size());
+        return;
+    }
 
-	cl->second->delMCtlVal(tick, part);
+    cl->second->delMCtlVal(tick, part);
 }
 
 //---------------------------------------------------------
@@ -748,131 +738,101 @@ void MidiPort::deleteController(int ch, int tick, int ctrl, Part* part)
 
 MidiController* MidiPort::midiController(int num) const
 {
-	if (_instrument && _device && _device->isSynthPlugin() == false)
-	{
-		MidiControllerList* mcl = _instrument->controller();
-		for (iMidiController i = mcl->begin(); i != mcl->end(); ++i)
-		{
-			int cn = i->second->num();
-			if (cn == num)
-				return i->second;
-			// wildcard?
-			if (((cn & 0xff) == 0xff) && ((cn & ~0xff) == (num & ~0xff)))
-				return i->second;
-		}
-	}
+    {
+        MidiControllerList* mcl = _instrument->controller();
+        for (iMidiController i = mcl->begin(); i != mcl->end(); ++i)
+        {
+            int cn = i->second->num();
+            if (cn == num)
+                return i->second;
+            // wildcard?
+            if (((cn & 0xff) == 0xff) && ((cn & ~0xff) == (num & ~0xff)))
+                return i->second;
+        }
+    }
 
-	for (iMidiController i = defaultMidiController.begin(); i != defaultMidiController.end(); ++i)
-	{
-		int cn = i->second->num();
-		if (cn == num)
-			return i->second;
-		// wildcard?
-		if (((cn & 0xff) == 0xff) && ((cn & ~0xff) == (num & ~0xff)))
-			return i->second;
-	}
+    for (iMidiController i = defaultMidiController.begin(); i != defaultMidiController.end(); ++i)
+    {
+        int cn = i->second->num();
+        if (cn == num)
+            return i->second;
+        // wildcard?
+        if (((cn & 0xff) == 0xff) && ((cn & ~0xff) == (num & ~0xff)))
+            return i->second;
+    }
 
 
-	QString name = midiCtrlName(num);
-	int min = 0;
-	int max = 127;
+    QString name = midiCtrlName(num);
+    int min = 0;
+    int max = 127;
 
-	MidiController::ControllerType t = midiControllerType(num);
-	switch (t)
-	{
-		case MidiController::RPN:
-		case MidiController::NRPN:
-		case MidiController::Controller7:
-			max = 127;
-			break;
-		case MidiController::Controller14:
-		case MidiController::RPN14:
-		case MidiController::NRPN14:
-			max = 16383;
-			break;
-		case MidiController::Program:
-			max = 0xffffff;
-			break;
-		case MidiController::Pitch:
-			max = 8191;
-			min = -8192;
-			break;
-		case MidiController::Velo: // cannot happen
-			break;
-	}
-	MidiController* c = new MidiController(name, num, min, max, 0);
-	defaultMidiController.add(c);
-	return c;
-}
-
-//---------------------------------------------------------
-//   drumController
-//   Returns instrument drum controller if ctl is a drum controller number.
-//   Otherwise returns zero. 
-//---------------------------------------------------------
-
-MidiController* MidiPort::drumController(int ctl)
-{
-	if (!_instrument)
-		return 0;
-
-	MidiControllerList* cl = _instrument->controller();
-
-	// If it's an RPN, NRPN, RPN14, or NRPN14 controller...
-	if (((ctl - CTRL_RPN_OFFSET >= 0) && (ctl - CTRL_RPN_OFFSET <= 0xffff)) ||
-			((ctl - CTRL_NRPN_OFFSET >= 0) && (ctl - CTRL_NRPN_OFFSET <= 0xffff)) ||
-			((ctl - CTRL_RPN14_OFFSET >= 0) && (ctl - CTRL_RPN14_OFFSET <= 0xffff)) ||
-			((ctl - CTRL_NRPN14_OFFSET >= 0) && (ctl - CTRL_NRPN14_OFFSET <= 0xffff)))
-	{
-		// Does the instrument have a drum controller to match this controller's number?
-		iMidiController imc = cl->find(ctl | 0xff);
-		if (imc != cl->end())
-			// Yes, it's a drum controller. Return a pointer to it.
-			return imc->second;
-	}
-
-	return 0;
+    MidiController::ControllerType t = midiControllerType(num);
+    switch (t)
+    {
+        case MidiController::RPN:
+        case MidiController::NRPN:
+        case MidiController::Controller7:
+            max = 127;
+            break;
+        case MidiController::Controller14:
+        case MidiController::RPN14:
+        case MidiController::NRPN14:
+            max = 16383;
+            break;
+        case MidiController::Program:
+            max = 0xffffff;
+            break;
+        case MidiController::Pitch:
+            max = 8191;
+            min = -8192;
+            break;
+        case MidiController::Velo: // cannot happen
+            break;
+    }
+    MidiController* c = new MidiController(name, num, min, max, 0);
+    defaultMidiController.add(c);
+    return c;
 }
 
 int MidiPort::nullSendValue()
 {
-	return _instrument ? _instrument->nullSendValue() : -1;
+    return _instrument ? _instrument->nullSendValue() : -1;
 }
 
 void MidiPort::setNullSendValue(int v)
 {
-	if (_instrument)
-		_instrument->setNullSendValue(v);
+    if (_instrument)
+        _instrument->setNullSendValue(v);
 }
 
 void MidiPort::addPatchSequence(PatchSequence* p)
 {
-	if (p)
-		_patchSequences.push_front(p);
+    if (p)
+        _patchSequences.push_front(p);
 }
 
 void MidiPort::appendPatchSequence(PatchSequence* p)
 {
-	if (p)
-		_patchSequences.push_back(p);
+    if (p)
+        _patchSequences.push_back(p);
 }
 
 void MidiPort::deletePatchSequence(PatchSequence* p)
 {
-	if (p && _patchSequences.indexOf(p) != -1)
-	{
-		PatchSequence* ps = _patchSequences.takeAt(_patchSequences.indexOf(p));
-		delete ps; //FIXME: Not sure about this
-	}
+    if (p && _patchSequences.indexOf(p) != -1)
+    {
+        PatchSequence* ps = _patchSequences.takeAt(_patchSequences.indexOf(p));
+        delete ps; //FIXME: Not sure about this
+    }
 }
 
 void MidiPort::insertPatchSequence(int p, PatchSequence* ps)
 {
-	if (p < _patchSequences.size() && ps)
-		_patchSequences.insert(p, ps);
-	else if (ps)
-		appendPatchSequence(ps);
-		//addPatchSequence(ps);
+    if (p < _patchSequences.size() && ps)
+        _patchSequences.insert(p, ps);
+    else if (ps)
+        appendPatchSequence(ps);
+        //addPatchSequence(ps);
 }
 
 //---------------------------------------------------------
@@ -881,30 +841,30 @@ void MidiPort::insertPatchSequence(int p, PatchSequence* ps)
 
 void MidiPort::writeRouting(int level, Xml& xml) const
 {
-	// If this device is not actually in use by the song, do not write any routes.
-	// This prevents bogus routes from being saved and propagated in the oom file.
-	if (!device())
-		return;
+    // If this device is not actually in use by the song, do not write any routes.
+    // This prevents bogus routes from being saved and propagated in the oom file.
+    if (!device())
+        return;
 
-	QString s;
+    QString s;
 
-	for (ciRoute r = _outRoutes.begin(); r != _outRoutes.end(); ++r)
-	{
-		if (r->type == Route::TRACK_ROUTE && !r->name().isEmpty())
-		{
-			s = QT_TRANSLATE_NOOP("@default", "Route");
-			if (r->channel != -1 && r->channel != 0)
-				s += QString(QT_TRANSLATE_NOOP("@default", " channelMask=\"%1\"")).arg(r->channel); // Use new channel mask.
-			xml.tag(level++, s.toLatin1().constData());
+    for (ciRoute r = _outRoutes.begin(); r != _outRoutes.end(); ++r)
+    {
+        if (r->type == Route::TRACK_ROUTE && !r->name().isEmpty())
+        {
+            s = QT_TRANSLATE_NOOP("@default", "Route");
+            if (r->channel != -1 && r->channel != 0)
+                s += QString(QT_TRANSLATE_NOOP("@default", " channelMask=\"%1\"")).arg(r->channel); // Use new channel mask.
+            xml.tag(level++, s.toLatin1().constData());
 
-			xml.tag(level, "source mportId=\"%lld\"/", m_portId);
+            xml.tag(level, "source mportId=\"%lld\"/", m_portId);
 
-			s = QT_TRANSLATE_NOOP("@default", "dest");
-			s += QString(QT_TRANSLATE_NOOP("@default", " name=\"%1\" trackId=\"%2\"/")).arg(Xml::xmlString(r->name())).arg(r->track->id());
-			xml.tag(level, s.toLatin1().constData());
+            s = QT_TRANSLATE_NOOP("@default", "dest");
+            s += QString(QT_TRANSLATE_NOOP("@default", " name=\"%1\" trackId=\"%2\"/")).arg(Xml::xmlString(r->name())).arg(r->track->id());
+            xml.tag(level, s.toLatin1().constData());
 
             xml.etag(--level, "Route");
-		}
-	}
+        }
+    }
 }
 

@@ -69,10 +69,6 @@ const int CTRL_VELOCITY = CTRL_INTERNAL_OFFSET + 2;
 const int CTRL_RECORD = CTRL_INTERNAL_OFFSET + 3;
 const int CTRL_MUTE = CTRL_INTERNAL_OFFSET + 4;
 const int CTRL_SOLO = CTRL_INTERNAL_OFFSET + 5;
-const int CTRL_AUX1 = CTRL_INTERNAL_OFFSET + 6;
-const int CTRL_AUX2 = CTRL_INTERNAL_OFFSET + 7;
-const int CTRL_AUX3 = CTRL_INTERNAL_OFFSET + 8;
-const int CTRL_AUX4 = CTRL_INTERNAL_OFFSET + 9;
 
 const int CTRL_VAL_UNKNOWN = 0x10000000; // used as unknown hwVal
 
@@ -315,17 +311,10 @@ extern MidiControllerList defaultMidiController;
 extern void initMidiController();
 extern MidiController::ControllerType midiControllerType(int num);
 
-
 extern const QString& int2ctrlType(int n);
 extern MidiController::ControllerType ctrlType2Int(const QString& s);
 extern QString midiCtrlName(int ctrl);
 extern MidiController veloCtrl;
-
-
-typedef std::map<int, int, std::less<int> > MidiCtl2LadspaPortMap;
-typedef MidiCtl2LadspaPortMap::iterator iMidiCtl2LadspaPort;
-typedef MidiCtl2LadspaPortMap::const_iterator ciMidiCtl2LadspaPort;
-
 
 #endif
 

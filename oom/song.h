@@ -27,7 +27,6 @@ class QMenu;
 class QMessageBox;
 class QUndoStack;
 
-class SynthI;
 struct MidiMsg;
 struct AudioMsg;
 class Event;
@@ -75,8 +74,6 @@ class AudioDevice;
 #define SC_MIXER_VOLUME       0x200000
 #define SC_MIXER_PAN          0x400000
 #define SC_AUTOMATION         0x800000
-#define SC_AUX                0x1000000   // mixer aux changed
-#define SC_RACK               0x2000000   // mixer rack changed
 #define SC_CLIP_MODIFIED      0x4000000
 #define SC_MIDI_CONTROLLER_ADD 0x8000000   // a hardware midi controller was added or deleted
 #define SC_MIDI_TRACK_PROP    0x10000000   // a midi track's properties changed (channel, compression etc)
@@ -90,18 +87,18 @@ class AudioDevice;
 #define SC_VIEW_DELETED		   0X90000000
 
 /*
-enum 
+enum
 {
-	SC_TRACK_INSERTED = 1, SC_TRACK_REMOVED, SC_TRACK_MODIFIED,
-	SC_PART_INSERTED, SC_PART_REMOVED, SC_PART_MODIFIED,
-	SC_PART_COLOR_MODIFIED, SC_EVENT_INSERTED,SC_EVENT_REMOVED,
-	SC_EVENT_MODIFIED, SC_SIG, SC_TEMPO, SC_MASTER,  SC_SELECTION,
-	SC_MIDI_CONTROLLER, SC_MUTE, SC_SOLO, SC_RECFLAG, SC_ROUTE,
-	SC_CHANNELS, SC_CONFIG, SC_DRUMMAP, SC_MIXER_VOLUME, SC_MIXER_PAN,
-	SC_AUTOMATION, SC_AUX, SC_RACK, SC_CLIP_MODIFIED, SC_MIDI_CONTROLLER_ADD,
-	SC_MIDI_TRACK_PROP, SC_SONG_TYPE, SC_TRACKVIEW_INSERTED, SC_TRACKVIEW_REMOVED,
-	SC_TRACKVIEW_MODIFIED, SC_PATCH_UPDATED, SC_VIEW_CHANGED, SC_VIEW_ADDED,
-	SC_VIEW_DELETED, SC_TRACK_INSTRUMENT
+    SC_TRACK_INSERTED = 1, SC_TRACK_REMOVED, SC_TRACK_MODIFIED,
+    SC_PART_INSERTED, SC_PART_REMOVED, SC_PART_MODIFIED,
+    SC_PART_COLOR_MODIFIED, SC_EVENT_INSERTED,SC_EVENT_REMOVED,
+    SC_EVENT_MODIFIED, SC_SIG, SC_TEMPO, SC_MASTER,  SC_SELECTION,
+    SC_MIDI_CONTROLLER, SC_MUTE, SC_SOLO, SC_RECFLAG, SC_ROUTE,
+    SC_CHANNELS, SC_CONFIG, SC_DRUMMAP, SC_MIXER_VOLUME, SC_MIXER_PAN,
+    SC_AUTOMATION, SC_CLIP_MODIFIED, SC_MIDI_CONTROLLER_ADD,
+    SC_MIDI_TRACK_PROP, SC_SONG_TYPE, SC_TRACKVIEW_INSERTED, SC_TRACKVIEW_REMOVED,
+    SC_TRACKVIEW_MODIFIED, SC_PATCH_UPDATED, SC_VIEW_CHANGED, SC_VIEW_ADDED,
+    SC_VIEW_DELETED, SC_TRACK_INSTRUMENT
 };
 */
 
@@ -136,7 +133,7 @@ public:
         MARKER_CUR, MARKER_ADD, MARKER_REMOVE, MARKER_NAME,
         MARKER_TICK, MARKER_LOCK
     };
-	static void movePlaybackToPart(Part*);
+    static void movePlaybackToPart(Part*);
 
 private:
     // fifo for note-on events
@@ -150,44 +147,38 @@ private:
 
     int updateFlags;
 
-	QHash<qint64, Track*> m_tracks; //New indexed list of tracks
-	QHash<qint64, Track*> m_composerTracks;
-	QHash<qint64, Track*> m_viewTracks;
+    QHash<qint64, Track*> m_tracks; //New indexed list of tracks
+    QHash<qint64, Track*> m_composerTracks;
+    QHash<qint64, Track*> m_viewTracks;
 
-	qint64 m_workingViewId;
-	qint64 m_inputViewId;
-	qint64 m_outputViewId;
-	qint64 m_bussViewId;
-	qint64 m_auxViewId;
-	qint64 m_commentViewId;
-	qint64 m_masterId;
-	qint64 m_oomVerbId;
-	
-	//For maintaining the track order and track view order
-	QList<qint64> m_trackIndex;
-	QList<qint64> m_composerTrackIndex;
-	QList<qint64> m_trackViewIndex;
-	QList<qint64> m_autoTrackViewIndex;
+    qint64 m_workingViewId;
+    qint64 m_inputViewId;
+    qint64 m_outputViewId;
+    qint64 m_commentViewId;
+    qint64 m_masterId;
 
-	//This list forms a compatibility layer between the old name based
-	//track system and should be removed when all things use track ID
-	//At that time track will be able to have the same name without a problem
-	QStringList m_tracknames;
-    
-	TrackList _tracks; // tracklist as seen by globally
+    //For maintaining the track order and track view order
+    QList<qint64> m_trackIndex;
+    QList<qint64> m_composerTrackIndex;
+    QList<qint64> m_trackViewIndex;
+    QList<qint64> m_autoTrackViewIndex;
+
+    //This list forms a compatibility layer between the old name based
+    //track system and should be removed when all things use track ID
+    //At that time track will be able to have the same name without a problem
+    QStringList m_tracknames;
+
+    TrackList _tracks; // tracklist as seen by globally
     TrackList _artracks; // tracklist as seen by Composer
-	
+
     TrackViewList _tviews; // trackviewlist as seen by Composer
-	TrackViewList _autotviews;
-    
-	MidiTrackList _midis;
+    TrackViewList _autotviews;
+
+    MidiTrackList _midis;
     WaveTrackList _waves;
-	TrackList _viewtracks;
+    TrackList _viewtracks;
     InputList _inputs; // audio input ports
     OutputList _outputs; // audio output ports
-    GroupList _groups; // mixer groups
-    AuxList _auxs; // aux sends
-    //SynthIList _synthIs;
 
     UndoList* undoList;
     UndoList* redoList;
@@ -216,14 +207,14 @@ private:
     QString songInfoStr; // contains user supplied song information, stored in song file.
     QStringList deliveredScriptNames;
     QStringList userScriptNames;
-	QMessageBox *jackErrorBox;
+    QMessageBox *jackErrorBox;
 
-	//Audition feature
-	bool _replay;
-	unsigned _replayPos;
-	
-	//key to note mapping
-	QHash<int, QString> m_midiKeys;
+    //Audition feature
+    bool _replay;
+    unsigned _replayPos;
+
+    //key to note mapping
+    QHash<int, QString> m_midiKeys;
 
 public:
     Song(QUndoStack *stack, const char* name = 0);
@@ -249,12 +240,12 @@ public:
     FollowMode follow() const {
         return _follow;
     }
-    
+
     bool dirty;
-	bool invalid; //used to deturmin is song is valid
-	bool viewselected;
-	bool hasSelectedParts;
-	QString associatedRoute;
+    bool invalid; //used to deturmin is song is valid
+    bool viewselected;
+    bool hasSelectedParts;
+    QString associatedRoute;
     WaveTrack* bounceTrack;
     AudioOutput* bounceOutput;
     void updatePos();
@@ -270,8 +261,8 @@ public:
     }
 
     void setSongInfo(QString info) {
-		if(songInfoStr != info)
-			dirty = true;
+        if(songInfoStr != info)
+            dirty = true;
         songInfoStr = info;
     }
 
@@ -413,8 +404,6 @@ public:
     void changeEvent(Event&, Event&, Part*);
     void deleteEvent(Event&, Part*);
     void cmdChangeWave(QString original, QString tmpfile, unsigned sx, unsigned ex);
-    void remapPortDrumCtrlEvents(int mapidx, int newnote, int newchan, int newport);
-    void changeAllPortDrumCtrlEvents(bool add, bool drumonly = false);
 
     //-----------------------------------------
     //   part manipulations
@@ -449,10 +438,10 @@ public:
     //   track manipulations
     //-----------------------------------------
 
-	QStringList *trackNames()
-	{
-		return &m_tracknames;
-	}
+    QStringList *trackNames()
+    {
+        return &m_tracknames;
+    }
     TrackList* tracks() {
         return &_tracks;
     }
@@ -465,17 +454,17 @@ public:
             return &_viewtracks;
     }
 
-	QList<qint64> selectedTracks()
-	{
-		QList<qint64> list;
-		foreach(Track* t, m_viewTracks)
-		{
-			if(t->selected())
-				list.append(t->id());
-		}
-		return list;
-	}
-	QList<Part*> selectedParts();
+    QList<qint64> selectedTracks()
+    {
+        QList<qint64> list;
+        foreach(Track* t, m_viewTracks)
+        {
+            if(t->selected())
+                list.append(t->id());
+        }
+        return list;
+    }
+    QList<Part*> selectedParts();
 
     TrackList getSelectedTracks();
     void setTrackHeights(TrackList& list, int height);
@@ -496,18 +485,6 @@ public:
         return &_outputs;
     }
 
-    GroupList* groups() {
-        return &_groups;
-    }
-
-    AuxList* auxs() {
-        return &_auxs;
-    }
-
-    //SynthIList* syntis() {
-    //    return &_synthIs;
-    //}
-
     void cmdRemoveTrack(Track* track);
     void removeTrack(Track* track);
     void removeTrack1(Track* track);
@@ -525,8 +502,8 @@ public:
     void insertTrack1(Track*, int idx);
     void insertTrackRealtime(Track*, int idx);
     void deselectTracks();
-	void deselectAllParts();
-	void disarmAllTracks();
+    void deselectAllParts();
+    void disarmAllTracks();
     void readRoute(Xml& xml);
     void recordEvent(MidiTrack*, Event&);
     void recordEvent(MidiPart*, Event&);
@@ -537,7 +514,6 @@ public:
     int execMidiAutomationCtlPopup(MidiTrack*, MidiPart*, const QPoint&, int);
     void connectJackRoutes(AudioTrack* track, bool disconnect);
     void updateSoloStates();
-	void updateAuxIndex();
     //void chooseMidiRoutes(QButton* /*parent*/, MidiTrack* /*track*/, bool /*dst*/);
 
     // TrackView
@@ -548,89 +524,76 @@ public:
     TrackViewList* autoviews() {
         return &_autotviews;
     }
-	QList<qint64>* autoTrackViewIndexList() 
-	{
-		return &m_autoTrackViewIndex;
-	}
-	int autoTrackViewIndex(qint64 id)
-	{
-		return m_autoTrackViewIndex.isEmpty() ? -1 : m_autoTrackViewIndex.indexOf(id);
-	}
-	QList<qint64>* trackViewIndexList() 
-	{
-		return &m_trackViewIndex;
-	}
-	int trackViewIndex(qint64 id)
-	{
-		return m_trackViewIndex.isEmpty() ? -1 : m_trackViewIndex.indexOf(id);
-	}
-	QList<qint64>* trackIndexList() 
-	{
-		return &m_trackIndex;
-	}
-	int trackIndex(qint64 id)
-	{
-		return m_trackIndex.isEmpty() ? -1 : m_trackIndex.indexOf(id);
-	}
-	qint64 workingViewId()
-	{
-		return m_workingViewId;
-	}
-	qint64 inputViewId()
-	{
-		return m_inputViewId;
-	}
-	qint64 outputViewId()
-	{
-		return m_outputViewId;
-	}
-	qint64 bussViewId()
-	{
-		return m_bussViewId;
-	}
-	qint64 commentViewId()
-	{
-		return m_commentViewId;
-	}
-	qint64 auxViewId()
-	{
-		return m_auxViewId;
-	}
-	qint64 masterId()
-	{
-		return m_masterId;
-	}
-	qint64 oomVerbId()
-	{
-		return m_oomVerbId;
-	}
+    QList<qint64>* autoTrackViewIndexList()
+    {
+        return &m_autoTrackViewIndex;
+    }
+    int autoTrackViewIndex(qint64 id)
+    {
+        return m_autoTrackViewIndex.isEmpty() ? -1 : m_autoTrackViewIndex.indexOf(id);
+    }
+    QList<qint64>* trackViewIndexList()
+    {
+        return &m_trackViewIndex;
+    }
+    int trackViewIndex(qint64 id)
+    {
+        return m_trackViewIndex.isEmpty() ? -1 : m_trackViewIndex.indexOf(id);
+    }
+    QList<qint64>* trackIndexList()
+    {
+        return &m_trackIndex;
+    }
+    int trackIndex(qint64 id)
+    {
+        return m_trackIndex.isEmpty() ? -1 : m_trackIndex.indexOf(id);
+    }
+    qint64 workingViewId()
+    {
+        return m_workingViewId;
+    }
+    qint64 inputViewId()
+    {
+        return m_inputViewId;
+    }
+    qint64 outputViewId()
+    {
+        return m_outputViewId;
+    }
+    qint64 commentViewId()
+    {
+        return m_commentViewId;
+    }
+    qint64 masterId()
+    {
+        return m_masterId;
+    }
 
-	void addMasterTrack();
-	void addOOMVerb();
+    void addMasterTrack();
 
     TrackView* addNewTrackView();
     TrackView* addTrackView();
-    
-	TrackView* findAutoTrackView(const QString& name) const;
+
+    TrackView* findAutoTrackView(const QString& name) const;
     TrackView* findAutoTrackViewById(qint64) const;
-    
-	TrackView* findTrackViewById(qint64) const;
+
+    TrackView* findTrackViewById(qint64) const;
     TrackView* findTrackViewByTrackId(qint64);
-    
-	void insertTrackView(TrackView*, int idx);
+
+    void insertTrackView(TrackView*, int idx);
     void removeTrackView(qint64);
     void cmdRemoveTrackView(qint64);
     void msgInsertTrackView(TrackView*, int idx, bool u = true);
 
-	//midikeys
-	QString key2note(int key)
-	{
-		if(m_midiKeys.contains(key))
-		{
-			return m_midiKeys.value(key);
-		}
-		return QString("");
-	}
+    //midikeys
+    QString key2note(int key)
+    {
+        if(m_midiKeys.contains(key))
+        {
+            return m_midiKeys.value(key);
+        }
+        return QString("");
+    }
 
     //-----------------------------------------
     //   undo, redo
@@ -666,9 +629,6 @@ public:
     //-----------------------------------------
     //   Configuration
     //-----------------------------------------
-
-    //SynthI* createSynthI(const QString& sclass);
-    SynthI* createSynthI(const QString& sclass, const QString& label = QString());
 
     void rescanAlsaPorts();
 
@@ -706,15 +666,15 @@ public slots:
 
     void setMasterFlag(bool flag);
 
-	bool getReplay() {
-		return _replay;
-	}
-	void setReplay(bool f);
-	unsigned replayPos() {
-		return _replayPos;
-	}
-	void updateReplayPos();
-	bool getLoop() {
+    bool getReplay() {
+        return _replay;
+    }
+    void setReplay(bool f);
+    unsigned replayPos() {
+        return _replayPos;
+    }
+    void updateReplayPos();
+    bool getLoop() {
         return loopFlag;
     }
     void setLoop(bool f);
@@ -731,26 +691,26 @@ public slots:
     void setQuantize(bool val);
     void panic();
     void seqSignal(int fd);
-	void playMonitorEvent(int fd);
-	void processMonitorMessage(const void*);
+    void playMonitorEvent(int fd);
+    void processMonitorMessage(const void*);
     Track* addTrack(int, bool doUndo = true);
-	Track* addTrackByName(QString name, int t, int pos, bool doUndo, bool connectMaster);
+    Track* addTrackByName(QString name, int t, int pos, bool doUndo, bool connectMaster);
     Track* addNewTrack(QAction* action);
     QString getScriptPath(int id, bool delivered);
     void populateScriptMenu(QMenu* menuPlugins, QObject* receiver);
-	void updateTrackViews();
-	void closeJackBox();
-	void toggleFeedback(bool);
-	void newTrackAdded(qint64);
+    void updateTrackViews();
+    void closeJackBox();
+    void toggleFeedback(bool);
+    void newTrackAdded(qint64);
 
 signals:
-	void replayChanged(bool, unsigned);
+    void replayChanged(bool, unsigned);
     void songChanged(int);
     void posChanged(int, unsigned, bool);
     void loopChanged(bool);
     void recordChanged(bool);
-	void playChanged(bool);
-	void playbackStateChanged(bool);
+    void playChanged(bool);
+    void playbackStateChanged(bool);
     void punchinChanged(bool);
     void punchoutChanged(bool);
     void clickChanged(bool);
@@ -758,35 +718,34 @@ signals:
     void markerChanged(int);
     void midiPortsChanged();
     void midiNote(int pitch, int velo);
-	void midiLearned(int port, int chan, int cc, int lsb = -1);
-	void trackViewChanged();
-	void trackViewAdded();
-	void trackViewDeleted();
-	void composerViewChanged();
+    void midiLearned(int port, int chan, int cc, int lsb = -1);
+    void trackViewChanged();
+    void trackViewAdded();
+    void trackViewDeleted();
+    void composerViewChanged();
     void segmentSizeChanged(int);
-	void trackOrderChanged();
-	void trackModified(qint64);
-	void trackRemoved(qint64);
-	void trackAdded(qint64);
-	void partInserted(qint64 trackId, unsigned int pos);
-	void partRemoved(qint64);
-	void partModified(qint64, unsigned);
-	void eventInserted();
-	void eventRemoved();
-	void eventModified();
-	void sigmapChanged();
-	void tempoModified();
-	void masterFlagChanged();
-	void selectionChanged(int type);
-	void midiControllerChanged();
-	void muteChanged(qint64);
-	void soloChanged(qint64);
-	void recordFlagChanged(qint64);
-	void routeChanged();
-	void channelsModified();
-	void configModified();
-//#define SC_AUX                0x1000000   // mixer aux changed
-//#define SC_RACK               0x2000000   // mixer rack changed
+    void trackOrderChanged();
+    void trackModified(qint64);
+    void trackRemoved(qint64);
+    void trackAdded(qint64);
+    void partInserted(qint64 trackId, unsigned int pos);
+    void partRemoved(qint64);
+    void partModified(qint64, unsigned);
+    void eventInserted();
+    void eventRemoved();
+    void eventModified();
+    void sigmapChanged();
+    void tempoModified();
+    void masterFlagChanged();
+    void selectionChanged(int type);
+    void midiControllerChanged();
+    void muteChanged(qint64);
+    void soloChanged(qint64);
+    void recordFlagChanged(qint64);
+    void routeChanged();
+    void channelsModified();
+    void configModified();
+
 //#define SC_CLIP_MODIFIED      0x4000000
 //#define SC_MIDI_CONTROLLER_ADD 0x8000000   // a hardware midi controller was added or deleted
 //#define SC_MIDI_TRACK_PROP    0x10000000   // a midi track's properties changed (channel, compression etc)

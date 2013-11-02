@@ -60,7 +60,6 @@ Meter::Meter(QWidget* parent, Track::TrackType track, MeterType type, Qt::Orient
 	switch (m_track)
 	{
 		case Track::MIDI:
-		case Track::DRUM:
 			m_trackColor= QColor(1,230,238);
 		break;
 		case Track::WAVE:
@@ -71,15 +70,6 @@ Meter::Meter(QWidget* parent, Track::TrackType track, MeterType type, Qt::Orient
 		break;
 		case Track::AUDIO_INPUT:
 			m_trackColor= QColor(189,122,214);
-		break;
-		case Track::AUDIO_BUSS:
-			m_trackColor= QColor(252,164,36);
-		break;
-		case Track::AUDIO_AUX:
-			m_trackColor= QColor(227,233,114);
-		break;
-		case Track::AUDIO_SOFTSYNTH:
-			m_trackColor= QColor(255,0,0);
 		break;
 	}
 }

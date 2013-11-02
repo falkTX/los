@@ -23,10 +23,10 @@
 class Xml;
 
 struct NRPNCache {
-	int msb;
-	int lsb;
-	int data_msb;
-	int data_lsb;
+    int msb;
+    int lsb;
+    int data_msb;
+    int data_lsb;
 };
 
 //---------------------------------------------------------
@@ -51,10 +51,10 @@ protected:
     bool _writeEnable; //
     bool _sysexReadingChunks;
 
-	MidiFifo eventFifo;
-	bool m_cachenrpn;
-	//NRPNCache m_nrpnCache;
-	QHash<int, NRPNCache*> m_nrpnCache;
+    MidiFifo eventFifo;
+    bool m_cachenrpn;
+    //NRPNCache m_nrpnCache;
+    QHash<int, NRPNCache*> m_nrpnCache;
 
     // Recording fifos. To speed up processing, one per channel plus one special system 'channel' for channel-less events like sysex.
     MidiRecFifo _recordFifo[MIDI_CHANNELS + 1];
@@ -63,24 +63,24 @@ protected:
 
     void init();
     virtual bool putMidiEvent(const MidiPlayEvent&) = 0;
-	virtual void monitorEvent(const MidiRecordEvent&);
-	virtual void monitorOutputEvent(const MidiPlayEvent&);
-	virtual void resetNRPNCache(int chan)
-	{
-		NRPNCache* c = m_nrpnCache.value(chan);
-		if(c)
-		{
-			c->msb = -1;
-			c->lsb = -1;
-			c->data_msb = -1;
-			c->data_lsb = -1;
-		}
-	}
+    virtual void monitorEvent(const MidiRecordEvent&);
+    virtual void monitorOutputEvent(const MidiPlayEvent&);
+    virtual void resetNRPNCache(int chan)
+    {
+        NRPNCache* c = m_nrpnCache.value(chan);
+        if(c)
+        {
+            c->msb = -1;
+            c->lsb = -1;
+            c->data_msb = -1;
+            c->data_lsb = -1;
+        }
+    }
 
 public:
 
     enum {
-        ALSA_MIDI = 0, JACK_MIDI = 1, SYNTH_MIDI = 2
+        ALSA_MIDI = 0, JACK_MIDI = 1, UNKNOWN_MIDI = 2
     };
 
     MidiDevice();
@@ -153,10 +153,6 @@ public:
         _rwFlags = val;
     }
 
-    virtual bool isSynthPlugin() const {
-        return false;
-    }
-
     virtual int selectRfd() {
         return -1;
     }
@@ -181,7 +177,7 @@ public:
     virtual void recordEvent(MidiRecordEvent&);
 
     virtual bool putEvent(const MidiPlayEvent&);
-	
+
     // For Jack-based devices - called in Jack audio process callback
 
     virtual void collectMidiEvents() {
@@ -226,23 +222,23 @@ public:
     }
 
     bool sendNullRPNParams(int, bool);
-	virtual bool cacheNRPN()
-	{
-		return m_cachenrpn;
-	}
-	virtual void setCacheNRPN(bool f)
-	{
-		m_cachenrpn = f;
-	}
+    virtual bool cacheNRPN()
+    {
+        return m_cachenrpn;
+    }
+    virtual void setCacheNRPN(bool f)
+    {
+        m_cachenrpn = f;
+    }
 
-	bool hasNRPNIndex(int index) {
-		return ((!m_nrpnCache.isEmpty() && m_nrpnCache.contains(index)) && m_nrpnCache.value(index)->msb >= 0 && m_nrpnCache.value(index)->lsb >= 0);
-	}
+    bool hasNRPNIndex(int index) {
+        return ((!m_nrpnCache.isEmpty() && m_nrpnCache.contains(index)) && m_nrpnCache.value(index)->msb >= 0 && m_nrpnCache.value(index)->lsb >= 0);
+    }
 
-	NRPNCache* rpnCache(int index)
-	{
-		return m_nrpnCache.value(index);;
-	}
+    NRPNCache* rpnCache(int index)
+    {
+        return m_nrpnCache.value(index);;
+    }
 };
 
 //---------------------------------------------------------

@@ -139,17 +139,17 @@ void Canvas::setPos(int idx, unsigned val, bool adjustScrollbar)
 		}
 	}
 
-	int x;
+    //int x;
 	int w = 1;
 	if (opos > npos)
 	{
 		w += opos - npos;
-		x = npos;
+        //x = npos;
 	}
 	else
 	{
 		w += npos - opos;
-		x = opos;
+        //x = opos;
 	}
 	_pos[idx] = val;
 	//redraw(QRect(x - 1, 0, w + 2, height()));

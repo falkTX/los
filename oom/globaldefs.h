@@ -14,40 +14,41 @@
 //    MT_GS  - Roland GS
 //    MT_XG  - Yamaha XG
 
-enum MType
-{
-    MT_UNKNOWN = 0, MT_GM, MT_GS, MT_XG
-};
-
-enum AutomationType
-{
-    AUTO_OFF, AUTO_READ, AUTO_TOUCH, AUTO_WRITE
-};
-
-const int MAX_CHANNELS = 2; // max audio channels
-const int MAX_PLUGINS = 100; // plugins in mixer rack
-
-//const int MIDI_PORTS   = 32;  // max Number of Midi Ports
-const int MIDI_PORTS = 1024; // max Number of Midi Ports
+const int MAX_CHANNELS  = 2;    // max audio channels
+const int MIDI_PORTS    = 1024; // max number of midi ports
+//const int MIDI_CHANNELS = 16;   // channels per port
 
 #ifndef MIDI_CHANNELS
-#define MIDI_CHANNELS 16       // Channels per Port
+#define MIDI_CHANNELS 16
 #endif
+
+enum MType {
+    MT_UNKNOWN = 0,
+    MT_GM,
+    MT_GS,
+    MT_XG
+};
+
+enum AutomationType {
+    AUTO_OFF = 0,
+    AUTO_READ,
+    AUTO_TOUCH,
+    AUTO_WRITE
+};
 
 struct SamplerData {
-	int samplerChannel;
-	int audioDevice;
-	int audioChannel;
-	int midiDevice;
-	int midiPort;
-	SamplerData()
-	{
-		samplerChannel = -1;
-		audioDevice = -1;
-		audioChannel = -1;
-		midiDevice = -1;
-		midiPort = -1;
-	}
-};
-#endif
+    int samplerChannel;
+    int audioDevice;
+    int audioChannel;
+    int midiDevice;
+    int midiPort;
 
+    SamplerData()
+        : samplerChannel(-1),
+          audioDevice(-1),
+          audioChannel(-1),
+          midiDevice(-1),
+          midiPort(-1) {}
+};
+
+#endif

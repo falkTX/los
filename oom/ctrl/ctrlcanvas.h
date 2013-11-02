@@ -175,7 +175,6 @@ protected:
     QPoint start;
     Tool tool;
     unsigned pos[4];
-    int curDrumInstrument; //Used by the drum-editor to view velocity of only one key (one drum)
 
     void leaveEvent(QEvent*e);
     QPoint raster(const QPoint&) const;
@@ -195,7 +194,6 @@ protected:
 
 private slots:
     void songChanged(int type);
-    void setCurDrumInstrument(int);
 
 public slots:
     void setTool(int t);

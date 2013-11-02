@@ -36,26 +36,26 @@ class CCInfo;
 class Track;
 struct MonitorLog
 {
-	unsigned pos;
-	int value;
+    unsigned pos;
+    int value;
 };
 struct MidiAssignData {/*{{{*/
-	Track* track;
-	QHash<int, CCInfo*> midimap;
-	int port;
-	int preset;
-	int channel;
-	bool enabled;
-	void read(Xml&, Track*);
-	//void write(int, Xml&);
-	inline bool operator==(MidiAssignData mad)
-	{
-		return mad.port == port && mad.track == track;
-	}
-	inline uint qHash(MidiAssignData m)
-	{
-		return (m.channel ^ m.port)*qrand();
-	}
+    Track* track;
+    QHash<int, CCInfo*> midimap;
+    int port;
+    int preset;
+    int channel;
+    bool enabled;
+    void read(Xml&, Track*);
+    //void write(int, Xml&);
+    inline bool operator==(MidiAssignData mad)
+    {
+        return mad.port == port && mad.track == track;
+    }
+    inline uint qHash(MidiAssignData m)
+    {
+        return (m.channel ^ m.port)*qrand();
+    }
 };/*}}}*/
 //---------------------------------------------------------
 //   Track
@@ -70,12 +70,13 @@ static const int MIN_TRACKHEIGHT_TOOLS = 150;
 class Track
 {
 public:
-
-    enum TrackType
-    {
-        MIDI = 0, DRUM, WAVE, AUDIO_OUTPUT, AUDIO_INPUT, AUDIO_BUSS,
-        AUDIO_AUX, AUDIO_SOFTSYNTH
+    enum TrackType {
+        MIDI = 0,
+        WAVE,
+        AUDIO_OUTPUT,
+        AUDIO_INPUT
     };
+
 private:
     TrackType _type;
     QString _comment;
@@ -83,13 +84,13 @@ private:
     PartList _parts;
 
     void init();
-	bool _reminder1;
-	bool _reminder2;
-	bool _reminder3;
+    bool _reminder1;
+    bool _reminder2;
+    bool _reminder3;
 
 
 protected:
-	qint64 m_id;
+    qint64 m_id;
     static unsigned int _soloRefCnt;
     static Track* _tmpSoloChainTrack;
     static bool _tmpSoloChainDoIns;
@@ -111,9 +112,9 @@ protected:
     bool _volumeEn2Ctrl;
     bool _panEnCtrl;
     bool _panEn2Ctrl;
-	bool _collapsed;
-	int _mixerTab;
-	int m_maxZIndex;
+    bool _collapsed;
+    int _mixerTab;
+    int m_maxZIndex;
 
     int _activity;
     int _lastActivity;
@@ -125,16 +126,15 @@ protected:
 
     bool _locked;
     bool _selected;
-	qint64 m_chainMaster;
-	bool m_masterFlag;
+    qint64 m_chainMaster;
+    bool m_masterFlag;
 
-    
     bool _wantsAutomation;
 
-	MidiAssignData m_midiassign;
-	QList<qint64> m_audioChain;
-    
-	bool readProperties(Xml& xml, const QString& tag);
+    MidiAssignData m_midiassign;
+    QList<qint64> m_audioChain;
+
+    bool readProperties(Xml& xml, const QString& tag);
     void writeProperties(int level, Xml& xml) const;
 
 public:
@@ -147,41 +147,41 @@ public:
     virtual Track & operator=(const Track& t);
 
     static const char* _cname[];
-	
-	bool getReminder1()
-	{
-		return _reminder1;
-	}
-	void setReminder1(bool r)
-	{
-		_reminder1 = r;
-	}
-	bool getReminder2()
-	{
-		return _reminder2;
-	}
-	void setReminder2(bool r)
-	{
-		_reminder2 = r;
-	}
-	bool getReminder3()
-	{
-		return _reminder3;
-	}
-	void setReminder3(bool r)
-	{
-		_reminder3 = r;
-	}
-	bool collapsed() { return _collapsed; }
-	void setCollapsed(bool f) { _collapsed = f; }
-	int mixerTab(){return _mixerTab;}
-	void setMixerTab(int i){_mixerTab = i;}
-	void setMaxZIndex(int i)
-	{
-		if(i > m_maxZIndex)
-			m_maxZIndex = i;
-	}
-	int maxZIndex() { return m_maxZIndex; }
+
+    bool getReminder1()
+    {
+        return _reminder1;
+    }
+    void setReminder1(bool r)
+    {
+        _reminder1 = r;
+    }
+    bool getReminder2()
+    {
+        return _reminder2;
+    }
+    void setReminder2(bool r)
+    {
+        _reminder2 = r;
+    }
+    bool getReminder3()
+    {
+        return _reminder3;
+    }
+    void setReminder3(bool r)
+    {
+        _reminder3 = r;
+    }
+    bool collapsed() { return _collapsed; }
+    void setCollapsed(bool f) { _collapsed = f; }
+    int mixerTab(){return _mixerTab;}
+    void setMixerTab(int i){_mixerTab = i;}
+    void setMaxZIndex(int i)
+    {
+        if(i > m_maxZIndex)
+            m_maxZIndex = i;
+    }
+    int maxZIndex() { return m_maxZIndex; }
 
     QString comment() const
     {
@@ -193,32 +193,32 @@ public:
         _comment = s;
     }
 
-	void setChainMaster(qint64 val){m_chainMaster = val;}
-	qint64 chainMaster(){return m_chainMaster;}
-	void setMasterFlag(bool val){m_masterFlag = val;}
-	bool masterFlag() {return m_masterFlag;}
-	void addManagedTrack(qint64 id)
-	{
-		if(!chainContains(id))
-			m_audioChain.append(id);
-	}
-	QList<qint64>* audioChain() {return &m_audioChain;}
-	bool chainContains(qint64 id) 
-	{
-		return (!m_audioChain.isEmpty() && m_audioChain.contains(id));
-	}
-	bool hasChildren()
-	{
-		return !m_audioChain.isEmpty();
-	}
-	Track* inputTrack();
+    void setChainMaster(qint64 val){m_chainMaster = val;}
+    qint64 chainMaster(){return m_chainMaster;}
+    void setMasterFlag(bool val){m_masterFlag = val;}
+    bool masterFlag() {return m_masterFlag;}
+    void addManagedTrack(qint64 id)
+    {
+        if(!chainContains(id))
+            m_audioChain.append(id);
+    }
+    QList<qint64>* audioChain() {return &m_audioChain;}
+    bool chainContains(qint64 id)
+    {
+        return (!m_audioChain.isEmpty() && m_audioChain.contains(id));
+    }
+    bool hasChildren()
+    {
+        return !m_audioChain.isEmpty();
+    }
+    Track* inputTrack();
 
-	MidiAssignData* midiAssign() { return &m_midiassign; }
+    MidiAssignData* midiAssign() { return &m_midiassign; }
 
-	qint64 id()
-	{
-		return  m_id;
-	}
+    qint64 id()
+    {
+        return  m_id;
+    }
 
     int y() const;
 
@@ -244,7 +244,7 @@ public:
 
     void setSelected(bool f);
 
-	void deselectParts();
+    void deselectParts();
 
     bool locked() const
     {
@@ -409,12 +409,12 @@ public:
     {
         return _recordFlag;
     }
-    
-	void setDefaultPartColor(int pc)
+
+    void setDefaultPartColor(int pc)
     {
         _partDefaultColor = pc;
     }
-	int getDefaultPartColor()
+    int getDefaultPartColor()
     {
         return _partDefaultColor;
     }
@@ -459,7 +459,7 @@ public:
 
     bool readProperty(Xml& xml, const QString& tag);
     void setDefaultName();
-	static QString getValidName(QString name, bool isdefault = false);
+    static QString getValidName(QString name, bool isdefault = false);
 
     int channels() const
     {
@@ -469,7 +469,7 @@ public:
 
     bool isMidiTrack() const
     {
-        return type() == MIDI || type() == DRUM;
+        return type() == MIDI;
     }
 
     virtual bool canRecord() const
@@ -478,12 +478,12 @@ public:
     }
     virtual AutomationType automationType() const = 0;
     virtual void setAutomationType(AutomationType t) = 0;
-    
+
     bool wantsAutomation()
     {
         return _wantsAutomation;
     }
-    
+
     void setWantsAutomation(bool yesno)
     {
         _wantsAutomation = yesno;
@@ -499,14 +499,14 @@ class AudioTrack;
 class MidiTrack : public Track
 {
     int _outPort;
-	qint64 _outPortId;
+    qint64 _outPortId;
     int _outChannel;
     bool _recEcho; // For midi (and audio). Whether to echo incoming record events to output device.
 
     EventList* _events; // tmp Events during midi import
     MPEventList* _mpevents; // tmp Events druring recording
-	QHash<int, QList<MonitorLog> > m_monitorBuffer;
-	SamplerData* m_samplerData;
+    QHash<int, QList<MonitorLog> > m_monitorBuffer;
+    SamplerData* m_samplerData;
 
 public:
     MidiTrack();
@@ -517,24 +517,24 @@ public:
     virtual AutomationType automationType() const;
     virtual void setAutomationType(AutomationType);
 
-	bool transpose;
+    bool transpose;
     int transposition;
     int velocity;
     int delay;
     int len;
     int compression;
 
-	int getTransposition();
-	QList<MonitorLog> getMonitorBuffer(int ctrl)
-	{
-		if(m_monitorBuffer.isEmpty() || !m_monitorBuffer.contains(ctrl))
-		{
-			QList<MonitorLog> list;
-			m_monitorBuffer.insert(ctrl, list);
-		}
-		QList<MonitorLog> list1 = m_monitorBuffer.value(ctrl);
-		return list1;
-	}
+    int getTransposition();
+    QList<MonitorLog> getMonitorBuffer(int ctrl)
+    {
+        if(m_monitorBuffer.isEmpty() || !m_monitorBuffer.contains(ctrl))
+        {
+            QList<MonitorLog> list;
+            m_monitorBuffer.insert(ctrl, list);
+        }
+        QList<MonitorLog> list1 = m_monitorBuffer.value(ctrl);
+        return list1;
+    }
 
     virtual bool setRecordFlag1(bool f, bool monitor = false);
 
@@ -588,10 +588,10 @@ public:
         return _outPort;
     }
 
-	qint64 outPortId() const
-	{
-		return _outPortId;
-	}
+    qint64 outPortId() const
+    {
+        return _outPortId;
+    }
 
     int outChannel() const
     {
@@ -602,8 +602,8 @@ public:
     {
         return _recEcho;
     }
-	SamplerData* samplerData() {return m_samplerData;}
-	void setSamplerData(SamplerData* data){ m_samplerData = data;}
+    SamplerData* samplerData() {return m_samplerData;}
+    void setSamplerData(SamplerData* data){ m_samplerData = data;}
 
     virtual bool isMute() const;
     virtual void setSolo(bool val, bool monitor = false);
@@ -614,20 +614,20 @@ public:
     {
         return true;
     }
-    
+
     AudioTrack* getAutomationTrack();
 };
 
 typedef QPair<bool, double> AuxInfo;
 /*typedef struct _AuxInfo
 {
-	double value;
-	bool pre;
-	_AuxInfo(double v, bool p = false)
-	{
-		value = v;
-		pre = p;
-	}
+    double value;
+    bool pre;
+    _AuxInfo(double v, bool p = false)
+    {
+        value = v;
+        pre = p;
+    }
 } AuxInfo;
 */
 
@@ -646,16 +646,10 @@ class AudioTrack : public Track
     CtrlRecList _recEvents; // recorded automation events
 
     bool _prefader; // prefader metering
-	QHash<qint64, AuxInfo> _auxSend;
-	
-    Pipeline* _efxPipe;
 
     AutomationType _automationType;
 
     bool _sendMetronome;
-
-	QHash<int, qint64> m_auxControlList;
-    void readAuxSend(Xml& xml);
 
 protected:
     float** outBuffers;
@@ -683,10 +677,6 @@ public:
         return _processed;
     }
 
-	QHash<int, qint64>* auxControlList()
-	{
-		return &m_auxControlList;
-	}
     //void setProcessed(bool v) { _processed = v; }
 
     void addController(CtrlList*);
@@ -695,9 +685,6 @@ public:
 
     bool readProperties(Xml&, const QString&);
     void writeProperties(int, Xml&) const;
-
-    void mapRackPluginsToControllers();
-    void showPendingPluginNativeGuis();
 
     virtual AudioTrack* clone(bool cloneParts) const = 0;
     virtual Part* newPart(Part*p = 0, bool clone = false);
@@ -753,11 +740,11 @@ public:
         return _sendMetronome;
     }
 
-	bool volFromAutomation();
+    bool volFromAutomation();
     double volume() const;
     double volume(unsigned) const;
     void setVolume(double val, bool monitor = false);
-	bool panFromAutomation();
+    bool panFromAutomation();
     double pan() const;
     void setPan(double val, bool monitor = false);
 
@@ -765,29 +752,8 @@ public:
     {
         return _prefader;
     }
-	QHash<qint64, AuxInfo>* auxSends()
-	{
-		return &_auxSend;
-	}
-    double auxSend(qint64 idx) const;
-    void setAuxSend(qint64 idx, double v, bool monitor = false);
-    void addAuxSend();
-	bool auxIsPrefader(qint64 idx);
-	void setAuxPrefader(qint64 idx, bool);
 
     void setPrefader(bool val);
-
-    Pipeline* efxPipe()
-    {
-        return _efxPipe;
-    }
-    void deleteAllEfxGuis();
-    void clearEfxList();
-    void addPlugin(BasePlugin* plugin, int idx);
-    void idlePlugin(BasePlugin* plugin);
-
-    double pluginCtrlVal(int ctlID) const;
-    void setPluginCtrlVal(int param, double val);
 
     void readVolume(Xml& xml);
 
@@ -797,11 +763,6 @@ public:
     }
     virtual void addData(unsigned /*samplePos*/, int /*channels*/, int /*srcStartChan*/, int /*srcChannels*/, unsigned /*frames*/, float** /*buffer*/);
     virtual void copyData(unsigned /*samplePos*/, int /*channels*/, int /*srcStartChan*/, int /*srcChannels*/, unsigned /*frames*/, float** /*buffer*/);
-
-    virtual bool hasAuxSend() const
-    {
-        return false;
-    }
 
     // automation
 
@@ -834,8 +795,8 @@ public:
 
 class AudioInput : public AudioTrack
 {
-	bool _slave;
-	Track* _master;
+    bool _slave;
+    Track* _master;
     void* jackPorts[MAX_CHANNELS];
     virtual bool getData(unsigned, int, unsigned, float**);
 
@@ -857,22 +818,22 @@ public:
     virtual void write(int, Xml&) const;
     virtual void setName(const QString& s);
 
-	void setSlave(bool s)
-	{
-		_slave = s;
-	}
-	bool isSlave()
-	{
-		return _slave;
-	}
-	void setMaster(Track* trk)
-	{
-		_master = trk;
-	}
-	Track* getMaster()
-	{
-		return _master;
-	}
+    void setSlave(bool s)
+    {
+        _slave = s;
+    }
+    bool isSlave()
+    {
+        return _slave;
+    }
+    void setMaster(Track* trk)
+    {
+        _master = trk;
+    }
+    Track* getMaster()
+    {
+        return _master;
+    }
     void* jackPort(int channel)
     {
         return jackPorts[channel];
@@ -902,8 +863,8 @@ public:
 
 class AudioOutput : public AudioTrack
 {
-	bool _slave;
-	Track* _master;
+    bool _slave;
+    Track* _master;
     void* jackPorts[MAX_CHANNELS];
     float* buffer[MAX_CHANNELS];
     float* buffer1[MAX_CHANNELS];
@@ -929,22 +890,22 @@ public:
     virtual void write(int, Xml&) const;
     virtual void setName(const QString& s);
 
-	void setSlave(bool s)
-	{
-		_slave = s;
-	}
-	bool isSlave()
-	{
-		return _slave;
-	}
-	void setMaster(Track* trk)
-	{
-		_master = trk;
-	}
-	Track* getMaster()
-	{
-		return _master;
-	}
+    void setSlave(bool s)
+    {
+        _slave = s;
+    }
+    bool isSlave()
+    {
+        return _slave;
+    }
+    void setMaster(Track* trk)
+    {
+        _master = trk;
+    }
+    Track* getMaster()
+    {
+        return _master;
+    }
     void* jackPort(int channel)
     {
         return jackPorts[channel];
@@ -979,106 +940,14 @@ public:
 };
 
 //---------------------------------------------------------
-//   AudioBuss
-//---------------------------------------------------------
-
-class AudioBuss : public AudioTrack
-{
-	AudioInput* _input;
-	AudioOutput* _output;
-public:
-
-    AudioBuss() : AudioTrack(AUDIO_BUSS)
-    {
-    }
-
-    AudioBuss* clone(bool /*cloneParts*/) const
-    {
-        return new AudioBuss(*this);
-    }
-
-    virtual AudioBuss* newTrack() const
-    {
-        return new AudioBuss();
-    }
-    virtual void read(Xml&);
-    virtual void write(int, Xml&) const;
-
-    virtual bool hasAuxSend() const
-    {
-        return true;
-    }
-
-    virtual bool isMute() const
-    {
-            return _mute;
-    }
-
-	void setOutputTrack(AudioOutput* out)
-	{
-		_output = out;
-	}
-	AudioOutput* output()
-	{
-		return _output;
-	}
-	void setInputTrack(AudioInput* in)
-	{
-		_input = in;
-	}
-	AudioInput* input()
-	{
-		return _input;
-	}
-
-};
-
-//---------------------------------------------------------
-//   AudioAux
-//---------------------------------------------------------
-
-class AudioAux : public AudioTrack
-{
-    float* buffer[MAX_CHANNELS];
-
-public:
-    AudioAux();
-
-    AudioAux* clone(bool /*cloneParts*/) const
-    {
-        return new AudioAux(*this);
-    }
-    ~AudioAux();
-
-    virtual AudioAux* newTrack() const
-    {
-        return new AudioAux();
-    }
-    virtual void read(Xml&);
-    virtual void write(int, Xml&) const;
-    virtual bool getData(unsigned, int, unsigned, float**);
-    virtual void setChannels(int n);
-
-    float** sendBuffer()
-    {
-        return buffer;
-    }
-
-    virtual bool isMute() const
-    {
-            return _mute;
-    }
-};
-
-//---------------------------------------------------------
 //   WaveTrack
 //---------------------------------------------------------
 
 class WaveTrack : public AudioTrack
 {
     Fifo _prefetchFifo; // prefetch Fifo
-	AudioInput* _input;
-	AudioOutput* _output;
+    AudioInput* _input;
+    AudioOutput* _output;
 
 public:
     static bool firstWaveTrack;
@@ -1131,30 +1000,30 @@ public:
         return true;
     }
 
-	void setOutputTrack(AudioOutput* out)
-	{
-		_output = out;
-	}
-	AudioOutput* output()
-	{
-		return _output;
-	}
-	void setInputTrack(AudioInput* in)
-	{
-		_input = in;
-	}
-	AudioInput* input()
-	{
-		return _input;
-	}
+    void setOutputTrack(AudioOutput* out)
+    {
+        _output = out;
+    }
+    AudioOutput* output()
+    {
+        return _output;
+    }
+    void setInputTrack(AudioInput* in)
+    {
+        _input = in;
+    }
+    AudioInput* input()
+    {
+        return _input;
+    }
 
-	void calculateCrossFades();
+    void calculateCrossFades();
 
-	bool leftEdgeOnTopOfPartBelow(WavePart* topPart, WavePart* bottomPart);
-	bool rightEdgeOnTopOfPartBelow(WavePart* topPart, WavePart* bottomPart);
-	bool leftAndRightEdgeOnTopOfPartBelow(WavePart* topPart, WavePart* bottomPart);
-	QList<WavePart*> partsBelowLeftEdge(WavePart* part);
-	QList<WavePart*> partsBelowRightEdge(WavePart* part);
+    bool leftEdgeOnTopOfPartBelow(WavePart* topPart, WavePart* bottomPart);
+    bool rightEdgeOnTopOfPartBelow(WavePart* topPart, WavePart* bottomPart);
+    bool leftAndRightEdgeOnTopOfPartBelow(WavePart* topPart, WavePart* bottomPart);
+    QList<WavePart*> partsBelowLeftEdge(WavePart* part);
+    QList<WavePart*> partsBelowRightEdge(WavePart* part);
 };
 
 //---------------------------------------------------------
@@ -1367,14 +1236,6 @@ typedef tracklist<AudioInput*> InputList;
 typedef tracklist<AudioOutput*>::iterator iAudioOutput;
 typedef tracklist<AudioOutput*>::const_iterator ciAudioOutput;
 typedef tracklist<AudioOutput*> OutputList;
-
-typedef tracklist<AudioBuss*>::iterator iAudioBuss;
-typedef tracklist<AudioBuss*>::const_iterator ciAudioBuss;
-typedef tracklist<AudioBuss*> GroupList;
-
-typedef tracklist<AudioAux*>::iterator iAudioAux;
-typedef tracklist<AudioAux*>::const_iterator ciAudioAux;
-typedef tracklist<AudioAux*> AuxList;
 
 extern void addPortCtrlEvents(MidiTrack* t);
 extern void removePortCtrlEvents(MidiTrack* t);

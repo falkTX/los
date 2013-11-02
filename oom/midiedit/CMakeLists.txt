@@ -23,17 +23,16 @@
 ##
 QT4_WRAP_CPP ( midiedit_mocs
       EventCanvas.h
-      Piano.h 
-      Performer.h 
-      PerformerCanvas.h 
-      quantconfig.h 
+      Piano.h
+      Performer.h
+      PerformerCanvas.h
+      quantconfig.h
       )
 
 ##
 ## List of source files to compile
 ##
 file (GLOB midiedit_source_files
-	  drummap.cpp
       EventCanvas.cpp
       Piano.cpp
       Performer.cpp
@@ -76,12 +75,5 @@ target_link_libraries ( midiedit
       icons
       widgets
       ctrl
-	  core
+      core
       )
-
-##
-## Install location
-##
-#install(TARGETS midiedit
-#     DESTINATION ${OOMidi_MODULES_DIR}
-#     )

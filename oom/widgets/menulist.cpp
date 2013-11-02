@@ -40,15 +40,7 @@ QWidget* MenuList::createWidget(QWidget* parent)
 	MidiTrack* track = (MidiTrack*) _track;
 
 	MidiDevice* md = 0;
-	int port = -1;
-	if (track->type() == Track::AUDIO_SOFTSYNTH)
-	{
-		md = dynamic_cast<MidiDevice*> (track);
-		if (md)
-			port = md->midiPort();
-	}
-	else
-		port = track->outPort();
+    int port = track->outPort();
 	list = new QListWidget(parent);
 	list->setSelectionMode(QAbstractItemView::SingleSelection);
 	list->setAlternatingRowColors(true);

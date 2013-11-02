@@ -32,15 +32,15 @@ struct Patch
 {
     signed char typ; // 1 - GM  2 - GS  4 - XG
     signed char hbank, lbank, prog;
-	QList<int> keys, keyswitches;
+    QList<int> keys, keyswitches;
     QString name;
-	int loadmode;
-	QString engine;
-	QString filename;
-	int index;
-	float volume;
+    int loadmode;
+    QString engine;
+    QString filename;
+    int index;
+    float volume;
     bool drum;
-	QHash<int, QString> comments;
+    QHash<int, QString> comments;
     void read(Xml&);
     void write(int level, Xml&);
 };
@@ -57,7 +57,7 @@ struct PatchGroup
 {
     QString name;
     PatchList patches;
-	int id;
+    int id;
     void read(Xml&);
 };
 
@@ -75,20 +75,20 @@ struct SysEx
 
 struct KeyMap
 {
-	int program;
-	QString pname;
-	int key;
-	QString comment;
-	bool hasProgram;
-	inline bool operator==(KeyMap km)
-	{
-		return km.key == key && km.program == program && km.comment == comment;
-	}
-	inline uint qHash(KeyMap km)
-	{
-		return km.program ^ km.key;
-	}
-	void read(Xml&);
+    int program;
+    QString pname;
+    int key;
+    QString comment;
+    bool hasProgram;
+    inline bool operator==(KeyMap km)
+    {
+        return km.key == key && km.program == program && km.comment == comment;
+    }
+    inline uint qHash(KeyMap km)
+    {
+        return km.program ^ km.key;
+    }
+    void read(Xml&);
     void write(int level, Xml&);
 };
 
@@ -101,12 +101,11 @@ class MidiInstrument
     PatchGroupList pg;
     MidiControllerList* _controller;
     QList<SysEx*> _sysex;
-	QHash<int, KeyMap*> m_keymaps;
+    QHash<int, KeyMap*> m_keymaps;
     bool _dirty;
     int _nullvalue;
-	bool m_oomInstrument;
-	double m_panValue;
-	double m_verbValue;
+    double m_panValue;
+    double m_verbValue;
 
     void init();
 
@@ -133,55 +132,43 @@ public:
         _name = txt;
     }
 
-	Patch* getDefaultPatch();
+    KeyMap* newKeyMap(int key)
+    {
+        if(m_keymaps.contains(key))
+        {
+            return keymap(key);
+        }
+        else
+        {
+            KeyMap *km = new KeyMap;
+            km->key = key;
+            km->hasProgram = false;
+            m_keymaps.insert(key, km);
+            return km;
+        }
+    }
+    bool hasMapping(int key)
+    {
+        if(m_keymaps.isEmpty())
+        {
+            return false;
+        }
+        return m_keymaps.contains(key);
+    }
+    KeyMap* keymap(int key)
+    {
+        if(hasMapping(key))
+            return m_keymaps.value(key);
+        else
+        {
+            return newKeyMap(key);;
+        }
+    }
 
-	KeyMap* newKeyMap(int key)
-	{
-		if(m_keymaps.contains(key))
-		{
-			return keymap(key);
-		}
-		else
-		{
-			KeyMap *km = new KeyMap;
-			km->key = key;
-			km->hasProgram = false;
-			m_keymaps.insert(key, km);
-			return km;
-		}
-	}
-	bool hasMapping(int key)
-	{
-		if(m_keymaps.isEmpty())
-		{
-			return false;
-		}
-		return m_keymaps.contains(key);
-	}
-	KeyMap* keymap(int key)
-	{
-		if(hasMapping(key))
-			return m_keymaps.value(key);
-		else
-		{
-			return newKeyMap(key);;
-		}
-	}
-	
-	QHash<int, KeyMap*> *keymaps()
-	{
-		return &m_keymaps;
-	}
-
-	bool isOOMInstrument()
-	{
-		return m_oomInstrument;
-	}
-
-	void setOOMInstrument(bool val)
-	{
-		m_oomInstrument = val;
-	}
+    QHash<int, KeyMap*> *keymaps()
+    {
+        return &m_keymaps;
+    }
 
     // Assign will 'delete' all existing patches and groups from the instrument.
     MidiInstrument& assign(const MidiInstrument&);
@@ -196,7 +183,7 @@ public:
         _filePath = s;
     }
 
-	bool fileSave();
+    bool fileSave();
 
     bool dirty() const
     {
@@ -279,10 +266,10 @@ public:
     }
 
     virtual void reset(int, MType);
-    virtual QString getPatchName(int, int, MType, bool);
-    virtual Patch* getPatch(int, int, MType, bool);
-    virtual void populatePatchPopup(QMenu*, int, MType, bool);
-	virtual void populatePatchModel(QStandardItemModel*, int, MType, bool);
+    virtual QString getPatchName(int, int, MType);
+    virtual Patch* getPatch(int, int, MType);
+    virtual void populatePatchPopup(QMenu*, int, MType);
+    virtual void populatePatchModel(QStandardItemModel*, int, MType);
     void read(Xml&);
     void write(int level, Xml&);
 
@@ -290,22 +277,22 @@ public:
     {
         return &pg;
     }
-	void setDefaultPan(double p)
-	{
-		m_panValue = p;
-	}
-	void setDefaultVerb(double v)
-	{
-		m_verbValue = v;
-	}
-	double defaultPan()
-	{
-		return m_panValue;
-	}
-	double defaultVerb()
-	{
-		return m_verbValue;
-	}
+    void setDefaultPan(double p)
+    {
+        m_panValue = p;
+    }
+    void setDefaultVerb(double v)
+    {
+        m_verbValue = v;
+    }
+    double defaultPan()
+    {
+        return m_panValue;
+    }
+    double defaultVerb()
+    {
+        return m_verbValue;
+    }
 };
 
 //---------------------------------------------------------

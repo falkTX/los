@@ -92,9 +92,8 @@ private slots:
     void patchSelectionChanged(QItemSelection, QItemSelection);
     void editorPartChanged(Part*);
     void transposeStateChanged(bool);
-	void toggleSynthGui(bool);
-	void instrumentChangeRequested(qint64, const QString&, int);
-	void generateInstrumentMenu();
+    void instrumentChangeRequested(qint64, const QString&, int);
+    void generateInstrumentMenu();
 
 protected slots:
     virtual void heartBeat();
@@ -132,15 +131,15 @@ public:
     ~Conductor();
 
     Track* track() const {
-	return selected;
+    return selected;
     }
     QTableView* getView() const
     {
-	    return tableView;
+        return tableView;
     }
     QTreeView* getPatchListview() const
     {
-	    return patchList;
+        return patchList;
     }
     void updateConductor(int);
     void setSolo(bool val);

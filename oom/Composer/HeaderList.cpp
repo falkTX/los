@@ -711,12 +711,8 @@ void HeaderList::mousePressEvent(QMouseEvent* ev) //{{{
 		wave->setData(Track::WAVE);
 		QAction* aoutput = p->addAction(*addOutputIcon, tr("Add Output"));
 		aoutput->setData(Track::AUDIO_OUTPUT);
-		QAction* agroup = p->addAction(*addBussIcon, tr("Add Buss"));
-		agroup->setData(Track::AUDIO_BUSS);
 		QAction* ainput = p->addAction(*addInputIcon, tr("Add Input"));
 		ainput->setData(Track::AUDIO_INPUT);
-		QAction* aaux = p->addAction(*addAuxIcon, tr("Add Aux Send"));
-		aaux->setData(Track::AUDIO_AUX);
 
 		// Show the menu
 		QAction* act = p->exec(ev->globalPos(), 0);
@@ -726,7 +722,7 @@ void HeaderList::mousePressEvent(QMouseEvent* ev) //{{{
 		{
 			int n = act->data().toInt();
 			// Valid item?
-            if (n >= 0 && ((Track::TrackType)n != Track::AUDIO_SOFTSYNTH))
+            if (n >= 0)
 			{
 				CreateTrackDialog *ctdialog = new CreateTrackDialog(n, -1, this);
 				connect(ctdialog, SIGNAL(trackAdded(qint64)), this, SLOT(newTrackAdded(qint64)));

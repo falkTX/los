@@ -442,7 +442,6 @@ void ComposerCanvas::viewMouseDoubleClickEvent(QMouseEvent* event)
 			switch (track->type())
 			{
 				case Track::MIDI:
-				case Track::DRUM:
 				{
 					MidiPart* part = new MidiPart((MidiTrack*) track);
                     part->setTick(_pos[1]);
@@ -458,9 +457,6 @@ void ComposerCanvas::viewMouseDoubleClickEvent(QMouseEvent* event)
 				case Track::WAVE:
 				case Track::AUDIO_OUTPUT:
 				case Track::AUDIO_INPUT:
-				case Track::AUDIO_BUSS:
-				case Track::AUDIO_AUX:
-				case Track::AUDIO_SOFTSYNTH:
 					break;
 			}
 		}
@@ -776,7 +772,6 @@ CItem* ComposerCanvas::addPartAtCursor(Track* track)
 	switch (track->type())
 	{
 		case Track::MIDI:
-		case Track::DRUM:
 			pa = new MidiPart((MidiTrack*) track);
 			pa->setTick(pos);
 			pa->setLenTick(8000);
@@ -788,9 +783,6 @@ CItem* ComposerCanvas::addPartAtCursor(Track* track)
 			//break;
 		case Track::AUDIO_OUTPUT:
 		case Track::AUDIO_INPUT:
-		case Track::AUDIO_BUSS:
-		case Track::AUDIO_AUX:
-		case Track::AUDIO_SOFTSYNTH:
 			return 0;
 	}
 	pa->setName(track->name());
@@ -823,7 +815,6 @@ CItem* ComposerCanvas::newItem(const QPoint& pos, int)
 	switch (track->type())
 	{
 		case Track::MIDI:
-		case Track::DRUM:
 			pa = new MidiPart((MidiTrack*) track);
 			pa->setTick(x);
 			pa->setLenTick(0);
@@ -834,10 +825,7 @@ CItem* ComposerCanvas::newItem(const QPoint& pos, int)
 			//pa->setLenTick(0);
 			//break;
 		case Track::AUDIO_OUTPUT:
-		case Track::AUDIO_INPUT:
-		case Track::AUDIO_BUSS:
-		case Track::AUDIO_AUX:
-		case Track::AUDIO_SOFTSYNTH:
+        case Track::AUDIO_INPUT:
 			return 0;
 	}
 	pa->setName(track->name());
@@ -999,16 +987,6 @@ QMenu* ComposerCanvas::genItemPopup(CItem* item)/*{{{*/
 			act_mexport->setData(16);
 		}
 			break;
-		case Track::DRUM:
-		{
-			QAction *act_dlist = partPopup->addAction(QIcon(*edit_listIcon), tr("List"));
-			act_dlist->setData(12);
-			QAction *act_drums = partPopup->addAction(QIcon(*edit_drummsIcon), tr("Drums"));
-			act_drums->setData(13);
-			QAction *act_dexport = partPopup->addAction(tr("Export"));
-			act_dexport->setData(16);
-		}
-			break;
 		case Track::WAVE:
 		{
 // the wave editor is destructive, don't us it anymore!
@@ -1021,10 +999,7 @@ QMenu* ComposerCanvas::genItemPopup(CItem* item)/*{{{*/
 		}
 			break;
 		case Track::AUDIO_OUTPUT:
-		case Track::AUDIO_INPUT:
-		case Track::AUDIO_BUSS:
-		case Track::AUDIO_AUX:
-		case Track::AUDIO_SOFTSYNTH:
+        case Track::AUDIO_INPUT:
 			break;
 	}
 
@@ -2452,10 +2427,6 @@ void ComposerCanvas::keyPress(QKeyEvent* event)/*{{{*/
 
 		switch (track->type())
 		{
-			case Track::DRUM:
-				type = 3;
-				break;
-
 			case Track::WAVE:
 				type = 4;
 				break;
@@ -2463,9 +2434,6 @@ void ComposerCanvas::keyPress(QKeyEvent* event)/*{{{*/
 			case Track::MIDI:
 			case Track::AUDIO_OUTPUT:
 			case Track::AUDIO_INPUT:
-			case Track::AUDIO_BUSS:
-			case Track::AUDIO_AUX:
-			case Track::AUDIO_SOFTSYNTH: //TODO
 				break;
 		}
 		emit startEditor(pl, type);

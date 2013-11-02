@@ -331,21 +331,7 @@ void AudioPortConfig::trackSelectionChanged()
 					insertInputs();
 					//newDstList->addItem(Route(track, -1).name());
 				break;
-				case Track::AUDIO_AUX:
-					newSrcList->clear();
-					for(iTrack t = song->tracks()->begin(); t != song->tracks()->end(); ++t)
-					{
-						if((*t)->isMidiTrack())
-							continue;
-						AudioTrack* track = (AudioTrack*) (*t);
-						if(track->name() == atrack->name())
-							continue; //You cant connect a track to itself
-						if(track->type() ==  Track::AUDIO_BUSS || track->type() == Track::AUDIO_OUTPUT)
-							newDstList->addItem(Route(track, -1).name());
-						//newDstList->addItem(Route(track, -1).name());
-					}
-				break;
-				case Track::AUDIO_INPUT:
+                case Track::AUDIO_INPUT:
 					for(iTrack t = song->tracks()->begin(); t != song->tracks()->end(); ++t)
 					{
 						if((*t)->isMidiTrack())
@@ -356,7 +342,6 @@ void AudioPortConfig::trackSelectionChanged()
 						switch(track->type())
 						{
 							case Track::AUDIO_OUTPUT:
-							case Track::AUDIO_BUSS:
 							case Track::WAVE:
 								newDstList->addItem(Route(track, -1).name());
 							break;
@@ -378,51 +363,9 @@ void AudioPortConfig::trackSelectionChanged()
 						{
 							newSrcList->addItem(Route(track, -1).name());
 						}
-						else if(track->type() == Track::AUDIO_OUTPUT || track->type() == Track::AUDIO_BUSS)
+                        else if(track->type() == Track::AUDIO_OUTPUT)
 						{
 							newDstList->addItem(Route(track, -1).name());
-						}
-					}
-				break;
-				case Track::AUDIO_BUSS:
-					for(iTrack t = song->tracks()->begin(); t != song->tracks()->end(); ++t)
-					{
-						if((*t)->isMidiTrack())
-							continue;
-						AudioTrack* track = (AudioTrack*) (*t);
-						if(track->name() == atrack->name())
-							continue; //You cant connect a track to itself
-						if(track->type() == Track::AUDIO_INPUT || track->type() == Track::WAVE || track->type() == Track::AUDIO_SOFTSYNTH)
-						{
-							//for (int channel = 0; channel < track->channels(); ++channel)
-							//{
-								newSrcList->addItem(Route(track, -1).name());
-							//}
-						}
-						else if(track->type() == Track::AUDIO_OUTPUT)
-						{
-							//for (int channel = 0; channel < track->channels(); ++channel)
-							//{
-								newDstList->addItem(Route(track, -1).name());
-							//}
-						}
-					}
-				break;
-				case Track::AUDIO_SOFTSYNTH:
-					newSrcList->clear();
-					for(iTrack t = song->tracks()->begin(); t != song->tracks()->end(); ++t)
-					{
-						if((*t)->isMidiTrack())
-							continue;
-						AudioTrack* track = (AudioTrack*) (*t);
-						if(track->name() == atrack->name())
-							continue; //You cant connect a track to itself
-						if(track->type() == Track::AUDIO_OUTPUT || track->type() == Track::AUDIO_BUSS)
-						{
-							//for (int channel = 0; channel < track->channels(); ++channel)
-							//{
-								newDstList->addItem(Route(track, -1).name());
-							//}
 						}
 					}
 				break;

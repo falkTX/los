@@ -29,7 +29,7 @@ void ProgramChangeTable::dropEvent(QDropEvent *evt)
 	{
 		evt->setDropAction(Qt::MoveAction);
 		ProgramChangeTableModel* m = (ProgramChangeTableModel*) model();
-		QRect r = frameRect();
+        //QRect r = frameRect();
 		QModelIndex index = indexAt(evt->pos());
 		QString t = evt->mimeData()->text();
 		int srow = t.toInt();

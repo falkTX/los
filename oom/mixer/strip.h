@@ -34,7 +34,6 @@ class QSPacerItem;
 class QTabWidget;
 class QPixmap;
 class QColor;
-class TrackEffects;
 
 static const int STRIP_WIDTH = 65;
 
@@ -46,32 +45,30 @@ class Strip : public QFrame
 {
     Q_OBJECT
 
-	void layoutUi();
-	QPixmap topRack;
-	QPixmap topRackLarge;
-	QPixmap bottomRack;
-	QPixmap bottomRackLarge;
+    void layoutUi();
+    QPixmap topRack;
+    QPixmap topRackLarge;
+    QPixmap bottomRack;
+    QPixmap bottomRackLarge;
     QWidget *m_buttonBase;
     QWidget *m_mixerBase;
     QWidget *m_vuBase;
     QWidget *m_panBase;
-    QFrame *m_auxBase;
 
 protected:
     Track* track;
-	int m_type;
+    int m_type;
 
     QVBoxLayout *m_mainVBoxLayout;
     QLabel *label;
     QLabel *toprack;
-	QLabel *brack;
+    QLabel *brack;
     QHBoxLayout *horizontalLayout;
     QVBoxLayout *m_mixerBox;
     QHBoxLayout *horizontalLayout_2;
     QHBoxLayout *m_vuBox;
     QVBoxLayout *m_buttonBox;
 
-    QToolButton *m_btnAux;
     QToolButton *m_btnStereo;
     QToolButton *m_btnIRoute;
     QToolButton *m_btnORoute;
@@ -82,37 +79,28 @@ protected:
     QToolButton *m_btnSolo;
     QVBoxLayout *m_panBox;
     QVBoxLayout *m_autoBox;
-    //QScrollArea *m_auxScroll;
-    //QVBoxLayout *m_auxBox;
-	//QTabWidget* m_tabWidget;
-	//QWidget *m_auxTab;
-	//QVBoxLayout *m_auxTabLayout;
-	//QWidget *m_fxTab;
-    //QVBoxLayout *rackBox;
-	TrackEffects* m_effectsRack;
 
     int _curGridRow;
     Meter* meter[MAX_CHANNELS];
     bool useSoloIconSet2;
 
-	bool hasRecord;
-	bool hasAux;
-	bool hasStereo;
-	bool hasIRoute;
-	bool hasORoute;
-	bool m_collapsed;
+    bool hasRecord;
+    bool hasStereo;
+    bool hasIRoute;
+    bool hasORoute;
+    bool m_collapsed;
 
     QGridLayout* sliderGrid;
     ComboBox* autoType;
-	QColor m_sliderBg;
+    QColor m_sliderBg;
     void setLabelText();
-	virtual void trackChanged() = 0;
+    virtual void trackChanged() = 0;
 
 private slots:
     void recordToggled(bool);
     void soloToggled(bool);
     void muteToggled(bool);
-	//void tabChanged(int);
+    //void tabChanged(int);
 
 protected slots:
     virtual void heartBeat();
@@ -120,7 +108,6 @@ protected slots:
 
 public slots:
     void resetPeaks();
-	virtual void toggleAuxPanel(bool);
     virtual void songChanged(int) = 0;
 
 public:
@@ -133,9 +120,9 @@ public:
         return track;
     }
 
-	bool setTrack(Track* t);
+    bool setTrack(Track* t);
     void setLabelFont();
-	int type(){return m_type;};
+    int type(){return m_type;};
 };
 
 #endif

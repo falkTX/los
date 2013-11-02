@@ -36,7 +36,7 @@ typedef struct pnode
 
 class MidiPort
 {
-	qint64 m_portId;
+    qint64 m_portId;
     MidiCtrlValListList* _controller;
     MidiDevice* _device;
     QString _state; // result of device open
@@ -51,7 +51,7 @@ class MidiPort
     int _defaultInChannels; // These are bit-wise channel masks.
     int _defaultOutChannels; //
 
-	QHash<int, QString>  m_presets;
+    QHash<int, QString>  m_presets;
 
     RouteList _inRoutes, _outRoutes;
 
@@ -69,16 +69,16 @@ public:
     {
         return _controller;
     }
-	qint64 id()
-	{
-		return m_portId;
-	}
-	//FIXME: To be removed when MidiPort::read is implemented
-	void setPortId(qint64 id)
-	{
-		if(id)
-			m_portId = id;
-	}
+    qint64 id()
+    {
+        return m_portId;
+    }
+    //FIXME: To be removed when MidiPort::read is implemented
+    void setPortId(qint64 id)
+    {
+        if(id)
+            m_portId = id;
+    }
     int getCtrl(int ch, int tick, int ctrl) const;
     int getCtrl(int ch, int tick, int ctrl, Part* part) const;
     // Removed by T356.
@@ -135,7 +135,6 @@ public:
     void tryCtrlInitVal(int chan, int ctl, int val);
     int limitValToInstrCtlRange(int ctl, int val);
     int limitValToInstrCtlRange(MidiController* mc, int val);
-    MidiController* drumController(int ctl);
     int nullSendValue();
     void setNullSendValue(int v);
     void addPatchSequence(PatchSequence*);
@@ -209,7 +208,7 @@ public:
     void sendMMCDeferredPlay(int devid = -1);
 
     //bool sendEvent(const MidiPlayEvent&);
-	bool sendEvent(const MidiPlayEvent&, bool forceSend = false );
+    bool sendEvent(const MidiPlayEvent&, bool forceSend = false );
 
     AutomationType automationType(int channel)
     {
@@ -226,26 +225,26 @@ public:
         return _syncInfo;
     }
 
-	void addPreset(int i, QString p) { m_presets.insert(i, p); }
-	bool hasPreset(int i)
-	{
-		return (!m_presets.isEmpty() && m_presets.contains(i));
-	}
-	//Return the preset sysex value as QString, returns an empty QString if there is no such preset.
-	QString preset(int i) { 
-		QString def;
-		if(!hasPreset(i))
-			return def;
-		return m_presets.value(i);
-	}
-	void removePreset(int i)
-	{
-		if(hasPreset(i))
-		{
-			m_presets.remove(i);
-		}
-	}
-	QHash<int, QString> * presets() { return &m_presets; }
+    void addPreset(int i, QString p) { m_presets.insert(i, p); }
+    bool hasPreset(int i)
+    {
+        return (!m_presets.isEmpty() && m_presets.contains(i));
+    }
+    //Return the preset sysex value as QString, returns an empty QString if there is no such preset.
+    QString preset(int i) {
+        QString def;
+        if(!hasPreset(i))
+            return def;
+        return m_presets.value(i);
+    }
+    void removePreset(int i)
+    {
+        if(hasPreset(i))
+        {
+            m_presets.remove(i);
+        }
+    }
+    QHash<int, QString> * presets() { return &m_presets; }
 };
 
 extern MidiPort midiPorts[MIDI_PORTS];

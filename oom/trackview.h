@@ -85,7 +85,7 @@ public:
 	TrackView(const TrackView&);
 	TrackView& operator=(const TrackView& g);
 	//TrackView* clone();
-	~TrackView();
+    virtual ~TrackView();
 	qint64 id() { return m_id; }
 	static QString getValidName(QString, bool temp = false);
 	

@@ -65,7 +65,7 @@ void MixerView::populateTable(int flag, bool startup)/*{{{*/
 		_autoTableModel->clear();
 		int icon_index = 0;
 		QList<int> list;
-		list << Track::MIDI << Track::AUDIO_INPUT << Track::AUDIO_OUTPUT << Track::AUDIO_BUSS << Track::AUDIO_AUX << Track::WAVE;
+        list << Track::MIDI << Track::AUDIO_INPUT << Track::AUDIO_OUTPUT << Track::WAVE;
 		idlist = song->autoTrackViewIndexList();
 		tvlist = song->autoviews();
 		for(int i = 0; i < idlist->size(); ++i)
@@ -257,8 +257,6 @@ void MixerView::updateTrackList()/*{{{*/
 						switch((*t)->type())/*{{{*/
 						{
 							case Track::MIDI:
-							case Track::DRUM:
-							case Track::AUDIO_SOFTSYNTH:
 							case Track::WAVE:
 								if(view->id() == song->workingViewId())
 								{
@@ -279,30 +277,6 @@ void MixerView::updateTrackList()/*{{{*/
 									m_tracklist.push_back((*t));
 								}
 								else if(view->id() == song->commentViewId() && (*t)->id() != song->masterId())
-								{
-									if((*t)->comment().isEmpty())
-										break;
-									m_tracklist.push_back((*t));
-								}
-								break;
-							case Track::AUDIO_BUSS:
-								if(view->id() == song->bussViewId())
-								{
-									m_tracklist.push_back((*t));
-								}
-								else if(view->id() == song->commentViewId())
-								{
-									if((*t)->comment().isEmpty())
-										break;
-									m_tracklist.push_back((*t));
-								}
-								break;
-							case Track::AUDIO_AUX:
-								if(view->id() == song->auxViewId())
-								{
-									m_tracklist.push_back((*t));
-								}
-								else if(view->id() == song->commentViewId())
 								{
 									if((*t)->comment().isEmpty())
 										break;

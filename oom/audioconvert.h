@@ -38,7 +38,7 @@ protected:
 
 public:
     AudioConverter();
-    ~AudioConverter();
+    virtual ~AudioConverter();
 
     AudioConverter* reference();
     static AudioConverter* release(AudioConverter* cv);

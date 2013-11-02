@@ -95,7 +95,6 @@ SET(OOMidi_SHARE_DIR ${SHARE_INSTALL_PREFIX}/${OOMidi_INSTALL_NAME})
 ## Lib directory
 SET(OOMidi_LIB_DIR ${CMAKE_INSTALL_LIBDIR}/${OOMidi_INSTALL_NAME})
 
-option ( ENABLE_OSC          "Enable OSC (Open Sound Control)"                    ON)
 option ( UPDATE_TRANSLATIONS "Update source translation share/locale/*.ts files
          (WARNING: This will modify the .ts files in the source tree!!)"          OFF)
 
@@ -131,19 +130,6 @@ else (APPLE)
     PKG_CHECK_MODULES(ALSA REQUIRED alsa>=0.9.0)
     include_directories(${ALSA_INCLUDE_DIRS})
 endif (APPLE)
-
-##
-## check for liblo >= 0.23
-##
-if (ENABLE_OSC)
-    PKG_CHECK_MODULES(LIBLO liblo>=0.23)
-    if (LIBLO_FOUND)
-        include_directories(${LIBLO_INCLUDE_DIRS})
-        set(OSC_SUPPORT ON)
-    endif (LIBLO_FOUND)
-else (ENABLE_OSC)
-    message("OSC disabled")
-endif (ENABLE_OSC)
 
 ##
 ## find sndfile >= 1.0.0
@@ -310,7 +296,6 @@ add_custom_target(uninstall
 ##
 ## Show a summary of what we got
 ##
-summary_add("OSC (Liblo) support" OSC_SUPPORT)
 summary_show()
 
 ##

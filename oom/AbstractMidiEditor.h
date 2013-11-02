@@ -36,7 +36,6 @@ class AbstractMidiEditor : public TopWin
 
     PartList* _pl;
     std::list<int> _parts;
-    int _curDrumInstrument; // currently selected instrument if drum
     // editor
 protected:
     ScrollScale* hscroll;
@@ -55,18 +54,11 @@ protected:
 
 public slots:
     void songChanged(int type);
-    void setCurDrumInstrument(int instr);
-
-    virtual void updateHScrollRange()
-    {
-    };
-signals:
-    void curDrumInstrumentChanged(int);
+    virtual void updateHScrollRange() {}
 
 public:
-    AbstractMidiEditor(int, int, PartList*,
-            QWidget* parent = 0, const char* name = 0);
-    ~AbstractMidiEditor();
+    AbstractMidiEditor(int, int, PartList*, QWidget* parent = 0, const char* name = 0);
+    virtual ~AbstractMidiEditor();
 
 	bool hasPart(int sn);
 	void addPart(Part* p);
@@ -124,10 +116,6 @@ public:
         return _pl;
     }
 
-    int curDrumInstrument() const
-    {
-        return _curDrumInstrument;
-    }
     Part* curCanvasPart();
 	bool isEventSelected(Event e);
 	QList<Event> getSelectedEvents();

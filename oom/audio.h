@@ -17,8 +17,6 @@
 #include <QList>
 
 class SndFile;
-class BasePlugin;
-class SynthI;
 class MidiDevice;
 class AudioDevice;
 class Track;
@@ -54,21 +52,13 @@ enum
     SEQM_SET_HW_CTRL_STATES,
     SEQM_SET_TRACK_OUT_PORT,
     SEQM_SET_TRACK_OUT_CHAN,
-    SEQM_REMAP_PORT_DRUM_CTL_EVS,
-    SEQM_CHANGE_ALL_PORT_DRUM_CTL_EVS,
     SEQM_SCAN_ALSA_MIDI_PORTS,
-    SEQM_SET_AUX,
     SEQM_UPDATE_SOLO_STATES,
-    MIDI_SHOW_INSTR_GUI,
-    MIDI_SHOW_INSTR_NATIVE_GUI,
     AUDIO_RECORD,
     AUDIO_ROUTEADD, AUDIO_ROUTEREMOVE, AUDIO_REMOVEROUTES,
     AUDIO_VOL, AUDIO_PAN,
-    AUDIO_ADDPLUGIN,
-    AUDIO_IDLEPLUGIN,
     AUDIO_SET_SEG_SIZE,
     AUDIO_SET_PREFADER, AUDIO_SET_CHANNELS,
-    AUDIO_SET_PLUGIN_CTRL_VAL,
     AUDIO_SWAP_CONTROLLER_IDX,
     AUDIO_CLEAR_CONTROLLER_EVENTS,
     AUDIO_SEEK_PREV_AC_EVENT,
@@ -90,7 +80,7 @@ extern const char* seqMsgList[]; // for debug
 struct AudioMsg : public ThreadMsg
 { // this should be an union
     int serialNo;
-	qint64 sid;
+    qint64 sid;
     SndFile* downmix;
     AudioTrack* snode;
     AudioTrack* dnode;
@@ -99,8 +89,6 @@ struct AudioMsg : public ThreadMsg
     int ival;
     int iival;
     double dval;
-    BasePlugin* plugin;
-    SynthI* synth;
     Part* spart;
     Part* dpart;
     Track* track;
@@ -110,18 +98,18 @@ struct AudioMsg : public ThreadMsg
     char port, channel, ctrl;
     int a, b, c;
     Pos pos;
-	QList<qint64> list;
-	QList<Part*> plist;
-	QList<void*> objectList;
+    QList<qint64> list;
+    QList<Part*> plist;
+    QList<void*> objectList;
 };
 
 //---------------------------------------------------------
 //  Struct for controll preload processing
 //---------------------------------------------------------
 struct ProcessList {
-	int port;
-	int channel;
-	int dataB;
+    int port;
+    int channel;
+    int dataB;
 };
 
 class AudioOutput;
@@ -237,7 +225,7 @@ public:
 
     void msgRemoveTrack(Track*, bool u = true);
     void msgRemoveTracks();
-	void msgRemoveTrackGroup(QList<qint64>, bool undo = true);
+    void msgRemoveTrackGroup(QList<qint64>, bool undo = true);
     void msgChangeTrack(Track* oldTrack, Track* newTrack, bool u = true);
     void msgMoveTrack(int idx1, int dx2, bool u = true);
     void msgAddPart(Part*, bool u = true);
@@ -255,14 +243,11 @@ public:
     void msgAddTempo(int tick, int tempo, bool doUndoFlag = true);
     void msgSetTempo(int tick, int tempo, bool doUndoFlag = true);
     void msgUpdateSoloStates();
-    void msgSetAux(AudioTrack*, qint64, double);
     void msgSetGlobalTempo(int val);
     void msgDeleteTempo(int tick, int tempo, bool doUndoFlag = true);
     void msgDeleteTempoRange(QList<void*> tempo, bool doUndoFlag = true);
     void msgAddSig(int tick, int z, int n, bool doUndoFlag = true);
     void msgRemoveSig(int tick, int z, int n, bool doUndoFlag = true);
-    void msgShowInstrumentGui(MidiInstrument*, bool);
-    void msgShowInstrumentNativeGui(MidiInstrument*, bool);
     void msgPanic();
     void sendMsg(AudioMsg*, bool waitRead = true);
     bool sendMessage(AudioMsg* m, bool doUndo, bool waitRead = true);
@@ -272,13 +257,9 @@ public:
     void msgRemoveRoutes1(Route, Route); // p3.3.55
     void msgAddRoute(Route, Route);
     void msgAddRoute1(Route, Route);
-    void msgAddPlugin(AudioTrack*, int idx, BasePlugin* plugin);
-    void msgIdlePlugin(AudioTrack*, BasePlugin* plugin);
     void msgSetMute(AudioTrack*, bool val);
     void msgSetVolume(AudioTrack*, double val);
     void msgSetPan(AudioTrack*, double val);
-    void msgAddSynthI(SynthI* synth);
-    void msgRemoveSynthI(SynthI* synth);
     void msgSetSegSize(int, int);
     void msgSetPrefader(AudioTrack*, int);
     void msgSetChannels(AudioTrack*, int);
@@ -291,8 +272,6 @@ public:
     void msgResetMidiDevices();
     void msgIdle(bool);
     void msgBounce();
-    //void msgSetPluginCtrlVal(BasePlugin* /*plugin*/, int /*param*/, double /*val*/);
-    void msgSetPluginCtrlVal(AudioTrack*, int /*param*/, double /*val*/, bool waitRead = true);
     void msgSwapControllerIDX(AudioTrack*, int, int);
     void msgClearControllerEvents(AudioTrack*, int);
     void msgSeekPrevACEvent(AudioTrack*, int);
@@ -305,8 +284,6 @@ public:
     void msgSetHwCtrlStates(MidiPort*, int, int, int, int);
     void msgSetTrackOutChannel(MidiTrack*, int);
     void msgSetTrackOutPort(MidiTrack*, int);
-    void msgRemapPortDrumCtlEvents(int, int, int, int);
-    void msgChangeAllPortDrumCtrlEvents(bool, bool);
     void msgSetSendMetronome(AudioTrack*, bool);
 
     void msgPlayMidiEvent(const MidiPlayEvent* event);

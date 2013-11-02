@@ -50,35 +50,33 @@ class AudioMixer : public QMainWindow
     Q_OBJECT
 
     DockList m_dockList;
-	QScrollArea* m_view;
-	QSplitter* m_splitter;
-	QComboBox* m_cmbRows;
-	MixerView *m_mixerView;
-	QPushButton* m_btnAux;
+    QScrollArea* m_view;
+    QSplitter* m_splitter;
+    QComboBox* m_cmbRows;
+    MixerView *m_mixerView;
 
-	TrackList* m_tracklist;
-	void getRowCount(int, int, int&, int&);
+    TrackList* m_tracklist;
+    void getRowCount(int, int, int&, int&);
 
 protected:
     virtual void closeEvent(QCloseEvent*);
-	virtual void hideEvent(QHideEvent*);
-	virtual void showEvent(QShowEvent*);
-	virtual void resizeEvent(QResizeEvent*);
+    virtual void hideEvent(QHideEvent*);
+    virtual void showEvent(QShowEvent*);
+    virtual void resizeEvent(QResizeEvent*);
 
 signals:
-	void closed();
+    void closed();
 
 private slots:
     void songChanged(int);
     void configChanged();
-    void toggleAuxRack(bool);
     void updateMixer(int);
-	void trackListChanged(TrackList* list);
+    void trackListChanged(TrackList* list);
 
 public:
     AudioMixer(const QString&, QWidget* parent = 0);
     ~AudioMixer();
-	TrackList* tracklist() { return m_tracklist; }
+    TrackList* tracklist() { return m_tracklist; }
     void clear();
 };
 

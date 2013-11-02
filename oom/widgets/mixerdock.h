@@ -31,55 +31,51 @@ class Track;
 typedef std::list<Strip*> StripList;
 enum MixerMode
 {
-	DOCKED, //docked as part of the main application
-	MASTER, //contains the master strip in the mixer
-	PANE  //Just a row in the main mixer <dumb mode>
+    DOCKED, //docked as part of the main application
+    MASTER, //contains the master strip in the mixer
+    PANE  //Just a row in the main mixer <dumb mode>
 };
 
 class MixerDock : public QFrame
 {
-	Q_OBJECT
+    Q_OBJECT
 
     StripList stripList;
     QScrollArea* view;
     QFrame* central;
     QHBoxLayout* m_mixerBox;
-	QVBoxLayout* m_adminBox;
+    QVBoxLayout* m_adminBox;
     QHBoxLayout* m_dockButtonBox;
     QHBoxLayout* layout;
     QHBoxLayout* m_masterBox;
-	Strip* masterStrip;
+    Strip* masterStrip;
     AudioPortConfig* routingDialog;
-	QToolButton* m_btnAux;
-	QToolButton* m_btnVUColor;
-	QToolButton* m_btnFadeClipping;
-	TrackList* m_tracklist;
-	MixerMode m_mode;
-	QAction* m_auxAction; 
-	QAction* m_vuColorAction; 
-	QAction* m_fadeClippingAction; 
-	bool loading;
+    QToolButton* m_btnVUColor;
+    QToolButton* m_btnFadeClipping;
+    TrackList* m_tracklist;
+    MixerMode m_mode;
+    QAction* m_vuColorAction;
+    QAction* m_fadeClippingAction;
+    bool loading;
 
-	int oldAuxsSize;
-	void layoutUi();
-	
+    void layoutUi();
+
 public:
-	MixerDock(QWidget *parent = 0);
-	MixerDock(MixerMode, QWidget *parent = 0 );
-	~MixerDock();
-	void setTracklist(TrackList* list);
-	TrackList* tracklist();
-	
+    MixerDock(QWidget *parent = 0);
+    MixerDock(MixerMode, QWidget *parent = 0 );
+    ~MixerDock();
+    void setTracklist(TrackList* list);
+    TrackList* tracklist();
+
 public slots:
-	void songChanged(int);
+    void songChanged(int);
     void configChanged();
-	void toggleAuxRack(bool);
-	void generateVUColorMenu();
-	void updateConnections(bool);
-	void composerViewChanged();
-	void scrollSelectedToView(qint64);
+    void generateVUColorMenu();
+    void updateConnections(bool);
+    void composerViewChanged();
+    void scrollSelectedToView(qint64);
     void clear();
-	
+
 protected:
     void addStrip(Track*, int);
     void showAudioPortConfig(bool);

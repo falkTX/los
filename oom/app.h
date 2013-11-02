@@ -91,30 +91,30 @@ class OOMidi : public QMainWindow
     Q_OBJECT
     enum
     {
-	CMD_CUT, CMD_COPY, CMD_PASTE, CMD_INSERT, CMD_INSERTMEAS, CMD_PASTE_CLONE,
-	CMD_PASTE_TO_TRACK, CMD_PASTE_CLONE_TO_TRACK, CMD_DELETE,
-	CMD_SELECT_ALL, CMD_SELECT_NONE, CMD_SELECT_INVERT,
-	CMD_SELECT_ILOOP, CMD_SELECT_OLOOP, CMD_SELECT_PARTS,
-	CMD_FOLLOW_NO, CMD_FOLLOW_JUMP, CMD_FOLLOW_CONTINUOUS,
-	CMD_DELETE_TRACK, CMD_SELECT_ALL_TRACK
+    CMD_CUT, CMD_COPY, CMD_PASTE, CMD_INSERT, CMD_INSERTMEAS, CMD_PASTE_CLONE,
+    CMD_PASTE_TO_TRACK, CMD_PASTE_CLONE_TO_TRACK, CMD_DELETE,
+    CMD_SELECT_ALL, CMD_SELECT_NONE, CMD_SELECT_INVERT,
+    CMD_SELECT_ILOOP, CMD_SELECT_OLOOP, CMD_SELECT_PARTS,
+    CMD_FOLLOW_NO, CMD_FOLLOW_JUMP, CMD_FOLLOW_CONTINUOUS,
+    CMD_DELETE_TRACK, CMD_SELECT_ALL_TRACK
     };
 
     //File menu items:
 
     enum
     {
-	CMD_OPEN_RECENT = 0, CMD_LOAD_TEMPLATE, CMD_SAVE_AS, CMD_IMPORT_MIDI,
-	CMD_EXPORT_MIDI, CMD_IMPORT_PART, CMD_IMPORT_AUDIO, CMD_QUIT, CMD_OPEN_DRUMS, CMD_OPEN_WAVE,
-	CMD_OPEN_LIST, CMD_OPEN_LIST_MASTER, CMD_GLOBAL_CONFIG,
-	CMD_OPEN_GRAPHIC_MASTER, CMD_OPEN_MIDI_TRANSFORM, CMD_TRANSPOSE,
-	CMD_GLOBAL_CUT, CMD_GLOBAL_INSERT, CMD_GLOBAL_SPLIT, CMD_COPY_RANGE,
-	CMD_CUT_EVENTS, CMD_CONFIG_SHORTCUTS, CMD_CONFIG_METRONOME, CMD_CONFIG_MIDISYNC,
-	CMD_MIDI_FILE_CONFIG, CMD_APPEARANCE_SETTINGS, CMD_CONFIG_MIDI_PORTS, CMD_CONFIG_AUDIO_PORTS,
-	CMD_MIDI_EDIT_INSTRUMENTS, CMD_MIDI_RESET, CMD_MIDI_INIT, CMD_MIDI_LOCAL_OFF,
-	CMD_MIXER_SNAPSHOT, CMD_MIXER_AUTOMATION_CLEAR, CMD_OPEN_HELP, CMD_OPEN_HOMEPAGE,
-	CMD_OPEN_BUG, CMD_START_WHATSTHIS,
-	CMD_AUDIO_BOUNCE_TO_FILE, CMD_AUDIO_BOUNCE_TO_TRACK, CMD_AUDIO_RESTART,
-	CMD_LAST
+    CMD_OPEN_RECENT = 0, CMD_LOAD_TEMPLATE, CMD_SAVE_AS, CMD_IMPORT_MIDI,
+    CMD_EXPORT_MIDI, CMD_IMPORT_PART, CMD_IMPORT_AUDIO, CMD_QUIT, CMD_OPEN_DRUMS, CMD_OPEN_WAVE,
+    CMD_OPEN_LIST, CMD_OPEN_LIST_MASTER, CMD_GLOBAL_CONFIG,
+    CMD_OPEN_GRAPHIC_MASTER, CMD_OPEN_MIDI_TRANSFORM, CMD_TRANSPOSE,
+    CMD_GLOBAL_CUT, CMD_GLOBAL_INSERT, CMD_GLOBAL_SPLIT, CMD_COPY_RANGE,
+    CMD_CUT_EVENTS, CMD_CONFIG_SHORTCUTS, CMD_CONFIG_METRONOME, CMD_CONFIG_MIDISYNC,
+    CMD_MIDI_FILE_CONFIG, CMD_APPEARANCE_SETTINGS, CMD_CONFIG_MIDI_PORTS, CMD_CONFIG_AUDIO_PORTS,
+    CMD_MIDI_EDIT_INSTRUMENTS, CMD_MIDI_RESET, CMD_MIDI_INIT, CMD_MIDI_LOCAL_OFF,
+    CMD_MIXER_SNAPSHOT, CMD_MIXER_AUTOMATION_CLEAR, CMD_OPEN_HELP, CMD_OPEN_HOMEPAGE,
+    CMD_OPEN_BUG, CMD_START_WHATSTHIS,
+    CMD_AUDIO_BOUNCE_TO_FILE, CMD_AUDIO_BOUNCE_TO_TRACK, CMD_AUDIO_RESTART,
+    CMD_LAST
     };
 
     //int menu_ids[CMD_LAST];
@@ -127,8 +127,8 @@ class OOMidi : public QMainWindow
     QAction *editCutAction, *editCopyAction, *editPasteAction, *editInsertAction, *editPasteCloneAction, *editPaste2TrackAction;
     QAction *editPasteC2TAction, *editInsertEMAction, *editDeleteSelectedAction, *editSelectAllAction, *editDeselectAllAction, *editSelectAllTracksAction;
     QAction *editInvertSelectionAction, *editInsideLoopAction, *editOutsideLoopAction, *editAllPartsAction;
-    QAction *trackMidiAction, *trackDrumAction, *trackWaveAction, *trackAOutputAction, *trackAGroupAction;
-    QAction *trackAInputAction, *trackAAuxAction;
+    QAction *trackMidiAction, *trackDrumAction, *trackWaveAction, *trackAOutputAction;
+    QAction *trackAInputAction;
     QAction *startPianoEditAction, *startDrumEditAction, *startListEditAction;
     QAction *masterGraphicAction, *masterListAction;
     QAction *midiTransposeAction;
@@ -171,7 +171,7 @@ class OOMidi : public QMainWindow
     Transport* transport;
     BigTime* bigtime;
     EditInstrument* editInstrument;
-	Performer* performer;
+    Performer* performer;
 
     QToolBar* toolbarComposerSettings;
     QToolBar* toolbarSnap;
@@ -188,7 +188,7 @@ class OOMidi : public QMainWindow
     QMenu* follow;
     QMenu* midiInputPlugins;
 
-	MidiAssignDialog* midiAssignDialog;
+    MidiAssignDialog* midiAssignDialog;
     QWidget* midiPortConfig;
     QWidget* softSynthesizerConfig;
     MidiSyncConfig* midiSyncConfig;
@@ -212,28 +212,28 @@ class OOMidi : public QMainWindow
     MidiTransformerDialog* midiTransformerDialog;
     QMenu* openRecent;
 
-	QDockWidget* _resourceDock;
-	MixerDock *m_mixerWidget;
-	QDockWidget *m_mixerDock;
-	QMessageBox *pipelineBox;
+    QDockWidget* _resourceDock;
+    MixerDock *m_mixerWidget;
+    QDockWidget *m_mixerDock;
+    QMessageBox *pipelineBox;
 
-	QUndoStack* m_undoStack;
-	QUndoView* m_undoView;
+    QUndoStack* m_undoStack;
+    QUndoView* m_undoView;
 
-	bool m_externalCall;
+    bool m_externalCall;
 
     QSignalMapper *editSignalMapper;
     QSignalMapper *midiPluginSignalMapper;
     QSignalMapper *followSignalMapper;
 
-	QString m_initProjectName;
-	bool m_useTemplate;
-	int m_rasterVal;
-	
-	//-------------------------------------------------------------
-	// Instrument Templates
-	//-------------------------------------------------------------
-	TrackViewList m_instrumentTemplates;
+    QString m_initProjectName;
+    bool m_useTemplate;
+    int m_rasterVal;
+
+    //-------------------------------------------------------------
+    // Instrument Templates
+    //-------------------------------------------------------------
+    TrackViewList m_instrumentTemplates;
 
 
     bool readMidi(FILE*);
@@ -261,33 +261,33 @@ class OOMidi : public QMainWindow
     virtual void keyPressEvent(QKeyEvent*); // p4.0.10 Tim.
     bool eventFilter(QObject *obj, QEvent *event);
 
-	//-------------------------------------------------------------
-	// Instrument Templates
-	//-------------------------------------------------------------
-	void writeInstrumentTemplates(int, Xml&) const;
-	void readInstrumentTemplates(Xml&);
-	void readInstrumentTemplates();
+    //-------------------------------------------------------------
+    // Instrument Templates
+    //-------------------------------------------------------------
+    void writeInstrumentTemplates(int, Xml&) const;
+    void readInstrumentTemplates(Xml&);
+    void readInstrumentTemplates();
 
 signals:
     void configChanged();
 #ifdef LSCP_SUPPORT
-	void channelInfoChanged(const LSCPChannelInfo&);
-	void lscpStartListener();
-	void lscpStopListener();
+    void channelInfoChanged(const LSCPChannelInfo&);
+    void lscpStartListener();
+    void lscpStopListener();
 #endif
-	
-	//-------------------------------------------------------------
-	// Instrument Templates
-	//-------------------------------------------------------------
 
-	void instrumentTemplateAdded(qint64 id);
-	void instrumentTemplateRemoved(qint64 id);
+    //-------------------------------------------------------------
+    // Instrument Templates
+    //-------------------------------------------------------------
 
-	void viewReady();
-	void songClearCalled();
+    void instrumentTemplateAdded(qint64 id);
+    void instrumentTemplateRemoved(qint64 id);
+
+    void viewReady();
+    void songClearCalled();
 
 protected:
-	virtual void showEvent(QShowEvent*);
+    virtual void showEvent(QShowEvent*);
 
 private slots:
     //void runPythonScript();
@@ -383,9 +383,9 @@ private slots:
     void execDeliveredScript(int);
     void execUserScript(int);
 
-	void performerClosed();
-	void loadInitialProject();
-	void lsStartupFailed();
+    void performerClosed();
+    void loadInitialProject();
+    void lsStartupFailed();
 
 
 public slots:
@@ -415,24 +415,24 @@ public slots:
     void routingPopupMenuAboutToHide();
     void configMidiAssign(int tab = -1);
 
-	void pipelineStateChanged(int);
-	void connectDefaultSongPorts();
-	void showUndoView();
+    void pipelineStateChanged(int);
+    void connectDefaultSongPorts();
+    void showUndoView();
 
     Tool getCurrentTool();
-	void setRaster(int r)
-	{
-		m_rasterVal = r;
-	}
+    void setRaster(int r)
+    {
+        m_rasterVal = r;
+    }
 
 
 public:
     OOMidi(int argc, char** argv);
     ~OOMidi();
     Composer* composer;
-	//FIXME: Hack to make projects loaded from the commandline not start PR
-	//I need to track where and what is cause it to crash
-	bool firstrun;
+    //FIXME: Hack to make projects loaded from the commandline not start PR
+    //I need to track where and what is cause it to crash
+    bool firstrun;
     QRect configGeometryMain;
     bool importMidi(const QString name, bool merge);
     void kbAccel(int);
@@ -447,7 +447,7 @@ public:
     QWidget* mixer2Window();
     QWidget* transportWindow();
     QWidget* bigtimeWindow();
-	AudioPortConfig* getRoutingDialog(bool);
+    AudioPortConfig* getRoutingDialog(bool);
     bool importWaveToTrack(QString& name, unsigned tick = 0, Track* track = NULL);
     void importPartToTrack(QString& filename, unsigned tick, Track* track);
 
@@ -459,37 +459,37 @@ public:
     void routingPopupMenuActivated(Track* /*track*/, int /*id*/);
     void updateRouteMenus(Track* /*track*/, QObject* /*master*/);
 
-	QDockWidget* resourceDock() { return _resourceDock; }
-	void addTransportToolbar();
+    QDockWidget* resourceDock() { return _resourceDock; }
+    void addTransportToolbar();
     void setComposerAndSnapToolbars(QToolBar*, QToolBar*);
-	bool saveRouteMapping(QString, QString note = "Untitled");
-	bool loadRouteMapping(QString);
-	bool updateRouteMapping(QString, QString);
-	QString noteForRouteMapping(QString);
-	QString* currentProject()
-	{
-		if(project.completeBaseName().endsWith("oom"))
-			return new QString(project.filePath());
-		else
-			return new QString();
-	}
-	QDockWidget* mixerDock() { return m_mixerDock; }
+    bool saveRouteMapping(QString, QString note = "Untitled");
+    bool loadRouteMapping(QString);
+    bool updateRouteMapping(QString, QString);
+    QString noteForRouteMapping(QString);
+    QString* currentProject()
+    {
+        if(project.completeBaseName().endsWith("oom"))
+            return new QString(project.filePath());
+        else
+            return new QString();
+    }
+    QDockWidget* mixerDock() { return m_mixerDock; }
 
-	//-------------------------------------------------------------
-	// Instrument Templates
-	//-------------------------------------------------------------
+    //-------------------------------------------------------------
+    // Instrument Templates
+    //-------------------------------------------------------------
 
-	TrackViewList* instrumentTemplates()
-	{
-		return &m_instrumentTemplates;
-	}
+    TrackViewList* instrumentTemplates()
+    {
+        return &m_instrumentTemplates;
+    }
 
-	TrackView* addInstrumentTemplate();
-	TrackView* findInstrumentTemplateById(qint64 id) const;
+    TrackView* addInstrumentTemplate();
+    TrackView* findInstrumentTemplateById(qint64 id) const;
     void insertInstrumentTemplate(TrackView*, int idx);
     void removeInstrumentTemplate(qint64);
-	void addGlobalInput(QPair<int, QString> pinfo);
-	void initGlobalInputPorts();
+    void addGlobalInput(QPair<int, QString> pinfo);
+    void initGlobalInputPorts();
 
     int rasterStep(unsigned tick) const/*{{{*/
     {
@@ -510,7 +510,7 @@ public:
     {
         return AL::sigmap.raster2(v, m_rasterVal);
     }/*}}}*/
-	int raster(){return m_rasterVal;}
+    int raster(){return m_rasterVal;}
 #ifdef HAVE_LASH
     void lash_idle_cb();
 #endif

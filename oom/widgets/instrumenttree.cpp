@@ -40,7 +40,7 @@ void InstrumentTree::updateModel()
 		_patchModel->clear();
 		return;
 	}
-	m_instrument->populatePatchModel(_patchModel, 0, song->mtype(), false);
+    m_instrument->populatePatchModel(_patchModel, 0, song->mtype());
 	updateHeader();
 }
 

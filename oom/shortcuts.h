@@ -67,8 +67,8 @@ enum
     SHRT_START_REC, // *(keypad)
     SHRT_REC_CLEAR, // *(keypad)
     SHRT_GOTO_SEL_NOTE,
-	SHRT_PLAY_REPEAT, //u
-	SHRT_TOGGLE_PLAY_REPEAT, //Ctrl+u toggle audition off
+    SHRT_PLAY_REPEAT, //u
+    SHRT_TOGGLE_PLAY_REPEAT, //Ctrl+u toggle audition off
 
     //Main + Drumeditor
     SHRT_NEW, //Ctrl+N
@@ -119,7 +119,7 @@ enum
     SHRT_OPEN_MIXER2, //Ctrl+*
     SHRT_OPEN_MARKER, // F9
     SHRT_OPEN_CLIPS, //Default: undefined
-	//SHRT_OPEN_ROUTES,
+    //SHRT_OPEN_ROUTES,
 
     SHRT_FOLLOW_JUMP, //Default: undefined
     SHRT_FOLLOW_NO, //Default: undefined
@@ -154,12 +154,9 @@ enum
     SHRT_MIXER_AUTOMATION_CLEAR, //Default: undefined
 
     SHRT_ADD_MIDI_TRACK, //Default: Ctrl+J
-    SHRT_ADD_DRUM_TRACK, //Default: undefined
     SHRT_ADD_WAVE_TRACK, //Default: undefined
     SHRT_ADD_AUDIO_OUTPUT, //Default: undefined
-    SHRT_ADD_AUDIO_BUSS, //Default: undefined
     SHRT_ADD_AUDIO_INPUT, //Default: undefined
-    SHRT_ADD_AUDIO_AUX, //Default: undefined
     SHRT_RESET_MIDI, //Ctrl+Alt+Z
 
     SHRT_OPEN_HELP, //F1
@@ -178,15 +175,15 @@ enum
     SHRT_PASTE_CLONE, //CTRL+SHIFT+Key_V
     SHRT_PASTE_TO_TRACK, //CTRL+Key_B
     SHRT_PASTE_CLONE_TO_TRACK, //CTRL+SHIFT+Key_B
-	SHRT_INSERT_PART, //Ctrl+Insert
+    SHRT_INSERT_PART, //Ctrl+Insert
 
     //Composer tracks
     SHRT_SEL_TRACK_BELOW,
     SHRT_SEL_TRACK_ABOVE,
     SHRT_SEL_TRACK_ABOVE_ADD,
     SHRT_SEL_TRACK_BELOW_ADD,
-	SHRT_RENAME_TRACK, //Ctrl+R
-    SHRT_SEL_ALL_TRACK, //(Windows Key)Mod4+A 
+    SHRT_RENAME_TRACK, //Ctrl+R
+    SHRT_SEL_ALL_TRACK, //(Windows Key)Mod4+A
 
     //To be in Composer, performer & drumeditor. p4.0.10 now globally handled, too.
     SHRT_SELECT_ALL, //Ctrl+A
@@ -256,15 +253,15 @@ enum
     SHRT_TRANSPOSE, //Default: undefined
 
     //Shortcuts to be in performer & drumeditor
-	SHRT_ZOOM_IN, // Ctrl+PgUp
-	SHRT_ZOOM_OUT, // Ctrl+PgDown
-	SHRT_VZOOM_IN, // Ctrl+Shift+PgUp
-	SHRT_VZOOM_OUT, // Ctrl+Shift+PgDown
+    SHRT_ZOOM_IN, // Ctrl+PgUp
+    SHRT_ZOOM_OUT, // Ctrl+PgDown
+    SHRT_VZOOM_IN, // Ctrl+Shift+PgUp
+    SHRT_VZOOM_OUT, // Ctrl+Shift+PgDown
     SHRT_GOTO_CPOS, // c
     SHRT_SCROLL_LEFT, // h
     SHRT_SCROLL_RIGHT, // l
-	SHRT_SCROLL_UP, // Shift+PgUp
-	SHRT_SCROLL_DOWN, // Shift+PgDown
+    SHRT_SCROLL_UP, // Shift+PgUp
+    SHRT_SCROLL_DOWN, // Shift+PgDown
     SHRT_FIXED_LEN, //Alt+L, currently only drumeditor
     SHRT_QUANTIZE, //q
     SHRT_OVER_QUANTIZE, //Default: undefined
@@ -321,7 +318,6 @@ enum
     SHRT_SEL_INSTRUMENT,
     SHRT_PREVIEW_INSTRUMENT,
     SHRT_PART_TOGGLE_MUTE,
-	SHRT_SHOW_PLUGIN_GUI,
 
     // Shortcuts for tools
     // global
@@ -335,7 +331,7 @@ enum
     SHRT_TOOL_LINEDRAW,
 
     // Composer
-	SHRT_TOOL_SCISSORS, // j
+    SHRT_TOOL_SCISSORS, // j
     SHRT_TOOL_GLUE,
     SHRT_TOOL_MUTE,
 
