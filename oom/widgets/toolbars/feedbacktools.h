@@ -15,18 +15,17 @@ class QAction;
 
 class FeedbackTools : public QFrame
 {
-	Q_OBJECT
-	QHBoxLayout* m_layout;
-	QToolButton* m_btnShowMixer;
-	QToolButton* m_btnLoadProgramChange;
-	QToolButton* m_btnMidiFeedback;
+    Q_OBJECT
+    QHBoxLayout* m_layout;
+    QToolButton* m_btnLoadProgramChange;
+    QToolButton* m_btnMidiFeedback;
 
 private slots:
-	void songChanged(int);
+    void songChanged(int);
 public slots:
 public:
-	FeedbackTools(QWidget* parent = 0);
-	virtual ~FeedbackTools(){}
+    FeedbackTools(QWidget* parent = 0);
+    virtual ~FeedbackTools(){}
 };
 
 #endif

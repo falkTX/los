@@ -1,9 +1,10 @@
 #=============================================================================
-#  OOMidi
-#  OpenOctave Midi and Audio Editor
+#  LOS
+#  Libre Octave Studio
 #  $Id:$
 #
 #  Copyright (C) 2002-2006 by Werner Schweer and others
+#  Copyright (C) 2012-2013 by Filipe Coelho
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License version 2.
@@ -21,54 +22,39 @@
 ##
 ## List of source files to compile
 ##
+
 file (GLOB driver_source_files
-       alsamidi.cpp
-       alsatimer.cpp
-       dummyaudio.cpp
-       jack.cpp
-       jackmidi.cpp
-       rtctimer.cpp
-       )
+    alsamidi.cpp
+    alsatimer.cpp
+    dummyaudio.cpp
+    jack.cpp
+    jackmidi.cpp
+    rtctimer.cpp
+)
 
 ##
 ## Define target
 ##
-add_library ( driver STATIC
-       # ${PROJECT_BINARY_DIR}/all.h.pch
-       ${driver_source_files}
-       )
+
+add_library(driver STATIC
+    ${driver_source_files}
+)
 
 ##
 ## Append to the list of translations
 ##
-set (FILES_TO_TRANSLATE
-      ${FILES_TO_TRANSLATE}
-      ${driver_source_files}
-      CACHE INTERNAL ""
-      )
+
+set(FILES_TO_TRANSLATE
+    ${FILES_TO_TRANSLATE}
+    ${driver_source_files}
+    CACHE INTERNAL ""
+)
 
 ##
 ## Compilation flags and target name
 ##
-set_target_properties( driver
-      PROPERTIES COMPILE_FLAGS "-include ${PROJECT_BINARY_DIR}/all.h -fPIC"
-      OUTPUT_NAME oom_driver
-      )
 
-##
-## Linkage
-##
-target_link_libraries ( driver
-      ${ALSA_LIBRARIES}
-      ${JACK_LIBRARIES}
-      ${QT_LIBRARIES}
-      pthread
-      mplugins
-      )
-
-##
-## Install location
-##
-#install(TARGETS driver
-#     DESTINATION ${OOMidi_MODULES_DIR}
-#     )
+set_target_properties(driver
+    PROPERTIES COMPILE_FLAGS "-include ${PROJECT_BINARY_DIR}/all.h -fPIC"
+    OUTPUT_NAME los_driver
+)

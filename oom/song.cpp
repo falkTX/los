@@ -33,7 +33,6 @@
 #include "audio.h"
 #include "mididev.h"
 #include "midiport.h"
-#include "AudioMixer.h"
 #include "midiseq.h"
 #include "audiodev.h"
 #include "gconfig.h"

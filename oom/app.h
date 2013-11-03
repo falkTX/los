@@ -51,7 +51,6 @@ class MRConfig;
 class MetronomeConfig;
 class AudioConf;
 class Xml;
-class AudioMixer;
 class ClipListEdit;
 class AudioRecord;
 class MidiFileConfig;
@@ -61,7 +60,6 @@ class GlobalSettingsConfig;
 class MidiControllerEditDialog;
 class MidiInputTransformDialog;
 class MidiTransformerDialog;
-class SynthI;
 class RhythmGen;
 class MidiTrack;
 class MidiInstrument;
@@ -74,11 +72,9 @@ class AudioPortConfig;
 class QDocWidget;
 class MidiAssignDialog;
 class MidiPlayEvent;
-class MixerDock;
 class VirtualTrack;
 class Performer;
 
-#define MENU_ADD_SYNTH_ID_BASE 0x1000
 #define OOCMD_PORT 8415
 
 //---------------------------------------------------------
@@ -135,8 +131,8 @@ class OOMidi : public QMainWindow
     QAction *midiTransformerAction;
 
     // View Menu actions
-    QAction *viewTransportAction, *viewBigtimeAction, *viewMixerAAction, *viewCliplistAction, *viewMarkerAction;
-    QAction *viewToolbarOrchestra, *viewToolbarMixer, *viewToolbarComposerSettings, *viewToolbarSnap, *viewToolbarTransport;
+    QAction *viewTransportAction, *viewBigtimeAction, *viewCliplistAction, *viewMarkerAction;
+    QAction *viewToolbarOrchestra, *viewToolbarComposerSettings, *viewToolbarSnap, *viewToolbarTransport;
 
     // Structure Menu actions
     QAction *strGlobalCutAction, *strGlobalInsertAction, *strGlobalSplitAction, *strCopyRangeAction, *strCutEventsAction;
@@ -190,7 +186,6 @@ class OOMidi : public QMainWindow
 
     MidiAssignDialog* midiAssignDialog;
     QWidget* midiPortConfig;
-    QWidget* softSynthesizerConfig;
     MidiSyncConfig* midiSyncConfig;
     MRConfig* midiRemoteConfig;
     RhythmGen* midiRhythmGenerator;
@@ -202,8 +197,6 @@ class OOMidi : public QMainWindow
     MidiInputTransformDialog* midiInputTransform;
     ShortcutConfig* shortcutConfig;
     //Appearance* appearance;
-    AudioMixer* mixer1;
-    AudioMixer* mixer2;
     AudioPortConfig* routingDialog;
 
     ToplevelList toplevels;
@@ -213,8 +206,6 @@ class OOMidi : public QMainWindow
     QMenu* openRecent;
 
     QDockWidget* _resourceDock;
-    MixerDock *m_mixerWidget;
-    QDockWidget *m_mixerDock;
     QMessageBox *pipelineBox;
 
     QUndoStack* m_undoStack;
@@ -305,11 +296,8 @@ private slots:
     void toggleTransport(bool);
     void toggleMarker(bool);
     void toggleBigTime(bool);
-    void toggleMixer1(bool);
-    void toggleMixer2(bool);
 
     void showToolbarOrchestra(bool);
-    void showToolbarMixer(bool);
     void showToolbarComposerSettings(bool);
     void showToolbarSnap(bool);
     void showToolbarTransport(bool);
@@ -376,8 +364,6 @@ private slots:
     void takeAutomationSnapshot();
     void clearAutomation();
     void bigtimeClosed();
-    void mixer1Closed();
-    void mixer2Closed();
     void markerClosed();
 
     void execDeliveredScript(int);
@@ -403,8 +389,6 @@ public slots:
     bool seqRestart();
     void loadTemplate();
     void showBigtime(bool);
-    void showMixer1(bool);
-    void showMixer2(bool);
     void showMarker(bool);
     void importMidi(const QString &file);
     void setUsedTool(int);
@@ -442,9 +426,6 @@ public:
     bool seqStart();
     void setHeartBeat();
     void importController(int, MidiPort*, int);
-    //QWidget* mixerWindow();
-    QWidget* mixer1Window();
-    QWidget* mixer2Window();
     QWidget* transportWindow();
     QWidget* bigtimeWindow();
     AudioPortConfig* getRoutingDialog(bool);
@@ -468,12 +449,11 @@ public:
     QString noteForRouteMapping(QString);
     QString* currentProject()
     {
-        if(project.completeBaseName().endsWith("oom"))
+        if(project.completeBaseName().endsWith("los"))
             return new QString(project.filePath());
         else
             return new QString();
     }
-    QDockWidget* mixerDock() { return m_mixerDock; }
 
     //-------------------------------------------------------------
     // Instrument Templates

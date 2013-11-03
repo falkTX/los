@@ -37,7 +37,7 @@
 #include "ComposerCanvas.h"
 #include "trackheader.h"
 #include "slider.h"
-#include "mixer/meter.h"
+#include "meter.h"
 #include "CreateTrackDialog.h"
 #include "AutomationMenu.h"
 #include "TrackInstrumentMenu.h"

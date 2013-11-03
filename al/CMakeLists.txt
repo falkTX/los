@@ -4,6 +4,7 @@
 #  $Id:$
 #
 #  Copyright (C) 2002-2006 by Werner Schweer and others
+#  Copyright (C) 2012-2013 by Filipe Coelho
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License version 2.
@@ -51,10 +52,10 @@ add_library(al STATIC
 ##
 ## Compilation flags and target name
 ##
-     
+
 set_source_files_properties(
     al.cpp
-    dsp.cpp 
+    dsp.cpp
     dspXMM.cpp
     sig.cpp
     xml.cpp

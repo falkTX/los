@@ -115,8 +115,6 @@ enum
 
     SHRT_OPEN_TRANSPORT, //F11
     SHRT_OPEN_BIGTIME, //F12
-    SHRT_OPEN_MIXER, //Ctrl+*
-    SHRT_OPEN_MIXER2, //Ctrl+*
     SHRT_OPEN_MARKER, // F9
     SHRT_OPEN_CLIPS, //Default: undefined
     //SHRT_OPEN_ROUTES,

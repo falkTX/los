@@ -1,9 +1,10 @@
 #=============================================================================
-#  OOMidi
-#  OpenOctave Midi and Audio Editor
+#  LOS
+#  Libre Octave Studio
 #  $Id:$
 #
 #  Copyright (C) 2002-2006 by Werner Schweer and others
+#  Copyright (C) 2012-2013 by Filipe Coelho
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License version 2.
@@ -21,56 +22,43 @@
 ##
 ## Expand Qt macros in source files
 ##
-QT4_WRAP_CPP (cliplist_mocs
-      cliplist.h
-      )
+
+QT4_WRAP_CPP(cliplist_mocs
+    cliplist.h
+)
 
 ##
 ## List of source files to compile
 ##
-file (GLOB cliplist_source_files
-      cliplist.cpp 
-      )
+
+file(GLOB cliplist_source_files
+    cliplist.cpp
+)
 
 ##
 ## Define target
 ##
-add_library ( cliplist STATIC
-      ${cliplist_source_files}
-      ${cliplist_mocs}
-      )
+
+add_library(cliplist STATIC
+    ${cliplist_source_files}
+    ${cliplist_mocs}
+)
 
 ##
 ## Append to the list of translations
 ##
-set (FILES_TO_TRANSLATE
-      ${FILES_TO_TRANSLATE}
-      ${cliplist_source_files}
-      CACHE INTERNAL ""
-      )
+
+set(FILES_TO_TRANSLATE
+    ${FILES_TO_TRANSLATE}
+    ${cliplist_source_files}
+    CACHE INTERNAL ""
+)
 
 ##
 ## Compilation flags and target name
 ##
-set_target_properties( cliplist
-      PROPERTIES COMPILE_FLAGS "-include ${PROJECT_BINARY_DIR}/all.h -fPIC"
-      OUTPUT_NAME oom_cliplist
-      )
 
-##
-## Linkage
-##
-target_link_libraries ( cliplist
-      ${QT_LIBRARIES}
-      awl
-      widgets
-      )
-
-##
-## Install location
-##
-#install(TARGETS cliplist
-#     DESTINATION ${OOMidi_MODULES_DIR}
-#     )
-
-
+set_target_properties(cliplist
+    PROPERTIES COMPILE_FLAGS "-include ${PROJECT_BINARY_DIR}/all.h -fPIC"
+    OUTPUT_NAME los_cliplist
+)

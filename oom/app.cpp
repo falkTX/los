@@ -28,7 +28,6 @@
 #include "app.h"
 #include "master/lmaster.h"
 #include "al/dsp.h"
-#include "AudioMixer.h"
 #include "Composer.h"
 #include "audio.h"
 #include "audiodev.h"
@@ -65,7 +64,6 @@
 #include "midiassign.h"
 #include "midimonitor.h"
 #include "confmport.h"
-#include "mixerdock.h"
 #include "toolbars/transporttools.h"
 #include "toolbars/edittools.h"
 #include "toolbars/looptools.h"
@@ -499,12 +497,9 @@ OOMidi::OOMidi(int argc, char** argv) : QMainWindow()
     midiRhythmGenerator = 0;
     globalSettingsConfig = 0;
     markerView = 0;
-    softSynthesizerConfig = 0;
     midiTransformerDialog = 0;
     shortcutConfig = 0;
     pipelineBox = 0;
-    mixer1 = 0;
-    mixer2 = 0;
     watchdogThread = 0;
     editInstrument = 0;
     routingPopupMenu = 0;
@@ -767,8 +762,6 @@ OOMidi::OOMidi(int argc, char** argv) : QMainWindow()
     viewTransportAction->setCheckable(true);
     viewBigtimeAction = new QAction(QIcon(*view_bigtime_windowIcon), tr("Bigtime Window"), this);
     viewBigtimeAction->setCheckable(true);
-    viewMixerAAction = new QAction(QIcon(*mixerSIcon), tr("Mixer"), this);
-    viewMixerAAction->setCheckable(true);
     viewCliplistAction = new QAction(QIcon(*cliplistSIcon), tr("Cliplist"), this);
     viewCliplistAction->setCheckable(true);
     viewMarkerAction = new QAction(QIcon(*view_markerIcon), tr("Marker View"), this);
@@ -777,8 +770,6 @@ OOMidi::OOMidi(int argc, char** argv) : QMainWindow()
     viewToolbars = new QMenu(tr("Toolbars"), this);
     viewToolbarOrchestra = new QAction(tr("The Orchestra Pit"), this);
     viewToolbarOrchestra->setCheckable(true);
-    viewToolbarMixer = new QAction(tr("The Mixer Dock"), this);
-    viewToolbarMixer->setCheckable(true);
     viewToolbarComposerSettings = new QAction(tr("The Composer Settings"), this);
     viewToolbarComposerSettings->setCheckable(true);
     viewToolbarSnap = new QAction(tr("Snap"), this);
@@ -914,12 +905,10 @@ OOMidi::OOMidi(int argc, char** argv) : QMainWindow()
     //-------- View connections
     connect(viewTransportAction, SIGNAL(toggled(bool)), SLOT(toggleTransport(bool)));
     connect(viewBigtimeAction, SIGNAL(toggled(bool)), SLOT(toggleBigTime(bool)));
-    connect(viewMixerAAction, SIGNAL(toggled(bool)), SLOT(toggleMixer1(bool)));
     connect(viewCliplistAction, SIGNAL(toggled(bool)), SLOT(startClipList(bool)));
     connect(viewMarkerAction, SIGNAL(toggled(bool)), SLOT(toggleMarker(bool)));
 
     connect(viewToolbarOrchestra, SIGNAL(toggled(bool)), SLOT(showToolbarOrchestra(bool)));
-    connect(viewToolbarMixer, SIGNAL(toggled(bool)), SLOT(showToolbarMixer(bool)));
     connect(viewToolbarComposerSettings, SIGNAL(toggled(bool)), SLOT(showToolbarComposerSettings(bool)));
     connect(viewToolbarSnap, SIGNAL(toggled(bool)), SLOT(showToolbarSnap(bool)));
     connect(viewToolbarTransport, SIGNAL(toggled(bool)), SLOT(showToolbarTransport(bool)));
@@ -1089,7 +1078,6 @@ OOMidi::OOMidi(int argc, char** argv) : QMainWindow()
     master->addAction(settingsMetronomeAction);
     master->addAction(masterListAction);
     menuView->addAction(viewTransportAction);
-    menuView->addAction(viewMixerAAction);
     menuView->addAction(viewBigtimeAction);
     menuView->addAction(viewCliplistAction);
     menuView->addAction(viewMarkerAction);
@@ -1097,7 +1085,6 @@ OOMidi::OOMidi(int argc, char** argv) : QMainWindow()
     menuView->addSeparator();
     menuView->addMenu(viewToolbars);
     viewToolbars->addAction(viewToolbarOrchestra);
-    viewToolbars->addAction(viewToolbarMixer);
     //viewToolbars->addSeparator();
     viewToolbars->addAction(viewToolbarComposerSettings);
     viewToolbars->addAction(viewToolbarSnap);
@@ -1153,20 +1140,6 @@ OOMidi::OOMidi(int argc, char** argv) : QMainWindow()
     menu_help->addSeparator();
     menu_help->addAction(helpAboutAction);
 
-    QWidget *faketitle = new QWidget();
-    m_mixerDock = new QDockWidget(tr("The Mixer Dock"), this);
-    m_mixerDock->setTitleBarWidget(faketitle);
-    m_mixerDock->setAllowedAreas(Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea);
-    m_mixerDock->setObjectName("m_mixerDock");
-    addDockWidget(Qt::BottomDockWidgetArea, m_mixerDock);
-
-    m_mixerWidget = new MixerDock(m_mixerDock);
-    m_mixerWidget->setObjectName("MixerDock");
-    connect(m_mixerDock, SIGNAL(visibilityChanged(bool)), m_mixerWidget, SLOT(updateConnections(bool)));
-    connect(song, SIGNAL(composerViewChanged()), m_mixerWidget, SLOT(composerViewChanged()));
-    m_mixerDock->setVisible(false);
-    m_mixerDock->setWidget(m_mixerWidget);
-
     //---------------------------------------------------
     //    Central Widget
     //---------------------------------------------------
@@ -1182,7 +1155,6 @@ OOMidi::OOMidi(int argc, char** argv) : QMainWindow()
     connect(composer, SIGNAL(startEditor(PartList*, int)), SLOT(startEditor(PartList*, int)));
     connect(this, SIGNAL(configChanged()), composer, SLOT(configChanged()));
     connect(pcloaderAction, SIGNAL(triggered()), composer, SLOT(preloadControllers()));
-    connect(composer, SIGNAL(trackSelectionChanged(qint64)), m_mixerWidget, SLOT(scrollSelectedToView(qint64)));
 
     connect(composer, SIGNAL(setUsedTool(int)), SLOT(setUsedTool(int)));
 
@@ -1525,9 +1497,6 @@ void OOMidi::loadProjectFile(const QString& name, bool songTemplate, bool loadAl
 
 void OOMidi::loadProjectFile1(const QString& name, bool songTemplate, bool loadAll)
 {
-    if (mixer1)
-        mixer1->clear();
-    m_mixerWidget->clear();
     composer->clear(); // clear track info
     //Clear the ID based oomMidiPorts hash, it will be repopulated when the song loads
     oomMidiPorts.clear();
@@ -1660,7 +1629,6 @@ void OOMidi::loadProjectFile1(const QString& name, bool songTemplate, bool loadA
     if (loadAll)
     {
         showBigtime(config.bigTimeVisible);
-        showMixer1(config.mixer1Visible);
 
         if (config.transportVisible)
             transport->show();
@@ -3228,10 +3196,6 @@ void OOMidi::kbAccel(int key)
     {
         toggleBigTime(!viewBigtimeAction->isChecked());
     }
-    else if (key == shortcuts[SHRT_OPEN_MIXER].key)
-    {
-        toggleMixer1(!viewMixerAAction->isChecked());
-    }
     else if (key == shortcuts[SHRT_NEXT_MARKER].key)
     {
         if (markerView)
@@ -4396,7 +4360,6 @@ void OOMidi::updateConfiguration()
 
     viewTransportAction->setShortcut(shortcuts[SHRT_OPEN_TRANSPORT].key);
     viewBigtimeAction->setShortcut(shortcuts[SHRT_OPEN_BIGTIME].key);
-    viewMixerAAction->setShortcut(shortcuts[SHRT_OPEN_MIXER].key);
     viewMarkerAction->setShortcut(shortcuts[SHRT_OPEN_MARKER].key);
 
     strGlobalCutAction->setShortcut(shortcuts[SHRT_GLOBAL_CUT].key);
@@ -4489,100 +4452,10 @@ void OOMidi::bigtimeClosed()
     viewBigtimeAction->setChecked(false);
 }
 
-//---------------------------------------------------------
-//   showMixer1
-//---------------------------------------------------------
-
-void OOMidi::showMixer1(bool on)
-{
-    if (on && mixer1 == 0)
-    {
-        mixer1 = new AudioMixer("Mixer1", this);
-        mixer1->setObjectName("Mixer1");
-        mixer1->setWindowRole("Mixer1");
-        connect(mixer1, SIGNAL(closed()), SLOT(mixer1Closed()));
-        //mixer1->resize(config.mixer1.geometry.size());
-        //mixer1->move(config.mixer1.geometry.topLeft());
-    }
-    if (mixer1)
-        mixer1->setVisible(on);
-    viewMixerAAction->setChecked(on);
-}
-
-//---------------------------------------------------------
-//   showMixer2
-//---------------------------------------------------------
-
-void OOMidi::showMixer2(bool)
-{
-    /*if (on && mixer2 == 0)
-    {
-        mixer2 = new AudioMixer(this, &(config.mixer2));
-        mixer2->setObjectName("Mixer2");
-        mixer2->setWindowRole("Mixer2");
-        connect(mixer2, SIGNAL(closed()), SLOT(mixer2Closed()));
-        //mixer2->resize(config.mixer2.geometry.size());
-        //mixer2->move(config.mixer2.geometry.topLeft());
-    }
-    if (mixer2)
-        mixer2->setVisible(on);
-    viewMixerBAction->setChecked(on);
-    */
-}
-
 AudioPortConfig* OOMidi::getRoutingDialog(bool)
 {
     configMidiAssign(0);
     return midiAssignDialog->getAudioPortConfig();
-}
-
-//---------------------------------------------------------
-//   toggleMixer1
-//---------------------------------------------------------
-
-void OOMidi::toggleMixer1(bool checked)
-{
-    showMixer1(checked);
-}
-
-//---------------------------------------------------------
-//   toggleMixer2
-//---------------------------------------------------------
-
-void OOMidi::toggleMixer2(bool checked)
-{
-    showMixer2(checked);
-}
-
-//---------------------------------------------------------
-//   mixer1Closed
-//---------------------------------------------------------
-
-void OOMidi::mixer1Closed()
-{
-    viewMixerAAction->setChecked(false);
-}
-
-//---------------------------------------------------------
-//   mixer2Closed
-//---------------------------------------------------------
-
-void OOMidi::mixer2Closed()
-{
-    //viewMixerBAction->setChecked(false);
-}
-
-
-//QWidget* OOMidi::mixerWindow()     { return audioMixer; }
-
-QWidget* OOMidi::mixer1Window()
-{
-    return mixer1;
-}
-
-QWidget* OOMidi::mixer2Window()
-{
-    return 0;
 }
 
 QWidget* OOMidi::transportWindow()
@@ -4601,12 +4474,6 @@ QWidget* OOMidi::bigtimeWindow()
 
 void OOMidi::focusInEvent(QFocusEvent* ev)
 {
-    //if (audioMixer)
-    //      audioMixer->raise();
-    if (mixer1)
-        mixer1->raise();
-    //if (mixer2)
-    //	mixer2->raise();
     raise();
     QMainWindow::focusInEvent(ev);
 }
@@ -4699,12 +4566,6 @@ void OOMidi::showToolbarOrchestra(bool yesno)
         _resourceDock->setVisible(yesno);
 }
 
-void OOMidi::showToolbarMixer(bool yesno)
-{
-    if (m_mixerDock)
-        m_mixerDock->setVisible(yesno);
-}
-
 void OOMidi::showToolbarComposerSettings(bool yesno)
 {
     if (toolbarComposerSettings)
@@ -4732,14 +4593,6 @@ void OOMidi::updateViewToolbarMenu()
     }
     else
         viewToolbarOrchestra->setEnabled(false);
-
-    if (m_mixerDock)
-    {
-        viewToolbarMixer->setEnabled(true);
-        viewToolbarMixer->setChecked(m_mixerDock->isVisible());
-    }
-    else
-        viewToolbarMixer->setEnabled(false);
 
     if (toolbarComposerSettings)
     {

@@ -1,9 +1,10 @@
 #=============================================================================
-#  OOMidi
-#  OpenOctave Midi and Audio Editor
+#  LOS
+#  Libre Octave Studio
 #  $Id:$
 #
 #  Copyright (C) 2002-2006 by Werner Schweer and others
+#  Copyright (C) 2012-2013 by Filipe Coelho
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License version 2.
@@ -21,7 +22,8 @@
 ##
 ## Expand Qt macros in source files
 ##
-QT4_WRAP_CPP ( patchcanvas_mocs
+
+QT4_WRAP_CPP(patchcanvas_mocs
     patchcanvas.h
     patchscene.h
     theme.h
@@ -35,19 +37,21 @@ QT4_WRAP_CPP ( patchcanvas_mocs
     canvaslinemov.h
     canvasport.h
     canvasportglow.h
-    )
+)
 
 ##
 ## Resource files
 ##
-#QT4_ADD_RESOURCES ( patchcanvas_qrc_files
-    #patchcanvas.qrc
-    #)
+
+# QT4_ADD_RESOURCES(patchcanvas_qrc_files
+#     patchcanvas.qrc
+# )
 
 ##
 ## List of source files to compile
 ##
-file (GLOB patchcanvas_source_files
+
+file(GLOB patchcanvas_source_files
     patchcanvas.cpp
     patchscene.cpp
     theme.cpp
@@ -61,25 +65,15 @@ file (GLOB patchcanvas_source_files
     canvaslinemov.cpp
     canvasport.cpp
     canvasportglow.cpp
-    )
-
-file (GLOB patchcanvas_source_files
-    ${patchcanvas_source_files}
 )
 
 ##
 ## Define target
 ##
-add_library ( patchcanvas STATIC
-      ${patchcanvas_ui_headers}
-      ${patchcanvas_source_files}
-      ${patchcanvas_mocs}
-      #${patchcanvas_qrc_files}
-      )
 
-##
-## Linkage
-##
-target_link_libraries ( patchcanvas
-      ${QT_LIBRARIES}
-      )
+add_library(patchcanvas STATIC
+    ${patchcanvas_ui_headers}
+    ${patchcanvas_source_files}
+    ${patchcanvas_mocs}
+    #${patchcanvas_qrc_files}
+)

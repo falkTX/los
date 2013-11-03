@@ -51,12 +51,12 @@ IF(NOT DEFINED SHARE_INSTALL_PREFIX)
 ENDIF(NOT DEFINED SHARE_INSTALL_PREFIX)
 
 set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -std=c99   -Wall -Wextra")
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra -Winvalid-pch")
 
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2 -DNDEBUG -fomit-frame-pointer -ffast-math -fstrength-reduce")
 set(CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_CXX_FLAGS_DEBUG}   -O0 -DDEBUG -DQT_DEBUG -g")
 
-# set(CMAKE_CXX_FLAGS         " -Winvalid-pch -fexceptions ${CMAKE_CXX_FLAGS}")
+# set(CMAKE_CXX_FLAGS         " -fexceptions ${CMAKE_CXX_FLAGS}")
 
 set(CMAKE_INCLUDE_CURRENT_DIR  TRUE)
 set(CMAKE_SKIP_RULE_DEPENDENCY TRUE)
@@ -160,14 +160,14 @@ include(${QT_USE_FILE})
 #     DEPENDS ${PROJECT_SOURCE_DIR}/all.h
 #     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
 # )
-# 
+#
 # add_custom_command(
 #     OUTPUT ${PROJECT_BINARY_DIR}/all-pic.h
 #     COMMAND cp ${PROJECT_SOURCE_DIR}/all.h ${PROJECT_BINARY_DIR}/all-pic.h
 #     DEPENDS ${PROJECT_SOURCE_DIR}/all.h
 #     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
 # )
-# 
+#
 # add_custom_command(
 #     OUTPUT ${PROJECT_BINARY_DIR}/all-pic-debug.h
 #     COMMAND cp ${PROJECT_SOURCE_DIR}/all.h ${PROJECT_BINARY_DIR}/all-pic-debug.h

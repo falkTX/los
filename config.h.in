@@ -31,6 +31,3 @@
 
 #define MIDI_FIFO_SIZE     ${OOM_MIDI_FIFO_SIZE}
 #define MIDI_REC_FIFO_SIZE ${OOM_MIDI_REC_FIFO_SIZE}
-
-// #define OOM_INSTALL_BIN          "${LOS_INSTALL_PATH}"
-// #define OOM_DEFAULT_TEMPLATE     "${LOS_SHARE_DIR}/templates/oomidi-template.oos"
