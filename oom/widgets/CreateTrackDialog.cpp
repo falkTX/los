@@ -21,11 +21,12 @@
 
 #include <QMessageBox>
 
+static const int s_allChannelBit = (1 << MIDI_CHANNELS) - 1;
+
 CreateTrackDialog::CreateTrackDialog(int type, int pos, QWidget* parent)
     : QDialog(parent),
       m_insertType(type),
-      m_insertPosition(pos),
-      m_templateMode(false)
+      m_insertPosition(pos)
 {
     initDefaults();
     m_vtrack = new VirtualTrack;
@@ -34,8 +35,7 @@ CreateTrackDialog::CreateTrackDialog(int type, int pos, QWidget* parent)
 CreateTrackDialog::CreateTrackDialog(VirtualTrack** vt, int type, int pos, QWidget* parent)
     : QDialog(parent),
       m_insertType(type),
-      m_insertPosition(pos),
-      m_templateMode(true)
+      m_insertPosition(pos)
 {
     initDefaults();
     m_vtrack = new VirtualTrack;
@@ -46,22 +46,12 @@ void CreateTrackDialog::initDefaults()
 {
     setupUi(this);
 
+    m_width  = 450;
+    m_height = 290;
+
     m_createMidiInputDevice = false;
     m_createMidiOutputDevice = false;
 
-    m_midiSameIO = false;
-    m_instrumentLoaded = false;
-    m_showJackAliases = -1;
-
-    m_midiInPort = -1;
-    m_midiOutPort = -1;
-    m_instrumentMap = -1;
-    m_existingMap = false;
-
-    m_height = 290;
-    m_width = 450;
-
-    m_allChannelBit = (1 << MIDI_CHANNELS) - 1;
     txtName->setValidator(new NameValidator(this));
 
     cmbType->addItem(*addMidiIcon, tr("Midi"), Track::MIDI);
@@ -69,7 +59,7 @@ void CreateTrackDialog::initDefaults()
     cmbType->addItem(*addOutputIcon, tr("Output"), Track::AUDIO_OUTPUT);
     cmbType->addItem(*addInputIcon, tr("Input"), Track::AUDIO_INPUT);
 
-    cmbInChannel->addItem(tr("All"), m_allChannelBit);
+    cmbInChannel->addItem(tr("All"), s_allChannelBit);
     for(int i = 0; i < 16; ++i)
     {
         cmbInChannel->addItem(QString(tr("Chan ")).append(QString::number(i+1)), 1 << i);
@@ -233,25 +223,17 @@ void CreateTrackDialog::addTrack()/*{{{*/
     }
     if(valid)
     {
-        if(m_templateMode)
+        connect(trackManager, SIGNAL(trackAdded(qint64)), this, SIGNAL(trackAdded(qint64)));
+        if(trackManager->addTrack(m_vtrack, m_insertPosition))
         {
-            //hide();
+            if(debugMsg)
+                qDebug("CreateTrackDialog::addTrack: Sucessfully added track");
             done(1);
         }
         else
         {
-            connect(trackManager, SIGNAL(trackAdded(qint64)), this, SIGNAL(trackAdded(qint64)));
-            if(trackManager->addTrack(m_vtrack, m_insertPosition))
-            {
-                if(debugMsg)
-                    qDebug("CreateTrackDialog::addTrack: Sucessfully added track");
-                done(1);
-            }
-            else
-            {
-                QMessageBox::critical(this, tr("Create Track Failed"), tr("Unknown error occurred.\nFailed to add new track."));
-                done(0);
-            }
+            QMessageBox::critical(this, tr("Create Track Failed"), tr("Unknown error occurred.\nFailed to add new track."));
+            done(0);
         }
     }
 }/*}}}*/
@@ -550,7 +532,7 @@ void CreateTrackDialog::populateNewInputList()/*{{{*/
     }
     if(audioDevice->deviceType() != AudioDevice::JACK_AUDIO)
         return;
-    std::list<QString> sl = audioDevice->outputPorts(true, m_showJackAliases);
+    std::list<QString> sl = audioDevice->outputPorts(true, -1);
     for (std::list<QString>::iterator ip = sl.begin(); ip != sl.end(); ++ip)
     {
         if(m_currentInput.isEmpty() || !m_currentInput.contains(*ip))
@@ -575,7 +557,7 @@ void CreateTrackDialog::populateNewOutputList()/*{{{*/
     }/*}}}*/
     if(audioDevice->deviceType() != AudioDevice::JACK_AUDIO)
         return;
-    std::list<QString> sl = audioDevice->inputPorts(true, m_showJackAliases);
+    std::list<QString> sl = audioDevice->inputPorts(true, -1);
     for (std::list<QString>::iterator ip = sl.begin(); ip != sl.end(); ++ip)
     {
         if(m_currentOutput.isEmpty() || !m_currentOutput.contains(*ip))
@@ -711,8 +693,6 @@ void CreateTrackDialog::updateVisibleElements()/*{{{*/
 
 void CreateTrackDialog::showEvent(QShowEvent*)
 {
-    if(debugMsg)
-        qDebug("CreateTrackDialog::showEvent: trackType: %i, position: %i", m_insertType, m_insertPosition);
     updateVisibleElements();
     populateInputList();
     populateOutputList();

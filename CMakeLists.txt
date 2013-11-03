@@ -51,7 +51,7 @@ IF(NOT DEFINED SHARE_INSTALL_PREFIX)
 ENDIF(NOT DEFINED SHARE_INSTALL_PREFIX)
 
 set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -std=c99   -Wall -Wextra")
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra -Winvalid-pch")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall -Wextra -Winvalid-pch")
 
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2 -DNDEBUG -fomit-frame-pointer -ffast-math -fstrength-reduce")
 set(CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_CXX_FLAGS_DEBUG}   -O0 -DDEBUG -DQT_DEBUG -g")

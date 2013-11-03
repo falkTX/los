@@ -28,7 +28,6 @@ class CreateTrackDialog : public QDialog,
 public:
     CreateTrackDialog(int type = 0, int pos = -1, QWidget* parent = 0);
     CreateTrackDialog(VirtualTrack** vt, int type = 0, int pos = -1, QWidget* parent = 0);
-    virtual ~CreateTrackDialog() {}
 
     void lockType(bool);
 
@@ -50,33 +49,21 @@ private slots:
     void showInputSettings();
 
 private:
-    int m_height;
-    int m_width;
-
     int m_insertType;
-    int m_insertPosition;
-    bool m_templateMode;
+    const int m_insertPosition;
+
+    VirtualTrack* m_vtrack;
+
+    int m_width;
+    int m_height;
 
     bool m_createMidiInputDevice;
     bool m_createMidiOutputDevice;
-    bool m_midiSameIO;
-
-    int m_allChannelBit;
-
-    int m_midiInPort;
-    int m_midiOutPort;
-
-    int m_showJackAliases;
-    bool m_instrumentLoaded;
-    int m_instrumentMap;
-    bool m_existingMap;
 
     QMap<int, QString> m_currentMidiInputList;
     QMap<int, QString> m_currentMidiOutputList;
     QStringList m_currentInput;
     QStringList m_currentOutput;
-
-    VirtualTrack *m_vtrack;
 
     void importInputs();
     void importOutputs();
