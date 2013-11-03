@@ -292,14 +292,6 @@ Track* Song::addTrack(int t, bool doUndo)/*{{{*/
     // Add default track <-> midiport routes.
     if (track->isMidiTrack())
     {
-        //Create the Audio input side of the track
-        Track* input = addTrackByName(QString("i").append(track->name()), Track::AUDIO_INPUT, -1, false, false);
-        if(input)
-        {
-            input->setMasterFlag(false);
-            input->setChainMaster(track->id());
-            track->addManagedTrack(input->id());
-        }
         MidiTrack* mt = (MidiTrack*) track;
         int c, cbi, ch;
         bool defOutFound = false; /// TODO: Remove this when multiple out routes supported.
@@ -351,8 +343,17 @@ Track* Song::addTrack(int t, bool doUndo)/*{{{*/
             audio->msgAddRoute(srcRoute, dstRoute);
             updateFlags |= SC_ROUTE;
         }
+        //Create the Audio output side of the track
+        Track* output = addTrackByName(track->name(), Track::AUDIO_OUTPUT, -1, false, false);
+        if(output)
+        {
+            output->setMasterFlag(false);
+            output->setChainMaster(track->id());
+            track->addManagedTrack(output->id());
+        }
     }
 
+#if 0
     //
     //  add default route to master
     //
@@ -369,6 +370,8 @@ Track* Song::addTrack(int t, bool doUndo)/*{{{*/
                 break;
         }
     }
+#endif
+
     audio->msgUpdateSoloStates();
     //updateTrackViews();
     return track;
@@ -478,8 +481,7 @@ Track* Song::addTrackByName(QString name, int t, int pos, bool doUndo, bool conn
     else if(track->type() == Track::WAVE)
     {
         //Create the Audio input side of the track
-        Track* input = addTrackByName(QString("i").append(track->name()), Track::AUDIO_INPUT, -1, false, false);
-        if(input)
+        if (Track* input = addTrackByName(QString("i").append(track->name()), Track::AUDIO_INPUT, -1, false, false))
         {
             input->setMasterFlag(false);
             input->setChainMaster(track->id());
@@ -491,8 +493,16 @@ Track* Song::addTrackByName(QString name, int t, int pos, bool doUndo, bool conn
             audio->msgAddRoute(srcRoute, dstRoute);
             updateFlags |= SC_ROUTE;
         }
+        //Create the Audio output side of the track
+        if (Track* output = addTrackByName(track->name(), Track::AUDIO_OUTPUT, -1, false, false))
+        {
+            output->setMasterFlag(false);
+            output->setChainMaster(track->id());
+            track->addManagedTrack(output->id());
+        }
     }
 
+#if 0
     //
     //  add default route to master
     //
@@ -512,6 +522,8 @@ Track* Song::addTrackByName(QString name, int t, int pos, bool doUndo, bool conn
             }
         }
     }
+#endif
+
     audio->msgUpdateSoloStates();
     //updateTrackViews();
     return track;

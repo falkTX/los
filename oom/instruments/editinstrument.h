@@ -13,9 +13,6 @@
 #include "minstrument.h"
 #include "midictrl.h"
 #include "config.h"
-#ifdef LSCP_SUPPORT
-#include "importinstruments.h"
-#endif
 
 class QDialog;
 class QMenu;
@@ -34,15 +31,15 @@ class EditInstrument : public QMainWindow, public Ui::EditInstrumentBase
     MidiInstrument workingInstrument;
     QListWidgetItem* oldMidiInstrument;
     QTreeWidgetItem* oldPatchItem;
-    
-	Knob* m_panKnob;
-	DoubleLabel* m_panLabel;
-	Knob* m_auxKnob;
-	DoubleLabel* m_auxLabel;
-	bool m_loading;
 
-	void closeEvent(QCloseEvent*);
-	int checkDirty(MidiInstrument*, bool isClose = false);
+    Knob* m_panKnob;
+    DoubleLabel* m_panLabel;
+    Knob* m_auxKnob;
+    DoubleLabel* m_auxLabel;
+    bool m_loading;
+
+    void closeEvent(QCloseEvent*);
+    int checkDirty(MidiInstrument*, bool isClose = false);
     bool fileSave(MidiInstrument*, const QString&);
     void saveAs();
     void updateInstrument(MidiInstrument*);
@@ -58,10 +55,7 @@ class EditInstrument : public QMainWindow, public Ui::EditInstrumentBase
     void setDefaultPatchControls(int);
     QString getPatchName(int);
     void deleteInstrument(QListWidgetItem*);
-		
-#ifdef LSCP_SUPPORT
-	LSCPImport* import;
-#endif
+
     ///QMenu* patchpopup;
 
 private slots:
@@ -95,22 +89,22 @@ private slots:
     void ctrlMinChanged(int);
     void ctrlMaxChanged(int);
     void ctrlDefaultChanged(int);
-	void populateInstruments();
+    void populateInstruments();
     //void sysexChanged();
     //void deleteSysexClicked();
     //void newSysexClicked();
     void ctrlNullParamHChanged(int);
     void ctrlNullParamLChanged(int);
-	void autoLoadChecked(bool);
-	void volumeChanged(double);
-	void engineChanged(int);
-	void loadmodeChanged(int);
-	void patchFilenameChanged();
-	void browseFilenameClicked();
-	void panChanged(double);
-	void auxChanged(double);
+    void autoLoadChecked(bool);
+    void volumeChanged(double);
+    void engineChanged(int);
+    void loadmodeChanged(int);
+    void patchFilenameChanged();
+    void browseFilenameClicked();
+    void panChanged(double);
+    void auxChanged(double);
 #ifdef LSCP_SUPPORT
-	void btnImportClicked(bool);
+    void btnImportClicked(bool);
 #endif
 
 public:

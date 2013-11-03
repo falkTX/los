@@ -617,7 +617,6 @@ qint64 TrackManager::addTrack(VirtualTrack* vtrack, int index)/*{{{*/
         break;
     }
     m_track = 0;
-    m_synthConfigs.clear();
     return rv;
 }/*}}}*/
 

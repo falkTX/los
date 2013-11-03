@@ -107,7 +107,6 @@ void CreateTrackDialog::addTrack()/*{{{*/
     int inputIndex = cmbInput->currentIndex();
     int outputIndex = cmbOutput->currentIndex();
     int instrumentIndex = cmbInstrument->currentIndex();
-    int monitorIndex = cmbMonitor->currentIndex();
     int inChanIndex = cmbInChannel->currentIndex();
     int outChanIndex = cmbOutChannel->currentIndex();
     bool valid = true;
@@ -173,14 +172,6 @@ void CreateTrackDialog::addTrack()/*{{{*/
                     //QString instrumentName = cmbInstrument->itemData(instrumentIndex, CTDInstrumentNameRole).toString();
                     m_vtrack->instrumentName = instrumentName;
                 }
-            }
-
-            if(monitorIndex >= 0 && midiBox->isChecked())
-            {
-                if (selectedInput.isEmpty())
-                    selectedInput = cmbMonitor->itemText(monitorIndex);
-                if (selectedInput2.isEmpty())
-                    selectedInput2 = selectedInput;
             }
         }
     }
@@ -292,16 +283,13 @@ void CreateTrackDialog::updateInstrument(int index)/*{{{*/
         txtName->setText(trackName);
         trackNameEdited();
     }
-    //if(btnAdd->isEnabled())
-    //{
+
     chkInput->setEnabled(true);
     cmbInput->setEnabled(true);
     cmbInChannel->setEnabled(true);
     chkOutput->setEnabled(true);
     cmbOutput->setEnabled(true);
     cmbOutChannel->setEnabled(true);
-    midiBox->setChecked(true);
-    midiBox->setEnabled(true);
 
     updateVisibleElements();
 
@@ -329,7 +317,6 @@ void CreateTrackDialog::trackTypeChanged(int type)/*{{{*/
     populateInputList();
     populateOutputList();
     populateInstrumentList();
-    populateMonitorList();
 }/*}}}*/
 
 void CreateTrackDialog::trackNameEdited()
@@ -350,7 +337,7 @@ void CreateTrackDialog::populateInputList()/*{{{*/
     {
         m_currentMidiInputList.clear();
         m_currentInput.clear();
-        cmbInput->addItem(tr("My Inputs"), 1025);
+        cmbInput->addItem(tr("My MIDI Inputs"), 1025);
         for (int i = 0; i < MIDI_PORTS; ++i)
         {
             MidiPort* mp = &midiPorts[i];
@@ -546,19 +533,6 @@ void CreateTrackDialog::importInputs()/*{{{*/
     }
 }/*}}}*/
 
-void CreateTrackDialog::populateMonitorList()/*{{{*/
-{
-    while(cmbMonitor->count())
-        cmbMonitor->removeItem(cmbMonitor->count()-1);
-    if (checkAudioDevice())
-    {
-        std::list<QString> sl = audioDevice->outputPorts();
-        for (std::list<QString>::iterator i = sl.begin(); i != sl.end(); ++i) {
-            cmbMonitor->addItem(*i, 1);
-        }
-    }
-}/*}}}*/
-
 void CreateTrackDialog::populateNewInputList()/*{{{*/
 {
     for (iMidiDevice i = midiDevices.begin(); i != midiDevices.end(); ++i)
@@ -639,7 +613,7 @@ void CreateTrackDialog::updateVisibleElements()/*{{{*/
     chkOutput->setEnabled(true);
     chkInput->setChecked(true);
     chkOutput->setChecked(true);
-    cmbMonitor->setEnabled(true);
+
     trackNameEdited();
 
     Track::TrackType type = (Track::TrackType)m_insertType;
@@ -664,17 +638,14 @@ void CreateTrackDialog::updateVisibleElements()/*{{{*/
         lblInstrument->setVisible(true);
         cmbInstrument->setVisible(true);
         cmbInstrument->setEnabled(true);
-        cmbMonitor->setVisible(true);
         cmbInput->setVisible(true);
         chkInput->setVisible(true);
         cmbOutput->setVisible(true);
         chkOutput->setVisible(true);
-        midiBoxFrame->setVisible(true);
-        midiBoxLabelFrame->setVisible(true);
+
         trackNameEdited();
 
-        //m_height = 290;
-        m_height = 400;
+        m_height = 300;
         m_width = width();
     }
         break;
@@ -684,17 +655,14 @@ void CreateTrackDialog::updateVisibleElements()/*{{{*/
         cmbOutChannel->setVisible(false);
         lblInstrument->setVisible(false);
         cmbInstrument->setVisible(false);
-        cmbMonitor->setVisible(false);
-        midiBoxFrame->setVisible(false);
-        midiBoxLabelFrame->setVisible(false);
 
-        cmbInput->setVisible(true);
-        chkInput->setVisible(true);
+        chkInput->setChecked(false);
+        cmbInput->setVisible(false);
+        chkInput->setVisible(false);
         cmbOutput->setVisible(true);
         chkOutput->setVisible(true);
 
-        //m_height = 160;
-        m_height = 260;
+        m_height = 220;
         m_width = width();
     }
         break;
@@ -704,17 +672,16 @@ void CreateTrackDialog::updateVisibleElements()/*{{{*/
         cmbOutChannel->setVisible(false);
         lblInstrument->setVisible(false);
         cmbInstrument->setVisible(false);
-        cmbMonitor->setVisible(false);
-        midiBoxFrame->setVisible(false);
-        midiBoxLabelFrame->setVisible(false);
 
         cmbInput->setVisible(true);
         chkInput->setVisible(true);
-        cmbOutput->setVisible(true);
-        chkOutput->setVisible(true);
+        cmbOutput->setVisible(false);
+        chkOutput->setVisible(false);
 
-        //m_height = 160;
-        m_height = 260;
+        cmbOutput->setCurrentIndex(0);
+        chkOutput->setEnabled(true);
+
+        m_height = 220;
         m_width = width();
     }
         break;
@@ -724,9 +691,6 @@ void CreateTrackDialog::updateVisibleElements()/*{{{*/
         cmbOutChannel->setVisible(false);
         lblInstrument->setVisible(false);
         cmbInstrument->setVisible(false);
-        cmbMonitor->setVisible(false);
-        midiBoxFrame->setVisible(false);
-        midiBoxLabelFrame->setVisible(false);
 
         cmbInput->setVisible(true);
         chkInput->setVisible(true);
@@ -734,7 +698,6 @@ void CreateTrackDialog::updateVisibleElements()/*{{{*/
         chkOutput->setVisible(true);
         chkInput->setChecked(false);
 
-        //m_height = 160;
         m_height = 260;
         m_width = width();
     }
@@ -754,6 +717,5 @@ void CreateTrackDialog::showEvent(QShowEvent*)
     populateInputList();
     populateOutputList();
     populateInstrumentList();
-    populateMonitorList();
 }
 

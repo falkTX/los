@@ -86,7 +86,6 @@ private:
     void populateNewInputList();
     void populateNewOutputList();
     void populateInstrumentList();
-    void populateMonitorList();
 
     void updateVisibleElements();
 

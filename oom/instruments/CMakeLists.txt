@@ -37,16 +37,13 @@ file(GLOB instruments_ui_files
 
 QT4_WRAP_UI(instruments_uis ${instruments_ui_files})
 
-
 ##
 ## List of source files to compile
 ##
 
 file(GLOB instruments_source_files
     editinstrument.cpp
-    editinstrument.h
     minstrument.cpp
-    minstrument.h
 )
 
 ##

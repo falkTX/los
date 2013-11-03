@@ -25,7 +25,7 @@
 
 QT4_WRAP_CPP(liste_mocs
     editevent.h
-    listedit.h 
+    listedit.h
 )
 
 ##
@@ -36,9 +36,7 @@ file(GLOB liste_ui_files
     editctrlbase.ui
 )
 
-QT4_WRAP_UI(liste_uis
-    ${liste_ui_files}
-)
+QT4_WRAP_UI(liste_uis ${liste_ui_files})
 
 ##
 ## List of source files to compile

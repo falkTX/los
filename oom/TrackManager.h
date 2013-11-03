@@ -60,7 +60,6 @@ class TrackManager : public QObject{
     QMap<int, QString> m_currentMidiOutputList;
 
     QMap<qint64, VirtualTrack*> m_virtualTracks;
-    QList<QPair<int, QString> > m_synthConfigs;
 
 signals:
     void trackAdded(qint64);

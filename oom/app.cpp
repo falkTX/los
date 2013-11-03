@@ -432,21 +432,10 @@ QActionGroup* populateAddTrack(QMenu* addTrack)
     midi->setData(Track::MIDI);
     grp->addAction(midi);
 
-    /*QAction* drum = addTrack->addAction(QIcon(*addtrack_drumtrackIcon),
-            QT_TRANSLATE_NOOP("@default", "Add Drum Track"));
-    drum->setData(Track::DRUM);
-    grp->addAction(drum);
-    */
-
     QAction* wave = addTrack->addAction(QIcon(*addAudioIcon),
             QT_TRANSLATE_NOOP("@default", "Add Audio Track"));
     wave->setData(Track::WAVE);
     grp->addAction(wave);
-
-    //QAction* synth = addTrack->addAction(QIcon(*addSynthIcon),
-    //        QT_TRANSLATE_NOOP("@default", "Add Synth Track"));
-    //synth->setData(Track::AUDIO_SOFTSYNTH);
-    //grp->addAction(synth);
 
     QAction* aoutput = addTrack->addAction(QIcon(*addOutputIcon),
             QT_TRANSLATE_NOOP("@default", "Add Audio Output"));
@@ -529,7 +518,7 @@ OOMidi::OOMidi(int argc, char** argv) : QMainWindow()
     g_trackDragImageList.insert(Track::AUDIO_OUTPUT, *dragOutputIcon);
     g_trackDragImageList.insert(Track::WAVE, *dragAudioIcon);
 
-    appName = QString("The Composer - OOStudio-").append(VERSION).append("     ");
+    appName = QString("The Composer - LOS-").append(VERSION).append("     ");
     setWindowTitle(appName);
 
     qRegisterMetaType<CCInfo>("CCInfo");
