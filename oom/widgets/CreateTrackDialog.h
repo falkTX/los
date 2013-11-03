@@ -35,7 +35,7 @@ signals:
     void trackAdded(qint64);
 
 protected:
-    void showEvent(QShowEvent*) override;
+    void showEvent(QShowEvent*) /*override*/;
 
 private slots:
     void addTrack();
