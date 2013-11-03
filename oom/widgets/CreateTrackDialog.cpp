@@ -574,9 +574,10 @@ void CreateTrackDialog::updateVisibleElements()/*{{{*/
 
         cmbInput->setVisible(true);
         chkInput->setVisible(true);
+        chkInput->setChecked(false);
         cmbOutput->setVisible(true);
         chkOutput->setVisible(true);
-        chkInput->setChecked(false);
+        chkOutput->setChecked(false);
 
         m_height = 260;
         m_width = width();
