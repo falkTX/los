@@ -344,8 +344,21 @@ bool initJackAudio()
 
 static int bufsize_callback(jack_nframes_t bufsize, void*)
 {
-    printf("JACK: buffersize changed %d\n", bufsize);
-    audio->msgSetSegSize(bufsize, sampleRate);
+    if (segmentSize != bufsize)
+    {
+        printf("JACK: buffersize changed %d\n", bufsize);
+        audio->msgSetSegSize(bufsize, sampleRate);
+    }
+    return 0;
+}
+
+static int srate_callback(jack_nframes_t srate, void*)
+{
+    if (sampleRate != (int)srate)
+    {
+        printf("JACK: samplerate changed %d\n", srate);
+        audio->msgSetSegSize(segmentSize, srate);
+    }
     return 0;
 }
 
@@ -358,13 +371,6 @@ static void freewheel_callback(int starting, void*)
     if (debugMsg || JACK_DEBUG)
         printf("JACK: freewheel_callback: starting%d\n", starting);
     audio->setFreewheel(starting);
-}
-
-static int srate_callback(jack_nframes_t n, void*)
-{
-    if (debugMsg || JACK_DEBUG)
-        printf("JACK: sample rate changed: %d\n", n);
-    return 0;
 }
 
 //---------------------------------------------------------
