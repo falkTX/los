@@ -59,7 +59,6 @@ QT4_WRAP_CPP(los_moc_headers
     traverso_shared/CommandGroup.h
     traverso_shared/OOMCommand.h
     midimonitor.h
-    ccinfo.h
     FadeCurve.h
     AddRemoveTrackCommand.h
     TrackManager.h
@@ -153,14 +152,14 @@ file(GLOB icons_source_files
 ## Define target
 ##
 
-add_executable(los
-    ${main_source_files}
-)
-
 add_library(core STATIC
     ${los_qrc_files}
     ${los_moc_headers}
     ${core_source_files}
+)
+
+add_executable(los
+    ${main_source_files}
 )
 
 add_library(icons STATIC
@@ -185,7 +184,6 @@ include_directories(
     liste
     midiedit
     midiplugins
-    remote
     widgets
 )
 
@@ -196,8 +194,7 @@ include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}/instruments
     ${CMAKE_CURRENT_BINARY_DIR}/liste
     ${CMAKE_CURRENT_BINARY_DIR}/midiedit
-    ${CMAKE_CURRENT_BINARY_DIR}/mplugins
-    ${CMAKE_CURRENT_BINARY_DIR}/remote
+    ${CMAKE_CURRENT_BINARY_DIR}/midiplugins
     ${CMAKE_CURRENT_BINARY_DIR}/widgets
 )
 
@@ -211,17 +208,32 @@ set_target_properties(core
     OUTPUT_NAME los_core
 )
 
-set_target_properties(icons
-    PROPERTIES OUTPUT_NAME los_icons
-)
-
 set_target_properties(los
     PROPERTIES OUTPUT_NAME ${LOS_EXEC_NAME}
+)
+
+set_target_properties(icons
+    PROPERTIES OUTPUT_NAME los_icons
 )
 
 ##
 ## Linkage
 ##
+
+target_link_libraries(core
+    Composer
+    cliplist
+    ctrl
+    driver
+    icons
+    instruments
+    liste
+    marker
+    master
+    midiedit
+    midiplugins
+    widgets
+)
 
 target_link_libraries(los
 # core

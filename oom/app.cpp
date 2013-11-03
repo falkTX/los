@@ -1169,10 +1169,8 @@ OOMidi::OOMidi(int argc, char** argv) : QMainWindow()
 
     QActionGroup *grp = populateAddTrack(addTrack);
 
-    trackMidiAction = grp->actions()[0];
-    trackWaveAction = grp->actions()[1];
-    trackAOutputAction = grp->actions()[2];
-    trackAInputAction = grp->actions()[3];
+    trackWaveAction = grp->actions()[0];
+    trackMidiAction = grp->actions()[1];
 
     transport = new Transport(this, "transport");
     bigtime = 0;

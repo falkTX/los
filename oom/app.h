@@ -123,8 +123,7 @@ class OOMidi : public QMainWindow
     QAction *editCutAction, *editCopyAction, *editPasteAction, *editInsertAction, *editPasteCloneAction, *editPaste2TrackAction;
     QAction *editPasteC2TAction, *editInsertEMAction, *editDeleteSelectedAction, *editSelectAllAction, *editDeselectAllAction, *editSelectAllTracksAction;
     QAction *editInvertSelectionAction, *editInsideLoopAction, *editOutsideLoopAction, *editAllPartsAction;
-    QAction *trackMidiAction, *trackDrumAction, *trackWaveAction, *trackAOutputAction;
-    QAction *trackAInputAction;
+    QAction *trackMidiAction, *trackWaveAction;
     QAction *startPianoEditAction, *startDrumEditAction, *startListEditAction;
     QAction *masterGraphicAction, *masterListAction;
     QAction *midiTransposeAction;
