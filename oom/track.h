@@ -212,6 +212,7 @@ public:
         return !m_audioChain.isEmpty();
     }
     Track* inputTrack();
+    Track* outputTrack();
 
     MidiAssignData* midiAssign() { return &m_midiassign; }
 
@@ -952,11 +953,17 @@ class WaveTrack : public AudioTrack
 public:
     static bool firstWaveTrack;
 
-    WaveTrack() : AudioTrack(Track::WAVE)
+    WaveTrack()
+        : AudioTrack(Track::WAVE),
+          _input(0),
+          _output(0)
     {
     }
 
-    WaveTrack(const WaveTrack& wt, bool cloneParts) : AudioTrack(wt, cloneParts)
+    WaveTrack(const WaveTrack& wt, bool cloneParts)
+        : AudioTrack(wt, cloneParts),
+          _input(0),
+          _output(0)
     {
     }
 
@@ -989,10 +996,6 @@ public:
     }
     virtual void setChannels(int n);
 
-    virtual bool hasAuxSend() const
-    {
-        return true;
-    }
     bool canEnableRecord() const;
 
     virtual bool canRecord() const

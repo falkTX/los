@@ -45,7 +45,6 @@
   <song>
     <info></info>
     <masterTrackId>1328921206007395620</masterTrackId>
-    <oomVerbAuxId>1328922385699435425</oomVerbAuxId>
     <automation>1</automation>
     <cpos>0</cpos>
     <rpos>0</rpos>
@@ -63,35 +62,7 @@
     <quantize>0</quantize>
     <len>405504</len>
     <follow>1</follow>
-	<associatedRoute></associatedRoute>
-    <AudioAux>
-      <name>OOStudio Verb</name>
-      <trackId>1328922385699435425</trackId>
-      <record>0</record>
-      <mute>0</mute>
-      <solo>0</solo>
-      <off>0</off>
-      <channels>2</channels>
-      <height>78</height>
-      <locked>0</locked>
-      <reminder1>0</reminder1>
-      <reminder2>0</reminder2>
-      <reminder3>0</reminder3>
-      <collapsed>1</collapsed>
-      <mixertab>0</mixertab>
-      <partcolor>1</partcolor>
-      <MidiAssign port="0" channel="0" enabled="0" preset="0" midimap="0:0:7:-1:0:0 0:0:262148:-1:0:0 0:0:262149:-1:0:0 0:0:10:-1:0:0 " />
-      <prefader>0</prefader>
-      <sendMetronome>0</sendMetronome>
-      <automation>0</automation>
-      <controller id="0" cur="1" color="#ff5a00" visible="0">
-        0 1,         
-      </controller>
-      <controller id="1" cur="0" color="#00db05" visible="0">
-      </controller>
-      <controller id="2" cur="0" color="#db0000" visible="0">
-      </controller>
-    </AudioAux>
+    <associatedRoute></associatedRoute>
     <AudioOutput>
       <name>Master</name>
       <trackId>1328921206007395620</trackId>
@@ -123,10 +94,6 @@
         0 0,         
       </controller>
     </AudioOutput>
-    <Route>
-      <source name="OOStudio Verb"/>
-      <dest name="Master"/>
-    </Route>
     <Route channel="0">
       <source name="Master"/>
       <dest type="1" name="system:playback_1"/>

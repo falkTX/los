@@ -359,7 +359,7 @@ void AudioClipList::fileItemContextMenu(const QPoint& pos)/*{{{*/
                         Track::TrackType t = Track::MIDI;
                         if(f.suffix().endsWith("wav", Qt::CaseInsensitive) || f.suffix().endsWith("ogg", Qt::CaseInsensitive))
                         {
-                            track = song->addTrackByName(f.baseName(), Track::WAVE, -1, true, true);
+                            track = song->addTrackByName(f.baseName(), Track::WAVE, -1, true);
                             song->updateTrackViews();
                         }
                         else

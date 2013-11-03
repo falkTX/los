@@ -537,7 +537,7 @@ bool ComposerCanvas::moveItem(CItem* item, const QPoint& newpos, DragType t)
         Track* newTrack = 0;// = song->addTrack(int(type));
         if(type == Track::WAVE)
         {
-            newTrack = song->addTrackByName(spart->name(), Track::WAVE, -1, true, true);
+            newTrack = song->addTrackByName(spart->name(), Track::WAVE, -1, true);
             song->updateTrackViews();
         }
         else
@@ -4138,7 +4138,7 @@ void ComposerCanvas::viewDropEvent(QDropEvent* event)
                 if(text.endsWith(".wav", Qt::CaseInsensitive) || text.endsWith(".ogg", Qt::CaseInsensitive))
                 {
                     QFileInfo f(text);
-                    track = song->addTrackByName(f.baseName(), Track::WAVE, -1, true, true);
+                    track = song->addTrackByName(f.baseName(), Track::WAVE, -1, true);
                     song->updateTrackViews();
                 }
                 else

@@ -181,7 +181,7 @@ qint64 TrackManager::addTrack(VirtualTrack* vtrack, int index)/*{{{*/
         {
             //Load up the instrument first
             song->startUndo();
-            m_track =  song->addTrackByName(vtrack->name, Track::MIDI, m_insertPosition, false, false);
+            m_track =  song->addTrackByName(vtrack->name, Track::MIDI, m_insertPosition, false);
             if(m_track)
             {
                 m_track->setMasterFlag(true);
@@ -402,33 +402,23 @@ qint64 TrackManager::addTrack(VirtualTrack* vtrack, int index)/*{{{*/
         case Track::WAVE:
         {
             song->startUndo();
-            m_track =  song->addTrackByName(vtrack->name, Track::WAVE, m_insertPosition, false, !vtrack->useOutput);
+            m_track =  song->addTrackByName(vtrack->name, Track::WAVE, m_insertPosition, false);
             if(m_track)
             {
                 m_track->setMasterFlag(true);
                 song->undoOp(UndoOp::AddTrack, m_insertPosition, m_track);
+
                 if(vtrack->useInput)
                 {
-                    QString inputName = QString("i").append(m_track->name());
-                    QString selectedInput = vtrack->inputConfig.second;
-                    bool addNewRoute = vtrack->inputConfig.first;
-                    Track* input = m_track->inputTrack();
-                    /*if(addNewRoute)
+                    if (Track* input = m_track->inputTrack())
                     {
-                        input = song->addTrackByName(inputName, Track::AUDIO_INPUT, -1, false, false);
-                        if(input)
-                        {
-                            input->setMasterFlag(false);
-                            input->setChainMaster(m_track->id());
-                            m_track->addManagedTrack(input->id());
-                        }
-                    }
-                    else
-                        input = song->findTrack(selectedInput);*/
-                    if(input)
-                    {
+                        QString inputName = input->name();
+                        QString selectedInput = vtrack->inputConfig.second;
+                        //bool addNewRoute = vtrack->inputConfig.first;
+
                         song->undoOp(UndoOp::AddTrack, -1, input);
-                        if(addNewRoute)
+
+                        //if(addNewRoute)
                         {
                             input->setMute(false);
                             //Connect jack port to Input track
@@ -437,8 +427,8 @@ qint64 TrackManager::addTrack(VirtualTrack* vtrack, int index)/*{{{*/
                             srcRoute.channel = 0;
 
                             Route srcRoute2(selectedInput, false, -1, Route::JACK_ROUTE);
-                            srcRoute2.channel = 1;
                             Route dstRoute2(input, 1);
+                            srcRoute2.channel = 1;
 
                             audio->msgAddRoute(srcRoute, dstRoute);
                             audio->msgAddRoute(srcRoute2, dstRoute2);
@@ -446,29 +436,64 @@ qint64 TrackManager::addTrack(VirtualTrack* vtrack, int index)/*{{{*/
                             audio->msgUpdateSoloStates();
                             song->update(SC_ROUTE);
                         }
-
-                        //Connect input track to audio track
-                        //Already done in song->addTrackByName
-                        /*Route srcRoute(input->name(), true, -1);
-                        Route dstRoute(m_track, 0, m_track->channels());
-
-                        audio->msgAddRoute(srcRoute, dstRoute);
-
-                        audio->msgUpdateSoloStates();
-                        song->update(SC_ROUTE);*/
                     }
                 }
+
                 if(vtrack->useOutput)
                 {
-                    //Route to the Output or Buss
-                    QString selectedOutput = vtrack->outputConfig.second;
-                    Route srcRoute(m_track, 0, m_track->channels());
-                    Route dstRoute(selectedOutput, true, -1);
+                    if (Track* output = m_track->outputTrack())
+                    {
+                        QString jackPlayback("system:playback");
+                        QString selectedOutput = vtrack->outputConfig.second;
+                        //bool addNewRoute = vtrack->outputConfig.first;
 
-                    audio->msgAddRoute(srcRoute, dstRoute);
-                    audio->msgUpdateSoloStates();
-                    song->update(SC_ROUTE);
+                        song->undoOp(UndoOp::AddTrack, -1, output);
+
+                        //if(addNewRoute)
+                        {
+                            if (selectedOutput.startsWith(jackPlayback))
+                            {
+                                //Route channel 1
+                                Route srcRoute(output, 0);
+                                Route dstRoute(QString(jackPlayback).append("_1"), true, -1, Route::JACK_ROUTE);
+                                dstRoute.channel = 0;
+
+                                //Route channel 2
+                                Route srcRoute2(output, 1);
+                                Route dstRoute2(QString(jackPlayback).append("_2"), true, -1, Route::JACK_ROUTE);
+                                dstRoute2.channel = 1;
+
+                                audio->msgAddRoute(srcRoute, dstRoute);
+                                audio->msgAddRoute(srcRoute2, dstRoute2);
+                            }
+                            else
+                            {
+                                //Route channel 1
+                                Route srcRoute(output, 0);
+                                Route dstRoute(selectedOutput, true, -1, Route::JACK_ROUTE);
+                                dstRoute.channel = 0;
+
+                                //Route channel 2
+                                Route srcRoute2(output, 1);
+                                Route dstRoute2(selectedOutput, true, -1, Route::JACK_ROUTE);
+                                dstRoute2.channel = 1;
+
+                                audio->msgAddRoute(srcRoute, dstRoute);
+                                audio->msgAddRoute(srcRoute2, dstRoute2);
+                            }
+                            audio->msgUpdateSoloStates();
+                            song->update(SC_ROUTE);
+                        }
+                    }
                 }
+
+                // always output wave tracks to master
+                Route srcRoute(m_track, 0, m_track->channels());
+                Route dstRoute(song->masterId(), true, -1);
+                audio->msgAddRoute(srcRoute, dstRoute);
+                audio->msgUpdateSoloStates();
+                song->update(SC_ROUTE);
+
                 song->deselectTracks();
                 m_track->setSelected(true);
                 emit trackAdded(m_track->id());
@@ -481,8 +506,10 @@ qint64 TrackManager::addTrack(VirtualTrack* vtrack, int index)/*{{{*/
         break;
         case Track::AUDIO_OUTPUT:
         {
+        qFatal("Trying to manually add OUT track, stop!");
+#if 0
             song->startUndo();
-            m_track = song->addTrackByName(vtrack->name, Track::AUDIO_OUTPUT, -1, false, false);
+            m_track = song->addTrackByName(vtrack->name, Track::AUDIO_OUTPUT, -1, false);
             if(m_track)
             {
                 m_track->setMasterFlag(true);
@@ -549,12 +576,15 @@ qint64 TrackManager::addTrack(VirtualTrack* vtrack, int index)/*{{{*/
             }
             song->endUndo(SC_TRACK_INSERTED | SC_TRACK_MODIFIED);
             song->updateTrackViews();
+#endif
         }
         break;
         case Track::AUDIO_INPUT:
         {
+        qFatal("Trying to manually add IN track, stop!");
+#if 0
             song->startUndo();
-            m_track = song->addTrackByName(vtrack->name, Track::AUDIO_INPUT, -1, false, false);
+            m_track = song->addTrackByName(vtrack->name, Track::AUDIO_INPUT, -1, false);
             if(m_track)
             {
                 m_track->setMasterFlag(true);
@@ -611,6 +641,7 @@ qint64 TrackManager::addTrack(VirtualTrack* vtrack, int index)/*{{{*/
             }
             song->endUndo(SC_TRACK_INSERTED | SC_TRACK_MODIFIED);
             song->updateTrackViews();
+#endif
         }
         break;
         default:

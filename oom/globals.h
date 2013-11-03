@@ -27,9 +27,7 @@ class QStringList;
 class QIcon;
 class QColor;
 class QPixmap;
-class LSClient;
 class TrackManager;
-class LSThread;
 
 extern const float denormalBias;
 
@@ -192,12 +190,9 @@ extern QHash<int, QColor> g_trackColorList;
 extern QHash<int, QColor> g_trackColorListSelected;
 extern QHash<int, QPixmap> g_trackDragImageList;
 extern int vuColorStrip;
-extern bool lsClientStarted;
-extern LSClient* lsClient;
 extern TrackManager* trackManager;
 extern QList<QPair<int, QString> > gInputList;
 extern QList<int> gInputListPorts;
-extern LSThread* gLSThread;
 extern bool gSamplerStarted;
 #endif
 

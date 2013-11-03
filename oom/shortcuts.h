@@ -153,8 +153,6 @@ enum
 
     SHRT_ADD_MIDI_TRACK, //Default: Ctrl+J
     SHRT_ADD_WAVE_TRACK, //Default: undefined
-    SHRT_ADD_AUDIO_OUTPUT, //Default: undefined
-    SHRT_ADD_AUDIO_INPUT, //Default: undefined
     SHRT_RESET_MIDI, //Ctrl+Alt+Z
 
     SHRT_OPEN_HELP, //F1

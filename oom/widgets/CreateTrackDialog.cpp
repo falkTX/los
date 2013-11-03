@@ -54,10 +54,8 @@ void CreateTrackDialog::initDefaults()
 
     txtName->setValidator(new NameValidator(this));
 
-    cmbType->addItem(*addMidiIcon, tr("Midi"), Track::MIDI);
     cmbType->addItem(*addAudioIcon, tr("Audio"), Track::WAVE);
-    cmbType->addItem(*addOutputIcon, tr("Output"), Track::AUDIO_OUTPUT);
-    cmbType->addItem(*addInputIcon, tr("Input"), Track::AUDIO_INPUT);
+    cmbType->addItem(*addMidiIcon, tr("Midi"), Track::MIDI);
 
     cmbInChannel->addItem(tr("All"), s_allChannelBit);
     for(int i = 0; i < 16; ++i)
@@ -184,6 +182,7 @@ void CreateTrackDialog::addTrack()/*{{{*/
         }
     }
         break;
+#if 0
     case Track::AUDIO_OUTPUT:
     {
         if(inputIndex >= 0 && chkInput->isChecked())
@@ -218,6 +217,7 @@ void CreateTrackDialog::addTrack()/*{{{*/
         }
     }
         break;
+#endif
     default:
         valid = false;
     }
@@ -312,14 +312,17 @@ void CreateTrackDialog::populateInputList()/*{{{*/
 {
     while(cmbInput->count())
         cmbInput->removeItem(cmbInput->count()-1);
+
     Track::TrackType type = (Track::TrackType)m_insertType;
-    switch(type)
+
+    switch (type)
     {
     case Track::MIDI:
-    {
         m_currentMidiInputList.clear();
         m_currentInput.clear();
+
         cmbInput->addItem(tr("My MIDI Inputs"), 1025);
+
         for (int i = 0; i < MIDI_PORTS; ++i)
         {
             MidiPort* mp = &midiPorts[i];
@@ -341,58 +344,27 @@ void CreateTrackDialog::populateInputList()/*{{{*/
                 m_currentMidiInputList.insert(cmbInput->count()-1, mdname);
             }
         }
-        populateNewInputList();
+
+        populateMidiInputList();
 
         if (!cmbInput->count())
         {
             chkInput->setChecked(false);
             chkInput->setEnabled(false);
         }
-    }
         break;
+
     case Track::WAVE:
-    {
-        //The track now has its own input on creation so dont bother showing other input
-        //to connect to it
-        /*for(iTrack it = song->inputs()->begin(); it != song->inputs()->end(); ++it)
-            {
-                cmbInput->addItem((*it)->name(), 0);
-            }*/
-        importOutputs();
-        if (!cmbInput->count())
-        {//TODO: Not sure what we could do here except notify the user
-            chkInput->setChecked(false);
-            chkInput->setEnabled(false);
-        }
-    }
-        break;
-    case Track::AUDIO_OUTPUT:
-    {
-        for(iTrack t = song->tracks()->begin(); t != song->tracks()->end(); ++t)
-        {
-            if((*t)->isMidiTrack() || (*t)->type() == Track::AUDIO_OUTPUT)
-                continue;
-            AudioTrack* track = (AudioTrack*) (*t);
-            Route r(track, -1);
-            cmbInput->addItem(r.name());
-        }
+        populateJackAudioOutputs();
 
         if (!cmbInput->count())
-        {//TODO: Not sure what we could do here except notify the user
+        {
             chkInput->setChecked(false);
             chkInput->setEnabled(false);
         }
-    }
         break;
-    case Track::AUDIO_INPUT:
-    {
-        importOutputs();
-        if (!cmbInput->count())
-        {//TODO: Not sure what we could do here except notify the user
-            chkInput->setChecked(false);
-            chkInput->setEnabled(false);
-        }
-    }
+
+    default:
         break;
     }
 }/*}}}*/
@@ -401,13 +373,15 @@ void CreateTrackDialog::populateOutputList()/*{{{*/
 {
     while(cmbOutput->count())
         cmbOutput->removeItem(cmbOutput->count()-1);
+
     Track::TrackType type = (Track::TrackType)m_insertType;
+
     switch(type)
     {
     case Track::MIDI:
-    {
         m_currentMidiOutputList.clear();
         m_currentOutput.clear();
+
         for (int i = 0; i < MIDI_PORTS; ++i)
         {
             MidiPort* mp = &midiPorts[i];
@@ -429,82 +403,31 @@ void CreateTrackDialog::populateOutputList()/*{{{*/
             }
         }
 
-        populateNewOutputList();
+        populateMidiOutputList();
+
         if (!cmbOutput->count())
         {
             chkOutput->setChecked(false);
             chkOutput->setEnabled(false);
         }
-    }
         break;
+
     case Track::WAVE:
-    {
-        for(iTrack t = song->tracks()->begin(); t != song->tracks()->end(); ++t)
-        {
-            if((*t)->isMidiTrack())
-                continue;
-            AudioTrack* track = (AudioTrack*) (*t);
-            if(track->type() == Track::AUDIO_OUTPUT)
-            {
-                cmbOutput->addItem(Route(track, -1).name());
-            }
-        }
+        populateJackAudioInputs();
+
         if (!cmbOutput->count())
         {
             chkOutput->setChecked(false);
             chkOutput->setEnabled(false);
         }
-    }
         break;
-    case Track::AUDIO_OUTPUT:
-    {
-        importInputs();
-        if (!cmbOutput->count())
-        {
-            chkOutput->setChecked(false);
-            chkOutput->setEnabled(false);
-        }
-    }
-        break;
-    case Track::AUDIO_INPUT:
-    {
-        for(iTrack t = song->tracks()->begin(); t != song->tracks()->end(); ++t)
-        {
-            if((*t)->isMidiTrack())
-                continue;
-            AudioTrack* track = (AudioTrack*) (*t);
-            switch(track->type())
-            {
-            case Track::AUDIO_OUTPUT:
-            case Track::WAVE:
-                cmbOutput->addItem(Route(track, -1).name());
-                break;
-            default:
-                break;
-            }
-        }
-        if (!cmbOutput->count())
-        {
-            chkOutput->setChecked(false);
-            chkOutput->setEnabled(false);
-        }
-    }
+
+    default:
         break;
     }
 }/*}}}*/
 
-void CreateTrackDialog::importOutputs()/*{{{*/
-{
-    if (checkAudioDevice())
-    {
-        std::list<QString> sl = audioDevice->outputPorts();
-        for (std::list<QString>::iterator i = sl.begin(); i != sl.end(); ++i) {
-            cmbInput->addItem(*i, 1);
-        }
-    }
-}/*}}}*/
-
-void CreateTrackDialog::importInputs()/*{{{*/
+void CreateTrackDialog::populateJackAudioInputs()/*{{{*/
 {
     if (checkAudioDevice())
     {
@@ -515,7 +438,18 @@ void CreateTrackDialog::importInputs()/*{{{*/
     }
 }/*}}}*/
 
-void CreateTrackDialog::populateNewInputList()/*{{{*/
+void CreateTrackDialog::populateJackAudioOutputs()/*{{{*/
+{
+    if (checkAudioDevice())
+    {
+        std::list<QString> sl = audioDevice->outputPorts();
+        for (std::list<QString>::iterator i = sl.begin(); i != sl.end(); ++i) {
+            cmbInput->addItem(*i, 1);
+        }
+    }
+}/*}}}*/
+
+void CreateTrackDialog::populateMidiInputList()/*{{{*/
 {
     for (iMidiDevice i = midiDevices.begin(); i != midiDevices.end(); ++i)
     {
@@ -540,7 +474,7 @@ void CreateTrackDialog::populateNewInputList()/*{{{*/
     }
 }/*}}}*/
 
-void CreateTrackDialog::populateNewOutputList()/*{{{*/
+void CreateTrackDialog::populateMidiOutputList()/*{{{*/
 {
     for (iMidiDevice i = midiDevices.begin(); i != midiDevices.end(); ++i)/*{{{*/
     {
@@ -628,42 +562,6 @@ void CreateTrackDialog::updateVisibleElements()/*{{{*/
         trackNameEdited();
 
         m_height = 300;
-        m_width = width();
-    }
-        break;
-    case Track::AUDIO_OUTPUT:
-    {
-        cmbInChannel->setVisible(false);
-        cmbOutChannel->setVisible(false);
-        lblInstrument->setVisible(false);
-        cmbInstrument->setVisible(false);
-
-        chkInput->setChecked(false);
-        cmbInput->setVisible(false);
-        chkInput->setVisible(false);
-        cmbOutput->setVisible(true);
-        chkOutput->setVisible(true);
-
-        m_height = 220;
-        m_width = width();
-    }
-        break;
-    case Track::AUDIO_INPUT:
-    {
-        cmbInChannel->setVisible(false);
-        cmbOutChannel->setVisible(false);
-        lblInstrument->setVisible(false);
-        cmbInstrument->setVisible(false);
-
-        cmbInput->setVisible(true);
-        chkInput->setVisible(true);
-        cmbOutput->setVisible(false);
-        chkOutput->setVisible(false);
-
-        cmbOutput->setCurrentIndex(0);
-        chkOutput->setEnabled(true);
-
-        m_height = 220;
         m_width = width();
     }
         break;

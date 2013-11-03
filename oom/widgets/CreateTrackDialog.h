@@ -65,13 +65,13 @@ private:
     QStringList m_currentInput;
     QStringList m_currentOutput;
 
-    void importInputs();
-    void importOutputs();
-
     void populateInputList();
     void populateOutputList();
-    void populateNewInputList();
-    void populateNewOutputList();
+
+    void populateJackAudioInputs();
+    void populateJackAudioOutputs();
+    void populateMidiInputList();
+    void populateMidiOutputList();
     void populateInstrumentList();
 
     void updateVisibleElements();

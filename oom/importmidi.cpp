@@ -565,14 +565,6 @@ bool OOMidi::importMidi(const QString name, bool merge)/*{{{*/
                     track->setOutChannel(0);
 
                     song->insertTrack(track, -1);
-                    //Create the Audio input side of the track
-                    Track* input = song->addTrackByName(QString("i").append(track->name()), Track::AUDIO_INPUT, -1, false, false);
-                    if(input)
-                    {
-                        input->setMasterFlag(false);
-                        input->setChainMaster(track->id());
-                        track->addManagedTrack(input->id());
-                    }
                     mPort++;
                     //FIXME: Provice a non-iterative way to do this using the new oomMidiPorts hash
                     //Or maintain a list of configured or inuse ports
@@ -608,14 +600,6 @@ bool OOMidi::importMidi(const QString name, bool merge)/*{{{*/
             buildMidiEventList(mel, el, track, division, true, false, false);
             processTrack(track);
             song->insertTrack(track, -1);
-            //Create the Audio input side of the track
-            Track* input = song->addTrackByName(QString("i").append(track->name()), Track::AUDIO_INPUT, -1, false, false);
-            if(input)
-            {
-                input->setMasterFlag(false);
-                input->setChainMaster(track->id());
-                track->addManagedTrack(input->id());
-            }
             mPort++;
             while((&midiPorts[mPort])->device() && mPort < MIDI_PORTS)
                 mPort++;

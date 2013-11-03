@@ -427,25 +427,15 @@ QActionGroup* populateAddTrack(QMenu* addTrack)
 {
     QActionGroup* grp = new QActionGroup(addTrack);
 
-    QAction* midi = addTrack->addAction(QIcon(*addMidiIcon),
-            QT_TRANSLATE_NOOP("@default", "Add Midi Track"));
-    midi->setData(Track::MIDI);
-    grp->addAction(midi);
-
     QAction* wave = addTrack->addAction(QIcon(*addAudioIcon),
             QT_TRANSLATE_NOOP("@default", "Add Audio Track"));
     wave->setData(Track::WAVE);
     grp->addAction(wave);
 
-    QAction* aoutput = addTrack->addAction(QIcon(*addOutputIcon),
-            QT_TRANSLATE_NOOP("@default", "Add Audio Output"));
-    aoutput->setData(Track::AUDIO_OUTPUT);
-    grp->addAction(aoutput);
-
-    QAction* ainput = addTrack->addAction(QIcon(*addInputIcon),
-            QT_TRANSLATE_NOOP("@default", "Add Audio Input"));
-    ainput->setData(Track::AUDIO_INPUT);
-    grp->addAction(ainput);
+    QAction* midi = addTrack->addAction(QIcon(*addMidiIcon),
+            QT_TRANSLATE_NOOP("@default", "Add Midi Track"));
+    midi->setData(Track::MIDI);
+    grp->addAction(midi);
 
     QObject::connect(addTrack, SIGNAL(triggered(QAction *)), song, SLOT(addNewTrack(QAction *)));
 
@@ -4327,8 +4317,6 @@ void OOMidi::updateConfiguration()
 
     trackMidiAction->setShortcut(shortcuts[SHRT_ADD_MIDI_TRACK].key);
     trackWaveAction->setShortcut(shortcuts[SHRT_ADD_WAVE_TRACK].key);
-    trackAOutputAction->setShortcut(shortcuts[SHRT_ADD_AUDIO_OUTPUT].key);
-    trackAInputAction->setShortcut(shortcuts[SHRT_ADD_AUDIO_INPUT].key);
 
     editSelectAllAction->setShortcut(shortcuts[SHRT_SELECT_ALL].key);
     editSelectAllTracksAction->setShortcut(shortcuts[SHRT_SEL_ALL_TRACK].key);

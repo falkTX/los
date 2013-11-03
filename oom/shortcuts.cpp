@@ -75,8 +75,6 @@ void initShortCuts()
     defShrt(SHRT_OPEN_MIDI_TRANSFORM, 0, "Open midi transformer", ARRANG_SHRT, "open_midi_transform");
     defShrt(SHRT_ADD_MIDI_TRACK, Qt::SHIFT + Qt::Key_M, "Add midi track", ARRANG_SHRT, "add_midi_track");
     defShrt(SHRT_ADD_WAVE_TRACK, Qt::SHIFT + Qt::Key_W, "Add wave track", ARRANG_SHRT, "add_wave_track");
-    defShrt(SHRT_ADD_AUDIO_OUTPUT, Qt::SHIFT + Qt::Key_O, "Add audio output", ARRANG_SHRT, "add_audio_output");
-    defShrt(SHRT_ADD_AUDIO_INPUT, Qt::SHIFT + Qt::Key_I, "Add audio input", ARRANG_SHRT, "add_audio_input");
     defShrt(SHRT_GLOBAL_CUT, 0, "Structure: Global cut", ARRANG_SHRT, "global_cut");
     defShrt(SHRT_GLOBAL_INSERT, 0, "Structure: Global insert", ARRANG_SHRT, "global_insert");
     defShrt(SHRT_GLOBAL_SPLIT, 0, "Structure: Global split", ARRANG_SHRT, "global_split");

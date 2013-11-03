@@ -329,10 +329,13 @@ Track* Song::addTrack(int t, bool doUndo)/*{{{*/
     }
     else if(track->type() == Track::WAVE)
     {
+        WaveTrack* wt = (WaveTrack*) track;
+
         //Create the Audio input side of the track
-        Track* input = addTrackByName(QString("i").append(track->name()), Track::AUDIO_INPUT, -1, false, false);
-        if(input)
+        if (Track* input = addTrackByName(QString("%1 (in)").arg(track->name()), Track::AUDIO_INPUT, -1, false))
         {
+            wt->setInputTrack((AudioInput*)input);
+
             input->setMasterFlag(false);
             input->setChainMaster(track->id());
             track->addManagedTrack(input->id());
@@ -343,41 +346,33 @@ Track* Song::addTrack(int t, bool doUndo)/*{{{*/
             audio->msgAddRoute(srcRoute, dstRoute);
             updateFlags |= SC_ROUTE;
         }
+
         //Create the Audio output side of the track
-        Track* output = addTrackByName(track->name(), Track::AUDIO_OUTPUT, -1, false, false);
-        if(output)
+        if (Track* output = addTrackByName(QString("%1 (out)").arg(track->name()), Track::AUDIO_OUTPUT, -1, false))
         {
+            wt->setOutputTrack((AudioOutput*)output);
+
             output->setMasterFlag(false);
             output->setChainMaster(track->id());
             track->addManagedTrack(output->id());
-        }
-    }
 
-#if 0
-    //
-    //  add default route to master
-    //
-    AudioOutput* ao = (AudioOutput*)findTrackByIdAndType(m_masterId, Track::AUDIO_OUTPUT);
-    if(ao)
-    {
-        switch (type)
-        {
-            case Track::WAVE:
-                audio->msgAddRoute(Route((AudioTrack*) track, -1), Route(ao, -1));
-                updateFlags |= SC_ROUTE;
-                break;
-            default:
-                break;
+            //Route the wave track to the output one
+            audio->msgAddRoute(Route(track, -1), Route(output, -1));
+
+            //Route the output track to master
+            if (AudioOutput* ao = (AudioOutput*)findTrackByIdAndType(m_masterId, Track::AUDIO_OUTPUT))
+                audio->msgAddRoute(Route(track, -1), Route(ao, -1));
+
+            updateFlags |= SC_ROUTE;
         }
     }
-#endif
 
     audio->msgUpdateSoloStates();
     //updateTrackViews();
     return track;
 }/*}}}*/
 
-Track* Song::addTrackByName(QString name, int t, int pos, bool doUndo, bool connectMaster)/*{{{*/
+Track* Song::addTrackByName(QString name, int t, int pos, bool doUndo)/*{{{*/
 {
     Track::TrackType type = (Track::TrackType) t;
     Track* track = 0;
@@ -428,14 +423,6 @@ Track* Song::addTrackByName(QString name, int t, int pos, bool doUndo, bool conn
     // Add default track <-> midiport routes.
     if (track->isMidiTrack())
     {
-        //Create the Audio input side of the track
-        Track* input = addTrackByName(QString("i").append(track->name()), Track::AUDIO_INPUT, -1, false, false);
-        if(input)
-        {
-            input->setMasterFlag(false);
-            input->setChainMaster(track->id());
-            track->addManagedTrack(input->id());
-        }
         MidiTrack* mt = (MidiTrack*) track;
         int c, cbi, ch;
         bool defOutFound = false; /// TODO: Remove this when multiple out routes supported.
@@ -480,9 +467,13 @@ Track* Song::addTrackByName(QString name, int t, int pos, bool doUndo, bool conn
     }
     else if(track->type() == Track::WAVE)
     {
+        WaveTrack* wt = (WaveTrack*) track;
+
         //Create the Audio input side of the track
-        if (Track* input = addTrackByName(QString("i").append(track->name()), Track::AUDIO_INPUT, -1, false, false))
+        if (Track* input = addTrackByName(QString("%1 (in)").arg(track->name()), Track::AUDIO_INPUT, -1, false))
         {
+            wt->setInputTrack((AudioInput*)input);
+
             input->setMasterFlag(false);
             input->setChainMaster(track->id());
             track->addManagedTrack(input->id());
@@ -494,35 +485,24 @@ Track* Song::addTrackByName(QString name, int t, int pos, bool doUndo, bool conn
             updateFlags |= SC_ROUTE;
         }
         //Create the Audio output side of the track
-        if (Track* output = addTrackByName(track->name(), Track::AUDIO_OUTPUT, -1, false, false))
+        if (Track* output = addTrackByName(QString("%1 (out)").arg(track->name()), Track::AUDIO_OUTPUT, -1, false))
         {
+            wt->setOutputTrack((AudioOutput*)output);
+
             output->setMasterFlag(false);
             output->setChainMaster(track->id());
             track->addManagedTrack(output->id());
-        }
-    }
 
-#if 0
-    //
-    //  add default route to master
-    //
-    if(connectMaster)
-    {
-        AudioOutput* ao = (AudioOutput*)findTrackByIdAndType(m_masterId, Track::AUDIO_OUTPUT);
-        if(ao)
-        {
-            switch (type)
-            {
-                case Track::WAVE:
-                    audio->msgAddRoute(Route((AudioTrack*) track, -1), Route(ao, -1));
-                    updateFlags |= SC_ROUTE;
-                    break;
-                default:
-                    break;
-            }
+            //Route the wave track to the output one
+            audio->msgAddRoute(Route(track, -1), Route(output, -1));
+
+            //Route the output track to master
+            if (AudioOutput* ao = (AudioOutput*)findTrackByIdAndType(m_masterId, Track::AUDIO_OUTPUT))
+                audio->msgAddRoute(Route(track, -1), Route(ao, -1));
+
+            updateFlags |= SC_ROUTE;
         }
     }
-#endif
 
     audio->msgUpdateSoloStates();
     //updateTrackViews();
@@ -954,6 +934,9 @@ Track* Song::findTrackById(qint64 id) const
 
 Track* Song::findTrackByIdAndType(qint64 id, int ttype) const
 {
+    if (id == 0)
+        return 0;
+
     Track::TrackType type = (Track::TrackType)ttype;
     switch(type)
     {
@@ -2460,7 +2443,7 @@ void Song::addMasterTrack()
 {
     if(!m_masterId)
     {//Create the default oom verb aux track if it dont exist, no undo
-        Track* t = addTrackByName("Master", Track::AUDIO_OUTPUT, -1, false, false);
+        Track* t = addTrackByName("Master", Track::AUDIO_OUTPUT, -1, false);
         if(t)
         {
             m_masterId = t->id();

@@ -28,8 +28,7 @@ bool Track::_tmpSoloChainDoIns = false;
 bool Track::_tmpSoloChainNoDec = false;
 
 const char* Track::_cname[] = {
-    "Midi", "Drum", "Wave", "AudioOut", "AudioIn", "AudioBuss",
-    "AudioAux", "AudioSynth"
+    "Midi", "Wave", "AudioOut", "AudioIn"
 };
 
 //---------------------------------------------------------
@@ -364,6 +363,20 @@ Track* Track::inputTrack()
     foreach(qint64 i, m_audioChain)
     {
         in = song->findTrackByIdAndType(i, AUDIO_INPUT);
+        if(in)
+        {
+            break;
+        }
+    }
+    return in;
+}
+
+Track* Track::outputTrack()
+{
+    Track* in = 0;
+    foreach(qint64 i, m_audioChain)
+    {
+        in = song->findTrackByIdAndType(i, AUDIO_OUTPUT);
         if(in)
         {
             break;
