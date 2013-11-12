@@ -333,7 +333,7 @@ void TrackHeader::setSelected(bool sel, bool force)/*{{{*/
         {
             m_trackName->setStyleSheet(m_style[m_tracktype]);
             setStyleSheet(trackHeaderStyle);
-            m_slider->setSliderBackground(g_trackColorList.value(m_track->type()));
+            if (m_slider) m_slider->setSliderBackground(g_trackColorList.value(m_track->type()));
             m_colorLine->setStyleSheet(lineStyleTemplate.arg(g_trackColorListLine.value(m_track->type()).name()));
             //m_strip->setStyleSheet("QFrame {background-color: blue;}");
         }
