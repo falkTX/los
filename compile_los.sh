@@ -7,4 +7,4 @@ else
 	mkdir build-debug
 fi
 cd build-debug
-cmake -DCMAKE_BUILD_TYPE=Debug .. && make -j 4 && echo "Build was OK, now enter the 'build' dir and run 'make install' as root"
+cmake -DCMAKE_BUILD_TYPE=Debug .. && make -j 4 && echo "Build was OK, now enter the 'build-debug' dir and run 'make install' as root"

@@ -99,13 +99,13 @@ SET(LOS_SHARE_DIR ${SHARE_INSTALL_PREFIX}/${LOS_INSTALL_NAME})
 ## set internal midi buffer sizes
 ##
 
-if(NOT DEFINED OOM_MIDI_FIFO_SIZE)
-    set(OOM_MIDI_FIFO_SIZE 2048)
-endif(NOT DEFINED OOM_MIDI_FIFO_SIZE)
+if(NOT DEFINED LOS_MIDI_FIFO_SIZE)
+    set(LOS_MIDI_FIFO_SIZE 2048)
+endif(NOT DEFINED LOS_MIDI_FIFO_SIZE)
 
-if(NOT DEFINED OOM_MIDI_REC_FIFO_SIZE)
-    set(OOM_MIDI_REC_FIFO_SIZE 256)
-endif(NOT DEFINED OOM_MIDI_REC_FIFO_SIZE)
+if(NOT DEFINED LOS_MIDI_REC_FIFO_SIZE)
+    set(LOS_MIDI_REC_FIFO_SIZE 256)
+endif(NOT DEFINED LOS_MIDI_REC_FIFO_SIZE)
 
 ##
 ## check build dependencies
@@ -202,13 +202,13 @@ INSTALL(FILES ${doc_files} DESTINATION ${LOS_DOC_DIR})
 include_directories(
     .
     ${PROJECT_SOURCE_DIR}
-    ${PROJECT_SOURCE_DIR}/oom
-    ${PROJECT_SOURCE_DIR}/oom/widgets
+    ${PROJECT_SOURCE_DIR}/los
+    ${PROJECT_SOURCE_DIR}/los/widgets
     ${PROJECT_BINARY_DIR}
-    ${PROJECT_BINARY_DIR}/oom
-    ${PROJECT_BINARY_DIR}/oom/ctrl
-    ${PROJECT_BINARY_DIR}/oom/instruments
-    ${PROJECT_BINARY_DIR}/oom/widgets
+    ${PROJECT_BINARY_DIR}/los
+    ${PROJECT_BINARY_DIR}/los/ctrl
+    ${PROJECT_BINARY_DIR}/los/instruments
+    ${PROJECT_BINARY_DIR}/los/widgets
 )
 
 ##
@@ -217,8 +217,8 @@ include_directories(
 ##       are scanned before coming to share/locale
 ##
 
-subdirs(al awl man oom packaging utils share)
-# subdirs(al awl man oom packaging patchcanvas utils share)
+subdirs(al awl man los packaging utils share)
+# subdirs(al awl man los packaging patchcanvas utils share)
 
 ##
 ## set uninstall
