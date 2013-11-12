@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: alsamidi.h,v 1.2 2004/01/14 09:06:43 wschweer Exp $
 //  (C) Copyright 2001 Werner Schweer (ws@seh.de)
 //=========================================================

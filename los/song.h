@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //
 //  (C) Copyright 1999/2000 Werner Schweer (ws@seh.de)
 //  (C) Copyright 2011-2012 The Open Octave Project <info@openoctave.org>
@@ -41,7 +41,7 @@ class EventList;
 class MarkerList;
 class Marker;
 class SNode;
-class OOMCommand;
+class LOSCommand;
 
 class MidiPort;
 class MidiDevice;
@@ -177,8 +177,8 @@ private:
     MidiTrackList _midis;
     WaveTrackList _waves;
     TrackList _viewtracks;
-    InputList _inputs; // audio input ports
-    OutputList _outputs; // audio output ports
+    InputHelperList _inputs; // audio input ports
+    OutputHelperList _outputs; // audio output ports
 
     UndoList* undoList;
     UndoList* redoList;
@@ -196,7 +196,7 @@ private:
     enum MType _mtype;
     int _recMode;
     int _cycleMode;
-    bool _click;
+    //bool _click;
     bool _quantize;
     int _composerRaster; // Used for audio rec new part snapping. Set by Composer snap combo box.
     unsigned _len; // song len in ticks
@@ -223,7 +223,7 @@ public:
     void putEvent(int pv);
     void endMsgCmd();
     void processMsg(AudioMsg* msg);
-    void pushToHistoryStack(OOMCommand* cmd);
+    void pushToHistoryStack(LOSCommand* cmd);
     void undoFromQtUndoStack();
     void redoFromQtUndoStack();
 
@@ -247,7 +247,7 @@ public:
     bool hasSelectedParts;
     QString associatedRoute;
     WaveTrack* bounceTrack;
-    AudioOutput* bounceOutput;
+    AudioOutputHelper* bounceOutput;
     void updatePos();
 
     void read(Xml&);
@@ -368,9 +368,9 @@ public:
         return _cycleMode;
     }
 
-    bool click() const {
-        return _click;
-    }
+//    bool click() const {
+//        return _click;
+//    }
 
     bool quantize() const {
         return _quantize;
@@ -477,11 +477,11 @@ public:
         return &_waves;
     }
 
-    InputList* inputs() {
+    InputHelperList* inputs() {
         return &_inputs;
     }
 
-    OutputList* outputs() {
+    OutputHelperList* outputs() {
         return &_outputs;
     }
 
@@ -606,7 +606,7 @@ public:
     void undoOp(UndoOp::UndoType, int, Track*);
     void undoOp(UndoOp::UndoType, int, int, int = 0);
     void undoOp(UndoOp::UndoType, Part*);
-    void undoOp(UndoOp::UndoType, OOMCommand*);
+    void undoOp(UndoOp::UndoType, LOSCommand*);
     //void undoOp(UndoOp::UndoType, Event& nevent, Part*);
     void undoOp(UndoOp::UndoType, Event& nevent, Part*, bool doCtrls, bool doClones);
     //void undoOp(UndoOp::UndoType, Event& oevent, Event& nevent, Part*);
@@ -687,7 +687,6 @@ public slots:
     void rewind();
     void setPunchin(bool f);
     void setPunchout(bool f);
-    void setClick(bool val);
     void setQuantize(bool val);
     void panic();
     void seqSignal(int fd);
@@ -713,7 +712,6 @@ signals:
     void playbackStateChanged(bool);
     void punchinChanged(bool);
     void punchoutChanged(bool);
-    void clickChanged(bool);
     void quantizeChanged(bool);
     void markerChanged(int);
     void midiPortsChanged();

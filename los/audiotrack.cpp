@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: audiotrack.cpp,v 1.14.2.21 2009/12/20 05:00:35 terminator356 Exp $
 //
 //  (C) Copyright 2004 Werner Schweer (ws@seh.de)
@@ -36,7 +36,6 @@ AudioTrack::AudioTrack(TrackType t)
 {
     _processed = false;
     _haveData = false;
-    _sendMetronome = false;
     _prefader = false;
     _recFile = 0;
     _channels = 0;
@@ -65,7 +64,6 @@ AudioTrack::AudioTrack(const AudioTrack& t, bool cloneParts)
     _totalOutChannels = t._totalOutChannels; // Is either MAX_CHANNELS, or custom value (used by syntis).
     _processed = false;
     _haveData = false;
-    _sendMetronome = t._sendMetronome;
     _controller = t._controller;
     _prefader = t._prefader;
     _automationType = t._automationType;
@@ -316,7 +314,7 @@ void AudioTrack::processAutomationEvents()/*{{{*/
     // Done with the recorded automation event list. Clear it.
     _recEvents.clear();
 
-    // Try oom without this, so that the user can remain in automation write mode
+    // Try los without this, so that the user can remain in automation write mode
     //  after a stop.
     /*
     if (automationType() == AUTO_WRITE)
@@ -661,7 +659,6 @@ void AudioTrack::writeProperties(int level, Xml& xml) const
 {
     Track::writeProperties(level, xml);
     xml.intTag(level, "prefader", prefader());
-    xml.intTag(level, "sendMetronome", sendMetronome());
     xml.intTag(level, "automation", int(automationType()));
 
     if (_wantsAutomation == false)
@@ -699,19 +696,8 @@ void AudioTrack::writeProperties(int level, Xml& xml) const
 
 bool AudioTrack::readProperties(Xml& xml, const QString& tag)
 {
-    if (tag == "LadspaPlugin" || tag == "plugin")
-    {
-    }
-    else if (tag == "Lv2Plugin")
-    {
-    }
-    else if (tag == "VstPlugin")
-    {
-    }
-    else if (tag == "prefader")
+    if (tag == "prefader")
         _prefader = xml.parseInt();
-    else if (tag == "sendMetronome")
-        _sendMetronome = xml.parseInt();
     else if (tag == "automation")
         setAutomationType(AutomationType(xml.parseInt()));
     else if (tag == "controller")
@@ -719,10 +705,10 @@ bool AudioTrack::readProperties(Xml& xml, const QString& tag)
         CtrlList* l = new CtrlList();
         l->read(xml);
 
-        // Since (until now) oom wrote a 'zero' for plugin controller current value
+        // Since (until now) los wrote a 'zero' for plugin controller current value
         //  in the XML file, we can't use that value, now that plugin automation is added.
         // We must take the value from the plugin control value.
-        // Otherwise we break all existing .oom files with plugins, because the gui
+        // Otherwise we break all existing .los files with plugins, because the gui
         //  controls would all be set to zero.
         // But we will allow for the (unintended, useless) possibility of a controller
         //  with no matching plugin control.
@@ -756,11 +742,11 @@ bool AudioTrack::readProperties(Xml& xml, const QString& tag)
 }
 
 //---------------------------------------------------------
-//   AudioInput
+//   AudioInputHelper
 //---------------------------------------------------------
 
-AudioInput::AudioInput()
-: AudioTrack(AUDIO_INPUT)
+AudioInputHelper::AudioInputHelper()
+: AudioTrack(WAVE_INPUT_HELPER)
 {
     // set Default for Input Ports:
     _mute = false;
@@ -770,7 +756,7 @@ AudioInput::AudioInput()
 }
 
 
-AudioInput::AudioInput(const AudioInput& t, bool cloneParts)
+AudioInputHelper::AudioInputHelper(const AudioInputHelper& t, bool cloneParts)
 : AudioTrack(t, cloneParts)
 {
     for (int i = 0; i < MAX_CHANNELS; ++i)
@@ -778,10 +764,10 @@ AudioInput::AudioInput(const AudioInput& t, bool cloneParts)
 }
 
 //---------------------------------------------------------
-//   ~AudioInput
+//   ~AudioInputHelper
 //---------------------------------------------------------
 
-AudioInput::~AudioInput()
+AudioInputHelper::~AudioInputHelper()
 {
     if (!checkAudioDevice()) return;
     for (int i = 0; i < _channels; ++i)
@@ -793,7 +779,7 @@ AudioInput::~AudioInput()
 //   write
 //---------------------------------------------------------
 
-void AudioInput::write(int level, Xml& xml) const
+void AudioInputHelper::write(int level, Xml& xml) const
 {
     xml.tag(level++, "AudioInput");
     AudioTrack::writeProperties(level, xml);
@@ -804,7 +790,7 @@ void AudioInput::write(int level, Xml& xml) const
 //   read
 //---------------------------------------------------------
 
-void AudioInput::read(Xml& xml)
+void AudioInputHelper::read(Xml& xml)
 {
     for (;;)
     {
@@ -834,17 +820,17 @@ void AudioInput::read(Xml& xml)
 }
 
 //---------------------------------------------------------
-//   AudioOutput
+//   AudioOutputHelper
 //---------------------------------------------------------
 
-AudioOutput::AudioOutput()
-: AudioTrack(AUDIO_OUTPUT)
+AudioOutputHelper::AudioOutputHelper()
+    : AudioTrack(WAVE_OUTPUT_HELPER)
 {
     for (int i = 0; i < MAX_CHANNELS; ++i)
         jackPorts[i] = 0;
 }
 
-AudioOutput::AudioOutput(const AudioOutput& t, bool cloneParts)
+AudioOutputHelper::AudioOutputHelper(const AudioOutputHelper& t, bool cloneParts)
 : AudioTrack(t, cloneParts)
 {
     for (int i = 0; i < MAX_CHANNELS; ++i)
@@ -853,10 +839,10 @@ AudioOutput::AudioOutput(const AudioOutput& t, bool cloneParts)
 }
 
 //---------------------------------------------------------
-//   ~AudioOutput
+//   ~AudioOutputHelper
 //---------------------------------------------------------
 
-AudioOutput::~AudioOutput()
+AudioOutputHelper::~AudioOutputHelper()
 {
     if (!checkAudioDevice()) return;
     for (int i = 0; i < _channels; ++i)
@@ -868,7 +854,7 @@ AudioOutput::~AudioOutput()
 //   write
 //---------------------------------------------------------
 
-void AudioOutput::write(int level, Xml& xml) const
+void AudioOutputHelper::write(int level, Xml& xml) const
 {
     xml.tag(level++, "AudioOutput");
     AudioTrack::writeProperties(level, xml);
@@ -879,7 +865,7 @@ void AudioOutput::write(int level, Xml& xml) const
 //   read
 //---------------------------------------------------------
 
-void AudioOutput::read(Xml& xml)
+void AudioOutputHelper::read(Xml& xml)
 {
     for (;;)
     {
@@ -962,7 +948,7 @@ bool AudioTrack::setRecordFlag1(bool f, bool monitor)/*{{{*/
 //---------------------------------------------------------
 // prepareRecording
 // normally called from song->setRecord to defer creating
-// wave files until OOMidi is globally rec-enabled
+// wave files until LOS is globally rec-enabled
 // also called from track->setRecordFlag (above)
 // if global rec enable already was done
 //---------------------------------------------------------
@@ -980,7 +966,7 @@ bool AudioTrack::prepareRecording()/*{{{*/
          QFile fil;
          for (;;++recFileNumber)
          {
-            sprintf(buffer, "%s/rec%d.wav",oomProject.toLatin1().constData(),recFileNumber);
+            sprintf(buffer, "%s/rec%d.wav",losProject.toLatin1().constData(),recFileNumber);
             fil.setFileName(QString(buffer));
             if (!fil.exists())
             break;
@@ -992,7 +978,7 @@ bool AudioTrack::prepareRecording()/*{{{*/
         printf("AudioNode::setRecordFlag1: init internal file %s\n", _recFile->path().toLatin1().constData());
     if (_recFile->openWrite())
     {
-        QMessageBox::critical(NULL, "OOMidi write error.", "Error creating target wave file\n"
+        QMessageBox::critical(NULL, "LOS write error.", "Error creating target wave file\n"
                 "Check your configuration.");
         return false;
 

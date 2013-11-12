@@ -1,6 +1,6 @@
 //======================================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //    $Id: knob.cpp,v 1.3.2.3 2009/03/09 02:05:18 terminator356 Exp $
 //  (C) Copyright 1999 Werner Schweer (ws@seh.de)
 //

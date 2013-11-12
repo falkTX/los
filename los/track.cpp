@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: track.cpp,v 1.34.2.11 2009/11/30 05:05:49 terminator356 Exp $
 //
 //  (C) Copyright 2000-2004 Werner Schweer (ws@seh.de)
@@ -237,7 +237,7 @@ Track::Track(const Track& t, bool cloneParts)
         // A couple of schemes were conceived to deal with cloneList being invalid, but the best way is
         //  to not alter the part list here. It's a big headache because: Either the parts in the cloneList
         //  need to be reliably looked up replaced with the new ones, or the clipboard and cloneList must be cleared.
-        // Fortunately the ONLY part of oom using this function is track rename (in TrackList and TrackInfo).
+        // Fortunately the ONLY part of los using this function is track rename (in TrackList and TrackInfo).
         // So we can get away with leaving this out:
         //for (iPart ip = _parts.begin(); ip != _parts.end(); ++ip)
         //      ip->second->setTrack(this);
@@ -316,10 +316,10 @@ void Track::setDefaultName()
         case WAVE:
             base = QString("Audio");
             break;
-        case AUDIO_OUTPUT:
+        case WAVE_OUTPUT_HELPER:
             base = QString("Out");
             break;
-        case AUDIO_INPUT:
+        case WAVE_INPUT_HELPER:
             base = QString("Input");
             break;
     };/*}}}*/
@@ -362,7 +362,7 @@ Track* Track::inputTrack()
     Track* in = 0;
     foreach(qint64 i, m_audioChain)
     {
-        in = song->findTrackByIdAndType(i, AUDIO_INPUT);
+        in = song->findTrackByIdAndType(i, WAVE_INPUT_HELPER);
         if(in)
         {
             break;
@@ -376,7 +376,7 @@ Track* Track::outputTrack()
     Track* in = 0;
     foreach(qint64 i, m_audioChain)
     {
-        in = song->findTrackByIdAndType(i, AUDIO_OUTPUT);
+        in = song->findTrackByIdAndType(i, WAVE_INPUT_HELPER);
         if(in)
         {
             break;
@@ -654,9 +654,9 @@ void MidiTrack::setOutPortId(qint64 i)
 {
     _outPortId = i;
 
-    if (oomMidiPorts.contains(i))
+    if (losMidiPorts.contains(i))
     {
-        MidiPort* mp = oomMidiPorts.value(i);
+        MidiPort* mp = losMidiPorts.value(i);
         _outPort = mp->portno();
     }
 }
@@ -694,9 +694,9 @@ void MidiTrack::setOutPortAndUpdate(int i)/*{{{*/
 
 void MidiTrack::setOutPortIdAndUpdate(qint64 i)/*{{{*/
 {
-    if (oomMidiPorts.contains(i))
+    if (losMidiPorts.contains(i))
     {
-        MidiPort* mp = oomMidiPorts.value(i);
+        MidiPort* mp = losMidiPorts.value(i);
         _outPort = mp->portno();
 
         // XXX for now
@@ -993,7 +993,7 @@ void Track::writeRouting(int level, Xml& xml) const/*{{{*/
 {
     QString s;
 
-    if (type() == Track::AUDIO_INPUT)
+    if (type() == Track::WAVE_INPUT_HELPER)
     {
         const RouteList* rl = &_inRoutes;
         for (ciRoute r = rl->begin(); r != rl->end(); ++r)

@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: app.cpp,v 1.113.2.68 2009/12/21 14:51:51 spamatica Exp $
 //
 //  (C) Copyright 1999-2004 Werner Schweer (ws@seh.de)
@@ -87,7 +87,7 @@ static void getCapabilities()
 
 static void printVersion(const char* prog)
 {
-    fprintf(stderr, "%s: OpenOctave Midi and Audio Editor; Version %s\n", prog, VERSION);
+    fprintf(stderr, "%s: Libre Octave Studio; Version %s\n", prog, VERSION);
 }
 
 bool g_ladish_l1_save_requested = false;
@@ -101,35 +101,34 @@ static void ladish_l1_save(int sig)
 }
 
 //Reconnect default project port state on SIGHUP
-bool oom_reconnect_ports_requested = false;
+bool los_reconnect_ports_requested = false;
 
-static void oom_reconnect_default_ports(int sig)
+static void los_reconnect_default_ports(int sig)
 {
     if(sig == SIGHUP)
     {
-        oom_reconnect_ports_requested = true;
+        los_reconnect_ports_requested = true;
     }
 }
 
 //---------------------------------------------------------
-//   OOMidiApplication
+//   LOSApplication
 //---------------------------------------------------------
 
-class OOMidiApplication : public QApplication
+class LOSApplication : public QApplication
 {
-    OOMidi* oom;
+    LOS* los;
 
 public:
-
-    OOMidiApplication(int& argc, char** argv)
+    LOSApplication(int& argc, char** argv)
     : QApplication(argc, argv)
     {
-        oom = 0;
+        los= 0;
     }
 
-    void setOOMidi(OOMidi* m)
+    void setLOS(LOS* m)
     {
-        oom = m;
+        los = m;
         startTimer(300);
     }
 
@@ -157,7 +156,7 @@ public:
                     key += Qt::ALT;
                 if (((QInputEvent*) ke)->modifiers() & Qt::ControlModifier)
                     key += Qt::CTRL;
-                oom->kbAccel(key);
+                los->kbAccel(key);
                 return true;
             }
         }
@@ -177,21 +176,17 @@ public:
 
     virtual void timerEvent(QTimerEvent * /* e */)
     {
-#ifdef HAVE_LASH
-        if (useLASH)
-            oom->lash_idle_cb();
-#endif /* HAVE_LASH */
         if (g_ladish_l1_save_requested)
         {
             g_ladish_l1_save_requested = false;
             printf("ladish L1 save request\n");
-            oom->save();
+            los->save();
         }
-        if(oom_reconnect_ports_requested)
+        if(los_reconnect_ports_requested)
         {
-            oom_reconnect_ports_requested = false;
-            printf("OOMidi reconnect ports called from SIGHUP\n");
-            oom->connectDefaultSongPorts();
+            los_reconnect_ports_requested = false;
+            printf("LOS reconnect ports called from SIGHUP\n");
+            los->connectDefaultSongPorts();
         }
     }
 
@@ -205,7 +200,7 @@ static QString localeList()
 {
     // Find out what translations are available:
     QStringList deliveredLocaleListFiltered;
-    QString distLocale = oomGlobalShare + "/locale";
+    QString distLocale = losGlobalShare + "/locale";
     QFileInfo distLocaleFi(distLocale);
     if (distLocaleFi.isDir())
     {
@@ -216,7 +211,7 @@ static QString localeList()
             QString item = *it;
             if (item.endsWith(".qm"))
             {
-                int inipos = item.indexOf("oom_") + 5;
+                int inipos = item.indexOf("los_") + 5;
                 int finpos = item.lastIndexOf(".qm");
                 deliveredLocaleListFiltered << item.mid(inipos, finpos - inipos);
             }
@@ -272,11 +267,11 @@ int main(int argc, char* argv[])
     getCapabilities();
     int noAudio = false;
 
-    oomUser = QDir::homePath();//QString(getenv("HOME"));
-    oomGlobalLib = QString(LIBDIR);
-    oomGlobalShare = QString(SHAREDIR);
-    oomProject = oomProjectInitPath; //getcwd(0, 0);
-    oomInstruments = oomGlobalShare + QDir::separator() + QString("instruments");
+    losUser = QDir::homePath();//QString(getenv("HOME"));
+    losGlobalLib = QString(LIBDIR);
+    losGlobalShare = QString(SHAREDIR);
+    losProject = losProjectInitPath; //getcwd(0, 0);
+    losInstruments = losGlobalShare + QDir::separator() + QString("instruments");
 
     // Create config dir if it doesn't exists
     QDir cPath = QDir(configPath);
@@ -301,7 +296,7 @@ int main(int argc, char* argv[])
     srand(time(0)); // initialize random number generator
     initMidiController();
     QApplication::setColorSpec(QApplication::ManyColor);
-    OOMidiApplication app(argc, argv);
+    LOSApplication app(argc, argv);
     app.setStyleSheet("QMessageBox{background-color: #595966;} QPushButton{border-radius: 3px; padding: 5px; background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,stop: 0 #626272, stop:0.1 #5b5b6b, stop: 1.0 #4d4d5b); border: 1px solid #393941; font-family: fixed-width;	font-weight: bold; font-size: 11px; color: #d0d4d0; } QPushButton:pressed, QPushButton::checked, QPushButton::hover { color: #e2e5e5; border-radius: 3px; padding: 3px; border: 1px solid #181819; background-color: #393941; }");
     QPalette p = QApplication::palette();
     p.setColor(QPalette::Disabled, QPalette::Light, QColor(89,89,102));
@@ -310,27 +305,10 @@ int main(int argc, char* argv[])
     initShortCuts();
     readConfiguration();
 
-    oomUserInstruments = config.userInstrumentsDir;
+    losUserInstruments = config.userInstrumentsDir;
 
     if (config.useDenormalBias)
         printf("Denormal protection enabled.\n");
-    // SHOW SPLASH SCREEN
-    if (config.showSplashScreen)
-    {
-        QPixmap splsh(oomGlobalShare + "/splash.png");
-
-        if (!splsh.isNull())
-        {
-            QSplashScreen* oom_splash = new QSplashScreen(splsh,
-                    Qt::WindowStaysOnTopHint);
-            oom_splash->setAttribute(Qt::WA_DeleteOnClose); // Possibly also Qt::X11BypassWindowManagerHint
-            oom_splash->show();
-            QTimer* stimer = new QTimer(0);
-            oom_splash->connect(stimer, SIGNAL(timeout()), oom_splash, SLOT(close()));
-            stimer->setSingleShot(true);
-            stimer->start(6000);
-        }
-    }
 
     int i;
 
@@ -394,11 +372,11 @@ int main(int argc, char* argv[])
     {
         if (!debugMode)
         {
-            QMessageBox::critical(NULL, "OOStudio fatal error", "OOStudio <b>failed</b> to find a <b>Jack audio server</b>.<br><br>"
-                    "<i>OOStudio will continue without audio support (-a switch)!</i><br><br>"
+            QMessageBox::critical(NULL, "LOS fatal error", "LOS <b>failed</b> to find a <b>Jack audio server</b>.<br><br>"
+                    "<i>LOS will continue without audio support (-a switch)!</i><br><br>"
                     "If this was not intended check that Jack was started. "
                     "If Jack <i>was</i> started check that it was\n"
-                    "started as the same user as OOMidi.\n");
+                    "started as the same user as LOS.\n");
 
             initDummyAudio();
             noAudio = true;
@@ -427,13 +405,12 @@ int main(int argc, char* argv[])
     argc -= optind;
     ++argc;
 
-    if (debugMsg)
     {//TODO: Change all these debugMsg/debugMode stuff to just use qDebug
-        printf("global lib:       <%s>\n", oomGlobalLib.toLatin1().constData());
-        printf("global share:     <%s>\n", oomGlobalShare.toLatin1().constData());
-        printf("oom home:        <%s>\n", oomUser.toLatin1().constData());
-        printf("project dir:      <%s>\n", oomProject.toLatin1().constData());
-        printf("user instruments: <%s>\n", oomUserInstruments.toLatin1().constData());
+        printf("global lib:       <%s>\n", losGlobalLib.toLatin1().constData());
+        printf("global share:     <%s>\n", losGlobalShare.toLatin1().constData());
+        printf("los home:        <%s>\n", losUser.toLatin1().constData());
+        printf("project dir:      <%s>\n", losProject.toLatin1().constData());
+        printf("user instruments: <%s>\n", losUserInstruments.toLatin1().constData());
     }
 
     static QTranslator translator(0);
@@ -442,11 +419,11 @@ int main(int argc, char* argv[])
         locale = locale_override;
     if (locale != "C")
     {
-        QString loc("oom_");
+        QString loc("los_");
         loc += locale;
         if (translator.load(loc, QString(".")) == false)
         {
-            QString lp(oomGlobalShare);
+            QString lp(losGlobalShare);
             lp += QString("/locale");
             if (translator.load(loc, lp) == false)
             {
@@ -464,7 +441,7 @@ int main(int argc, char* argv[])
 
     initIcons();
 
-    QApplication::addLibraryPath(oomGlobalLib + "/qtplugins");
+    QApplication::addLibraryPath(losGlobalLib + "/qtplugins");
     if (debugMsg)
     {
         QStringList list = app.libraryPaths();
@@ -477,9 +454,9 @@ int main(int argc, char* argv[])
         }
     }
 
-    oom = new OOMidi(argc, &argv[optind]);
-    app.setOOMidi(oom);
-    oom->setWindowIcon(*oomIcon);
+    los = new LOS(argc, &argv[optind]);
+    app.setLOS(los);
+    los->setWindowIcon(*losIcon);
 
     if (!debugMode)
     {
@@ -487,21 +464,21 @@ int main(int argc, char* argv[])
             perror("WARNING: Cannot lock memory:");
     }
 
-    oom->show();
-    oom->seqStart();
+    los->show();
+    los->seqStart();
     //Finally launch the server on port 8415
 
     // ladish L1
     signal(SIGUSR1, ladish_l1_save);
 
-    // OOMidi ports reconnect
-    signal(SIGHUP, oom_reconnect_default_ports);
+    // LOS ports reconnect
+    signal(SIGHUP, los_reconnect_default_ports);
 
     int rv = app.exec();
     if (debugMsg)
-        printf("app.exec() returned:%d\nDeleting main OOMidi object\n", rv);
+        printf("app.exec() returned:%d\nDeleting main LOS object\n", rv);
 
-    delete oom;
+    delete los;
     if (debugMsg)
         printf("Finished! Exiting main, return value:%d\n", rv);
     return rv;

@@ -104,7 +104,6 @@ file(GLOB core_source_files
     mpevent.cpp
     mtc.cpp
     node.cpp
-    osc.cpp
     part.cpp
     pos.cpp
     route.cpp

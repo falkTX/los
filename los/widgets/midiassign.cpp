@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: $
 //
 //  (C) Copyright 2011 Andrew Williams and Christopher Cherrett
@@ -277,7 +277,7 @@ void MidiAssignDialog::btnAddController()/*{{{*/
                     allowed = true;
                 break;
                 case CTRL_RECORD:
-                    if(m_selected->type() == Track::AUDIO_OUTPUT || m_selected->type() == Track::WAVE)
+                    if(m_selected->type() == Track::WAVE)
                     {
                         allowed = true;
                     }
@@ -409,12 +409,13 @@ void MidiAssignDialog::cmbTypeSelected(int type)/*{{{*/
 
     for (ciTrack t = song->tracks()->begin(); t != song->tracks()->end(); ++t)
     {
-        if (type == 1 && (*t)->type() != Track::AUDIO_OUTPUT)
+        if (type == 1 && (*t)->type() != Track::WAVE)
             continue;
-        else if(type == 2 && (*t)->type() != Track::AUDIO_INPUT)
+        if (type == 2 && (*t)->type() != Track::WAVE_INPUT_HELPER)
             continue;
-        else if(type == 3 && (*t)->type() != Track::WAVE)
+        if (type == 3 && (*t)->type() != Track::WAVE_OUTPUT_HELPER)
             continue;
+
         MidiAssignData* data = (*t)->midiAssign();
         QList<QStandardItem*> rowData;
         QStandardItem* enable = new QStandardItem(data->enabled);

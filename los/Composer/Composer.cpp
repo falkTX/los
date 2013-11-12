@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //    $Id: Composer.cpp,v 1.33.2.21 2009/11/17 22:08:22 terminator356 Exp $
 //  (C) Copyright 1999-2004 Werner Schweer (ws@seh.de)
 //=========================================================
@@ -99,9 +99,9 @@ Composer::Composer(QMainWindow* parent, const char* name)
     toolbar2->setMovable(false);
     toolbar2->setFloatable(false);
     toolbar2->setFixedHeight(24);
-    ((OOMidi*)parent)->setComposerAndSnapToolbars(toolbar, toolbar2);
+    ((LOS*)parent)->setComposerAndSnapToolbars(toolbar, toolbar2);
 
-    _rtabs = new QTabWidget(oom->resourceDock());
+    _rtabs = new QTabWidget(los->resourceDock());
     _rtabs->setObjectName("tabControlCenter");
     _rtabs->setTabPosition(QTabWidget::West);
     _rtabs->setTabShape(QTabWidget::Triangular);
@@ -116,8 +116,8 @@ Composer::Composer(QMainWindow* parent, const char* name)
     logoLabel->setPixmap(QPixmap(":/images/icons/oomidi_icon_the_composer.png"));
     dockLayout->addWidget(logoLabel);
     dockLayout->addWidget(_rtabs);
-    oom->resourceDock()->setWidget(dockWidget);
-    connect(oom->resourceDock(), SIGNAL(dockLocationChanged(Qt::DockWidgetArea)), SLOT(resourceDockAreaChanged(Qt::DockWidgetArea)));
+    los->resourceDock()->setWidget(dockWidget);
+    connect(los->resourceDock(), SIGNAL(dockLocationChanged(Qt::DockWidgetArea)), SLOT(resourceDockAreaChanged(Qt::DockWidgetArea)));
 
 
     /*cursorPos = new PosLabel(0);
@@ -139,8 +139,8 @@ Composer::Composer(QMainWindow* parent, const char* name)
     toolbar2->addWidget(raster);
     connect(raster, SIGNAL(activated(int)), SLOT(_setRaster(int)));
     connect(raster, SIGNAL(currentIndexChanged(int)), SLOT(_setRaster(int)));
-    connect(raster, SIGNAL(activated(int)), oom, SLOT(setRaster(int)));
-    connect(raster, SIGNAL(currentIndexChanged(int)), oom, SLOT(setRaster(int)));
+    connect(raster, SIGNAL(activated(int)), los, SLOT(setRaster(int)));
+    connect(raster, SIGNAL(currentIndexChanged(int)), los, SLOT(setRaster(int)));
     ///raster->setFocusPolicy(Qt::NoFocus);
     raster->setFocusPolicy(Qt::TabFocus);
 
@@ -340,7 +340,7 @@ Composer::Composer(QMainWindow* parent, const char* name)
     m_tempoHeader->setStartTempo(m_tempoStart);
     m_tempoHeader->setEndTempo(m_tempoEnd);
 
-    connect(oom, SIGNAL(viewReady()), &virtualScroll, SLOT(updateSpacing()));
+    connect(los, SIGNAL(viewReady()), &virtualScroll, SLOT(updateSpacing()));
     connect(canvas, SIGNAL(selectionChanged()), &virtualScroll, SLOT(updateSelections()));
     connect(canvas, SIGNAL(trackHeightChanged()), &virtualScroll, SLOT(updateParts()));
     connect(m_trackheader, SIGNAL(trackHeightChanged()), &virtualScroll, SLOT(updateParts()));
@@ -1129,7 +1129,7 @@ void Composer::controllerChanged(Track *t)
 void Composer::createDockMembers()
 {
     midiConductor = new Conductor(this);
-    foreach(QObject* obj, oom->resourceDock()->children())
+    foreach(QObject* obj, los->resourceDock()->children())
     {
         obj->installEventFilter(this);
     }

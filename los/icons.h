@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: icons.h,v 1.11.2.8 2009/11/14 03:37:48 terminator356 Exp $
 //
 //  (C) Copyright 2000 Werner Schweer (ws@seh.de)
@@ -631,9 +631,9 @@ extern QIcon* automation_trackIconSet3;
 extern QIcon* instrument_trackIconSet3;
 extern QIcon* instrumentIconSet3;
 
-extern QPixmap* oomIcon;
-extern QPixmap* aboutOOMidiImage;
-extern QPixmap* oomLeftSideLogo;
+extern QPixmap* losIcon;
+extern QPixmap* aboutLOSImage;
+extern QPixmap* losLeftSideLogo;
 
 extern QIcon* globalIcon;
 extern QIcon* projectIcon;

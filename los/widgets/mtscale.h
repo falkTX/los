@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //    $Id: mtscale.h,v 1.3 2004/04/27 22:27:06 spamatica Exp $
 //  (C) Copyright 1999 Werner Schweer (ws@seh.de)
 //=========================================================

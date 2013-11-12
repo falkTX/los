@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //    $Id: dummyaudio.cpp,v 1.3.2.16 2009/12/20 05:00:35 terminator356 Exp $
 //  (C) Copyright 2002-2003 Werner Schweer (ws@seh.de)
 //=========================================================
@@ -108,7 +108,7 @@ public:
 
 	virtual const char* clientName()
 	{
-		return "OOMidi";
+		return "LOS";
 	}
 
 	//virtual void* registerOutPort(const char*) {

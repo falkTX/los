@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: midiport.cpp,v 1.21.2.15 2009/12/07 20:11:51 terminator356 Exp $
 //
 //  (C) Copyright 2000-2004 Werner Schweer (ws@seh.de)
@@ -24,7 +24,7 @@
 #include "utils.h"
 
 MidiPort midiPorts[MIDI_PORTS];
-QHash<qint64, MidiPort*> oomMidiPorts;
+QHash<qint64, MidiPort*> losMidiPorts;
 
 //---------------------------------------------------------
 //   initMidiPorts
@@ -33,7 +33,7 @@ QHash<qint64, MidiPort*> oomMidiPorts;
 void initMidiPorts()
 {
     //TODO: Remove the need for this code
-    //We should populate the oomMidiPort hash with ports as we create them
+    //We should populate the losMidiPort hash with ports as we create them
     for (int i = 0; i < MIDI_PORTS; ++i)
     {
         MidiPort* port = &midiPorts[i];
@@ -841,7 +841,7 @@ void MidiPort::insertPatchSequence(int p, PatchSequence* ps)
 void MidiPort::writeRouting(int level, Xml& xml) const
 {
     // If this device is not actually in use by the song, do not write any routes.
-    // This prevents bogus routes from being saved and propagated in the oom file.
+    // This prevents bogus routes from being saved and propagated in the los file.
     if (!device())
         return;
 

@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //    $Id: ttoolbutton.h,v 1.1 2004/02/21 16:53:51 wschweer Exp $
 //  (C) Copyright 2004 Werner Schweer (ws@seh.de)
 //=========================================================

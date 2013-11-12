@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //    $Id: AbstractMidiEditor.h,v 1.3.2.2 2009/02/02 21:38:00 terminator356 Exp $
 //  (C) Copyright 1999 Werner Schweer (ws@seh.de)
 //=========================================================
@@ -60,11 +60,11 @@ public:
     AbstractMidiEditor(int, int, PartList*, QWidget* parent = 0, const char* name = 0);
     virtual ~AbstractMidiEditor();
 
-	bool hasPart(int sn);
-	void addPart(Part* p);
-	void addParts(PartList* p);
-	void removePart(int sn);
-	void removeParts(PartList*);
+    bool hasPart(int sn);
+    void addPart(Part* p);
+    void addParts(PartList* p);
+    void removePart(int sn);
+    void removeParts(PartList*);
     int quantVal(int v) const;
     ///int rasterStep(unsigned tick) const   { return sigmap.rasterStep(tick, _raster); }
     ///unsigned rasterVal(unsigned v)  const { return sigmap.raster(v, _raster);  }
@@ -117,12 +117,12 @@ public:
     }
 
     Part* curCanvasPart();
-	bool isEventSelected(Event e);
-	QList<Event> getSelectedEvents();
+    bool isEventSelected(Event e);
+    QList<Event> getSelectedEvents();
     WavePart* curWavePart();
     virtual void setCurCanvasPart(Part*);
-	virtual bool isGlobalEdit(){ return false; }
-	virtual void updateCanvas() {}
+    virtual bool isGlobalEdit(){ return false; }
+    virtual void updateCanvas() {}
 };
 
 #endif

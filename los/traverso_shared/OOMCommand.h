@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //
 //
 //
@@ -14,30 +14,38 @@
 #include <QUndoCommand>
 #include <QUndoStack>
 
-class QUndoStack;
-
-class OOMCommand : public QObject, public QUndoCommand
+class LOSCommand : public QObject,
+                   public QUndoCommand
 {
-        Q_OBJECT
+    Q_OBJECT
 
-public :
-	enum
-	{
-		ADD, REMOVE, MODIFY
-	};
+public:
+    enum Type {
+        ADD, REMOVE, MODIFY
+    };
 
-	OOMCommand(const QString& des = "No description set!");
-	virtual ~OOMCommand();
+    LOSCommand(const QString& des = "No description set!");
+    virtual ~LOSCommand();
 
-	virtual int do_action();
-        virtual int undo_action();
-        
-	void undo() {undo_action();}
-	void redo() {do_action();}
+    void undo()
+    {
+        undoAction();
+    }
 
-        QString		m_description;
+    void redo()
+    {
+        doAction();
+    }
 
-	static void process_command(OOMCommand* cmd);
+    static void processCommand(LOSCommand* cmd);
+
+protected:
+    QString fDescription;
+
+    virtual int doAction();
+    virtual int undoAction();
+
+    friend class CommandGroup;
 };
 
 

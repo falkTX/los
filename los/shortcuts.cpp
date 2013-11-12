@@ -28,7 +28,6 @@ void initShortCuts()
 {
     //Global:
     defShrt(SHRT_PLAY_SONG, Qt::CTRL + Qt::Key_Enter, "Transport: Start playback from current location", GLOBAL_SHRT, "play");
-    defShrt(SHRT_TOGGLE_METRO, Qt::Key_C, "Transport: Toggle metronome", GLOBAL_SHRT, "toggle_metro");
     defShrt(SHRT_STOP, 0, "Transport: Stop Playback", GLOBAL_SHRT, "stop");
     defShrt(SHRT_GOTO_START, Qt::Key_Home, "Transport: Goto Start", GLOBAL_SHRT, "goto_start");
     defShrt(SHRT_PLAY_TOGGLE, Qt::Key_Space, "Transport: Play, Stop, Rewind", GLOBAL_SHRT, "play_toggle");
@@ -65,7 +64,7 @@ void initShortCuts()
     defShrt(SHRT_EXPORT_MIDI, 0, "File: Export midi file", ARRANG_SHRT, "export_midi");
     //defShrt(SHRT_IMPORT_PART, 0, "File: Import midi part", ARRANG_SHRT, "import_part");
     //defShrt(SHRT_IMPORT_AUDIO, 0, "File: Import audio file", ARRANG_SHRT, "import_audio");
-    defShrt(SHRT_QUIT, Qt::CTRL + Qt::Key_Q, "File: Quit OOMidi", ARRANG_SHRT, "quit");
+    defShrt(SHRT_QUIT, Qt::CTRL + Qt::Key_Q, "File: Quit LOS", ARRANG_SHRT, "quit");
     //      defShrt(SHRT_DESEL_PARTS,           Qt::CTRL + Qt::Key_B, "Deselect all parts", ARRANG_SHRT, "deselect_parts");
     defShrt(SHRT_SELECT_PRTSTRACK, Qt::CTRL + Qt::ALT + Qt::Key_P, "Edit: Select parts on track", ARRANG_SHRT, "select_parts_on_track");
     defShrt(SHRT_OPEN_PIANO, Qt::Key_Return, "Open The Performer", ARRANG_SHRT, "open_performer");

@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: conf.cpp,v 1.33.2.18 2009/12/01 03:52:40 terminator356 Exp $
 //
 //  (C) Copyright 1999-2003 Werner Schweer (ws@seh.de)
@@ -463,7 +463,7 @@ static void readConfigMidiPort(Xml& xml)/*{{{*/
                         midiSeq->msgSetMidiDevice(mp, dev);
                         dev->setCacheNRPN(cachenrpn);
                     }
-                    oomMidiPorts.insert(mp->id(), mp);
+                    losMidiPorts.insert(mp->id(), mp);
                     return;
                 }
             default:
@@ -576,8 +576,8 @@ static void readSeqConfiguration(Xml& xml)
                         for(int i = 0; i < MIDI_PORTS; ++i)
                         {
                             MidiPort *mp = &midiPorts[i];
-                            if(!oomMidiPorts.contains(mp->id()))
-                                oomMidiPorts.insert(mp->id(), mp);
+                            if(!losMidiPorts.contains(mp->id()))
+                                losMidiPorts.insert(mp->id(), mp);
                         }
                     //}
                     return;
@@ -997,7 +997,7 @@ bool readConfiguration()/*{{{*/
                 fclose(f);
                 return true;
             case Xml::TagStart:
-                if (skipmode && (tag == "oom" || tag == "muse"))
+                if (skipmode && (tag == "los" || tag == "oom" || tag == "muse"))
                     skipmode = false;
                 else if (skipmode)
                     break;
@@ -1015,7 +1015,7 @@ bool readConfiguration()/*{{{*/
                 }
                 break;
             case Xml::TagEnd:
-                if (!skipmode && (tag == "oom" || tag == "muse"))
+                if (!skipmode && (tag == "los" || tag == "oom" || tag == "muse"))
                 {
                     fclose(f);
                     return false;
@@ -1170,7 +1170,7 @@ static void writeSeqConfiguration(int level, Xml& xml, bool writePortInfo)/*{{{*
 //   writeGlobalConfiguration
 //---------------------------------------------------------
 
-void OOMidi::writeGlobalConfiguration() const
+void LOS::writeGlobalConfiguration() const
 {
     FILE* f = fopen(configName.toLatin1().constData(), "w");
     if (f == 0)
@@ -1181,13 +1181,13 @@ void OOMidi::writeGlobalConfiguration() const
     }
     Xml xml(f);
     xml.header();
-    xml.tag(0, "oom version=\"2.0\"");
+    xml.tag(0, "los version=\"2.0\"");
     writeGlobalConfiguration(1, xml);
-    xml.tag(0, "/oom");
+    xml.tag(0, "/los");
     fclose(f);
 }
 
-void OOMidi::writeGlobalConfiguration(int level, Xml& xml) const
+void LOS::writeGlobalConfiguration(int level, Xml& xml) const
 {
     xml.tag(level++, "configuration");
 
@@ -1276,7 +1276,7 @@ void OOMidi::writeGlobalConfiguration(int level, Xml& xml) const
     writeInstrumentTemplates(level, xml);
 }
 
-void OOMidi::writeInstrumentTemplates(int level, Xml& xml) const
+void LOS::writeInstrumentTemplates(int level, Xml& xml) const
 {
     xml.tag(level++, "instrumentTemplateList");
     trackManager->write(level, xml);
@@ -1289,7 +1289,7 @@ void OOMidi::writeInstrumentTemplates(int level, Xml& xml) const
 }
 
 
-void OOMidi::readInstrumentTemplates()
+void LOS::readInstrumentTemplates()
 {
     FILE* f = fopen(configName.toLatin1().constData(), "r");
     if (f == 0)
@@ -1309,7 +1309,7 @@ void OOMidi::readInstrumentTemplates()
                 fclose(f);
                 return;
             case Xml::TagStart:
-                if (skipmode && tag == "oom")
+                if (skipmode && tag == "los")
                     skipmode = false;
                 else if (skipmode)
                     break;
@@ -1327,7 +1327,7 @@ void OOMidi::readInstrumentTemplates()
                 }
                 break;
             case Xml::TagEnd:
-                if(tag == "oom")
+                if(tag == "los")
                 {
                     fclose(f);
                     return;
@@ -1339,7 +1339,7 @@ void OOMidi::readInstrumentTemplates()
     fclose(f);
 }
 
-void OOMidi::readInstrumentTemplates(Xml& xml)
+void LOS::readInstrumentTemplates(Xml& xml)
 {
     for (;;)/*{{{*/
     {
@@ -1379,7 +1379,7 @@ void OOMidi::readInstrumentTemplates(Xml& xml)
 //    write song specific configuration
 //---------------------------------------------------------
 
-void OOMidi::writeConfiguration(int level, Xml& xml) const
+void LOS::writeConfiguration(int level, Xml& xml) const
 {
     xml.tag(level++, "configuration");
 
@@ -1415,7 +1415,7 @@ void OOMidi::writeConfiguration(int level, Xml& xml) const
 //   configMidiFile
 //---------------------------------------------------------
 
-void OOMidi::configMidiFile()
+void LOS::configMidiFile()
 {
     if (!midiFileConfig)
         midiFileConfig = new MidiFileConfig();
@@ -1486,7 +1486,7 @@ void MidiFileConfig::okClicked()
     config.exp2ByteTimeSigs = twoByteTimeSigs->isChecked();
     config.importMidiSplitParts = splitPartsCheckBox->isChecked();
 
-    oom->changeConfig(true); // write config file
+    los->changeConfig(true); // write config file
     close();
 }
 
@@ -1503,7 +1503,7 @@ void MidiFileConfig::cancelClicked()
 //   configGlobalSettings
 //---------------------------------------------------------
 
-void OOMidi::configGlobalSettings(int tab)
+void LOS::configGlobalSettings(int tab)
 {
     if (!globalSettingsConfig)
         globalSettingsConfig = new GlobalSettingsConfig(this);

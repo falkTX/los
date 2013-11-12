@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>OOMidi: Midi Input Plugin: Transpose</string>
+   <string>LOS: Midi Input Plugin: Transpose</string>
   </property>
   <property name="autoFillBackground">
    <bool>true</bool>

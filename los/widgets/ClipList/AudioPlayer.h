@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  
 //  (C) Copyright 2010 Andrew Williams and Christopher Cherrett
 //

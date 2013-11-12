@@ -1,4 +1,4 @@
-.\" OOMidi -- MIDI/Audio Sequencer
+.\" LOS -- MIDI/Audio Sequencer
 .\" Copyright (c) 2006 Daniel Kobras <kobras@debian.org>
 .\" Copyright (c) 2010 Orcan Ogetbil <oget.fedora@gmail.com>
 .\"
@@ -21,12 +21,12 @@
 .\"
 .TH OOMIDI 1 "May 2011"
 .SH NAME
-OOMidi \- MIDI/Audio Sequencer
+LOS \- MIDI/Audio Sequencer
 .SH SYNOPSIS
-.B ${OOMidi_EXEC_NAME}
+.B ${LOS_EXEC_NAME}
 [ \fIoptions\fR ] [ \fIfile\fR ]
 .SH DESCRIPTION
-.B OOMidi
+.B LOS
 is a MIDI/Audio sequencer that can also record and edit sound files, apply
 effects and filters from an intuitive graphical interface.  It is based on
 the Linux-specific ALSA interface for audio i/o.  The Jack Audio Connection
@@ -35,7 +35,7 @@ list of available effects.
 .PP
 The optional
 .I file
-argument denotes a project file in OOMidi-internal format that is loaded on
+argument denotes a project file in LOS-internal format that is loaded on
 startup.  Project files can also be loaded later on through the graphical menu.
 .SH OPTIONS
 .TP
@@ -87,14 +87,14 @@ Enable Python control support.
 .B -Y \fIn\fR
 Force midi real time priority to n.
 .SH "SEE ALSO"
-.B OOMidi
+.B LOS
 provides integrated links to our online documentation in the graphical user interface.
 .SH AUTHORS
-.B OOMidi
+.B LOS
 was written by Andrew Williams and Christopher Cherrett.
 Documentation written by Alex Stone.
 .PP
-.B OOMidi 
+.B LOS 
 is a fork of the MusE project that was written by Werner Schweer, Robert Jonnson, Mathias Lundgren,
 Frank Neumann, Joachim Schiele, Tim Donnelly, Nil Geisweiller, 
 Orcan Ogetbil and others.
@@ -102,4 +102,4 @@ Orcan Ogetbil and others.
 This manual page was originally written by Daniel Kobras 
 <kobras@debian.org> for the Debian GNU/Linux system
 (but may be used by others). It was updated later by
-Orcan Ogetbil of MusE2 then by Andrew Williams for OOMidi2.
+Orcan Ogetbil of MusE2 then by Andrew Williams for LOS2.

@@ -1,8 +1,8 @@
 //=========================================================
-//  OOStudio
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 
-//  (C) Copyright 2012 Filipe Coelho and the OOMidi team
+//  (C) Copyright 2012 Filipe Coelho and the LOS team
 //=========================================================
 
 #include "StretchDialog.h"
@@ -41,7 +41,7 @@ void StretchDialog::accept()
         QStringList arguments;
         arguments << "-c" << QString::number(ui->comboBox->currentIndex());
         arguments << m_filename;
-        arguments << "/tmp/oom-rubberband.wav";
+        arguments << "/tmp/los-rubberband.wav";
         qWarning() << program;
         qWarning() << arguments;
         m_proc.start(program, arguments);
@@ -51,7 +51,7 @@ void StretchDialog::accept()
     else
     {
         qWarning("Finished");
-        
+
         // Finished
         QDialog::accept();
     }

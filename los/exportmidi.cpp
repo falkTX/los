@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: exportmidi.cpp,v 1.9.2.1 2009/04/01 01:37:10 terminator356 Exp $
 //
 //  (C) Copyright 1999-2003 Werner Schweer (ws@seh.de)
@@ -127,13 +127,13 @@ static void addController(MPEventList* l, int tick, int port, int channel, int a
 //   exportMidi
 //---------------------------------------------------------
 
-void OOMidi::exportMidi()
+void LOS::exportMidi()
 {
     MFile file(QString("midis"), QString(".mid"));
 
     //FILE* fp = file.open("w", midi_file_pattern, this, false, true,
     FILE* fp = file.open("w", midi_file_save_pattern, this, false, true,
-            tr("OOMidi: Export Midi"));
+            tr("LOS: Export Midi"));
     if (fp == 0)
         return;
     MidiFile mf(fp);
@@ -273,7 +273,7 @@ void OOMidi::exportMidi()
                         fprintf(stderr, "falsche Signatur; nenner %d\n", event->sig.n);
                         break;
                 }
-                // By T356. In oom the metronome pulse is fixed at 24 (once per quarter-note).
+                // By T356. In los the metronome pulse is fixed at 24 (once per quarter-note).
                 // The number of 32nd notes per 24 MIDI clock signals (per quarter-note) is 8.
                 if (!config.exp2ByteTimeSigs)
                 {

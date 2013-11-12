@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: confmport.h,v 1.3 2004/01/25 11:20:31 wschweer Exp $
 //
 //  (C) Copyright 2000 Werner Schweer (ws@seh.de)

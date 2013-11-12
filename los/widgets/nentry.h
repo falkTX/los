@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //    $Id: nentry.h,v 1.1.1.1.2.2 2008/05/21 00:28:54 terminator356 Exp $
 //  (C) Copyright 1999 Werner Schweer (ws@seh.de)
 //=========================================================

@@ -41,7 +41,7 @@ TConfig::~ TConfig( )
 
 void TConfig::load_configuration()
 {
-        QSettings settings(QSettings::IniFormat, QSettings::UserScope, PACKAGE_NAME, "oom-" VERSION);
+        QSettings settings(QSettings::IniFormat, QSettings::UserScope, PACKAGE_NAME, "los-" VERSION);
 
     QStringList keys = settings.allKeys();
 
@@ -52,7 +52,7 @@ void TConfig::load_configuration()
 
 void TConfig::reset_settings( )
 {
-        QSettings settings(QSettings::IniFormat, QSettings::UserScope, PACKAGE_NAME, "oom-" VERSION);
+        QSettings settings(QSettings::IniFormat, QSettings::UserScope, PACKAGE_NAME, "los-" VERSION);
 
     settings.clear();
 
@@ -79,7 +79,7 @@ void TConfig::check_and_load_configuration( )
 
 void TConfig::save( )
 {
-        QSettings settings(QSettings::IniFormat, QSettings::UserScope, PACKAGE_NAME, "oom-" VERSION);
+        QSettings settings(QSettings::IniFormat, QSettings::UserScope, PACKAGE_NAME, "los-" VERSION);
 
     QHash<QString, QVariant>::const_iterator i = m_configs.constBegin();
 

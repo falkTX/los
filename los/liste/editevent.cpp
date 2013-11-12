@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //    $Id: editevent.cpp,v 1.12.2.6 2009/02/02 21:38:00 terminator356 Exp $
 //  (C) Copyright 1999-2004 Werner Schweer (ws@seh.de)
 //=========================================================
@@ -234,12 +234,12 @@ void EditSysexDialog::accept()
     {
         case 1:
             QMessageBox::information(this,
-                QString("OOMidi"),
+                QString("LOS"),
                 QWidget::tr("Cannot convert sysex string"));
         break;
         case 2:
             QMessageBox::information(this,
-                QString("OOMidi"),
+                QString("LOS"),
                 QWidget::tr("Hex String too long (2048 bytes limit)"));
         break;
         default:
@@ -258,7 +258,7 @@ EditMetaDialog::EditMetaDialog(int tick, const Event& ev,
 : EditEventDialog(parent)
 {
     meta = 0;
-    setWindowTitle(tr("OOMidi: Enter Meta Event"));
+    setWindowTitle(tr("LOS: Enter Meta Event"));
 
     QLabel* l1 = new QLabel(tr("Time Position"));
     ///epos = new PosEdit;
@@ -346,12 +346,12 @@ void EditMetaDialog::toggled(bool flag)
         {
             case 1:
                 QMessageBox::information(this,
-                    QString("OOMidi"),
+                    QString("LOS"),
                     QWidget::tr("Cannot convert sysex string"));
             break;
             case 2:
                 QMessageBox::information(this,
-                    QString("OOMidi"),
+                    QString("LOS"),
                     QWidget::tr("Hex String too long (2048 bytes limit)"));
             break;
             default:
@@ -407,12 +407,12 @@ void EditMetaDialog::accept()
     {
         case 1:
             QMessageBox::information(this,
-                QString("OOMidi"),
+                QString("LOS"),
                 QWidget::tr("Cannot convert sysex string"));
         break;
         case 2:
             QMessageBox::information(this,
-                QString("OOMidi"),
+                QString("LOS"),
                 QWidget::tr("Hex String too long (2048 bytes limit)"));
         break;
         default:
@@ -430,7 +430,7 @@ EditCAfterDialog::EditCAfterDialog(int tick, const Event& event,
         QWidget* parent)
 : EditEventDialog(parent)
 {
-    setWindowTitle(tr("OOMidi: Enter Channel Aftertouch"));
+    setWindowTitle(tr("LOS: Enter Channel Aftertouch"));
 
     QLabel* l1 = new QLabel(tr("Time Position"));
     ///epos = new PosEdit;
@@ -491,7 +491,7 @@ EditPAfterDialog::EditPAfterDialog(int tick, const Event& event,
         QWidget* parent)
 : EditEventDialog(parent)
 {
-    setWindowTitle(tr("OOMidi: Enter Poly Aftertouch"));
+    setWindowTitle(tr("LOS: Enter Poly Aftertouch"));
 
     QLabel* l1 = new QLabel(tr("Time Position"));
     ///epos = new PosEdit;

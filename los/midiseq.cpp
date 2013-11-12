@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: midiseq.cpp,v 1.30.2.21 2009/12/20 05:00:35 terminator356 Exp $
 //
 //    high priority task for scheduling midi events
@@ -531,7 +531,7 @@ void MidiSeq::processTimerTick()
             // (midiClock only increments by div units).
             //
             // Tested: With midi thread set to high priority, very few clock dropouts ocurred (P4 1.6Ghz).
-            // But target device tick drifts out of phase with oom tick slowly over time, say 20 bars or so.
+            // But target device tick drifts out of phase with los tick slowly over time, say 20 bars or so.
             // May need more tweaking, possibly use round with/instead of lrint (above), and/or
             //  do not use equalization periods - set midiClock to fractions of div.
             // Tested: With RTC resolution at 1024, stability was actually better than with 8192!

@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: globals.h,v 1.10.2.11 2009/11/25 09:09:43 terminator356 Exp $
 //
 //  (C) Copyright 1999/2000 Werner Schweer (ws@seh.de)
@@ -49,17 +49,17 @@ extern bool hIsB;
 extern const signed char sharpTab[14][7];
 extern const signed char flatTab[14][7];
 
-extern QString oomGlobalLib;
-extern QString oomGlobalShare;
-extern QString oomUser;
-extern QString oomProject;
-extern QString oomProjectFile;
-extern QString oomProjectInitPath;
+extern QString losGlobalLib;
+extern QString losGlobalShare;
+extern QString losUser;
+extern QString losProject;
+extern QString losProjectFile;
+extern QString losProjectInitPath;
 extern QString configName;
 extern QString configPath;
 extern QString routePath;
-extern QString oomInstruments;
-extern QString oomUserInstruments;
+extern QString losInstruments;
+extern QString losUserInstruments;
 extern QString gJackSessionUUID;
 
 extern QString lastWavePath;
@@ -135,8 +135,8 @@ extern QAction* noteAlphaAction;
 extern QAction* multiPartSelectionAction;
 extern QAction* masterEnableAction;
 
-class OOMidi;
-extern OOMidi* oom;
+class LOS;
+extern LOS* los;
 
 extern int preMeasures;
 extern unsigned char measureClickNote;

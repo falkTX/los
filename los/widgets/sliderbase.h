@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //    $Id: sliderbase.h,v 1.4.2.3 2006/11/14 06:28:37 terminator356 Exp $
 
 //    Copyright (C) 1997  Josef Wilgen

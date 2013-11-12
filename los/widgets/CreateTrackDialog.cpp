@@ -1,6 +1,6 @@
 //===========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  (C) Copyright 2011 Andrew Williams & Christopher Cherrett
 //===========================================================
 
@@ -339,7 +339,7 @@ void CreateTrackDialog::populateInputList()/*{{{*/
                 //{
                 //Put it in the alsa list
                 //}
-                mdname = QString("(OOStudio) ").append(mdname);
+                mdname = QString("(LOS) ").append(mdname);
                 cmbInput->addItem(mdname, i);
                 m_currentMidiInputList.insert(cmbInput->count()-1, mdname);
             }
@@ -397,7 +397,7 @@ void CreateTrackDialog::populateOutputList()/*{{{*/
                 //if(md->deviceType() == MidiDevice::ALSA_MIDI)
                 //{
                 //}
-                mdname = QString("(OOStudio) ").append(mdname);
+                mdname = QString("(LOS) ").append(mdname);
                 cmbOutput->addItem(mdname, i);
                 m_currentMidiOutputList.insert(cmbOutput->count()-1, mdname);
             }
@@ -458,7 +458,7 @@ void CreateTrackDialog::populateMidiInputList()/*{{{*/
             if ((*i)->rwFlags() & 0x2)
             {
                 //Dont add any ALSA ports that are already configured
-                //An alsa device can only be connected to 1 OOM MidiPort
+                //An alsa device can only be connected to 1 LOS MidiPort
                 if(m_currentInput.isEmpty() || !m_currentInput.contains((*i)->name()))
                     cmbInput->addItem((*i)->name(), MidiDevice::ALSA_MIDI);
             }
@@ -483,7 +483,7 @@ void CreateTrackDialog::populateMidiOutputList()/*{{{*/
             if ((*i)->rwFlags() & 0x1)
             {
                 //Dont add any ALSA ports that are already configured
-                //An alsa device can only be connected to 1 OOM MidiPort
+                //An alsa device can only be connected to 1 LOS MidiPort
                 if(m_currentOutput.isEmpty() || !m_currentOutput.contains((*i)->name()))
                     cmbOutput->addItem((*i)->name(), MidiDevice::ALSA_MIDI);
             }
@@ -509,7 +509,7 @@ void CreateTrackDialog::populateInstrumentList()/*{{{*/
         for (iMidiInstrument i = midiInstruments.begin(); i != midiInstruments.end(); ++i)
         {
             // XXX another resource thing
-            //if((*i)->isOOMInstrument() == false)
+            //if((*i)->isLOSInstrument() == false)
             {
                 cmbInstrument->addItem(QString("(GM) ").append((*i)->iname()));
                 cmbInstrument->setItemData(cmbInstrument->count()-1, (*i)->iname(), CTDInstrumentNameRole);

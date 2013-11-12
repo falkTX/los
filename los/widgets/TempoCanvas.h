@@ -1,6 +1,6 @@
 //=========================================================
-//  OOStudio
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  (C) Copyright 1999 Werner Schweer (ws@seh.de)
 //  (C) Copyright 2012 Andrew Williams & Christopher Cherrett
 //=========================================================

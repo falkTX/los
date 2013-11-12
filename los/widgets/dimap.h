@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //    $Id: dimap.h,v 1.1.1.1 2003/10/27 18:54:28 wschweer Exp $
 //
 //    Copyright (C) 1997  Josef Wilgen

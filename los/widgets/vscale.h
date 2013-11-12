@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //    $Id: vscale.h,v 1.1.1.1.2.1 2008/01/19 13:33:47 wschweer Exp $
 //  (C) Copyright 1999 Werner Schweer (ws@seh.de)
 //=========================================================

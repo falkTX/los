@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //    $Id: markerview.h,v 1.4.2.3 2008/08/18 00:15:25 terminator356 Exp $
 //  (C) Copyright 2000 Werner Schweer (ws@seh.de)
 //=========================================================

@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //    $Id: spinbox.h,v 1.1.2.2 2009/02/02 21:38:01 terminator356 Exp $
 //    (C) Copyright 2001 Werner Schweer (ws@seh.de)
 //=========================================================

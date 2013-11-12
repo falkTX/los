@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: undo.h,v 1.6.2.5 2009/05/24 21:43:44 terminator356 Exp $
 //
 //  (C) Copyright 1999/2000 Werner Schweer (ws@seh.de)
@@ -20,7 +20,7 @@ class Track;
 class TEvent;
 class SigEvent;
 class Part;
-class OOMCommand;
+class LOSCommand;
 
 extern std::list<QString> temporaryWavFiles; //!< Used for storing all tmp-files, for cleanup on shutdown
 //---------------------------------------------------------
@@ -41,79 +41,69 @@ struct UndoOp
         ModifyClip,
         ModifyMarker,
         AddTrackView, DeleteTrackView, ModifyTrackView,
-		AddAutomation, DeleteAutomation, ModifyAutomation,
-	    AddOOMCommand
+        AddAutomation, DeleteAutomation, ModifyAutomation,
+        AddOOMCommand
     };
     UndoType type;
 
     union
     {
-
-        struct
-        {
+        struct {
             int a;
             int b;
             int c;
         };
 
-        struct
-        {
+        struct {
             Track* oTrack;
             Track* nTrack;
             int trackno;
         };
 
-        struct
-        {
+        struct {
             Part* oPart;
             Part* nPart;
         };
 
-        struct
-        {
+        struct {
             Part* part;
         };
 
-	struct
-	{
-		OOMCommand* cmd;
-	};
+        struct {
+            LOSCommand* cmd;
+        };
 
-        struct
-        {
+        struct {
             SigEvent* nSignature;
             SigEvent* oSignature;
         };
 
-        struct
-        {
+        struct {
             int channel;
             int ctrl;
             int oVal;
             int nVal;
         };
 
-        struct
-        {
+        struct {
             int startframe; //!< Start frame of changed data
             int endframe; //!< End frame of changed data
             const char* filename; //!< The file that is changed
             const char* tmpwavfile; //!< The file with the changed data
         };
 
-        struct
-        {
+        struct {
             Marker* realMarker;
             Marker* copyMarker;
         };
 
-        struct
-        {
+        struct {
             int d;
             int e;
             int f;
         };
     };
+
     Event oEvent;
     Event nEvent;
     bool doCtrls;
@@ -137,6 +127,5 @@ public:
 };
 
 typedef UndoList::iterator iUndo;
-
 
 #endif // __UNDO_H__

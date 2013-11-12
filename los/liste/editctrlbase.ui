@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>OOMidi: Edit Controller Event</string>
+   <string>LOS: Edit Controller Event</string>
   </property>
   <property name="sizeGripEnabled">
    <bool>true</bool>

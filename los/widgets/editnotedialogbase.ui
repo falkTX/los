@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>OOMidi: Enter Note</string>
+   <string>LOS: Enter Note</string>
   </property>
   <property name="sizeGripEnabled">
    <bool>true</bool>

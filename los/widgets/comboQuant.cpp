@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //    $Id: comboQuant.cpp,v 1.1.1.1 2003/10/27 18:54:52 wschweer Exp $
 //  (C) Copyright 2001 Werner Schweer (ws@seh.de)
 //=========================================================

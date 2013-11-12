@@ -17,7 +17,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>OOMidi: Instrument Editor</string>
+   <string>LOS: Instrument Editor</string>
   </property>
   <widget class="QWidget" name="widget">
    <layout class="QHBoxLayout" name="horizontalLayout_5">
@@ -1121,7 +1121,7 @@ p, li { white-space: pre-wrap; }
                    </property>
                    <property name="whatsThis">
                     <string>This is a list of commonly used midi controllers.
-Note that in OOMidi pitch and program changes are
+Note that in LOS pitch and program changes are
 handled like normal controllers.</string>
                    </property>
                    <property name="alternatingRowColors">
@@ -1403,7 +1403,7 @@ If low byte is * then the controller is a
  'drum controller'. For drum tracks and 
  GS/XG type songs and instruments.
 Allows controllers for each instrument in 
- OOMidi's drum map. The low byte will be 
+ LOS's drum map. The low byte will be 
  replaced by the 'ANote' in the drum map.
 Examples: The GS and XG instruments' 
  Drum controllers.</string>

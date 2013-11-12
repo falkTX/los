@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //    $Id: comment.cpp,v 1.2 2004/02/08 18:30:00 wschweer Exp $
 //  (C) Copyright 2001 Werner Schweer (ws@seh.de)
 //=========================================================

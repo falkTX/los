@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //
 //
 //
@@ -14,29 +14,28 @@
 
 #include <QList>
 
-class CommandGroup : public OOMCommand
+class CommandGroup : public LOSCommand
 {
-	Q_OBJECT
+    Q_OBJECT
 public :
-	CommandGroup(const QString& des)
-		: OOMCommand(des)
-	{
-	}
-	~CommandGroup();
+    CommandGroup(const QString& des)
+        : LOSCommand(des)
+    {
+    }
+    ~CommandGroup() override;
 
-	int do_action();
-	int undo_action();
+    void addCommand(LOSCommand* const cmd)
+    {
+        Q_ASSERT(cmd != nullptr);
+        fCommands.append(cmd);
+    }
 
-	void add_command(OOMCommand* cmd) {
-		Q_ASSERT(cmd);
-		m_commands.append(cmd);
-	}
-private :
-	QList<OOMCommand* >	m_commands;
+protected:
+    int doAction() override;
+    int undoAction() override;
 
+private:
+    QList<LOSCommand*> fCommands;
 };
 
 #endif
-
-
-

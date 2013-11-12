@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: confmport.cpp,v 1.9.2.10 2009/12/15 03:39:58 terminator356 Exp $
 //
 //  (C) Copyright 2000 Werner Schweer (ws@seh.de)
@@ -208,7 +208,7 @@ void MPConfig::mdevViewItemRenamed(QTableWidgetItem* item)
             if (midiDevices.find(s))
             {
                 QMessageBox::critical(this,
-                        tr("OOMidi: bad device name"),
+                        tr("LOS: bad device name"),
                         tr("please choose a unique device name"),
                         QMessageBox::Ok,
                         Qt::NoButton,
@@ -637,7 +637,7 @@ _redisplay:
                 }
 
                 midiSeq->msgSetMidiDevice(port, sdev);
-                oom->changeConfig(true); // save configuration file
+                los->changeConfig(true); // save configuration file
                 song->update();
             }
         }

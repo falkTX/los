@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: mitplugin.h,v 1.1.1.1.2.1 2007/01/27 14:52:43 spamatica Exp $
 //
 //  (C) Copyright 2001 Werner Schweer (ws@seh.de)

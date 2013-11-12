@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: undo.cpp,v 1.12.2.9 2009/05/24 21:43:44 terminator356 Exp $
 //
 //  (C) Copyright 1999/2000 Werner Schweer (ws@seh.de)
@@ -129,16 +129,16 @@ void UndoList::clearDelete()
                             // Prevent delete i->oTrack from crashing.
                             switch (i->oTrack->type())
                             {
-                                case Track::AUDIO_OUTPUT:
+                                case Track::WAVE_OUTPUT_HELPER:
                                 {
-                                    AudioOutput* ao = (AudioOutput*) i->oTrack;
+                                    AudioOutputHelper* ao = (AudioOutputHelper*) i->oTrack;
                                     for (int ch = 0; ch < ao->channels(); ++ch)
                                         ao->setJackPort(ch, 0);
                                 }
                                     break;
-                                case Track::AUDIO_INPUT:
+                                case Track::WAVE_INPUT_HELPER:
                                 {
-                                    AudioInput* ai = (AudioInput*) i->oTrack;
+                                    AudioInputHelper* ai = (AudioInputHelper*) i->oTrack;
                                     for (int ch = 0; ch < ai->channels(); ++ch)
                                         ai->setJackPort(ch, 0);
                                 }
@@ -188,7 +188,7 @@ void UndoList::clearDelete()
     clear();
 }
 
-void Song::pushToHistoryStack(OOMCommand *cmd)
+void Song::pushToHistoryStack(LOSCommand *cmd)
 {
     startUndo();
     m_undoStack->push(cmd);
@@ -271,16 +271,16 @@ void Song::doUndo2()
                 // Prevent delete i->oTrack from crashing.
                 switch (i->oTrack->type())
                 {
-                    case Track::AUDIO_OUTPUT:
+                    case Track::WAVE_OUTPUT_HELPER:
                     {
-                        AudioOutput* ao = (AudioOutput*) i->oTrack;
+                        AudioOutputHelper* ao = (AudioOutputHelper*) i->oTrack;
                         for (int ch = 0; ch < ao->channels(); ++ch)
                             ao->setJackPort(ch, 0);
                     }
                         break;
-                    case Track::AUDIO_INPUT:
+                    case Track::WAVE_INPUT_HELPER:
                     {
-                        AudioInput* ai = (AudioInput*) i->oTrack;
+                        AudioInputHelper* ai = (AudioInputHelper*) i->oTrack;
                         for (int ch = 0; ch < ai->channels(); ++ch)
                             ai->setJackPort(ch, 0);
                     }
@@ -301,15 +301,15 @@ void Song::doUndo2()
                 // Connect and register ports.
                 switch (i->nTrack->type())
                 {
-                    case Track::AUDIO_OUTPUT:
+                    case Track::WAVE_OUTPUT_HELPER:
                     {
-                        AudioOutput* ao = (AudioOutput*) i->nTrack;
+                        AudioOutputHelper* ao = (AudioOutputHelper*) i->nTrack;
                         ao->setName(ao->name());
                     }
                         break;
-                    case Track::AUDIO_INPUT:
+                    case Track::WAVE_INPUT_HELPER:
                     {
-                        AudioInput* ai = (AudioInput*) i->nTrack;
+                        AudioInputHelper* ai = (AudioInputHelper*) i->nTrack;
                         ai->setName(ai->name());
                     }
                         break;
@@ -465,16 +465,16 @@ void Song::doRedo2()
                 // Prevent delete i->oTrack from crashing.
                 switch (i->oTrack->type())
                 {
-                    case Track::AUDIO_OUTPUT:
+                    case Track::WAVE_OUTPUT_HELPER:
                     {
-                        AudioOutput* ao = (AudioOutput*) i->oTrack;
+                        AudioOutputHelper* ao = (AudioOutputHelper*) i->oTrack;
                         for (int ch = 0; ch < ao->channels(); ++ch)
                             ao->setJackPort(ch, 0);
                     }
                         break;
-                    case Track::AUDIO_INPUT:
+                    case Track::WAVE_INPUT_HELPER:
                     {
-                        AudioInput* ai = (AudioInput*) i->oTrack;
+                        AudioInputHelper* ai = (AudioInputHelper*) i->oTrack;
                         for (int ch = 0; ch < ai->channels(); ++ch)
                             ai->setJackPort(ch, 0);
                     }
@@ -492,15 +492,15 @@ void Song::doRedo2()
                 // Connect and register ports.
                 switch (i->nTrack->type())
                 {
-                    case Track::AUDIO_OUTPUT:
+                    case Track::WAVE_OUTPUT_HELPER:
                     {
-                        AudioOutput* ao = (AudioOutput*) i->nTrack;
+                        AudioOutputHelper* ao = (AudioOutputHelper*) i->nTrack;
                         ao->setName(ao->name());
                     }
                         break;
-                    case Track::AUDIO_INPUT:
+                    case Track::WAVE_INPUT_HELPER:
                     {
-                        AudioInput* ai = (AudioInput*) i->nTrack;
+                        AudioInputHelper* ai = (AudioInputHelper*) i->nTrack;
                         ai->setName(ai->name());
                     }
                         break;
@@ -643,7 +643,7 @@ void Song::undoOp(UndoOp::UndoType type, Part* part)
     addUndo(i);
 }
 
-void Song::undoOp(UndoOp::UndoType type, OOMCommand* cmd)
+void Song::undoOp(UndoOp::UndoType type, LOSCommand* cmd)
 {
     UndoOp i;
     i.type = type;
@@ -785,8 +785,8 @@ bool Song::doUndo1()
                 //  before the routes are (dis)connected. So far seems to do no harm though...
                 switch (i->oTrack->type())
                 {
-                    case Track::AUDIO_OUTPUT:
-                    case Track::AUDIO_INPUT:
+                    case Track::WAVE_OUTPUT_HELPER:
+                    case Track::WAVE_INPUT_HELPER:
                         connectJackRoutes((AudioTrack*) i->oTrack, false);
                         break;
                         //case Track::AUDIO_SOFTSYNTH:
@@ -875,8 +875,8 @@ bool Song::doRedo1()
                 // FIXME: See comments in Undo1.
                 switch (i->oTrack->type())
                 {
-                    case Track::AUDIO_OUTPUT:
-                    case Track::AUDIO_INPUT:
+                    case Track::WAVE_OUTPUT_HELPER:
+                    case Track::WAVE_INPUT_HELPER:
                         connectJackRoutes((AudioTrack*) i->oTrack, false);
                         break;
                         //case Track::AUDIO_SOFTSYNTH:

@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //
 //    add ctrl value command class
 //
@@ -12,94 +12,86 @@
 
 #include "ctrl.h"
 
-AddRemoveCtrlValues::AddRemoveCtrlValues(CtrlList *cl, QList<CtrlVal> ctrlValues, int type)
-	: OOMCommand(tr("Add Nodes"))
-	, m_cl(cl)
-	, m_ctrlValues(ctrlValues)
-	, m_type(type)
+AddRemoveCtrlValues::AddRemoveCtrlValues(CtrlList* const cl, CtrlVal ctrlValue, const int type)
+    : LOSCommand(tr("Add Node")),
+      fType(type),
+      fStartValue(cl->value(0)),
+      fCtrlList(cl)
 {
-	m_startValue = m_cl->value(0);
+    fCtrlValues << ctrlValue;
 }
 
-AddRemoveCtrlValues::AddRemoveCtrlValues(CtrlList *cl, CtrlVal ctrlValue, int type)
-	: OOMCommand(tr("Add Node"))
-	, m_cl(cl)
-	, m_type(type)
+AddRemoveCtrlValues::AddRemoveCtrlValues(CtrlList* const cl, QList<CtrlVal> ctrlValues, const int type)
+    : LOSCommand(tr("Add Nodes")),
+      fType(type),
+      fStartValue(cl->value(0)),
+      fCtrlList(cl),
+      fCtrlValues(ctrlValues)
 {
-	m_ctrlValues << ctrlValue;
-	m_startValue = m_cl->value(0);
 }
 
-AddRemoveCtrlValues::AddRemoveCtrlValues(CtrlList *cl, QList<CtrlVal> ctrlValues, QList<CtrlVal> newCtrlValues, int type)
-	: OOMCommand(tr("Move Nodes"))
-	, m_cl(cl)
-	, m_ctrlValues(ctrlValues)
-	, m_newCtrlValues(newCtrlValues)
-	, m_type(type)
+AddRemoveCtrlValues::AddRemoveCtrlValues(CtrlList* const cl, QList<CtrlVal> ctrlValues, QList<CtrlVal> newCtrlValues, const int type)
+    : LOSCommand(tr("Move Nodes")),
+      fType(type),
+      fStartValue(cl->value(0)),
+      fCtrlList(cl),
+      fCtrlValues(ctrlValues),
+      fNewCtrlValues(newCtrlValues)
 {
-	m_startValue = m_cl->value(0);
 }
 
-int AddRemoveCtrlValues::do_action()
+int AddRemoveCtrlValues::doAction()
 {
-	if (m_type == ADD)
-	{
-		foreach(CtrlVal v, m_ctrlValues)
-		{
-			m_cl->add(v.getFrame(), v.val);
-		}
-	}
-	else if(m_type == REMOVE)
-	{
-		foreach(CtrlVal v, m_ctrlValues) {
-			m_cl->del(v.getFrame());
-		}
-		m_cl->add(0, m_startValue);
-	}
-	else
-	{
-		foreach(CtrlVal v, m_ctrlValues) {
-			//Delete the old
-			m_cl->del(v.getFrame());
-		}
-		foreach(CtrlVal v, m_newCtrlValues) {
-			//Add the new
-			m_cl->add(v.getFrame(), v.val);
-		}
-	}
+    if (fType == ADD)
+    {
+        foreach (CtrlVal v, fCtrlValues)
+            fCtrlList->add(v.getFrame(), v.val);
+    }
+    else if (fType == REMOVE)
+    {
+        foreach (CtrlVal v, fCtrlValues)
+            fCtrlList->del(v.getFrame());
 
+        fCtrlList->add(0, fStartValue);
+    }
+    else
+    {
+        // Delete the old
+        foreach (CtrlVal v, fCtrlValues)
+            fCtrlList->del(v.getFrame());
 
-	return 1;
+        // Add the new
+        foreach (CtrlVal v, fNewCtrlValues)
+            fCtrlList->add(v.getFrame(), v.val);
+    }
+
+    return 1;
 }
 
-int AddRemoveCtrlValues::undo_action()
+int AddRemoveCtrlValues::undoAction()
 {
-	if (m_type == ADD)
-	{
-		foreach(CtrlVal v, m_ctrlValues)
-		{
-			m_cl->del(v.getFrame());
-		}
-		m_cl->add(0, m_startValue);
-	}
-	else if(m_type == REMOVE)
-	{
-		foreach(CtrlVal v, m_ctrlValues)
-		{
-			m_cl->add(v.getFrame(), v.val);
-		}
-	}
-	else
-	{
-		foreach(CtrlVal v, m_newCtrlValues) {
-			//Delete the old
-			m_cl->del(v.getFrame());
-		}
-		foreach(CtrlVal v, m_ctrlValues) {
-			//Add the new
-			m_cl->add(v.getFrame(), v.val);
-		}
-	}
+    if (fType == ADD)
+    {
+        foreach (CtrlVal v, fCtrlValues)
+            fCtrlList->del(v.getFrame());
 
-	return 1;
+        fCtrlList->add(0, fStartValue);
+    }
+    else if (fType == REMOVE)
+    {
+        foreach (CtrlVal v, fCtrlValues)
+            fCtrlList->add(v.getFrame(), v.val);
+    }
+    else
+    {
+        // Delete the new
+        foreach(CtrlVal v, fNewCtrlValues)
+            fCtrlList->del(v.getFrame());
+
+        // Add the old
+        foreach(CtrlVal v, fCtrlValues)
+            fCtrlList->add(v.getFrame(), v.val);
+    }
+
+    return 1;
 }

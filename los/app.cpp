@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: app.cpp,v 1.113.2.68 2009/12/21 14:51:51 spamatica Exp $
 //
 //  (C) Copyright 1999-2004 Werner Schweer (ws@seh.de)
@@ -47,7 +47,6 @@
 #include "listedit.h"
 #include "marker/markerview.h"
 #include "master/masteredit.h"
-#include "metronome.h"
 #include "midiseq.h"
 #include "midiport.h"
 #include "mididev.h"
@@ -104,26 +103,10 @@ static QString* projectList[PROJECT_LIST_LEN];
 
 extern void exitJackAudio();
 extern void exitDummyAudio();
-// p3.3.39
-extern void exitOSC();
-
-#ifdef HAVE_LASH
-#include <lash/lash.h>
-lash_client_t * lash_client = 0;
-extern snd_seq_t * alsaSeq;
-#endif /* HAVE_LASH */
 
 int watchAudio, watchAudioPrefetch, watchMidi;
 pthread_t splashThread;
 //static int performerTools = PointerTool | PencilTool | RubberTool | CutTool | GlueTool | DrawTool;
-
-
-//PyScript *pyscript;
-// void OOMidi::runPythonScript()
-// {
-//  QString script("test.py");
-// // pyscript->runPythonScript(script);
-// }
 
 //---------------------------------------------------------
 //   sleep function
@@ -137,7 +120,7 @@ void microSleep(long msleep)
         sleepOk = usleep(msleep);
 }
 
-void OOMidi::initGlobalInputPorts()/*{{{*/
+void LOS::initGlobalInputPorts()/*{{{*/
 {
     gInputListPorts.clear();
     if(gInputList.size())
@@ -150,7 +133,7 @@ void OOMidi::initGlobalInputPorts()/*{{{*/
     }
 }/*}}}*/
 
-void OOMidi::addGlobalInput(QPair<int, QString> input)
+void LOS::addGlobalInput(QPair<int, QString> input)
 {
 
     QString devname = input.second;
@@ -159,17 +142,17 @@ void OOMidi::addGlobalInput(QPair<int, QString> input)
     QString inputDevName(QString("Input-").append(devname));
     int midiInPort = getFreeMidiPort();
     if(debugMsg)
-        qDebug("OOMidi::addGlobalInput: createMidiInputDevice is set: %i", midiInPort);
+        qDebug("LOS::addGlobalInput: createMidiInputDevice is set: %i", midiInPort);
     inport = &midiPorts[midiInPort];
     int devtype = input.first;
-    oomMidiPorts.insert(inport->id(), inport);
+    losMidiPorts.insert(inport->id(), inport);
     if(devtype == MidiDevice::ALSA_MIDI)
     {
         indev = midiDevices.find(devname, MidiDevice::ALSA_MIDI);
         if(indev)
         {
             if(debugMsg)
-                qDebug("OOMidi::addGlobalInput: Found MIDI input device: ALSA_MIDI");
+                qDebug("LOS::addGlobalInput: Found MIDI input device: ALSA_MIDI");
             int openFlags = 0;
             openFlags ^= 0x2;
             indev->setOpenFlags(openFlags);
@@ -183,7 +166,7 @@ void OOMidi::addGlobalInput(QPair<int, QString> input)
         if(indev)
         {
             if(debugMsg)
-                qDebug("OOMidi::addGlobalInput: Created MIDI input device: JACK_MIDI");
+                qDebug("LOS::addGlobalInput: Created MIDI input device: JACK_MIDI");
             int openFlags = 0;
             openFlags ^= 0x2;
             indev->setOpenFlags(openFlags);
@@ -194,7 +177,7 @@ void OOMidi::addGlobalInput(QPair<int, QString> input)
     if(indev && indev->deviceType() == MidiDevice::JACK_MIDI)
     {
         if(debugMsg)
-            qDebug("OOMidi::addGlobalInput: MIDI input device configured, Adding input routes to MIDI port");
+            qDebug("LOS::addGlobalInput: MIDI input device configured, Adding input routes to MIDI port");
         Route srcRoute(devname, false, -1, Route::JACK_ROUTE);
         Route dstRoute(indev, -1);
 
@@ -209,7 +192,7 @@ void OOMidi::addGlobalInput(QPair<int, QString> input)
 //   seqStart
 //---------------------------------------------------------
 
-bool OOMidi::seqStart()
+bool LOS::seqStart()
 {
     if (audio->isRunning())
     {
@@ -219,7 +202,7 @@ bool OOMidi::seqStart()
 
     if (!audio->start())
     {
-        QMessageBox::critical(oom, tr("Failed to start audio!"),
+        QMessageBox::critical(los, tr("Failed to start audio!"),
                 tr("Was not able to start audio, check if jack is running.\n"));
         return false;
     }
@@ -235,7 +218,7 @@ bool OOMidi::seqStart()
     }
     if (!audio->isRunning())
     {
-        QMessageBox::critical(oom, tr("Failed to start audio!"),
+        QMessageBox::critical(los, tr("Failed to start audio!"),
                 tr("Timeout waiting for audio to run. Check if jack is running.\n"));
     }
     //
@@ -244,7 +227,7 @@ bool OOMidi::seqStart()
 
     realTimePriority = audioDevice->realtimePriority();
     if (debugMsg)
-        printf("OOMidi::seqStart: getting audio driver realTimePriority:%d\n", realTimePriority);
+        printf("LOS::seqStart: getting audio driver realTimePriority:%d\n", realTimePriority);
 
     int pfprio = 0;
     int midiprio = 0;
@@ -268,7 +251,7 @@ bool OOMidi::seqStart()
 
     // FIXME FIXME: The realTimePriority of the Jack thread seems to always be 5 less than the value passed to jackd command.
     //if(midiprio == realTimePriority)
-    //  printf("OOMidi: WARNING: Midi realtime priority %d is the same as audio realtime priority %d. Try a different setting.\n",
+    //  printf("LOS: WARNING: Midi realtime priority %d is the same as audio realtime priority %d. Try a different setting.\n",
     //         midiprio, realTimePriority);
 
     //Starting midiMonitor
@@ -314,7 +297,7 @@ bool OOMidi::seqStart()
 //   stop
 //---------------------------------------------------------
 
-void OOMidi::seqStop()
+void LOS::seqStop()
 {
     // label sequencer as disabled before it actually happened to minimize race condition
     midiSeqRunning = false;
@@ -339,7 +322,7 @@ void OOMidi::seqStop()
 //   seqRestart
 //---------------------------------------------------------
 
-bool OOMidi::seqRestart()
+bool LOS::seqRestart()
 {
     bool restartSequencer = audio->isRunning();
     if (restartSequencer)
@@ -359,7 +342,7 @@ bool OOMidi::seqRestart()
     return true;
 }
 
-void OOMidi::pipelineStateChanged(int state)
+void LOS::pipelineStateChanged(int state)
 {
     switch(state)
     {
@@ -443,10 +426,10 @@ QActionGroup* populateAddTrack(QMenu* addTrack)
 }
 
 //---------------------------------------------------------
-//   OOMidi
+//   LOS
 //---------------------------------------------------------
 
-OOMidi::OOMidi(int argc, char** argv) : QMainWindow()
+LOS::LOS(int argc, char** argv) : QMainWindow()
 {
 
     // Very first thing we should do is loading global configuration values
@@ -459,7 +442,7 @@ OOMidi::OOMidi(int argc, char** argv) : QMainWindow()
 
     setIconSize(ICON_SIZE);
     setFocusPolicy(Qt::WheelFocus);
-    oom = this; // hack
+    los = this; // hack
 
     //Initialize the trackManager
     trackManager = new TrackManager;
@@ -468,7 +451,6 @@ OOMidi::OOMidi(int argc, char** argv) : QMainWindow()
     midiRemoteConfig = 0;
     midiPortConfig = 0;
     midiAssignDialog = 0;
-    metronomeConfig = 0;
     audioConfig = 0;
     midiFileConfig = 0;
     midiFilterConfig = 0;
@@ -488,25 +470,25 @@ OOMidi::OOMidi(int argc, char** argv) : QMainWindow()
     performer = 0;
     m_rasterVal = 0;
 
-    g_trackColorListLine.insert(Track::AUDIO_INPUT, QColor(189,122,214));
     g_trackColorListLine.insert(Track::MIDI, QColor(1,230,238));
-    g_trackColorListLine.insert(Track::AUDIO_OUTPUT, QColor(252,118,118));
     g_trackColorListLine.insert(Track::WAVE, QColor(129,244,118));
+    g_trackColorListLine.insert(Track::WAVE_INPUT_HELPER, QColor(189,122,214));
+    g_trackColorListLine.insert(Track::WAVE_OUTPUT_HELPER, QColor(252,118,118));
 
-    g_trackColorList.insert(Track::AUDIO_INPUT, QColor(105,105,105));
     g_trackColorList.insert(Track::MIDI, QColor(105,105,105));
-    g_trackColorList.insert(Track::AUDIO_OUTPUT, QColor(105,105,105));
     g_trackColorList.insert(Track::WAVE, QColor(105,105,105));
+    g_trackColorList.insert(Track::WAVE_INPUT_HELPER, QColor(105,105,105));
+    g_trackColorList.insert(Track::WAVE_OUTPUT_HELPER, QColor(105,105,105));
 
-    g_trackColorListSelected.insert(Track::AUDIO_INPUT, QColor(189,122,214));
     g_trackColorListSelected.insert(Track::MIDI, QColor(1,230,238));
-    g_trackColorListSelected.insert(Track::AUDIO_OUTPUT, QColor(252,118,118));
     g_trackColorListSelected.insert(Track::WAVE, QColor(129,244,118));
+    g_trackColorListSelected.insert(Track::WAVE_INPUT_HELPER, QColor(189,122,214));
+    g_trackColorListSelected.insert(Track::WAVE_OUTPUT_HELPER, QColor(252,118,118));
 
-    g_trackDragImageList.insert(Track::AUDIO_INPUT, *dragMidiIcon);
-    g_trackDragImageList.insert(Track::MIDI, *dragInputIcon);
-    g_trackDragImageList.insert(Track::AUDIO_OUTPUT, *dragOutputIcon);
+    g_trackDragImageList.insert(Track::MIDI, *dragMidiIcon);
     g_trackDragImageList.insert(Track::WAVE, *dragAudioIcon);
+    g_trackDragImageList.insert(Track::WAVE_INPUT_HELPER, *dragInputIcon);
+    g_trackDragImageList.insert(Track::WAVE_OUTPUT_HELPER, *dragOutputIcon);
 
     appName = QString("The Composer - LOS-").append(VERSION).append("     ");
     setWindowTitle(appName);
@@ -541,7 +523,7 @@ OOMidi::OOMidi(int argc, char** argv) : QMainWindow()
     //---------------------------------------------------
     //    Python bridge
     //---------------------------------------------------
-    // Uncomment in order to enable OOMidi Python bridge:
+    // Uncomment in order to enable LOS Python bridge:
     if (usePythonBridge)
     {
         printf("Initializing python bridge!\n");
@@ -811,9 +793,9 @@ OOMidi::OOMidi(int argc, char** argv) : QMainWindow()
 
     //-------- Help Actions
     helpManualAction = new QAction(tr("&Manual"), this);
-    helpHomepageAction = new QAction(tr("&OOStudio Homepage"), this);
+    helpHomepageAction = new QAction(tr("&LOS Homepage"), this);
     helpReportAction = new QAction(tr("&Report Bug..."), this);
-    helpAboutAction = new QAction(tr("&About OOStudio"), this);
+    helpAboutAction = new QAction(tr("&About LOS"), this);
 
 
     //---- Connections
@@ -1202,7 +1184,7 @@ OOMidi::OOMidi(int argc, char** argv) : QMainWindow()
     else if (config.startMode == 1)
     {
         printf("starting with default template\n");
-        m_initProjectName = oomGlobalShare + QString("/templates/default.los");
+        m_initProjectName = losGlobalShare + QString("/templates/default.los");
         m_useTemplate = true;
     }
     else if (config.startMode == 2)
@@ -1239,9 +1221,9 @@ OOMidi::OOMidi(int argc, char** argv) : QMainWindow()
     setCorner(Qt::BottomLeftCorner, Qt:: LeftDockWidgetArea);
 }
 
-OOMidi::~OOMidi()
+LOS::~LOS()
 {
-    //printf("OOMidi::~OOMidi\n");
+    //printf("LOS::~LOS\n");
     tconfig().set_property("Interface", "size", size());
     tconfig().set_property("Interface", "fullScreen", isFullScreen());
     tconfig().set_property("Interface", "pos", pos());
@@ -1251,35 +1233,35 @@ OOMidi::~OOMidi()
     tconfig().save();
 }
 
-void OOMidi::loadInitialProject()
+void LOS::loadInitialProject()
 {
-    //qDebug("Entering OOMidi::loadInitialProject~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    //qDebug("Entering LOS::loadInitialProject~~~~~~~~~~~~~~~~~~~~~~~~~~");
     song->blockSignals(false);
     loadProjectFile(m_initProjectName, m_useTemplate, true);
     changeConfig(false);
     readInstrumentTemplates();
     song->update();
-    //qDebug("Leaving OOMidi::loadInitialProject~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    //qDebug("Leaving LOS::loadInitialProject~~~~~~~~~~~~~~~~~~~~~~~~~~");
 }
 
-void OOMidi::lsStartupFailed()
+void LOS::lsStartupFailed()
 {
-    //qDebug("Entering OOMidi::lsStartupFailed~~~~~~~~~~~~~~~~~~~~~~~~~~");
-    m_initProjectName = oomGlobalShare + QString("/templates/default.oom");
+    //qDebug("Entering LOS::lsStartupFailed~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    m_initProjectName = losGlobalShare + QString("/templates/default.los");
     m_useTemplate = true;
     song->blockSignals(false);
     loadProjectFile(m_initProjectName, m_useTemplate, true);
     changeConfig(false);
     readInstrumentTemplates();
     song->update();
-    //qDebug("Leaving OOMidi::lsStartupFailed~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    //qDebug("Leaving LOS::lsStartupFailed~~~~~~~~~~~~~~~~~~~~~~~~~~");
 }
 
-void OOMidi::showUndoView()
+void LOS::showUndoView()
 {
 }
 
-Tool OOMidi::getCurrentTool()
+Tool LOS::getCurrentTool()
 {
     if (composer && composer->getCanvas())
         return composer->getCanvas()->tool();
@@ -1290,7 +1272,7 @@ Tool OOMidi::getCurrentTool()
 /**
  * Called from within the after Composer Constructor
  */
-void OOMidi::addTransportToolbar()
+void LOS::addTransportToolbar()
 {
     tools = new QToolBar(tr("Transport Tools"));
     tools->setAllowedAreas(Qt::BottomToolBarArea);
@@ -1360,7 +1342,7 @@ void OOMidi::addTransportToolbar()
 //   setComposerAndSnapToolbars
 //---------------------------------------------------------
 
-void OOMidi::setComposerAndSnapToolbars(QToolBar* comp, QToolBar* snap)
+void LOS::setComposerAndSnapToolbars(QToolBar* comp, QToolBar* snap)
 {
     toolbarComposerSettings = comp;
     toolbarSnap = snap;
@@ -1370,7 +1352,7 @@ void OOMidi::setComposerAndSnapToolbars(QToolBar* comp, QToolBar* snap)
 //   setHeartBeat
 //---------------------------------------------------------
 
-void OOMidi::setHeartBeat()
+void LOS::setHeartBeat()
 {
     heartBeatTimer->start(1000 / config.guiRefresh);
 }
@@ -1379,7 +1361,7 @@ void OOMidi::setHeartBeat()
 //   resetDevices
 //---------------------------------------------------------
 
-void OOMidi::resetMidiDevices()
+void LOS::resetMidiDevices()
 {
     audio->msgResetMidiDevices();
 }
@@ -1388,7 +1370,7 @@ void OOMidi::resetMidiDevices()
 //   initMidiDevices
 //---------------------------------------------------------
 
-void OOMidi::initMidiDevices()
+void LOS::initMidiDevices()
 {
     // Added by T356
     //audio->msgIdle(true);
@@ -1403,14 +1385,14 @@ void OOMidi::initMidiDevices()
 //   localOff
 //---------------------------------------------------------
 
-void OOMidi::localOff()
+void LOS::localOff()
 {
     audio->msgLocalOff();
 }
 
 //---------------------------------------------------------
 //   loadProjectFile
-//    load *.oom, *.mid, *.kar
+//    load *.los, *.mid, *.kar
 //
 //    template - if true, load file but do not change
 //                project name
@@ -1418,13 +1400,13 @@ void OOMidi::localOff()
 
 // for drop:
 
-void OOMidi::loadProjectFile(const QString& name)
+void LOS::loadProjectFile(const QString& name)
 {
     loadProjectFile(name, false, false);
 }
 
 
-void OOMidi::loadProjectFile(const QString& name, bool songTemplate, bool loadAll)
+void LOS::loadProjectFile(const QString& name, bool songTemplate, bool loadAll)
 {
     //FIXME: Check this the file exists before going further
     QFileInfo info(name);
@@ -1465,18 +1447,18 @@ void OOMidi::loadProjectFile(const QString& name, bool songTemplate, bool loadAl
 
 //---------------------------------------------------------
 //   loadProjectFile
-//    load *.oom, *.mid, *.kar
+//    load *.los, *.mid, *.kar
 //
 //    template - if true, load file but do not change
 //                project name
 //    loadAll  - load song data + configuration data
 //---------------------------------------------------------
 
-void OOMidi::loadProjectFile1(const QString& name, bool songTemplate, bool loadAll)
+void LOS::loadProjectFile1(const QString& name, bool songTemplate, bool loadAll)
 {
     composer->clear(); // clear track info
-    //Clear the ID based oomMidiPorts hash, it will be repopulated when the song loads
-    oomMidiPorts.clear();
+    //Clear the ID based losMidiPorts hash, it will be repopulated when the song loads
+    losMidiPorts.clear();
     if (clearSong())
     {
         return;
@@ -1488,38 +1470,38 @@ void OOMidi::loadProjectFile1(const QString& name, bool songTemplate, bool loadA
     {
         if (!fi.isReadable())
         {
-            QMessageBox::critical(this, QString("OOStudio"),
+            QMessageBox::critical(this, QString("LOS"),
                     tr("Cannot read template"));
             return;
         }
         project.setFile("untitled");
-        oomProject = oomProjectInitPath;
-        oomProjectFile = project.filePath();
+        losProject = losProjectInitPath;
+        losProjectFile = project.filePath();
     }
     else
     {
         printf("Setting project path to %s\n", fi.absolutePath().toLatin1().constData());
-        oomProject = fi.absolutePath();
+        losProject = fi.absolutePath();
         project.setFile(name);
-        oomProjectFile = project.filePath();
+        losProjectFile = project.filePath();
     }
     QString ex = fi.completeSuffix().toLower();
     QString mex = ex.section('.', -1, -1);
     if ((mex == "gz") || (mex == "bz2"))
         mex = ex.section('.', -2, -2);
 
-    if (ex.isEmpty() || mex == "oom" || mex == "los") //XXX temp only
+    if (ex.isEmpty() || mex == "los")
     {
         //
-        //  read *.oom file
+        //  read *.los file
         //
         bool popenFlag;
-        FILE* f = fileOpen(this, fi.filePath(), QString(".oom"), "r", popenFlag, true);
+        FILE* f = fileOpen(this, fi.filePath(), QString(".los"), "r", popenFlag, true);
         if (f == 0)
         {
             if (errno != ENOENT)
             {
-                QMessageBox::critical(this, QString("OOStudio"),
+                QMessageBox::critical(this, QString("LOS"),
                         tr("File open error"));
                 setUntitledProject();
             }
@@ -1528,11 +1510,11 @@ void OOMidi::loadProjectFile1(const QString& name, bool songTemplate, bool loadA
         }
         else
         {
-             // Load the .oom file into a QDomDocument.
+             // Load the .los file into a QDomDocument.
              // the xml parser of QDomDocument then will be able to tell us
-             // if the .oom file didn't get corrupted in some way, cause the
-             // internal xml parser of oom can't do that.
-             QDomDocument doc("OOMProject");
+             // if the .los file didn't get corrupted in some way, cause the
+             // internal xml parser of los can't do that.
+             QDomDocument doc("LOSProject");
              QFile file(fi.filePath());
 
              if (!file.open(QIODevice::ReadOnly)) {
@@ -1545,7 +1527,7 @@ void OOMidi::loadProjectFile1(const QString& name, bool songTemplate, bool loadA
                 printf("Failed to set xml content (Error: %s)\n", errorMsg.toLatin1().data());
 
                 if (QMessageBox::critical(this,
-                              QString("OOStudio Load Project"),
+                              QString("LOS Load Project"),
                               tr("Failed to parse file:\n\n %1 \n\n\n Error Message:\n\n %2 \n\n"
                              "Suggestion: \n\nmove the %1 file to another location, and rename the %1.backup to %1"
                              " and reload the project\n")
@@ -1566,15 +1548,15 @@ void OOMidi::loadProjectFile1(const QString& name, bool songTemplate, bool loadA
             initGlobalInputPorts();
             Xml xml(f);
             if(debugMsg)
-                qDebug("OOMidi::loadProjectFile1 Before OOMidi::read()\n");
+                qDebug("LOS::loadProjectFile1 Before LOS::read()\n");
             read(xml, !loadAll);
             if(debugMsg)
-                qDebug("OOMidi::loadProjectFile1 After OOMidi::read()\n");
+                qDebug("LOS::loadProjectFile1 After LOS::read()\n");
             bool fileError = ferror(f);
             popenFlag ? pclose(f) : fclose(f);
             if (fileError)
             {
-                QMessageBox::critical(this, QString("OOStudio"), tr("File read error"));
+                QMessageBox::critical(this, QString("LOS"), tr("File read error"));
                 setUntitledProject();
             }
         }
@@ -1587,13 +1569,13 @@ void OOMidi::loadProjectFile1(const QString& name, bool songTemplate, bool loadA
     }
     else
     {
-        QMessageBox::critical(this, QString("OOStudio"), tr("Unknown File Format: ") + ex);
+        QMessageBox::critical(this, QString("LOS"), tr("Unknown File Format: ") + ex);
         setUntitledProject();
     }
     if (!songTemplate)
     {
         addProject(project.absoluteFilePath());
-        setWindowTitle(QString("The Composer - OOStudio-").append(VERSION).append(":     ") + project.completeBaseName() + QString("     "));
+        setWindowTitle(QString("The Composer - LOS-").append(VERSION).append(":     ") + project.completeBaseName() + QString("     "));
     }
     song->dirty = false;
 
@@ -1637,22 +1619,22 @@ void OOMidi::loadProjectFile1(const QString& name, bool songTemplate, bool loadA
 //   setUntitledProject
 //---------------------------------------------------------
 
-void OOMidi::setUntitledProject()
+void LOS::setUntitledProject()
 {
     setConfigDefaults();
     QString name("untitled");
-    oomProject = "./"; //QFileInfo(name).absolutePath();
+    losProject = "./"; //QFileInfo(name).absolutePath();
     project.setFile(name);
-    oomProjectFile = project.filePath();
-    //setWindowTitle(tr("OOMidi: Song: ") + project.completeBaseName());
-    setWindowTitle(QString("The Composer - OOStudio-").append(VERSION).append(":     ") + project.completeBaseName() + QString("     "));
+    losProjectFile = project.filePath();
+    //setWindowTitle(tr("LOS: Song: ") + project.completeBaseName());
+    setWindowTitle(QString("The Composer - LOS-").append(VERSION).append(":     ") + project.completeBaseName() + QString("     "));
 }
 
 //---------------------------------------------------------
 //   setConfigDefaults
 //---------------------------------------------------------
 
-void OOMidi::setConfigDefaults()
+void LOS::setConfigDefaults()
 {
     readConfiguration(); // used for reading midi files
 #if 0
@@ -1696,7 +1678,7 @@ void OOMidi::setConfigDefaults()
 //   setFollow
 //---------------------------------------------------------
 
-void OOMidi::setFollow()
+void LOS::setFollow()
 {
     Song::FollowMode fm = song->follow();
 
@@ -1706,18 +1688,18 @@ void OOMidi::setFollow()
 }
 
 //---------------------------------------------------------
-//   OOMidi::loadProject
+//   LOS::loadProject
 //---------------------------------------------------------
 
-void OOMidi::loadProject()
+void LOS::loadProject()
 {
     bool loadAll;
     QString fn = getOpenFileName(QString(""), med_file_pattern, this,
-            tr("OOStudio: load project"), &loadAll);
+            tr("LOS: load project"), &loadAll);
     if (!fn.isEmpty())
     {
-        oomProject = QFileInfo(fn).absolutePath();
-        oomProjectFile = QFileInfo(fn).filePath();
+        losProject = QFileInfo(fn).absolutePath();
+        losProjectFile = QFileInfo(fn).filePath();
         loadProjectFile(fn, false, loadAll);
     }
 }
@@ -1726,13 +1708,13 @@ void OOMidi::loadProject()
 //   loadTemplate
 //---------------------------------------------------------
 
-void OOMidi::loadTemplate()
+void LOS::loadTemplate()
 {
     QString fn = getOpenFileName(QString("templates"), med_file_pattern, this,
-            tr("OOStudio: load template"), 0, MFileDialog::GLOBAL_VIEW);
+            tr("LOS: load template"), 0, MFileDialog::GLOBAL_VIEW);
     if (!fn.isEmpty())
     {
-        // oomProject = QFileInfo(fn).absolutePath();
+        // losProject = QFileInfo(fn).absolutePath();
         loadProjectFile(fn, true, true);
         setUntitledProject();
     }
@@ -1742,7 +1724,7 @@ void OOMidi::loadTemplate()
 //   save
 //---------------------------------------------------------
 
-bool OOMidi::save()
+bool LOS::save()
 {
     if (project.completeBaseName() == "untitled")
         return saveAs();
@@ -1754,7 +1736,7 @@ bool OOMidi::save()
 //   save
 //---------------------------------------------------------
 
-bool OOMidi::save(const QString& name, bool overwriteWarn)
+bool LOS::save(const QString& name, bool overwriteWarn)
 {
     QString backupCommand;
 
@@ -1767,9 +1749,9 @@ bool OOMidi::save(const QString& name, bool overwriteWarn)
     {
         backupCommand.sprintf("cp \"%s\" \"%s.backup\"", name.toLatin1().constData(), name.toLatin1().constData());
     }
-    else if (QFile::exists(name + QString(".oom")))
+    else if (QFile::exists(name + QString(".los")))
     {
-        backupCommand.sprintf("cp \"%s.oom\" \"%s.oom.backup\"", name.toLatin1().constData(), name.toLatin1().constData());
+        backupCommand.sprintf("cp \"%s.los\" \"%s.los.backup\"", name.toLatin1().constData(), name.toLatin1().constData());
     }
     if (!backupCommand.isEmpty())
     {
@@ -1779,7 +1761,7 @@ bool OOMidi::save(const QString& name, bool overwriteWarn)
     }
 
     bool popenFlag;
-    FILE* f = fileOpen(this, name, QString(".oom"), "w", popenFlag, false, overwriteWarn);
+    FILE* f = fileOpen(this, name, QString(".los"), "w", popenFlag, false, overwriteWarn);
     if (f == 0)
         return false;
     Xml xml(f);
@@ -1790,7 +1772,7 @@ bool OOMidi::save(const QString& name, bool overwriteWarn)
                 //+ strerror(errno);
                 + QString(strerror(errno)); // p4.0.0
         QMessageBox::critical(this,
-                tr("OOStudio: Write File failed"), s);
+                tr("LOS: Write File failed"), s);
         popenFlag ? pclose(f) : fclose(f);
         unlink(name.toLatin1().constData());
         //FIXME: We should probably restore the backup file at this point as the saved file
@@ -1809,7 +1791,7 @@ bool OOMidi::save(const QString& name, bool overwriteWarn)
     }
 }
 
-bool OOMidi::saveRouteMapping(QString name, QString notes)
+bool LOS::saveRouteMapping(QString name, QString notes)
 {
     bool popenFlag;
     FILE* f = fileOpen(this, name, QString(".orm"), "w", popenFlag, false, false);
@@ -1839,7 +1821,7 @@ bool OOMidi::saveRouteMapping(QString name, QString notes)
     if (ferror(f))
     {
         QString s = "Write File\n" + name + "\nfailed: " + QString(strerror(errno));
-        QMessageBox::critical(this, tr("OOStudio: Write File failed"), s);
+        QMessageBox::critical(this, tr("LOS: Write File failed"), s);
         popenFlag ? pclose(f) : fclose(f);
         unlink(name.toLatin1().constData());
         return false;
@@ -1853,10 +1835,10 @@ bool OOMidi::saveRouteMapping(QString name, QString notes)
     return true;
 }
 
-bool OOMidi::updateRouteMapping(QString name, QString note)/*{{{*/
+bool LOS::updateRouteMapping(QString name, QString note)/*{{{*/
 {
     QFileInfo fi(name);
-    QDomDocument doc("OOMRouteMap");/*{{{*/
+    QDomDocument doc("LOSRouteMap");/*{{{*/
     QFile file(fi.filePath());
 
     if (!file.open(QIODevice::ReadOnly)) {
@@ -1869,7 +1851,7 @@ bool OOMidi::updateRouteMapping(QString name, QString note)/*{{{*/
         printf("Failed to set xml content (Error: %s)\n", errorMsg.toLatin1().data());
 
         if (QMessageBox::critical(this,
-                  QString("OOStudio Load Routing Map"),
+                  QString("LOS Load Routing Map"),
                   tr("Failed to parse file:\n\n %1 \n\n\n Error Message:\n\n %2 \n")
                   .arg(file.fileName())
                   .arg(errorMsg),
@@ -1904,11 +1886,11 @@ bool OOMidi::updateRouteMapping(QString name, QString note)/*{{{*/
     return true;
 }/*}}}*/
 
-QString OOMidi::noteForRouteMapping(QString name)/*{{{*/
+QString LOS::noteForRouteMapping(QString name)/*{{{*/
 {
     QString rv;
     QFileInfo fi(name);
-    QDomDocument doc("OOMRouteMap");/*{{{*/
+    QDomDocument doc("LOSRouteMap");/*{{{*/
     QFile file(fi.filePath());
 
     if (!file.open(QIODevice::ReadOnly)) {
@@ -1921,7 +1903,7 @@ QString OOMidi::noteForRouteMapping(QString name)/*{{{*/
         printf("Failed to set xml content (Error: %s)\n", errorMsg.toLatin1().data());
 
         if (QMessageBox::critical(this,
-                  QString("OOStudio Load Routing Map"),
+                  QString("LOS Load Routing Map"),
                   tr("Failed to parse file:\n\n %1 \n\n\n Error Message:\n\n %2 \n")
                   .arg(file.fileName())
                   .arg(errorMsg),
@@ -1946,7 +1928,7 @@ QString OOMidi::noteForRouteMapping(QString name)/*{{{*/
     return rv;
 }/*}}}*/
 
-bool OOMidi::loadRouteMapping(QString name)
+bool LOS::loadRouteMapping(QString name)
 {
     //Make sure we stop the song
     song->setStop(true);
@@ -1960,7 +1942,7 @@ bool OOMidi::loadRouteMapping(QString name)
     QFileInfo fi(name);/*{{{*/
     if (!fi.isReadable())
     {
-        QMessageBox::critical(this, QString("OOStudio"), tr("Cannot read routing map"));
+        QMessageBox::critical(this, QString("LOS"), tr("Cannot read routing map"));
         return false;
     }
     QString ex = fi.completeSuffix().toLower();
@@ -1974,13 +1956,13 @@ bool OOMidi::loadRouteMapping(QString name)
         {
             if (errno != ENOENT)
             {
-                QMessageBox::critical(this, QString("OOStudio"), tr("File open error: Could not open Route Map"));
+                QMessageBox::critical(this, QString("LOS"), tr("File open error: Could not open Route Map"));
                 return false;
             }
         }
         else
         {
-        QDomDocument doc("OOMRouteMap");
+        QDomDocument doc("LOSRouteMap");
         QFile file(fi.filePath());
 
         if (!file.open(QIODevice::ReadOnly)) {
@@ -1993,7 +1975,7 @@ bool OOMidi::loadRouteMapping(QString name)
         printf("Failed to set xml content (Error: %s)\n", errorMsg.toLatin1().data());
 
         if (QMessageBox::critical(this,
-                      QString("OOStudio Load Routing Map"),
+                      QString("LOS Load Routing Map"),
                       tr("Failed to parse file:\n\n %1 \n\n\n Error Message:\n\n %2 \n")
                       .arg(file.fileName())
                       .arg(errorMsg),
@@ -2061,7 +2043,7 @@ bool OOMidi::loadRouteMapping(QString name)
             popenFlag ? pclose(f) : fclose(f);
             if (fileError)
             {
-                QMessageBox::critical(this, QString("OOStudio"), tr("File read error"));
+                QMessageBox::critical(this, QString("LOS"), tr("File read error"));
                 return false;
             }
         }
@@ -2073,7 +2055,7 @@ bool OOMidi::loadRouteMapping(QString name)
     return true;
 }
 
-void OOMidi::connectDefaultSongPorts()
+void LOS::connectDefaultSongPorts()
 {
     if(!song->associatedRoute.isEmpty())
     {
@@ -2089,7 +2071,7 @@ void OOMidi::connectDefaultSongPorts()
 //   quitDoc
 //---------------------------------------------------------
 
-void OOMidi::quitDoc(bool external)
+void LOS::quitDoc(bool external)
 {
     m_externalCall = external;
     close();
@@ -2099,7 +2081,7 @@ void OOMidi::quitDoc(bool external)
 //   closeEvent
 //---------------------------------------------------------
 
-void OOMidi::closeEvent(QCloseEvent* event)
+void LOS::closeEvent(QCloseEvent* event)
 {
     if(performer)
     {
@@ -2176,10 +2158,10 @@ void OOMidi::closeEvent(QCloseEvent* event)
         fclose(f);
     }
     if (debugMsg)
-        printf("OOStudio: Exiting JackAudio\n");
+        printf("LOS: Exiting JackAudio\n");
     exitJackAudio();
     if (debugMsg)
-        printf("OOStudio: Exiting DummyAudio\n");
+        printf("LOS: Exiting DummyAudio\n");
     exitDummyAudio();
 
 
@@ -2190,7 +2172,7 @@ void OOMidi::closeEvent(QCloseEvent* event)
     song->cleanupForQuit();
 
     if (debugMsg)
-        printf("OOMidi: Cleaning up temporary wavefiles + peakfiles\n");
+        printf("LOS: Cleaning up temporary wavefiles + peakfiles\n");
     // Cleanup temporary wavefiles + peakfiles used for undo
     for (std::list<QString>::iterator i = temporaryWavFiles.begin(); i != temporaryWavFiles.end(); i++)
     {
@@ -2208,19 +2190,15 @@ void OOMidi::closeEvent(QCloseEvent* event)
     if (lash_client)
     {
         if (debugMsg)
-            printf("OOMidi: Disconnecting from LASH\n");
+            printf("LOS: Disconnecting from LASH\n");
         lash_event_t* lashev = lash_event_new_with_type(LASH_Quit);
         lash_send_event(lash_client, lashev);
     }
 #endif
 
     if (debugMsg)
-        printf("OOMidi: Exiting Dsp\n");
+        printf("LOS: Exiting Dsp\n");
     AL::exitDsp();
-
-    if (debugMsg)
-        printf("OOMidi: Exiting OSC\n");
-    exitOSC();
 
     // p3.3.47
     delete midiMonitor;
@@ -2236,7 +2214,7 @@ void OOMidi::closeEvent(QCloseEvent* event)
 //   toggleMarker
 //---------------------------------------------------------
 
-void OOMidi::toggleMarker(bool checked)
+void LOS::toggleMarker(bool checked)
 {
     showMarker(checked);
 }
@@ -2245,7 +2223,7 @@ void OOMidi::toggleMarker(bool checked)
 //   showMarker
 //---------------------------------------------------------
 
-void OOMidi::showMarker(bool flag)
+void LOS::showMarker(bool flag)
 {
     //printf("showMarker %d\n",flag);
     if (markerView == 0)
@@ -2268,7 +2246,7 @@ void OOMidi::showMarker(bool flag)
 //   markerClosed
 //---------------------------------------------------------
 
-void OOMidi::markerClosed()
+void LOS::markerClosed()
 {
     viewMarkerAction->setChecked(false);
 }
@@ -2277,7 +2255,7 @@ void OOMidi::markerClosed()
 //   toggleTransport
 //---------------------------------------------------------
 
-void OOMidi::toggleTransport(bool checked)
+void LOS::toggleTransport(bool checked)
 {
     showTransport(checked);
 }
@@ -2286,7 +2264,7 @@ void OOMidi::toggleTransport(bool checked)
 //   showTransport
 //---------------------------------------------------------
 
-void OOMidi::showTransport(bool flag)
+void LOS::showTransport(bool flag)
 {
     transport->setVisible(flag);
     viewTransportAction->setChecked(flag);
@@ -2296,7 +2274,7 @@ void OOMidi::showTransport(bool flag)
 //   getRoutingPopupMenu
 //---------------------------------------------------------
 
-PopupMenu* OOMidi::getRoutingPopupMenu()
+PopupMenu* LOS::getRoutingPopupMenu()
 {
     if (!routingPopupMenu)
         routingPopupMenu = new PopupMenu(this);
@@ -2307,12 +2285,12 @@ PopupMenu* OOMidi::getRoutingPopupMenu()
 //   updateRouteMenus
 //---------------------------------------------------------
 
-void OOMidi::updateRouteMenus(Track* track, QObject* master)
+void LOS::updateRouteMenus(Track* track, QObject* master)
 {
     // NOTE: The puropse of this routine is to make sure the items actually reflect
-    //  the routing status. And with OOMidi-1 QT3, it was also required to actually
+    //  the routing status. And with LOS-1 QT3, it was also required to actually
     //  check the items since QT3 didn't do it for us.
-    // But now with OOMidi-2 and QT4, QT4 checks an item when it is clicked.
+    // But now with LOS-2 and QT4, QT4 checks an item when it is clicked.
     // So this routine is less important now, since 99% of the time, the items
     //  will be in the right checked state.
     // But we still need this in case for some reason a route could not be
@@ -2363,8 +2341,8 @@ void OOMidi::updateRouteMenus(Track* track, QObject* master)
             }
         }
         //pup->setItemChecked(imm->first, found);
-        //printf("OOMidi::updateRouteMenus setItemChecked\n");
-        // TODO: OOMidi-2: Convert this, fastest way is to change the routing map, otherwise this requires a lookup.
+        //printf("LOS::updateRouteMenus setItemChecked\n");
+        // TODO: LOS-2: Convert this, fastest way is to change the routing map, otherwise this requires a lookup.
         //if(pup->isItemChecked(imm->first) != (irl != rl->end()))
         //  pup->setItemChecked(imm->first, irl != rl->end());
         QAction* act = pup->findActionFromData(imm->first);
@@ -2377,7 +2355,7 @@ void OOMidi::updateRouteMenus(Track* track, QObject* master)
 //   routingPopupMenuActivated
 //---------------------------------------------------------
 
-void OOMidi::routingPopupMenuActivated(Track* track, int n)
+void LOS::routingPopupMenuActivated(Track* track, int n)
 {
     if (!track)
         return;
@@ -2461,7 +2439,7 @@ void OOMidi::routingPopupMenuActivated(Track* track, int n)
 //   routingPopupMenuAboutToHide
 //---------------------------------------------------------
 
-void OOMidi::routingPopupMenuAboutToHide()
+void LOS::routingPopupMenuAboutToHide()
 {
     gRoutingMenuMap.clear();
     gRoutingPopupMenuMaster = 0;
@@ -2471,7 +2449,7 @@ void OOMidi::routingPopupMenuAboutToHide()
 //   prepareRoutingPopupMenu
 //---------------------------------------------------------
 
-PopupMenu* OOMidi::prepareRoutingPopupMenu(Track* track, bool dst)
+PopupMenu* LOS::prepareRoutingPopupMenu(Track* track, bool dst)
 {
     if (!track)
         return 0;
@@ -2508,7 +2486,7 @@ PopupMenu* OOMidi::prepareRoutingPopupMenu(Track* track, bool dst)
             if (!(md->openFlags() & (dst ? 1 : 2)))
                 continue;
 
-            //printf("OOMidi::prepareRoutingPopupMenu adding submenu portnum:%d\n", i);
+            //printf("LOS::prepareRoutingPopupMenu adding submenu portnum:%d\n", i);
 
             PopupMenu* subp = new PopupMenu(pup);
             subp->setTitle(md->name());
@@ -2530,7 +2508,7 @@ PopupMenu* OOMidi::prepareRoutingPopupMenu(Track* track, bool dst)
             {
                 gid = i * MIDI_CHANNELS + ch;
 
-                //printf("OOMidi::prepareRoutingPopupMenu inserting gid:%d\n", gid);
+                //printf("LOS::prepareRoutingPopupMenu inserting gid:%d\n", gid);
 
                 act = subp->addAction(QString("Channel %1").arg(ch + 1));
                 act->setCheckable(true);
@@ -2587,15 +2565,15 @@ PopupMenu* OOMidi::prepareRoutingPopupMenu(Track* track, bool dst)
 //   saveAs
 //---------------------------------------------------------
 
-bool OOMidi::saveAs()
+bool LOS::saveAs()
 {
     QString name;
-    if (oomProject == oomProjectInitPath)
+    if (losProject == losProjectInitPath)
     {
         printf("config.useProjectSaveDialog=%d\n", config.useProjectSaveDialog);
         if (config.useProjectSaveDialog)
         {
-            ProjectCreateImpl pci(oom);
+            ProjectCreateImpl pci(los);
             if (pci.exec() == QDialog::Rejected)
             {
                 return false;
@@ -2605,14 +2583,14 @@ bool OOMidi::saveAs()
         }
         else
         {
-            name = getSaveFileName(QString(""), med_file_save_pattern, this, tr("OOStudio: Save As"));
+            name = getSaveFileName(QString(""), med_file_save_pattern, this, tr("LOS: Save As"));
             if (name.isEmpty())
                 return false;
         }
-        oomProject = QFileInfo(name).absolutePath();
-        oomProjectFile = QFileInfo(name).filePath();
+        losProject = QFileInfo(name).absolutePath();
+        losProjectFile = QFileInfo(name).filePath();
         QDir dirmanipulator;
-        if (!dirmanipulator.mkpath(oomProject))
+        if (!dirmanipulator.mkpath(losProject))
         {
             QMessageBox::warning(this, "Path error", "Can't create project path", QMessageBox::Ok);
             return false;
@@ -2620,24 +2598,24 @@ bool OOMidi::saveAs()
     }
     else
     {
-        name = getSaveFileName(QString(""), med_file_save_pattern, this, tr("OOStudio: Save As"));
+        name = getSaveFileName(QString(""), med_file_save_pattern, this, tr("LOS: Save As"));
     }
     bool ok = false;
     if (!name.isEmpty())
     {
-        QString tempOldProj = oomProject;
-        oomProject = QFileInfo(name).absolutePath();
+        QString tempOldProj = losProject;
+        losProject = QFileInfo(name).absolutePath();
         ok = save(name, true);
         if (ok)
         {
             project.setFile(name);
-            oomProjectFile = project.filePath();
-            //setWindowTitle(tr("OOMidi: Song: ") + project.completeBaseName());
-            setWindowTitle(QString("The Composer - OOStudio-").append(VERSION).append(":     ") + project.completeBaseName() + QString("     "));
+            losProjectFile = project.filePath();
+            //setWindowTitle(tr("LOS: Song: ") + project.completeBaseName());
+            setWindowTitle(QString("The Composer - LOS-").append(VERSION).append(":     ") + project.completeBaseName() + QString("     "));
             addProject(name);
         }
         else
-            oomProject = tempOldProj;
+            losProject = tempOldProj;
     }
 
     return ok;
@@ -2647,7 +2625,7 @@ bool OOMidi::saveAs()
 //   startEditor
 //---------------------------------------------------------
 
-void OOMidi::startEditor(PartList* pl, int type)
+void LOS::startEditor(PartList* pl, int type)
 {
     switch (type)
     {
@@ -2664,7 +2642,7 @@ void OOMidi::startEditor(PartList* pl, int type)
 //   startEditor
 //---------------------------------------------------------
 
-void OOMidi::startEditor(Track* t)
+void LOS::startEditor(Track* t)
 {
     switch (t->type())
     {
@@ -2680,12 +2658,12 @@ void OOMidi::startEditor(Track* t)
 //   getMidiPartsToEdit
 //---------------------------------------------------------
 
-PartList* OOMidi::getMidiPartsToEdit()
+PartList* LOS::getMidiPartsToEdit()
 {
     PartList* pl = song->getSelectedMidiParts();
     if (pl->empty())
     {
-        QMessageBox::critical(this, QString("OOStudio"), tr("Nothing to edit"));
+        QMessageBox::critical(this, QString("LOS"), tr("Nothing to edit"));
         return 0;
     }
     return pl;
@@ -2695,7 +2673,7 @@ PartList* OOMidi::getMidiPartsToEdit()
 //   startPerformer
 //---------------------------------------------------------
 
-void OOMidi::startPerformer()
+void LOS::startPerformer()
 {
     if(composer->isEditing())
     {
@@ -2708,14 +2686,14 @@ void OOMidi::startPerformer()
     startPerformer(pl, true);
 }
 
-void OOMidi::performerClosed()
+void LOS::performerClosed()
 {
     if(performer)
         delete performer;
     performer = 0;
 }
 
-void OOMidi::startPerformer(PartList* pl, bool /*showDefaultCtrls*/)
+void LOS::startPerformer(PartList* pl, bool /*showDefaultCtrls*/)
 {
     if(!performer)
     {
@@ -2733,7 +2711,7 @@ void OOMidi::startPerformer(PartList* pl, bool /*showDefaultCtrls*/)
         Song::movePlaybackToPart(pl->begin()->second);
 
         connect(performer, SIGNAL(deleted()), SLOT(performerClosed()));
-        connect(oom, SIGNAL(configChanged()), performer, SLOT(configChanged()));
+        connect(los, SIGNAL(configChanged()), performer, SLOT(configChanged()));
     }
     else
     {
@@ -2753,7 +2731,7 @@ void OOMidi::startPerformer(PartList* pl, bool /*showDefaultCtrls*/)
 //   startListenEditor
 //---------------------------------------------------------
 
-void OOMidi::startListEditor()
+void LOS::startListEditor()
 {
     PartList* pl = getMidiPartsToEdit();
     if (pl == 0)
@@ -2761,23 +2739,23 @@ void OOMidi::startListEditor()
     startListEditor(pl);
 }
 
-void OOMidi::startListEditor(PartList* pl)
+void LOS::startListEditor(PartList* pl)
 {
     ListEdit* listEditor = new ListEdit(pl);
     listEditor->show();
     toplevels.push_back(Toplevel(Toplevel::LISTE, (unsigned long) (listEditor), listEditor));
     connect(listEditor, SIGNAL(deleted(unsigned long)), SLOT(toplevelDeleted(unsigned long)));
-    connect(oom, SIGNAL(configChanged()), listEditor, SLOT(configChanged()));
+    connect(los, SIGNAL(configChanged()), listEditor, SLOT(configChanged()));
 }
 
 //---------------------------------------------------------
 //   startMasterEditor
 //---------------------------------------------------------
 
-void OOMidi::startMasterEditor()
+void LOS::startMasterEditor()
 {
     MasterEdit* masterEditor = new MasterEdit();
-    masterEditor->installEventFilter(oom);
+    masterEditor->installEventFilter(los);
     masterEditor->setWindowRole("tempo_editor");
     masterEditor->show();
     toplevels.push_back(Toplevel(Toplevel::MASTER, (unsigned long) (masterEditor), masterEditor));
@@ -2788,26 +2766,26 @@ void OOMidi::startMasterEditor()
 //   startLMasterEditor
 //---------------------------------------------------------
 
-void OOMidi::startLMasterEditor()
+void LOS::startLMasterEditor()
 {
     LMaster* lmaster = new LMaster();
     lmaster->setWindowRole("tempo_editor_list");
     lmaster->show();
     toplevels.push_back(Toplevel(Toplevel::LMASTER, (unsigned long) (lmaster), lmaster));
     connect(lmaster, SIGNAL(deleted(unsigned long)), SLOT(toplevelDeleted(unsigned long)));
-    connect(oom, SIGNAL(configChanged()), lmaster, SLOT(configChanged()));
+    connect(los, SIGNAL(configChanged()), lmaster, SLOT(configChanged()));
 }
 
 //---------------------------------------------------------
 //   startDrumEditor
 //---------------------------------------------------------
 
-void OOMidi::startDrumEditor()
+void LOS::startDrumEditor()
 {
     return;
 }
 
-void OOMidi::startDrumEditor(PartList*, bool)
+void LOS::startDrumEditor(PartList*, bool)
 {
     return;
 }
@@ -2816,12 +2794,12 @@ void OOMidi::startDrumEditor(PartList*, bool)
 //   startWaveEditor
 //---------------------------------------------------------
 
-void OOMidi::startWaveEditor()
+void LOS::startWaveEditor()
 {
     return;
 }
 
-void OOMidi::startWaveEditor(PartList*)
+void LOS::startWaveEditor(PartList*)
 {
     return;
 }
@@ -2831,7 +2809,7 @@ void OOMidi::startWaveEditor(PartList*)
 //   startSongInfo
 //---------------------------------------------------------
 
-void OOMidi::startSongInfo(bool editable)
+void LOS::startSongInfo(bool editable)
 {
     printf("startSongInfo!!!!\n");
     SongInfoWidget info;
@@ -2850,13 +2828,13 @@ void OOMidi::startSongInfo(bool editable)
 //   showDidYouKnowDialog
 //---------------------------------------------------------
 
-void OOMidi::showDidYouKnowDialog()
+void LOS::showDidYouKnowDialog()
 {
     if ((bool)config.showDidYouKnow == true)
     {
         printf("show did you know dialog!!!!\n");
         DidYouKnowWidget dyk;
-        dyk.tipText->setText("To get started with OOStudio why don't you try some demo songs available at http://www.openoctave.org/");
+        dyk.tipText->setText("To get started with LOS why don't you try some demo songs available at http://www.openoctave.org/");
         dyk.show();
         if (dyk.exec())
         {
@@ -2864,7 +2842,7 @@ void OOMidi::showDidYouKnowDialog()
             {
                 printf("disables dialog!\n");
                 config.showDidYouKnow = false;
-                oom->changeConfig(true); // save settings
+                los->changeConfig(true); // save settings
             }
         }
     }
@@ -2878,7 +2856,7 @@ void OOMidi::showDidYouKnowDialog()
 //   startClipList
 //---------------------------------------------------------
 
-void OOMidi::startClipList(bool checked)
+void LOS::startClipList(bool checked)
 {
     if (clipListEdit == 0)
     {
@@ -2895,7 +2873,7 @@ void OOMidi::startClipList(bool checked)
 //   fileMenu
 //---------------------------------------------------------
 
-void OOMidi::openRecentMenu()
+void LOS::openRecentMenu()
 {
     openRecent->clear();
     for (int i = 0; i < PROJECT_LIST_LEN; ++i)
@@ -2918,7 +2896,7 @@ void OOMidi::openRecentMenu()
 //   selectProject
 //---------------------------------------------------------
 
-void OOMidi::selectProject(QAction* act)
+void LOS::selectProject(QAction* act)
 {
     if (!act)
         return;
@@ -2934,7 +2912,7 @@ void OOMidi::selectProject(QAction* act)
 //   toplevelDeleted
 //---------------------------------------------------------
 
-void OOMidi::toplevelDeleted(unsigned long tl)
+void LOS::toplevelDeleted(unsigned long tl)
 {
     for (iToplevel i = toplevels.begin(); i != toplevels.end(); ++i)
     {
@@ -2975,7 +2953,7 @@ void OOMidi::toplevelDeleted(unsigned long tl)
 
 #if 0
 
-void OOMidi::ctrlChanged()
+void LOS::ctrlChanged()
 {
     composer->updateInspector();
 }
@@ -2985,13 +2963,13 @@ void OOMidi::ctrlChanged()
 //   keyPressEvent
 //---------------------------------------------------------
 
-void OOMidi::keyPressEvent(QKeyEvent* event)
+void LOS::keyPressEvent(QKeyEvent* event)
 {
     // Pass it on to composer part canvas.
     composer->getCanvas()->redirKeypress(event);
 }
 
-bool OOMidi::eventFilter(QObject *obj, QEvent *event)
+bool LOS::eventFilter(QObject *obj, QEvent *event)
 {
     QKeyEvent *keyEvent = 0;
     int key = 0;
@@ -3043,13 +3021,9 @@ bool OOMidi::eventFilter(QObject *obj, QEvent *event)
 //   kbAccel
 //---------------------------------------------------------
 
-void OOMidi::kbAccel(int key)
+void LOS::kbAccel(int key)
 {
-    if (key == shortcuts[SHRT_TOGGLE_METRO].key)
-    {
-        song->setClick(!song->click());
-    }
-    else if (key == shortcuts[SHRT_PLAY_TOGGLE].key)
+    if (key == shortcuts[SHRT_PLAY_TOGGLE].key)
     {
         if (audio->isPlaying())
             //song->setStopPlay(false);
@@ -3195,7 +3169,7 @@ void OOMidi::kbAccel(int key)
 //    some cmd's from pulldown menu
 //---------------------------------------------------------
 
-void OOMidi::cmd(int cmd)
+void LOS::cmd(int cmd)
 {
     TrackList* tracks = song->tracks();
     int l = song->lpos();
@@ -3389,13 +3363,13 @@ void OOMidi::cmd(int cmd)
 //   clipboardChanged
 //---------------------------------------------------------
 
-void OOMidi::clipboardChanged()
+void LOS::clipboardChanged()
 {
     bool flag = false;
-    if (QApplication::clipboard()->mimeData()->hasFormat(QString("text/x-oom-midipartlist")) ||
-            QApplication::clipboard()->mimeData()->hasFormat(QString("text/x-oom-wavepartlist")) ||
-            QApplication::clipboard()->mimeData()->hasFormat(QString("text/x-oom-mixedpartlist")) ||
-            QApplication::clipboard()->mimeData()->hasFormat(QString("text/x-oom-automationcurve")))
+    if (QApplication::clipboard()->mimeData()->hasFormat(QString("text/x-los-midipartlist")) ||
+            QApplication::clipboard()->mimeData()->hasFormat(QString("text/x-los-wavepartlist")) ||
+            QApplication::clipboard()->mimeData()->hasFormat(QString("text/x-los-mixedpartlist")) ||
+            QApplication::clipboard()->mimeData()->hasFormat(QString("text/x-los-automationcurve")))
         flag = true;
 
     editPasteAction->setEnabled(flag);
@@ -3409,10 +3383,10 @@ void OOMidi::clipboardChanged()
 //   selectionChanged
 //---------------------------------------------------------
 
-void OOMidi::selectionChanged()
+void LOS::selectionChanged()
 {
     //bool flag = composer->isSingleSelection();  // -- Hmm, why only single?
-    bool flag = true;//composer->selectionSize() > 0; // -- Test OK cut and copy. For oom2. Tim.
+    bool flag = true;//composer->selectionSize() > 0; // -- Test OK cut and copy. For los2. Tim.
     editCutAction->setEnabled(flag);
     editCopyAction->setEnabled(flag);
 }
@@ -3421,7 +3395,7 @@ void OOMidi::selectionChanged()
 //   transpose
 //---------------------------------------------------------
 
-void OOMidi::transpose()
+void LOS::transpose()
 {
     Transpose *w = new Transpose();
     w->show();
@@ -3431,7 +3405,7 @@ void OOMidi::transpose()
 //   modifyGateTime
 //---------------------------------------------------------
 
-void OOMidi::modifyGateTime()
+void LOS::modifyGateTime()
 {
     GateTime* w = new GateTime(this);
     w->show();
@@ -3441,7 +3415,7 @@ void OOMidi::modifyGateTime()
 //   modifyVelocity
 //---------------------------------------------------------
 
-void OOMidi::modifyVelocity()
+void LOS::modifyVelocity()
 {
     printf("not implemented\n");
 }
@@ -3450,7 +3424,7 @@ void OOMidi::modifyVelocity()
 //   crescendo
 //---------------------------------------------------------
 
-void OOMidi::crescendo()
+void LOS::crescendo()
 {
     printf("not implemented\n");
 }
@@ -3459,7 +3433,7 @@ void OOMidi::crescendo()
 //   thinOut
 //---------------------------------------------------------
 
-void OOMidi::thinOut()
+void LOS::thinOut()
 {
     printf("not implemented\n");
 }
@@ -3468,7 +3442,7 @@ void OOMidi::thinOut()
 //   eraseEvent
 //---------------------------------------------------------
 
-void OOMidi::eraseEvent()
+void LOS::eraseEvent()
 {
     printf("not implemented\n");
 }
@@ -3477,7 +3451,7 @@ void OOMidi::eraseEvent()
 //   noteShift
 //---------------------------------------------------------
 
-void OOMidi::noteShift()
+void LOS::noteShift()
 {
     printf("not implemented\n");
 }
@@ -3486,7 +3460,7 @@ void OOMidi::noteShift()
 //   moveClock
 //---------------------------------------------------------
 
-void OOMidi::moveClock()
+void LOS::moveClock()
 {
     printf("not implemented\n");
 }
@@ -3495,7 +3469,7 @@ void OOMidi::moveClock()
 //   copyMeasure
 //---------------------------------------------------------
 
-void OOMidi::copyMeasure()
+void LOS::copyMeasure()
 {
     printf("not implemented\n");
 }
@@ -3504,7 +3478,7 @@ void OOMidi::copyMeasure()
 //   eraseMeasure
 //---------------------------------------------------------
 
-void OOMidi::eraseMeasure()
+void LOS::eraseMeasure()
 {
     printf("not implemented\n");
 }
@@ -3513,7 +3487,7 @@ void OOMidi::eraseMeasure()
 //   deleteMeasure
 //---------------------------------------------------------
 
-void OOMidi::deleteMeasure()
+void LOS::deleteMeasure()
 {
     printf("not implemented\n");
 }
@@ -3522,7 +3496,7 @@ void OOMidi::deleteMeasure()
 //   createMeasure
 //---------------------------------------------------------
 
-void OOMidi::createMeasure()
+void LOS::createMeasure()
 {
     printf("not implemented\n");
 }
@@ -3531,7 +3505,7 @@ void OOMidi::createMeasure()
 //   mixTrack
 //---------------------------------------------------------
 
-void OOMidi::mixTrack()
+void LOS::mixTrack()
 {
     printf("not implemented\n");
 }
@@ -3540,7 +3514,7 @@ void OOMidi::mixTrack()
 //   loadTheme
 //---------------------------------------------------------
 
-void OOMidi::loadTheme(const QString& s)
+void LOS::loadTheme(const QString& s)
 {
     if (style()->objectName() != s)
         QApplication::setStyle(s);
@@ -3550,7 +3524,7 @@ void OOMidi::loadTheme(const QString& s)
 //   loadStyleSheetFile
 //---------------------------------------------------------
 
-void OOMidi::loadStyleSheetFile(const QString& s)
+void LOS::loadStyleSheetFile(const QString& s)
 {
     if (s.isEmpty())
     {
@@ -3574,10 +3548,10 @@ void OOMidi::loadStyleSheetFile(const QString& s)
 //   configChanged
 //    - called whenever configuration has changed
 //    - when configuration has changed by user, call with
-//      writeFlag=true to save configuration in ~/.config/OOMidi
+//      writeFlag=true to save configuration in ~/.config/LOS
 //---------------------------------------------------------
 
-void OOMidi::changeConfig(bool writeFlag)
+void LOS::changeConfig(bool writeFlag)
 {
     if (writeFlag)
         writeGlobalConfiguration();
@@ -3587,29 +3561,10 @@ void OOMidi::changeConfig(bool writeFlag)
 }
 
 //---------------------------------------------------------
-//   configMetronome
-//---------------------------------------------------------
-
-void OOMidi::configMetronome()
-{
-    if (!metronomeConfig)
-        metronomeConfig = new MetronomeConfig;
-
-    if (metronomeConfig->isVisible())
-    {
-        metronomeConfig->raise();
-        metronomeConfig->activateWindow();
-    }
-    else
-        metronomeConfig->show();
-}
-
-
-//---------------------------------------------------------
 //   configShortCuts
 //---------------------------------------------------------
 
-void OOMidi::configShortCuts()
+void LOS::configShortCuts()
 {
     if (!shortcutConfig)
         shortcutConfig = new ShortcutConfig(this);
@@ -3625,7 +3580,7 @@ void OOMidi::configShortCuts()
 //    - cut master track
 //---------------------------------------------------------
 
-void OOMidi::globalCut()
+void LOS::globalCut()
 {
     int lpos = song->lpos();
     int rpos = song->rpos();
@@ -3737,7 +3692,7 @@ void OOMidi::globalCut()
 //    - insert in master track
 //---------------------------------------------------------
 
-void OOMidi::globalInsert()
+void LOS::globalInsert()
 {
     unsigned lpos = song->lpos();
     unsigned rpos = song->rpos();
@@ -3806,7 +3761,7 @@ void OOMidi::globalInsert()
 //    - do not touch muted track
 //---------------------------------------------------------
 
-void OOMidi::globalSplit()
+void LOS::globalSplit()
 {
     int pos = song->cpos();
     song->startUndo();
@@ -3845,10 +3800,10 @@ void OOMidi::globalSplit()
 //      copied events
 //---------------------------------------------------------
 
-void OOMidi::copyRange()
+void LOS::copyRange()
 {
     QMessageBox::critical(this,
-            tr("OOStudio: Copy Range"),
+            tr("LOS: Copy Range"),
             tr("not implemented")
             );
 }
@@ -3860,10 +3815,10 @@ void OOMidi::copyRange()
 //    - process only marked parts
 //---------------------------------------------------------
 
-void OOMidi::cutEvents()
+void LOS::cutEvents()
 {
     QMessageBox::critical(this,
-            tr("OOStudio: Cut Events"),
+            tr("LOS: Cut Events"),
             tr("not implemented")
             );
 }
@@ -3873,14 +3828,14 @@ void OOMidi::cutEvents()
 //    return true if (rPos - lPos) <= 0
 //---------------------------------------------------------
 
-bool OOMidi::checkRegionNotNull()
+bool LOS::checkRegionNotNull()
 {
     int start = song->lPos().frame();
     int end = song->rPos().frame();
     if (end - start <= 0)
     {
         QMessageBox::critical(this,
-                tr("OOStudio: Bounce"),
+                tr("LOS: Bounce"),
                 tr("set left/right marker for bounce range")
                 );
         return true;
@@ -3892,7 +3847,7 @@ bool OOMidi::checkRegionNotNull()
 //   bounceToTrack
 //---------------------------------------------------------
 
-void OOMidi::bounceToTrack()
+void LOS::bounceToTrack()
 {
     if (audio->bounce())
         return;
@@ -3902,17 +3857,17 @@ void OOMidi::bounceToTrack()
     if (song->waves()->empty())
     {
         QMessageBox::critical(this,
-                tr("OOStudio: Bounce to Track"),
+                tr("LOS: Bounce to Track"),
                 tr("No wave tracks found")
                 );
         return;
     }
 
-    OutputList* ol = song->outputs();
+    OutputHelperList* ol = song->outputs();
     if (ol->empty())
     {
         QMessageBox::critical(this,
-                tr("OOStudio: Bounce to Track"),
+                tr("LOS: Bounce to Track"),
                 tr("No audio output tracks found")
                 );
         return;
@@ -3921,15 +3876,15 @@ void OOMidi::bounceToTrack()
     if (checkRegionNotNull())
         return;
 
-    AudioOutput* out = 0;
+    AudioOutputHelper* out = 0;
     // If only one output, pick it, else pick the first selected.
     if (ol->size() == 1)
         out = ol->front();
     else
     {
-        for (iAudioOutput iao = ol->begin(); iao != ol->end(); ++iao)
+        for (iAudioOutputHelper iao = ol->begin(); iao != ol->end(); ++iao)
         {
-            AudioOutput* o = *iao;
+            AudioOutputHelper* o = *iao;
             if (o->selected())
             {
                 if (out)
@@ -3943,7 +3898,7 @@ void OOMidi::bounceToTrack()
         if (!out)
         {
             QMessageBox::critical(this,
-                    tr("OOStudio: Bounce to Track"),
+                    tr("LOS: Bounce to Track"),
                     tr("Select one audio output track,\nand one target wave track")
                     );
             return;
@@ -3959,7 +3914,7 @@ void OOMidi::bounceToTrack()
         Track* t = *it;
         if (t->selected())
         {
-            if (t->type() != Track::WAVE && t->type() != Track::AUDIO_OUTPUT)
+            if (t->type() != Track::WAVE && t->type() != Track::WAVE_OUTPUT_HELPER)
             {
                 track = 0;
                 break;
@@ -3982,7 +3937,7 @@ void OOMidi::bounceToTrack()
         if (ol->size() == 1)
         {
             QMessageBox::critical(this,
-                    tr("OOStudio: Bounce to Track"),
+                    tr("LOS: Bounce to Track"),
                     tr("Select one target wave track")
                     );
             return;
@@ -3990,7 +3945,7 @@ void OOMidi::bounceToTrack()
         else
         {
             QMessageBox::critical(this,
-                    tr("OOStudio: Bounce to Track"),
+                    tr("LOS: Bounce to Track"),
                     tr("Select one target wave track,\nand one audio output track")
                     );
             return;
@@ -4010,18 +3965,18 @@ void OOMidi::bounceToTrack()
 //   bounceToFile
 //---------------------------------------------------------
 
-void OOMidi::bounceToFile(AudioOutput* ao)
+void LOS::bounceToFile(AudioOutputHelper* ao)
 {
     if (audio->bounce())
         return;
     song->bounceOutput = 0;
     if (!ao)
     {
-        OutputList* ol = song->outputs();
+        OutputHelperList* ol = song->outputs();
         if (ol->empty())
         {
             QMessageBox::critical(this,
-                    tr("OOStudio: Bounce to File"),
+                    tr("LOS: Bounce to File"),
                     tr("No audio output tracks found")
                     );
             return;
@@ -4031,9 +3986,9 @@ void OOMidi::bounceToFile(AudioOutput* ao)
             ao = ol->front();
         else
         {
-            for (iAudioOutput iao = ol->begin(); iao != ol->end(); ++iao)
+            for (iAudioOutputHelper iao = ol->begin(); iao != ol->end(); ++iao)
             {
-                AudioOutput* o = *iao;
+                AudioOutputHelper* o = *iao;
                 if (o->selected())
                 {
                     if (ao)
@@ -4047,7 +4002,7 @@ void OOMidi::bounceToFile(AudioOutput* ao)
             if (ao == 0)
             {
                 QMessageBox::critical(this,
-                        tr("OOStudio: Bounce to File"),
+                        tr("LOS: Bounce to File"),
                         tr("Select one audio output track")
                         );
                 return;
@@ -4072,79 +4027,13 @@ void OOMidi::bounceToFile(AudioOutput* ao)
     song->setPlay(true);
 }
 
-#ifdef HAVE_LASH
-//---------------------------------------------------------
-//   lash_idle_cb
-//---------------------------------------------------------
-#include <iostream>
-
-void
-OOMidi::lash_idle_cb()
-{
-    lash_event_t * event;
-    if (!lash_client)
-        return;
-
-    while ((event = lash_get_event(lash_client)))
-    {
-        switch (lash_event_get_type(event))
-        {
-            case LASH_Save_File:
-            {
-                /* save file */
-                QString ss = QString(lash_event_get_string(event)) + QString("/lash-project-oom.oom");
-                int ok = save(ss.toAscii(), false);
-                if (ok)
-                {
-                    project.setFile(ss.toAscii());
-                    //setWindowTitle(tr("OOMidi: Song: ") + project.completeBaseName());
-                    setWindowTitle(QString("The Composer - OOStudio-").append(VERSION).append(":     ") + project.completeBaseName()  + QString("     "));
-                    addProject(ss.toAscii());
-                    oomProject = QFileInfo(ss.toAscii()).absolutePath();
-                    oomProjectFile = QFileInfo(ss.toAscii()).filePath();
-                }
-                lash_send_event(lash_client, event);
-            }
-                break;
-
-            case LASH_Restore_File:
-            {
-                /* load file */
-                QString sr = QString(lash_event_get_string(event)) + QString("/lash-project-oom.oom");
-                loadProjectFile(sr.toAscii(), false, true);
-                lash_send_event(lash_client, event);
-            }
-                break;
-
-            case LASH_Quit:
-            {
-                /* quit oom */
-                std::cout << "OOMidi::lash_idle_cb Received LASH_Quit"
-                        << std::endl;
-                lash_event_destroy(event);
-            }
-                break;
-
-            default:
-            {
-                std::cout << "OOMidi::lash_idle_cb Received unknown LASH event of type "
-                        << lash_event_get_type(event)
-                        << std::endl;
-                lash_event_destroy(event);
-            }
-                break;
-        }
-    }
-}
-#endif /* HAVE_LASH */
-
 //---------------------------------------------------------
 //   clearSong
 //    return true if operation aborted
 //    called with sequencer stopped
 //---------------------------------------------------------
 
-bool OOMidi::clearSong()
+bool LOS::clearSong()
 {
     if (song->dirty)
     {
@@ -4204,7 +4093,7 @@ bool OOMidi::clearSong()
         delete performer;
         performer = 0;
     }
-    //printf("OOMidi::clearSong() TopLevel.size(%d) \n", (int)toplevels.size());
+    //printf("LOS::clearSong() TopLevel.size(%d) \n", (int)toplevels.size());
     microSleep(100000);
     emit songClearCalled();
     song->clear(false);
@@ -4216,7 +4105,7 @@ bool OOMidi::clearSong()
 //   startEditInstrument
 //---------------------------------------------------------
 
-void OOMidi::startEditInstrument()
+void LOS::startEditInstrument()
 {
     if (editInstrument == 0)
     {
@@ -4237,7 +4126,7 @@ void OOMidi::startEditInstrument()
 //   switchMixerAutomation
 //---------------------------------------------------------
 
-void OOMidi::switchMixerAutomation()
+void LOS::switchMixerAutomation()
 {
     automation = !automation;
     // Clear all pressed and touched and rec event lists.
@@ -4251,7 +4140,7 @@ void OOMidi::switchMixerAutomation()
 //   clearAutomation
 //---------------------------------------------------------
 
-void OOMidi::clearAutomation()
+void LOS::clearAutomation()
 {
     printf("not implemented\n");
 }
@@ -4260,7 +4149,7 @@ void OOMidi::clearAutomation()
 //   takeAutomationSnapshot
 //---------------------------------------------------------
 
-void OOMidi::takeAutomationSnapshot()
+void LOS::takeAutomationSnapshot()
 {
     int frame = song->cPos().frame();
     TrackList* tracks = song->tracks();
@@ -4283,7 +4172,7 @@ void OOMidi::takeAutomationSnapshot()
 //    called whenever the configuration has changed
 //---------------------------------------------------------
 
-void OOMidi::updateConfiguration()
+void LOS::updateConfiguration()
 {
     fileOpenAction->setShortcut(shortcuts[SHRT_OPEN].key);
     fileNewAction->setShortcut(shortcuts[SHRT_NEW].key);
@@ -4392,14 +4281,14 @@ void OOMidi::updateConfiguration()
 //   showBigtime
 //---------------------------------------------------------
 
-void OOMidi::showBigtime(bool on)
+void LOS::showBigtime(bool on)
 {
     if (on && bigtime == 0)
     {
         bigtime = new BigTime(0);
         bigtime->setPos(0, song->cpos(), false);
         connect(song, SIGNAL(posChanged(int, unsigned, bool)), bigtime, SLOT(setPos(int, unsigned, bool)));
-        connect(oom, SIGNAL(configChanged()), bigtime, SLOT(configChanged()));
+        connect(los, SIGNAL(configChanged()), bigtime, SLOT(configChanged()));
         connect(bigtime, SIGNAL(closed()), SLOT(bigtimeClosed()));
         bigtime->resize(config.geometryBigTime.size());
         bigtime->move(config.geometryBigTime.topLeft());
@@ -4413,7 +4302,7 @@ void OOMidi::showBigtime(bool on)
 //   toggleBigTime
 //---------------------------------------------------------
 
-void OOMidi::toggleBigTime(bool checked)
+void LOS::toggleBigTime(bool checked)
 {
     showBigtime(checked);
 }
@@ -4422,23 +4311,23 @@ void OOMidi::toggleBigTime(bool checked)
 //   bigtimeClosed
 //---------------------------------------------------------
 
-void OOMidi::bigtimeClosed()
+void LOS::bigtimeClosed()
 {
     viewBigtimeAction->setChecked(false);
 }
 
-AudioPortConfig* OOMidi::getRoutingDialog(bool)
+AudioPortConfig* LOS::getRoutingDialog(bool)
 {
     configMidiAssign(0);
     return midiAssignDialog->getAudioPortConfig();
 }
 
-QWidget* OOMidi::transportWindow()
+QWidget* LOS::transportWindow()
 {
     return transport;
 }
 
-QWidget* OOMidi::bigtimeWindow()
+QWidget* LOS::bigtimeWindow()
 {
     return bigtime;
 }
@@ -4447,7 +4336,7 @@ QWidget* OOMidi::bigtimeWindow()
 //   focusInEvent
 //---------------------------------------------------------
 
-void OOMidi::focusInEvent(QFocusEvent* ev)
+void LOS::focusInEvent(QFocusEvent* ev)
 {
     raise();
     QMainWindow::focusInEvent(ev);
@@ -4457,12 +4346,12 @@ void OOMidi::focusInEvent(QFocusEvent* ev)
 //   setUsedTool
 //---------------------------------------------------------
 
-void OOMidi::setUsedTool(int tool)
+void LOS::setUsedTool(int tool)
 {
     tools1->set(tool);
 }
 
-void OOMidi::configMidiAssign(int tab)
+void LOS::configMidiAssign(int tab)
 {
     if(!midiAssignDialog)
     {
@@ -4479,7 +4368,7 @@ void OOMidi::configMidiAssign(int tab)
 //   execDeliveredScript
 //---------------------------------------------------------
 
-void OOMidi::execDeliveredScript(int id)
+void LOS::execDeliveredScript(int id)
 {
     //QString scriptfile = QString(INSTPREFIX) + SCRIPTSSUFFIX + deliveredScriptNames[id];
     song->executeScript(song->getScriptPath(id, true).toLatin1().constData(), song->getSelectedMidiParts(), 0, false); // TODO: get quant from composer
@@ -4488,7 +4377,7 @@ void OOMidi::execDeliveredScript(int id)
 //   execUserScript
 //---------------------------------------------------------
 
-void OOMidi::execUserScript(int id)
+void LOS::execUserScript(int id)
 {
     song->executeScript(song->getScriptPath(id, false).toLatin1().constData(), song->getSelectedMidiParts(), 0, false); // TODO: get quant from composer
 }
@@ -4498,14 +4387,14 @@ void OOMidi::execUserScript(int id)
 //
 //---------------------------------------------------------
 
-void OOMidi::insertInstrumentTemplate(TrackView* tv, int idx)
+void LOS::insertInstrumentTemplate(TrackView* tv, int idx)
 {
     Q_UNUSED(idx);
     m_instrumentTemplates.insert(tv->id(), tv);
     emit instrumentTemplateAdded(tv->id());
 }
 
-void OOMidi::removeInstrumentTemplate(qint64 id)
+void LOS::removeInstrumentTemplate(qint64 id)
 {
     if(m_instrumentTemplates.contains(id))
     {
@@ -4514,7 +4403,7 @@ void OOMidi::removeInstrumentTemplate(qint64 id)
     }
 }
 
-TrackView* OOMidi::addInstrumentTemplate()
+TrackView* LOS::addInstrumentTemplate()
 {
     TrackView* tv = new TrackView(true);
     tv->setDefaultName();
@@ -4524,7 +4413,7 @@ TrackView* OOMidi::addInstrumentTemplate()
     return tv;
 }
 
-TrackView* OOMidi::findInstrumentTemplateById(qint64 id) const
+TrackView* LOS::findInstrumentTemplateById(qint64 id) const
 {
     if(m_instrumentTemplates.contains(id))
         return m_instrumentTemplates.value(id);
@@ -4535,31 +4424,31 @@ TrackView* OOMidi::findInstrumentTemplateById(qint64 id) const
 // View Toolbars code
 //---------------------------------------------------------
 
-void OOMidi::showToolbarOrchestra(bool yesno)
+void LOS::showToolbarOrchestra(bool yesno)
 {
     if (_resourceDock)
         _resourceDock->setVisible(yesno);
 }
 
-void OOMidi::showToolbarComposerSettings(bool yesno)
+void LOS::showToolbarComposerSettings(bool yesno)
 {
     if (toolbarComposerSettings)
         toolbarComposerSettings->setVisible(yesno);
 }
 
-void OOMidi::showToolbarSnap(bool yesno)
+void LOS::showToolbarSnap(bool yesno)
 {
     if (toolbarSnap)
         toolbarSnap->setVisible(yesno);
 }
 
-void OOMidi::showToolbarTransport(bool yesno)
+void LOS::showToolbarTransport(bool yesno)
 {
     if (tools)
         tools->setVisible(yesno);
 }
 
-void OOMidi::updateViewToolbarMenu()
+void LOS::updateViewToolbarMenu()
 {
     if (_resourceDock)
     {
@@ -4594,7 +4483,7 @@ void OOMidi::updateViewToolbarMenu()
         viewToolbarTransport->setEnabled(false);
 }
 
-void OOMidi::showEvent(QShowEvent*)
+void LOS::showEvent(QShowEvent*)
 {
     emit viewReady();
 }

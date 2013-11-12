@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: transport.h,v 1.4 2004/06/28 21:13:16 wschweer Exp $
 //
 //  (C) Copyright 1999/2000 Werner Schweer (ws@seh.de)

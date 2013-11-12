@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //    $Id: sclif.h,v 1.1.1.1 2003/10/27 18:54:33 wschweer Exp $
 
 //    Copyright (C) 1997  Josef Wilgen

@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //
 //
 //
@@ -9,37 +9,29 @@
 
 #include "OOMCommand.h"
 
-OOMCommand::OOMCommand( const QString& des )
-	: QUndoCommand(des)
+LOSCommand::LOSCommand(const QString& des)
+    : QUndoCommand(des),
+      fDescription(des)
 {
 }
-OOMCommand::~OOMCommand()
+
+LOSCommand::~LOSCommand()
 {}
 
-
-/**
- * 	Virtual function, needs to be reimplemented for all
-	type of Commands
- */
-int OOMCommand::do_action( )
+void LOSCommand::processCommand(LOSCommand* cmd)
 {
-	return -1;
+    Q_ASSERT(cmd);
+    qDebug("processing %s\n", cmd->text().toAscii().data());
+
+    cmd->redo();
 }
 
-/**
- * 	Virtual function, needs to be reimplemented for all
-	type of Commands
-
- */
-int OOMCommand::undo_action( )
+int LOSCommand::doAction()
 {
-	return -1;
+    return -1;
 }
 
-void OOMCommand::process_command(OOMCommand * cmd)
+int LOSCommand::undoAction()
 {
-	Q_ASSERT(cmd);
-
-	qDebug("processing %s\n", cmd->text().toAscii().data());
-	cmd->redo();
+    return -1;
 }

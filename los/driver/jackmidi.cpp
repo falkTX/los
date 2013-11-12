@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: jackmidi.cpp,v 1.1.1.1 2010/01/27 09:06:43 terminator356 Exp $
 //  (C) Copyright 1999-2010 Werner Schweer (ws@seh.de)
 //=========================================================
@@ -96,7 +96,7 @@ MidiDevice* MidiJackDevice::createJackMidiDevice(QString name, int rwflags) // p
     }
     if (ni >= 65536)
     {
-        fprintf(stderr, "OOMidi: createJackMidiDevice failed! Can't find an unused midi device name 'jack-midi-[0-65535]'.\n");
+        fprintf(stderr, "LOS: createJackMidiDevice failed! Can't find an unused midi device name 'jack-midi-[0-65535]'.\n");
         return 0;
     }
 
@@ -148,7 +148,7 @@ QString MidiJackDevice::open()
                     _out_client_jackport = (jack_port_t*) audioDevice->registerOutPort(s.toLatin1().constData(), true);
                     if (!_out_client_jackport)
                     {
-                        fprintf(stderr, "OOMidi: MidiJackDevice::open failed creating output port name %s\n", s.toLatin1().constData());
+                        fprintf(stderr, "LOS: MidiJackDevice::open failed creating output port name %s\n", s.toLatin1().constData());
                         _openFlags &= ~1; // Remove the flag, but continue on...
                     }
                 }
@@ -175,7 +175,7 @@ QString MidiJackDevice::open()
                 _in_client_jackport = (jack_port_t*) audioDevice->registerInPort(s.toLatin1().constData(), true);
                 if (!_in_client_jackport)
                 {
-                    fprintf(stderr, "OOMidi: MidiJackDevice::open failed creating input port name %s\n", s.toLatin1().constData());
+                    fprintf(stderr, "LOS: MidiJackDevice::open failed creating input port name %s\n", s.toLatin1().constData());
                     _openFlags &= ~2; // Remove the flag, but continue on...
                 }
             }
@@ -219,7 +219,7 @@ void MidiJackDevice::writeRouting(int level, Xml& xml) const
 {
     // p3.3.45
     // If this device is not actually in use by the song, do not write any routes.
-    // This prevents bogus routes from being saved and propagated in the oom file.
+    // This prevents bogus routes from being saved and propagated in the los file.
     if (midiPort() == -1)
         return;
 
@@ -283,7 +283,7 @@ void MidiJackDevice::writeRouting(int level, Xml& xml) const
 
 /* FIX: if we fail to transmit the event,
  *      we return false (indicating OK). Otherwise
- *      it seems oom will retry forever
+ *      it seems los will retry forever
  */
 bool MidiJackDevice::putMidiEvent(const MidiPlayEvent& /*event*/)
 {
@@ -404,7 +404,7 @@ void MidiJackDevice::eventReceived(jack_midi_event_t* ev)/*{{{*/
     MidiRecordEvent event;
     event.setB(0);
 
-    // NOTE: From OOMidi-2. Not done here in OOMidi-1 (yet).
+    // NOTE: From LOS-2. Not done here in LOS-1 (yet).
     // move all events 2*segmentSize into the future to get
     // jitterfree playback
     //
@@ -669,7 +669,7 @@ bool MidiJackDevice::processEvent(const MidiPlayEvent& event)
     unsigned t = event.time();
     int a = event.dataA();
     int b = event.dataB();
-    // Perhaps we can find use for this value later, together with the Jack midi OOMidi port(s).
+    // Perhaps we can find use for this value later, together with the Jack midi LOS port(s).
     // No big deal if not. Not used for now.
     int port = event.port();
 
@@ -719,7 +719,7 @@ bool MidiJackDevice::processEvent(const MidiPlayEvent& event)
     {
         //int a      = event.dataA();
         //int b      = event.dataB();
-        // Perhaps we can find use for this value later, together with the Jack midi OOMidi port(s).
+        // Perhaps we can find use for this value later, together with the Jack midi LOS port(s).
         // No big deal if not. Not used for now.
         //int port   = event.port();
 

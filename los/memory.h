@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: memory.h,v 1.4.2.3 2009/12/15 22:08:50 spamatica Exp $
 //
 //  (C) Copyright 2003-2004 Werner Schweer (ws@seh.de)

@@ -1,8 +1,8 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //    $Id: $
-//  (C) Copyright 2011 Andrew Williams and the OOMidi team
+//  (C) Copyright 2011 Andrew Williams and the LOS team
 //=========================================================
 
 #include <QWidgetAction>
@@ -69,14 +69,14 @@ QWidget* TrackInstrumentMenu::createWidget(QWidget* parent)/*{{{*/
     int lstr = 0;
     QString longest;
 
-    MidiPort *mp = oomMidiPorts.value(((MidiTrack*)m_track)->outPortId());
+    MidiPort *mp = losMidiPorts.value(((MidiTrack*)m_track)->outPortId());
     if (mp)
     {
         // add GM first, then LS, then SYNTH
         for (iMidiInstrument i = midiInstruments.begin(); i != midiInstruments.end(); ++i)
         {
             // XXX find resource and delete it
-            //if(!(*i)->isOOMInstrument())
+            //if(!(*i)->isLOSInstrument())
             {
                 QString name(QString("(GM) ").append((*i)->iname()));/*{{{*/
                 baseHeight += 18;

@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: seqmsg.cpp,v 1.32.2.17 2009/12/20 05:00:35 terminator356 Exp $
 //
 //  (C) Copyright 2001 Werner Schweer (ws@seh.de)
@@ -98,7 +98,7 @@ void Audio::msgRemoveRoute(Route src, Route dst)
             }
         }
         else
-            audioDevice->disconnect(src.jackPort, ((AudioInput*) dst.track)->jackPort(dst.channel));
+            audioDevice->disconnect(src.jackPort, ((AudioInputHelper*) dst.track)->jackPort(dst.channel));
     }
     else if (dst.type == Route::JACK_ROUTE)
     {
@@ -113,7 +113,7 @@ void Audio::msgRemoveRoute(Route src, Route dst)
             }
         }
         else
-            audioDevice->disconnect(((AudioOutput*) src.track)->jackPort(src.channel), dst.jackPort);
+            audioDevice->disconnect(((AudioOutputHelper*) src.track)->jackPort(src.channel), dst.jackPort);
     }
 }
 
@@ -176,7 +176,7 @@ void Audio::msgAddRoute(Route src, Route dst)
                 }
             }
             else
-                audioDevice->connect(src.jackPort, ((AudioInput*) dst.track)->jackPort(dst.channel));
+                audioDevice->connect(src.jackPort, ((AudioInputHelper*) dst.track)->jackPort(dst.channel));
         }
     }
     else if (dst.type == Route::JACK_ROUTE)
@@ -193,7 +193,7 @@ void Audio::msgAddRoute(Route src, Route dst)
                 }
             }
             else
-                audioDevice->connect(((AudioOutput*) src.track)->jackPort(dst.channel), dst.jackPort);
+                audioDevice->connect(((AudioOutputHelper*) src.track)->jackPort(dst.channel), dst.jackPort);
         }
     }
     msgAddRoute1(src, dst);
@@ -236,7 +236,7 @@ void Audio::msgSetVolume(AudioTrack* src, double val)
     msg.snode = src;
     msg.dval = val;
     sendMsg(&msg);
-    //oom->composer->controllerChanged(src);
+    //los->composer->controllerChanged(src);
 }
 
 //---------------------------------------------------------
@@ -250,7 +250,7 @@ void Audio::msgSetPan(AudioTrack* node, double val)
     msg.snode = node;
     msg.dval = val;
     sendMsg(&msg);
-    //oom->composer->controllerChanged(node);
+    //los->composer->controllerChanged(node);
 }
 
 //---------------------------------------------------------
@@ -279,10 +279,10 @@ void Audio::msgSetChannels(AudioTrack* node, int n)
 
     if (!name.isEmpty())
     {
-        if (node->type() == Track::AUDIO_INPUT)
+        if (node->type() == Track::WAVE_INPUT_HELPER)
         {
             if (!checkAudioDevice()) return;
-            AudioInput* ai = (AudioInput*) node;
+            AudioInputHelper* ai = (AudioInputHelper*) node;
             for (int i = 0; i < mc; ++i)
             {
                 if (i < n && ai->jackPort(i) == 0)
@@ -309,10 +309,10 @@ void Audio::msgSetChannels(AudioTrack* node, int n)
                 }
             }
         }
-        else if (node->type() == Track::AUDIO_OUTPUT)
+        else if (node->type() == Track::WAVE_OUTPUT_HELPER)
         {
             if (!checkAudioDevice()) return;
-            AudioOutput* ao = (AudioOutput*) node;
+            AudioOutputHelper* ao = (AudioOutputHelper*) node;
             for (int i = 0; i < mc; ++i)
             {
                 void* jp = ao->jackPort(i);
@@ -408,7 +408,7 @@ void Audio::msgSwapControllerIDX(AudioTrack* node, int idx1, int idx2)
     msg.a = idx1;
     msg.b = idx2;
     sendMsg(&msg);
-    //oom->composer->controllerChanged(node);
+    //los->composer->controllerChanged(node);
 }
 
 //---------------------------------------------------------
@@ -423,7 +423,7 @@ void Audio::msgClearControllerEvents(AudioTrack* node, int acid)
     msg.snode = node;
     msg.ival = acid;
     sendMsg(&msg);
-    //oom->composer->controllerChanged(node);
+    //los->composer->controllerChanged(node);
 }
 
 //---------------------------------------------------------
@@ -467,7 +467,7 @@ void Audio::msgEraseACEvent(AudioTrack* node, int acid, int frame)
     msg.ival = acid;
     msg.a = frame;
     sendMsg(&msg);
-    //oom->composer->controllerChanged(node);
+    //los->composer->controllerChanged(node);
 }
 
 //---------------------------------------------------------
@@ -484,7 +484,7 @@ void Audio::msgEraseRangeACEvents(AudioTrack* node, int acid, int frame1, int fr
     msg.a = frame1;
     msg.b = frame2;
     sendMsg(&msg);
-    //oom->composer->controllerChanged(node);
+    //los->composer->controllerChanged(node);
 }
 
 //---------------------------------------------------------
@@ -501,7 +501,7 @@ void Audio::msgAddACEvent(AudioTrack* node, int acid, int frame, double val)
     msg.a = frame;
     msg.dval = val;
     sendMsg(&msg);
-    //oom->composer->controllerChanged(node);
+    //los->composer->controllerChanged(node);
 }
 
 //---------------------------------------------------------
@@ -1087,19 +1087,6 @@ void Audio::msgSetTrackOutPort(MidiTrack* track, int port)
     msg.id = SEQM_SET_TRACK_OUT_PORT;
     msg.p1 = track;
     msg.a = port;
-    sendMessage(&msg, false);
-}
-
-//---------------------------------------------------------
-//   msgSetSendMetronome
-//---------------------------------------------------------
-
-void Audio::msgSetSendMetronome(AudioTrack* track, bool b)
-{
-    AudioMsg msg;
-    msg.id = AUDIO_SET_SEND_METRONOME;
-    msg.snode = track;
-    msg.ival = (int) b;
     sendMessage(&msg, false);
 }
 

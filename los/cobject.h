@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: cobject.h,v 1.3.2.1 2005/12/11 21:29:24 spamatica Exp $
 //
 //  (C) Copyright 1999/2000 Werner Schweer (ws@seh.de)

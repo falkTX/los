@@ -5,7 +5,7 @@
 AboutBoxImpl::AboutBoxImpl()
 {
 	setupUi(this);
-	imageLabel->setPixmap(*aboutOOMidiImage);
+	imageLabel->setPixmap(*aboutLOSImage);
 	QString version(VERSION);
 	versionLabel->setText("Version: " + version);
 }

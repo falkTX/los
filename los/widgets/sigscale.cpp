@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //    $Id: sigscale.cpp,v 1.6 2004/04/11 13:03:32 wschweer Exp $
 //  (C) Copyright 1999 Werner Schweer (ws@seh.de)
 //=========================================================

@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>OOMidi: Midi Input Plugin: Remote Control</string>
+   <string>LOS: Midi Input Plugin: Remote Control</string>
   </property>
   <layout class="QVBoxLayout">
    <property name="spacing">

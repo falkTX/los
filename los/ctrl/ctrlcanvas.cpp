@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //    $Id: ctrlcanvas.cpp,v 1.15.2.10 2009/11/14 03:37:48 terminator356 Exp $
 //  (C) Copyright 1999 Werner Schweer (ws@seh.de)
 //=========================================================
@@ -390,7 +390,7 @@ void CtrlCanvas::songChanged(int type)
     // Although changing the instrument/device in the
     //  config window generates a type of -1, we can eliminate
     //  some other useless calls using SC_CONFIG, which was not used
-    //  anywhere else in oom before now, except song header.
+    //  anywhere else in los before now, except song header.
     if ((type & (SC_CONFIG | SC_DRUMMAP)) || ((type & (SC_PART_MODIFIED | SC_SELECTION)) && changed))
     {
         setMidiController(_cnum);

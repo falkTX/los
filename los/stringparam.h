@@ -1,6 +1,6 @@
 //=============================================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: stringparam.h,v 1.0.0.0 2010/04/24 01:01:01 terminator356 Exp $
 //
 //  Copyright (C) 1999-2010 by Werner Schweer and others

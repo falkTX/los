@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: routedialog.h,v 1.2 2004/01/31 17:31:49 wschweer Exp $
 //
 //  (C) Copyright 2004 Werner Schweer (ws@seh.de)

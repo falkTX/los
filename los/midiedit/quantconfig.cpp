@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: quantconfig.cpp,v 1.2 2004/04/24 14:58:52 wschweer Exp $
 //
 //  (C) Copyright 1999/2003 Werner Schweer (ws@seh.de)
@@ -27,7 +27,7 @@ const char* wtQLenTxt = QT_TRANSLATE_NOOP("@default", "quantize also note len as
 QuantConfig::QuantConfig(int s, int l, bool lenFlag)
 : QDialog()
 {
-	setWindowTitle(tr("OOMidi: Config Quantize"));
+	setWindowTitle(tr("LOS: Config Quantize"));
 	QVBoxLayout *mainlayout = new QVBoxLayout;
 
 	QGridLayout* layout = new QGridLayout;

@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //    $Id: marker.cpp,v 1.2 2003/12/10 18:34:22 wschweer Exp $
 //  (C) Copyright 2000 Werner Schweer (ws@seh.de)
 //=========================================================

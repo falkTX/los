@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //    $Id: lmaster.cpp,v 1.2.2.8 2009/03/09 02:05:18 terminator356 Exp $
 //  (C) Copyright 2000 Werner Schweer (ws@seh.de)
 //=========================================================
@@ -36,7 +36,7 @@
 #define LMASTER_TYPE_COL 2
 #define LMASTER_VAL_COL  3
 
-#define LMASTER_MSGBOX_STRING          "OOMidi: List Editor"
+#define LMASTER_MSGBOX_STRING          "LOS: List Editor"
 //---------------------------------------------------------
 //   closeEvent
 //---------------------------------------------------------
@@ -69,7 +69,7 @@ LMaster::LMaster()
 	sig_editor = 0;
 	editedItem = 0;
 	editingNewItem = false;
-	setWindowTitle(tr("OOMidi: Tempo Editor"));
+	setWindowTitle(tr("LOS: Tempo Editor"));
 	setMinimumHeight(100);
 	setFixedWidth(400);
 
@@ -498,7 +498,7 @@ void LMaster::returnPressed()
 		}
 		else
 		{
-			QMessageBox::warning(this, tr("OOMidi: List Editor"),
+			QMessageBox::warning(this, tr("LOS: List Editor"),
 					tr("Input error, conversion not OK or value out of range"),
 					QMessageBox::Ok, Qt::NoButton
 					);

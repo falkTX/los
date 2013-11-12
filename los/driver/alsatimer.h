@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: alsatimer.h,v 1.1.2.4 2009/03/09 02:05:18 terminator356 Exp $
 //
 //  Plenty of code borrowed from timer.c example in 

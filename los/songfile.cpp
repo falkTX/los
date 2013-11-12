@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: songfile.cpp,v 1.25.2.12 2009/11/04 15:06:07 spamatica Exp $
 //
 //  (C) Copyright 1999/2000 Werner Schweer (ws@seh.de)
@@ -539,7 +539,7 @@ QFont Song::readFont(Xml& xml, const char* name)
 //   readPart
 //---------------------------------------------------------
 
-Part* OOMidi::readPart(Xml& xml)
+Part* LOS::readPart(Xml& xml)
 {
     Part* part = 0;
     for (;;)
@@ -658,13 +658,13 @@ void Song::read(Xml& xml)/*{{{*/
                 }
                 else if (tag == "AudioInput")
                 {
-                    AudioInput* track = new AudioInput();
+                    AudioInputHelper* track = new AudioInputHelper();
                     track->read(xml);
                     insertTrack(track, -1);
                 }
                 else if (tag == "AudioOutput")
                 {
-                    AudioOutput* track = new AudioOutput();
+                    AudioOutputHelper* track = new AudioOutputHelper();
                     track->read(xml);
                     insertTrack(track, -1);
                     if(!m_masterId && (track->name() == "Master" || track->name() == tr("Master")))
@@ -736,7 +736,6 @@ void Song::read(Xml& xml)/*{{{*/
                     //Call song->updateTrackViews() to update the canvas and headers
                     addMasterTrack();
                     updateTrackViews();
-                    setClick(click);
                     //Call to update the track view menu
                     update(SC_VIEW_CHANGED);
                     return;
@@ -757,7 +756,7 @@ void Song::read(Xml& xml)/*{{{*/
 //    read song
 //---------------------------------------------------------
 
-void OOMidi::read(Xml& xml, bool skipConfig)
+void LOS::read(Xml& xml, bool skipConfig)
 {
     bool skipmode = true;
     for (;;)
@@ -770,7 +769,7 @@ void OOMidi::read(Xml& xml, bool skipConfig)
             case Xml::End:
                 return;
             case Xml::TagStart:
-                if (skipmode && tag == "oom")
+                if (skipmode && tag == "los")
                     skipmode = false;
                 else if (skipmode)
                     break;
@@ -798,7 +797,7 @@ void OOMidi::read(Xml& xml, bool skipConfig)
                 }
                 break;
             case Xml::TagEnd:
-                if (!skipmode && tag == "oom")
+                if (!skipmode && tag == "los")
                     return;
             default:
                 break;
@@ -829,7 +828,6 @@ void Song::write(int level, Xml& xml) const
     xml.intTag(level, "type", _mtype);
     xml.intTag(level, "recmode", _recMode);
     xml.intTag(level, "cycle", _cycleMode);
-    xml.intTag(level, "click", _click);
     xml.intTag(level, "quantize", _quantize);
     xml.intTag(level, "len", _len);
     xml.intTag(level, "follow", _follow);
@@ -904,18 +902,18 @@ void Song::write(int level, Xml& xml) const
 //    write song
 //---------------------------------------------------------
 
-void OOMidi::write(Xml& xml) const
+void LOS::write(Xml& xml) const
 {
     xml.header();
 
     int level = 0;
-    xml.tag(level++, "oom version=\"2.0\"");
+    xml.tag(level++, "los version=\"2.0\"");
     writeConfiguration(level, xml);
 
     writeStatusMidiInputTransformPlugins(level, xml);
 
     song->write(level, xml);
 
-    xml.tag(--level, "/oom");
+    xml.tag(--level, "/los");
 }
 

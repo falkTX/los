@@ -1,6 +1,6 @@
 //=========================================================
-//  OOStudio
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 
 //  (C) Copyright 2011 Andrew Williams
 //  (C) Copyright 2011 Christopher Cherrett
@@ -454,9 +454,7 @@ void ComposerCanvas::viewMouseDoubleClickEvent(QMouseEvent* event)
                     audio->msgAddPart(part);
                 }
                     break;
-                case Track::WAVE:
-                case Track::AUDIO_OUTPUT:
-                case Track::AUDIO_INPUT:
+                default:
                     break;
             }
         }
@@ -584,7 +582,7 @@ bool ComposerCanvas::moveItem(CItem* item, const QPoint& newpos, DragType t)
 
     if (dtrack->type() != type)
     {
-        QMessageBox::critical(this, QString("OOStudio"),
+        QMessageBox::critical(this, QString("LOS"),
                 tr("Cannot copy/move/clone to different Track-Type"));
         return false;
     }
@@ -781,8 +779,7 @@ CItem* ComposerCanvas::addPartAtCursor(Track* track)
             //pa->setTick(pos);
             //pa->setLenTick(0);
             //break;
-        case Track::AUDIO_OUTPUT:
-        case Track::AUDIO_INPUT:
+        default:
             return 0;
     }
     pa->setName(track->name());
@@ -824,8 +821,7 @@ CItem* ComposerCanvas::newItem(const QPoint& pos, int)
             //pa->setTick(x);
             //pa->setLenTick(0);
             //break;
-        case Track::AUDIO_OUTPUT:
-        case Track::AUDIO_INPUT:
+        default:
             return 0;
     }
     pa->setName(track->name());
@@ -998,8 +994,7 @@ QMenu* ComposerCanvas::genItemPopup(CItem* item)/*{{{*/
             act_wfinfo->setData(17);
         }
             break;
-        case Track::AUDIO_OUTPUT:
-        case Track::AUDIO_INPUT:
+        default:
             break;
     }
 
@@ -1098,8 +1093,8 @@ void ComposerCanvas::itemPopup(CItem* item, int n, const QPoint& pt)/*{{{*/
         {
             const Part* part = item->part();
             bool popenFlag = false;
-            //QString fn = getSaveFileName(QString(""), part_file_pattern, this, tr("OOStudio: save part"));
-            QString fn = getSaveFileName(QString(""), part_file_save_pattern, this, tr("OOStudio: save part"));
+            //QString fn = getSaveFileName(QString(""), part_file_pattern, this, tr("LOS: save part"));
+            QString fn = getSaveFileName(QString(""), part_file_save_pattern, this, tr("LOS: save part"));
             if (!fn.isEmpty())
             {
                 FILE* fp = fileOpen(this, fn, ".mpt", "w", popenFlag, false, false);
@@ -1537,10 +1532,10 @@ void ComposerCanvas::mouseRelease(const QPoint& pos)/*{{{*/
                     automation.currentCtrlList->add(v.getFrame(), v.val);
                 }
                 //Let undo/redo do the job
-                AddRemoveCtrlValues* modifyCommand = new AddRemoveCtrlValues(automation.currentCtrlList, m_automationMoveList, valuesToAdd, OOMCommand::MODIFY);
+                AddRemoveCtrlValues* modifyCommand = new AddRemoveCtrlValues(automation.currentCtrlList, m_automationMoveList, valuesToAdd, LOSCommand::MODIFY);
 
                 CommandGroup* group = new CommandGroup(tr("Move Automation Nodes"));
-                group->add_command(modifyCommand);
+                group->addCommand(modifyCommand);
 
                 song->pushToHistoryStack(group);
 
@@ -1962,7 +1957,7 @@ void ComposerCanvas::keyPress(QKeyEvent* event)/*{{{*/
     }
     else if (key == shortcuts[SHRT_TRACK_TOGGLE_SOLO].key)
     {
-        Track* t =oom->composer->curTrack();
+        Track* t =los->composer->curTrack();
         if (t)
         {
             audio->msgSetSolo(t, !t->solo());
@@ -1972,7 +1967,7 @@ void ComposerCanvas::keyPress(QKeyEvent* event)/*{{{*/
     }
     else if (key == shortcuts[SHRT_TRACK_TOGGLE_MUTE].key)
     {
-        Track* t =oom->composer->curTrack();
+        Track* t =los->composer->curTrack();
         if (t)
         {
             t->setMute(!t->mute());
@@ -1987,38 +1982,38 @@ void ComposerCanvas::keyPress(QKeyEvent* event)/*{{{*/
     }
     else if (key == shortcuts[SHRT_SET_QUANT_0].key)
     {
-        oom->composer->_setRaster(0);
-        oom->composer->raster->setCurrentIndex(0);
+        los->composer->_setRaster(0);
+        los->composer->raster->setCurrentIndex(0);
         return;
     }
     else if (key == shortcuts[SHRT_SET_QUANT_1].key)
     {
-        oom->composer->_setRaster(1);
-        oom->composer->raster->setCurrentIndex(1);
+        los->composer->_setRaster(1);
+        los->composer->raster->setCurrentIndex(1);
         return;
     }
     else if (key == shortcuts[SHRT_SET_QUANT_2].key)
     {
-        oom->composer->_setRaster(2);
-        oom->composer->raster->setCurrentIndex(2);
+        los->composer->_setRaster(2);
+        los->composer->raster->setCurrentIndex(2);
         return;
     }
     else if (key == shortcuts[SHRT_SET_QUANT_3].key)
     {
-        oom->composer->_setRaster(3);
-        oom->composer->raster->setCurrentIndex(3);
+        los->composer->_setRaster(3);
+        los->composer->raster->setCurrentIndex(3);
         return;
     }
     else if (key == shortcuts[SHRT_SET_QUANT_4].key)
     {
-        oom->composer->_setRaster(4);
-        oom->composer->raster->setCurrentIndex(4);
+        los->composer->_setRaster(4);
+        los->composer->raster->setCurrentIndex(4);
         return;
     }
     else if (key == shortcuts[SHRT_SET_QUANT_5].key)
     {
-        oom->composer->_setRaster(5);
-        oom->composer->raster->setCurrentIndex(5);
+        los->composer->_setRaster(5);
+        los->composer->raster->setCurrentIndex(5);
         return;
     }
     else if (key == shortcuts[SHRT_TRACK_HEIGHT_DEFAULT].key)
@@ -2047,7 +2042,7 @@ void ComposerCanvas::keyPress(QKeyEvent* event)/*{{{*/
         if (tl.size())
         {
             Track* tr = *tl.begin();
-            oom->composer->verticalScrollSetYpos(track2Y(tr));
+            los->composer->verticalScrollSetYpos(track2Y(tr));
         }
         emit trackHeightChanged();
         song->update(SC_TRACK_MODIFIED);
@@ -2064,7 +2059,7 @@ void ComposerCanvas::keyPress(QKeyEvent* event)/*{{{*/
         if (tl.size())
         {
             Track* tr = *tl.begin();
-            oom->composer->verticalScrollSetYpos(track2Y(tr));
+            los->composer->verticalScrollSetYpos(track2Y(tr));
         }
         emit trackHeightChanged();
         song->update(SC_TRACK_MODIFIED);
@@ -2431,9 +2426,7 @@ void ComposerCanvas::keyPress(QKeyEvent* event)/*{{{*/
                 type = 4;
                 break;
 
-            case Track::MIDI:
-            case Track::AUDIO_OUTPUT:
-            case Track::AUDIO_INPUT:
+            default:
                 break;
         }
         emit startEditor(pl, type);
@@ -3298,10 +3291,10 @@ void ComposerCanvas::cmd(int cmd)/*{{{*/
                             //automation.currentCtrlList->del(val->getFrame());
                         }
                     }
-                    AddRemoveCtrlValues* removeCommand = new AddRemoveCtrlValues(automation.currentCtrlList, valuesToRemove, OOMCommand::REMOVE);
+                    AddRemoveCtrlValues* removeCommand = new AddRemoveCtrlValues(automation.currentCtrlList, valuesToRemove, LOSCommand::REMOVE);
 
                     CommandGroup* group = new CommandGroup(tr("Delete Automation Nodes"));
-                    group->add_command(removeCommand);
+                    group->addCommand(removeCommand);
 
                     song->pushToHistoryStack(group);
                     _curveNodeSelection->clearSelection();
@@ -3314,10 +3307,10 @@ void ComposerCanvas::cmd(int cmd)/*{{{*/
                     CtrlVal& firstCtrlVal = automation.currentCtrlList->begin()->second;
                     if (automation.currentCtrlVal->getFrame() != firstCtrlVal.getFrame())
                     {
-                        AddRemoveCtrlValues* removeCommand = new AddRemoveCtrlValues(automation.currentCtrlList, CtrlVal(automation.currentCtrlVal->getFrame(), automation.currentCtrlVal->val), OOMCommand::REMOVE);
+                        AddRemoveCtrlValues* removeCommand = new AddRemoveCtrlValues(automation.currentCtrlList, CtrlVal(automation.currentCtrlVal->getFrame(), automation.currentCtrlVal->val), LOSCommand::REMOVE);
 
                         CommandGroup* group = new CommandGroup(tr("Delete Automation Node"));
-                        group->add_command(removeCommand);
+                        group->addCommand(removeCommand);
 
                         song->pushToHistoryStack(group);
                         _curveNodeSelection->clearSelection();
@@ -3416,7 +3409,7 @@ void ComposerCanvas::copyAutomation()/*{{{*/
         //qDebug() << xml;
         QByteArray data = xml.toUtf8();
         QMimeData* md = new QMimeData();
-        md->setData("text/x-oom-automationcurve", data);
+        md->setData("text/x-los-automationcurve", data);
         QApplication::clipboard()->setMimeData(md, QClipboard::Clipboard);
     }
 }/*}}}*/
@@ -3444,7 +3437,7 @@ void ComposerCanvas::pasteAutomation()/*{{{*/
         return;
     }
     AudioTrack *track = (AudioTrack*)*itrack;
-    QString subtype("x-oom-automationcurve");
+    QString subtype("x-los-automationcurve");
     QString format("text/" + subtype);
     QClipboard* cb = QApplication::clipboard();
     const QMimeData* md = cb->mimeData(QClipboard::Clipboard);
@@ -3561,12 +3554,12 @@ void ComposerCanvas::pasteAutomation()/*{{{*/
                         }
                     }
 
-                    AddRemoveCtrlValues* addCommand = new AddRemoveCtrlValues(cl, valuesToAdd, OOMCommand::ADD);
-                    AddRemoveCtrlValues* removeCommand = new AddRemoveCtrlValues(cl, valuesToRemove, OOMCommand::REMOVE);
+                    AddRemoveCtrlValues* addCommand = new AddRemoveCtrlValues(cl, valuesToAdd, LOSCommand::ADD);
+                    AddRemoveCtrlValues* removeCommand = new AddRemoveCtrlValues(cl, valuesToRemove, LOSCommand::REMOVE);
 
                     CommandGroup* group = new CommandGroup(tr("Copy Automation Nodes"));
-                    group->add_command(addCommand);
-                    group->add_command(removeCommand);
+                    group->addCommand(addCommand);
+                    group->addCommand(removeCommand);
 
                     song->pushToHistoryStack(group);
                 }
@@ -3656,13 +3649,13 @@ void ComposerCanvas::copy(PartList* pl)/*{{{*/
 
 
     if (midi && wave)
-        md->setData("text/x-oom-mixedpartlist", data); // By T356. Support mixed .mpt files.
+        md->setData("text/x-los-mixedpartlist", data); // By T356. Support mixed .mpt files.
     else
         if (midi)
-        md->setData("text/x-oom-midipartlist", data);
+        md->setData("text/x-los-midipartlist", data);
     else
         if (wave)
-        md->setData("text/x-oom-wavepartlist", data);
+        md->setData("text/x-los-wavepartlist", data);
 
     QApplication::clipboard()->setMimeData(md, QClipboard::Clipboard);
 
@@ -3767,7 +3760,7 @@ int ComposerCanvas::pasteAt(const QString& pt, Track* track, unsigned int pos, b
     if (notDone)
     {
         int tot = notDone + done;
-        QMessageBox::critical(this, QString("OOStudio"),
+        QMessageBox::critical(this, QString("LOS"),
                 QString().setNum(notDone) + (tot > 1 ? (tr(" out of ") + QString().setNum(tot)) : QString("")) +
                 (tot > 1 ? tr(" parts") : tr(" part")) +
                 tr(" could not be pasted.\nLikely the selected track is the wrong type."));
@@ -3800,7 +3793,7 @@ void ComposerCanvas::paste(bool clone, bool toTrack, bool doInsert)/*{{{*/
             {
                 if (track)
                 {
-                    QMessageBox::critical(this, QString("OOStudio"),
+                    QMessageBox::critical(this, QString("LOS"),
                             tr("Cannot paste: multiple tracks selected"));
                     return;
                 }
@@ -3810,7 +3803,7 @@ void ComposerCanvas::paste(bool clone, bool toTrack, bool doInsert)/*{{{*/
         }
         if (track == 0)
         {
-            QMessageBox::critical(this, QString("OOStudio"),
+            QMessageBox::critical(this, QString("LOS"),
                     tr("Cannot paste: no track selected"));
             return;
         }
@@ -3820,9 +3813,9 @@ void ComposerCanvas::paste(bool clone, bool toTrack, bool doInsert)/*{{{*/
     const QMimeData* md = cb->mimeData(QClipboard::Clipboard);
 
     QString pfx("text/");
-    QString mdpl("x-oom-midipartlist");
-    QString wvpl("x-oom-wavepartlist");
-    QString mxpl("x-oom-mixedpartlist");
+    QString mdpl("x-los-midipartlist");
+    QString wvpl("x-los-wavepartlist");
+    QString mxpl("x-los-mixedpartlist");
     QString txt;
 
     if (md->hasFormat(pfx + mdpl))
@@ -3830,7 +3823,7 @@ void ComposerCanvas::paste(bool clone, bool toTrack, bool doInsert)/*{{{*/
         // If we want to paste to a selected track...
         if (toTrack && !track->isMidiTrack())
         {
-            QMessageBox::critical(this, QString("OOStudio"),
+            QMessageBox::critical(this, QString("LOS"),
                     tr("Can only paste to midi track"));
             return;
         }
@@ -3841,7 +3834,7 @@ void ComposerCanvas::paste(bool clone, bool toTrack, bool doInsert)/*{{{*/
         // If we want to paste to a selected track...
         if (toTrack && track->type() != Track::WAVE)
         {
-            QMessageBox::critical(this, QString("OOStudio"),
+            QMessageBox::critical(this, QString("LOS"),
                     tr("Can only paste to wave track"));
             return;
         }
@@ -3852,7 +3845,7 @@ void ComposerCanvas::paste(bool clone, bool toTrack, bool doInsert)/*{{{*/
         // If we want to paste to a selected track...
         if (toTrack && !track->isMidiTrack() && track->type() != Track::WAVE)
         {
-            QMessageBox::critical(this, QString("OOStudio"),
+            QMessageBox::critical(this, QString("LOS"),
                     tr("Can only paste to midi or wave track"));
             return;
         }
@@ -3860,7 +3853,7 @@ void ComposerCanvas::paste(bool clone, bool toTrack, bool doInsert)/*{{{*/
     }
     else
     {
-        QMessageBox::critical(this, QString("OOStudio"),
+        QMessageBox::critical(this, QString("LOS"),
                 tr("Cannot paste: wrong data type"));
         return;
     }
@@ -3974,7 +3967,7 @@ void ComposerCanvas::startDrag(CItem* item, DragType t)/*{{{*/
     QByteArray data(fbuf);
     QMimeData* md = new QMimeData();
 
-    md->setData("text/x-oom-partlist", data);
+    md->setData("text/x-los-partlist", data);
 
     // "Note that setMimeData() assigns ownership of the QMimeData object to the QDrag object.
     //  The QDrag must be constructed on the heap with a parent QWidget to ensure that Qt can
@@ -4010,7 +4003,7 @@ void ComposerCanvas::dragEnterEvent(QDragEnterEvent* event)
         if (text.endsWith(".wav", Qt::CaseInsensitive) ||
                 text.endsWith(".ogg", Qt::CaseInsensitive) ||
                 text.endsWith(".mpt", Qt::CaseInsensitive) ||
-                text.endsWith(".oom", Qt::CaseInsensitive) ||
+                text.endsWith(".los", Qt::CaseInsensitive) ||
                 text.endsWith(".mid", Qt::CaseInsensitive))
         {
             /*if(text.endsWith(".mpt", Qt::CaseInsensitive))
@@ -4162,16 +4155,16 @@ void ComposerCanvas::viewDropEvent(QDropEvent* event)
                         (text.endsWith(".ogg", Qt::CaseInsensitive))))
                 {
                     unsigned tick = x;
-                    oom->importWaveToTrack(text, tick, track);
+                    los->importWaveToTrack(text, tick, track);
                 }
                 else if ((track->isMidiTrack() || track->type() == Track::WAVE) && text.endsWith(".mpt", Qt::CaseInsensitive))
                 {//Who saves a wave part as anything but a wave file?
                     unsigned tick = x;
-                    oom->importPartToTrack(text, tick, track);
+                    los->importPartToTrack(text, tick, track);
                 }
             }
         }
-        else if (text.endsWith(".oom", Qt::CaseInsensitive))
+        else if (text.endsWith(".los", Qt::CaseInsensitive))
         {
             emit dropSongFile(text);
         }
@@ -5399,9 +5392,9 @@ void ComposerCanvas::processAutomationMovements(QMouseEvent *event)
                 newValue = max - (relativeY * range);
             }
 
-            AddRemoveCtrlValues* cmd = new AddRemoveCtrlValues(automation.currentCtrlList, CtrlVal(currFrame, newValue), OOMCommand::ADD);
+            AddRemoveCtrlValues* cmd = new AddRemoveCtrlValues(automation.currentCtrlList, CtrlVal(currFrame, newValue), LOSCommand::ADD);
             CommandGroup* group = new CommandGroup(tr("Add Automation Node"));
-            group->add_command(cmd);
+            group->addCommand(cmd);
             song->pushToHistoryStack(group);
         }
 

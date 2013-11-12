@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //    $Id: drange.cpp,v 1.2.2.1 2009/03/09 02:05:18 terminator356 Exp $
 //
 //    Copyright (C) 1997  Josef Wilgen

@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //    $Id: drange.h,v 1.1.1.1.2.1 2007/01/27 14:52:43 spamatica Exp $
 //
 //    Copyright (C) 1997  Josef Wilgen

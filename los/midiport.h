@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: midiport.h,v 1.9.2.6 2009/11/17 22:08:22 terminator356 Exp $
 //
 //  (C) Copyright 1999-2004 Werner Schweer (ws@seh.de)
@@ -248,7 +248,7 @@ public:
 };
 
 extern MidiPort midiPorts[MIDI_PORTS];
-extern QHash<qint64, MidiPort*> oomMidiPorts;
+extern QHash<qint64, MidiPort*> losMidiPorts;
 extern void initMidiPorts();
 
 class QMenu;

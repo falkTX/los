@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: route.cpp,v 1.18.2.3 2008/05/21 00:28:52 terminator356 Exp $
 //
 //  (C) Copyright 2003-2004 Werner Schweer (ws@seh.de)
@@ -22,8 +22,8 @@
 
 //#define ROUTE_DEBUG
 
-//#define ROUTE_MIDIPORT_NAME_PREFIX       "OOMidi MidiPort "
-const QString ROUTE_MIDIPORT_NAME_PREFIX = "OOMidi MidiPort ";
+//#define ROUTE_MIDIPORT_NAME_PREFIX       "LOS MidiPort "
+const QString ROUTE_MIDIPORT_NAME_PREFIX = "LOS MidiPort ";
 
 //---------------------------------------------------------
 //   Route
@@ -99,8 +99,8 @@ Route::Route(qint64 port, int ch)
     track = 0;
     trackId = -1;
     midiPortId = port;
-    if(oomMidiPorts.contains(port))
-        midiPort = oomMidiPorts.value(port)->portno();
+    if(losMidiPorts.contains(port))
+        midiPort = losMidiPorts.value(port)->portno();
     channel = ch;
     channels = -1;
     remoteChannel = -1;
@@ -186,7 +186,7 @@ void addRoute(Route src, Route dst)/*{{{*/
     {
         if (dst.type == Route::TRACK_ROUTE)
         {
-            if (dst.track->type() != Track::AUDIO_INPUT)
+            if (dst.track->type() != Track::WAVE_INPUT_HELPER)
             {
                 fprintf(stderr, "addRoute: source is jack, dest:%s is track but not audio input\n", dst.track->name().toLatin1().constData());
                 return;
@@ -248,7 +248,7 @@ void addRoute(Route src, Route dst)/*{{{*/
     {
         if (src.type == Route::TRACK_ROUTE)
         {
-            if (src.track->type() != Track::AUDIO_OUTPUT)
+            if (src.track->type() != Track::WAVE_OUTPUT_HELPER)
             {
                 fprintf(stderr, "addRoute: destination is jack, source is track but not audio output\n");
                 return;
@@ -463,7 +463,7 @@ void removeRoute(Route src, Route dst)/*{{{*/
 
         if (dst.type == Route::TRACK_ROUTE)
         {
-            if (dst.track->type() != Track::AUDIO_INPUT)
+            if (dst.track->type() != Track::WAVE_INPUT_HELPER)
             {
                 fprintf(stderr, "removeRoute: source is jack, destination is track but not audio input\n");
                 // exit(-1);
@@ -509,7 +509,7 @@ void removeRoute(Route src, Route dst)/*{{{*/
 
         if (src.type == Route::TRACK_ROUTE)
         {
-            if (src.track->type() != Track::AUDIO_OUTPUT)
+            if (src.track->type() != Track::WAVE_OUTPUT_HELPER)
             {
                 fprintf(stderr, "removeRoute: destination is jack, source is track but not audio output\n");
                 return;
@@ -758,7 +758,7 @@ Route name2route(const QString& rn, bool /*dst*/, int rtype)/*{{{*/
     // printf("name2route %s\n", rn.toLatin1().constData());
     int channel = -1;
     QString s(rn);
-    // Support old route style in oom files. Obsolete.
+    // Support old route style in los files. Obsolete.
     if (rn.size() >= 2 && rn[0].isNumber() && rn[1] == ':')
     {
         channel = rn[0].toAscii() - int('1');
@@ -876,7 +876,7 @@ bool checkRoute(const QString& s, const QString& d)/*{{{*/
     {
         if (dst.type == Route::TRACK_ROUTE)
         {
-            if (dst.track->type() != Track::AUDIO_INPUT)
+            if (dst.track->type() != Track::WAVE_INPUT_HELPER)
             {
                 return false;
             }
@@ -909,7 +909,7 @@ bool checkRoute(const QString& s, const QString& d)/*{{{*/
     {
         if (src.type == Route::TRACK_ROUTE)
         {
-            if (src.track->type() != Track::AUDIO_OUTPUT)
+            if (src.track->type() != Track::WAVE_OUTPUT_HELPER)
             {
                 return false;
             }
@@ -1025,7 +1025,7 @@ void Route::read(Xml& xml)/*{{{*/
                     {
                         //qDebug("Route::read(): MIDI_PORT_ROUTE Finding midiport from id");
                         type = rtype;
-                        MidiPort *mp = oomMidiPorts.value(midiPortId);
+                        MidiPort *mp = losMidiPorts.value(midiPortId);
                         if(mp)
                         {
                             midiPort = mp->portno();
@@ -1093,7 +1093,7 @@ void Route::read(Xml& xml)/*{{{*/
                             if (md->name() == s && md->deviceType() == dtype)
                             {
                                 // We found a device, but if it is not in use by the song (port is -1), ignore it.
-                                // This prevents loading and propagation of bogus routes in the oom file.
+                                // This prevents loading and propagation of bogus routes in the los file.
                                 if (md->midiPort() == -1)
                                     break;
 

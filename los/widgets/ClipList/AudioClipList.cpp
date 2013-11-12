@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //
 //  (C) Copyright 2010 Andrew Williams and Christopher Cherrett
 //=========================================================
@@ -151,7 +151,7 @@ AudioClipList::AudioClipList(QWidget *parent)
     player.setVolume(volume);
     loadBookmarks();
     //setDir(QDir::currentPath());
-    setDir(oomProject);
+    setDir(losProject);
     updateLabels();
 }
 
@@ -262,14 +262,14 @@ void AudioClipList::refresh()/*{{{*/
     if(!m_active)
         return;
     if(m_currentPath.isEmpty())
-        setDir(oomProject);
+        setDir(losProject);
     else
     {
         QFileInfo i(m_currentPath);
         if(i.exists())
             setDir(m_currentPath);
         else
-            setDir(oomProject);
+            setDir(losProject);
     }
 }/*}}}*/
 
@@ -342,11 +342,11 @@ void AudioClipList::fileItemContextMenu(const QPoint& pos)/*{{{*/
                                         (f.suffix().endsWith("wav", Qt::CaseInsensitive) ||
                                         (f.suffix().endsWith("ogg", Qt::CaseInsensitive))))
                                 {
-                                    oom->importWaveToTrack(text, song->cpos(), track);
+                                    los->importWaveToTrack(text, song->cpos(), track);
                                 }
                                 else if ((track->isMidiTrack() || track->type() == Track::WAVE) && f.suffix().endsWith("mpt", Qt::CaseInsensitive))
                                 {//Who saves a wave part as anything but a wave file?
-                                    oom->importPartToTrack(text, song->cpos(), track);
+                                    los->importPartToTrack(text, song->cpos(), track);
                                 }
                             }
                         }
@@ -377,21 +377,21 @@ void AudioClipList::fileItemContextMenu(const QPoint& pos)/*{{{*/
                         {
                             QString text(f.filePath());
                             if(track->type() == Track::WAVE)
-                                oom->importWaveToTrack(text, song->cpos(), track);
+                                los->importWaveToTrack(text, song->cpos(), track);
                             else
-                                oom->importPartToTrack(text, song->cpos(), track);
+                                los->importPartToTrack(text, song->cpos(), track);
                         }
                     }
                     break;
                     case 4:
                     {
-                        oom->importMidi(f.filePath(), true);
+                        los->importMidi(f.filePath(), true);
                         song->update();
                     }
                     break;
                     case 5:
                     {//Replace
-                        oom->loadProjectFile(f.filePath(), false, false);
+                        los->loadProjectFile(f.filePath(), false, false);
                     }
                     break;
                     case 6:
@@ -447,7 +447,7 @@ void AudioClipList::fileItemSelected(const QModelIndex& index)
                 if(f.suffix().endsWith("mid", Qt::CaseInsensitive) ||
                 f.suffix().endsWith("kar", Qt::CaseInsensitive))
                 {
-                    oom->importMidi(f.filePath());
+                    los->importMidi(f.filePath());
                 }
                 else
                     playClicked(true);

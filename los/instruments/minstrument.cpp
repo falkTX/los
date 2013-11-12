@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: minstrument.cpp,v 1.10.2.5 2009/03/28 01:46:10 terminator356 Exp $
 //
 //  (C) Copyright 2000-2003 Werner Schweer (ws@seh.de)
@@ -62,7 +62,7 @@ int string2sysex(const QString& s, unsigned char** data)
             if (ep == src)
             {
                 QMessageBox::information(0,
-                        QString("OOMidi"),
+                        QString("LOS"),
                         QWidget::tr("Cannot convert sysex string"));
                 return 0;
             }
@@ -71,7 +71,7 @@ int string2sysex(const QString& s, unsigned char** data)
             if (dst - buffer >= 2048)
             {
                 QMessageBox::information(0,
-                        QString("OOMidi"),
+                        QString("LOS"),
                         QWidget::tr("Hex String too long (2048 bytes limit)"));
                 return 0;
             }
@@ -168,7 +168,7 @@ static void loadIDF(QFileInfo* fi)
             case Xml::End:
                 return;
             case Xml::TagStart:
-                if (skipmode && (tag == "oom" || tag == "muse"))
+                if (skipmode && (tag == "los" || tag == "oom" || tag == "muse"))
                     skipmode = false;
                 else if (skipmode)
                     break;
@@ -190,12 +190,12 @@ static void loadIDF(QFileInfo* fi)
                         delete i;
                 }
                 else
-                    xml.unknown("oom");
+                    xml.unknown("los");
                 break;
             case Xml::Attribut:
                 break;
             case Xml::TagEnd:
-                if (!skipmode && (tag == "oom" || tag == "muse"))
+                if (!skipmode && (tag == "los" || tag == "oom" || tag == "muse"))
                 {
                     return;
                 }
@@ -215,8 +215,8 @@ void initMidiInstruments()
     genericMidiInstrument = new MidiInstrument(QWidget::tr("generic midi"));
     midiInstruments.push_back(genericMidiInstrument);
     if (debugMsg)
-        printf("load user instrument definitions from <%s>\n", oomUserInstruments.toLatin1().constData());
-    QDir usrInstrumentsDir(oomUserInstruments, QString("*.idf"));
+        printf("load user instrument definitions from <%s>\n", losUserInstruments.toLatin1().constData());
+    QDir usrInstrumentsDir(losUserInstruments, QString("*.idf"));
     if (usrInstrumentsDir.exists())
     {
         QFileInfoList list = usrInstrumentsDir.entryInfoList();
@@ -229,15 +229,15 @@ void initMidiInstruments()
     }
     //else
     //{
-    //  if(usrInstrumentsDir.mkdir(oomUserInstruments))
-    //    printf("Created user instrument directory: %s\n", oomUserInstruments.toLatin1());
+    //  if(usrInstrumentsDir.mkdir(losUserInstruments))
+    //    printf("Created user instrument directory: %s\n", losUserInstruments.toLatin1());
     //  else
-    //    printf("Unable to create user instrument directory: %s\n", oomUserInstruments.toLatin1());
+    //    printf("Unable to create user instrument directory: %s\n", losUserInstruments.toLatin1());
     //}
 
     if (debugMsg)
-        printf("load instrument definitions from <%s>\n", oomInstruments.toLatin1().constData());
-    QDir instrumentsDir(oomInstruments, QString("*.idf"));
+        printf("load instrument definitions from <%s>\n", losInstruments.toLatin1().constData());
+    QDir instrumentsDir(losInstruments, QString("*.idf"));
     if (instrumentsDir.exists())
     {
         QFileInfoList list = instrumentsDir.entryInfoList();
@@ -249,7 +249,7 @@ void initMidiInstruments()
         }
     }
     else
-        printf("Instrument directory not found: %s\n", oomInstruments.toLatin1().constData());
+        printf("Instrument directory not found: %s\n", losInstruments.toLatin1().constData());
 
 }
 
@@ -773,7 +773,7 @@ void MidiInstrument::read(Xml& xml)
                 {
                     MidiController* mc = new MidiController();
                     mc->read(xml);
-                    // Added by Tim. Copied from oom 2.
+                    // Added by Tim. Copied from los 2.
                     //
                     // HACK: make predefined "Program" controller overloadable
                     //
@@ -848,7 +848,7 @@ void MidiInstrument::read(Xml& xml)
 void MidiInstrument::write(int level, Xml& xml)
 {
     xml.header();
-    xml.tag(level, "oom version=\"1.0\"");
+    xml.tag(level, "los version=\"1.0\"");
     level++;
     xml.nput(level, "<MidiInstrument name=\"%s\" panValue=\"%f\" verbValue=\"%f\"",
             Xml::xmlString(iname()).toLatin1().constData(), m_panValue, m_verbValue);
@@ -887,7 +887,7 @@ void MidiInstrument::write(int level, Xml& xml)
     level--;
     xml.etag(level, "MidiInstrument");
     level--;
-    xml.etag(level, "oom");
+    xml.etag(level, "los");
 }
 
 //---------------------------------------------------------
@@ -1152,9 +1152,9 @@ bool MidiInstrument::fileSave()/*{{{*/
 {
     if(_filePath.isEmpty())
         return false;
-    // Do not allow a direct overwrite of a 'built-in' oom instrument.
+    // Do not allow a direct overwrite of a 'built-in' los instrument.
     QFileInfo qfi(_filePath);
-    if (qfi.absolutePath() == oomInstruments)
+    if (qfi.absolutePath() == losInstruments)
     {
         return false;
     }

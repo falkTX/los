@@ -63,7 +63,6 @@ enum
     SHRT_POS_INC, // Plus
     SHRT_POS_DEC, // Minus
     SHRT_TOGGLE_LOOP, // Slash
-    SHRT_TOGGLE_METRO, // C
     SHRT_START_REC, // *(keypad)
     SHRT_REC_CLEAR, // *(keypad)
     SHRT_GOTO_SEL_NOTE,

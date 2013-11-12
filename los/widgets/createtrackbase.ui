@@ -14,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>OOStudio: Create Track</string>
+   <string>LOS: Create Track</string>
   </property>
   <property name="sizeGripEnabled">
    <bool>true</bool>

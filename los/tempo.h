@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: tempo.h,v 1.2.2.1 2006/09/19 19:07:09 spamatica Exp $
 //
 //  (C) Copyright 1999/2000 Werner Schweer (ws@seh.de)

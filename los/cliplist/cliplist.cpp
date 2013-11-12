@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: cliplist.cpp,v 1.6.2.3 2008/08/18 00:15:24 terminator356 Exp $
 
 //  (C) Copyright 2011 Remon Sijrier
@@ -101,7 +101,7 @@ ClipListEdit::ClipListEdit(QWidget* parent)
 : TopWin(parent, "cliplist", Qt::Window)
 {
 	//setAttribute(Qt::WA_DeleteOnClose);
-	setWindowTitle(tr("OOMidi: Clip List Editor"));
+	setWindowTitle(tr("LOS: Clip List Editor"));
 
 	editor = new ClipListEditorBaseWidget;
 	setCentralWidget(editor);

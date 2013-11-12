@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: help.cpp,v 1.7.2.4 2009/07/05 23:06:21 terminator356 Exp $
 //
 //  (C) Copyright 1999/2000 Werner Schweer (ws@seh.de)
@@ -23,39 +23,39 @@
 //   startHelpBrowser
 //---------------------------------------------------------
 
-void OOMidi::startHelpBrowser()
+void LOS::startHelpBrowser()
 {
-      QString oomHelp = QString("https://github.com/ccherrett/oom/wiki/Quick-Start-Manual");
-      launchBrowser(oomHelp);
+      QString losHelp = QString("https://github.com/ccherrett/oom/wiki/Quick-Start-Manual");
+      launchBrowser(losHelp);
 }
 
 //---------------------------------------------------------
 //   startHelpBrowser
 //---------------------------------------------------------
 
-void OOMidi::startHomepageBrowser()
+void LOS::startHomepageBrowser()
 {
-      QString oomHome = QString("http://www.openoctave.org");
+      QString losHome = QString("http://www.openoctave.org");
 
-      launchBrowser(oomHome);
+      launchBrowser(losHome);
 }
 
 //---------------------------------------------------------
 //   startBugBrowser
 //---------------------------------------------------------
 
-void OOMidi::startBugBrowser()
+void LOS::startBugBrowser()
 {
-      //QString oomBugPage("http://www.openoctave.org/wiki/index.php/Report_a_bug");
-      QString oomBugPage("http://www.openoctave.org/index.php/Report_a_bug");
-      launchBrowser(oomBugPage);
+      //QString losBugPage("http://www.openoctave.org/wiki/index.php/Report_a_bug");
+      QString losBugPage("http://www.openoctave.org/index.php/Report_a_bug");
+      launchBrowser(losBugPage);
 }
 
 //---------------------------------------------------------
 //   about
 //---------------------------------------------------------
 
-void OOMidi::about()
+void LOS::about()
 {
       AboutBoxImpl ab;
       ab.show();
@@ -66,17 +66,17 @@ void OOMidi::about()
 //   aboutQt
 //---------------------------------------------------------
 
-void OOMidi::aboutQt()
+void LOS::aboutQt()
 {
-      QMessageBox::aboutQt(this, QString("OOMidi"));
+      QMessageBox::aboutQt(this, QString("LOS"));
 }
 
-void OOMidi::launchBrowser(QString &whereTo)
+void LOS::launchBrowser(QString &whereTo)
 {
       if (! QDesktopServices::openUrl(QUrl(whereTo)))
       {
-            QMessageBox::information(this, tr("Unable to launch help"), 
-                                     tr("For some reason OOMidi has to launch the default\n"
+            QMessageBox::information(this, tr("Unable to launch help"),
+                                     tr("For some reason LOS has to launch the default\n"
                                         "browser on your machine."),
                                      QMessageBox::Ok, QMessageBox::Ok);
             printf("Unable to launch help\n");

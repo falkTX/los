@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: mitplugin.cpp,v 1.1.1.1 2003/10/27 18:52:40 wschweer Exp $
 //
 //  (C) Copyright 2001 Werner Schweer (ws@seh.de)
@@ -26,7 +26,7 @@ MITPluginList mitPlugins;
 //   startMidiInputPlugin
 //---------------------------------------------------------
 
-void OOMidi::startMidiInputPlugin(int id)
+void LOS::startMidiInputPlugin(int id)
 {
 	bool flag = false;
 	QWidget* w = 0;
@@ -106,28 +106,28 @@ void OOMidi::startMidiInputPlugin(int id)
 	act->setChecked(flag);
 }
 
-void OOMidi::hideMitPluginTranspose()
+void LOS::hideMitPluginTranspose()
 {
 	midiTrpAction->setChecked(false);
 }
 
-void OOMidi::hideMidiInputTransform()
+void LOS::hideMidiInputTransform()
 {
 	midiInputTrfAction->setChecked(false);
 }
 
-void OOMidi::hideMidiFilterConfig()
+void LOS::hideMidiFilterConfig()
 {
 	midiInputFilterAction->setChecked(false);
 }
 
-void OOMidi::hideMidiRemoteConfig()
+void LOS::hideMidiRemoteConfig()
 {
 	midiRemoteAction->setChecked(false);
 }
 #ifdef BUILD_EXPERIMENTAL
 
-void OOMidi::hideMidiRhythmGenerator()
+void LOS::hideMidiRhythmGenerator()
 {
 	midiRhythmAction->setChecked(false);
 }
@@ -147,7 +147,7 @@ void processMidiInputTransformPlugins(MEvent& event)
 //   startMidiTransformer
 //---------------------------------------------------------
 
-void OOMidi::startMidiTransformer()
+void LOS::startMidiTransformer()
 {
 	if (midiTransformerDialog == 0)
 		midiTransformerDialog = new MidiTransformerDialog;

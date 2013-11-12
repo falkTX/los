@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>OOStudio: Export Audio</string>
+   <string>LOS: Export Audio</string>
   </property>
   <property name="sizeGripEnabled">
    <bool>true</bool>

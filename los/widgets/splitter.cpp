@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //    $Id: splitter.cpp,v 1.1.1.1 2003/10/27 18:54:59 wschweer Exp $
 //  (C) Copyright 1999 Werner Schweer (ws@seh.de)
 //=========================================================
@@ -42,7 +42,7 @@ Splitter::~Splitter()
 	}
 	//printf("Inside the Splitter Destructor: %s\n", val.toStdString().c_str());
 	tconfig().set_property(objectName(), "sizes", val);
-	//For whatever reason OOMidi destructor is called before this so call tconfig().save() again
+	//For whatever reason LOS destructor is called before this so call tconfig().save() again
     tconfig().save();
 	*/
 	//saveStateInfo();
@@ -60,7 +60,7 @@ void Splitter::saveStateInfo()
 	}
 	//printf("Inside the Splitter Destructor: %s\n", val.toStdString().c_str());
 	tconfig().set_property(objectName(), "sizes", val);
-	//For whatever reason OOMidi destructor is called before this so call tconfig().save() again
+	//For whatever reason LOS destructor is called before this so call tconfig().save() again
     tconfig().save();
 }
 

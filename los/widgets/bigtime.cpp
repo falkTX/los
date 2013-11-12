@@ -85,7 +85,7 @@ BigTime::BigTime(QWidget* parent)
 
 	configChanged();
 
-	setWindowTitle(tr("OOStudio: Bigtime"));
+	setWindowTitle(tr("LOS: Bigtime"));
 }
 
 

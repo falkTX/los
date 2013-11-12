@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //    $Id: tscale.cpp,v 1.2 2003/12/17 11:04:14 wschweer Exp $
 //  (C) Copyright 1999 Werner Schweer (ws@seh.de)
 //=========================================================

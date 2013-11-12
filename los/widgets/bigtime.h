@@ -6,7 +6,7 @@
 class QCheckBox;
 class QLabel;
 
-class OOMidi;
+class LOS;
 
 //---------------------------------------------------------
 //   BigTime
@@ -17,7 +17,7 @@ class BigTime : public QWidget
     Q_OBJECT
 
     bool tickmode;
-    OOMidi* seq;
+    LOS* seq;
 
     bool setString(unsigned);
 

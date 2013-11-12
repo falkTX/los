@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: importmidi.cpp,v 1.26.2.10 2009/11/05 03:14:35 terminator356 Exp $
 //
 //  (C) Copyright 1999-2003 Werner Schweer (ws@seh.de)
@@ -34,19 +34,19 @@
 //   importMidi
 //---------------------------------------------------------
 
-void OOMidi::importMidi()
+void LOS::importMidi()
 {
     QString empty("");
     importMidi(empty);
 }
 
-void OOMidi::importMidi(const QString &file)
+void LOS::importMidi(const QString &file)
 {
     QString fn;
     if (file.isEmpty())
     {
         fn = getOpenFileName(lastMidiPath, midi_file_pattern, this,
-                tr("OOStudio: Import Midi"), 0);
+                tr("LOS: Import Midi"), 0);
         if (fn.isEmpty())
             return;
         lastMidiPath = fn;
@@ -84,7 +84,7 @@ void OOMidi::importMidi(const QString &file)
 //---------------------------------------------------------
 
 #if 0
-bool OOMidi::importMidi(const QString name, bool merge)/*{{{*/
+bool LOS::importMidi(const QString name, bool merge)/*{{{*/
 {
     bool popenFlag;
     FILE* fp = fileOpen(this, name, QString(".mid"), "r", popenFlag);
@@ -99,7 +99,7 @@ bool OOMidi::importMidi(const QString name, bool merge)/*{{{*/
         s += name;
         s += tr("\nfailed: ");
         s += mf.error();
-        QMessageBox::critical(this, QString("OOStudio"), s);
+        QMessageBox::critical(this, QString("LOS"), s);
         return rv;
     }
     //
@@ -273,7 +273,7 @@ bool OOMidi::importMidi(const QString name, bool merge)/*{{{*/
 }/*}}}*/
 #endif
 #if 0
-bool OOMidi::importMidi(const QString name, bool merge)/*{{{*/
+bool LOS::importMidi(const QString name, bool merge)/*{{{*/
 {
     bool popenFlag;
     FILE* fp = fileOpen(this, name, QString(".mid"), "r", popenFlag);
@@ -288,7 +288,7 @@ bool OOMidi::importMidi(const QString name, bool merge)/*{{{*/
         s += name;
         s += tr("\nfailed: ");
         s += mf.error();
-        QMessageBox::critical(this, QString("OOStudio"), s);
+        QMessageBox::critical(this, QString("LOS"), s);
         return rv;
     }
     //
@@ -413,7 +413,7 @@ bool OOMidi::importMidi(const QString name, bool merge)/*{{{*/
             }
         }
         mPort++;
-        //FIXME: Provice a non-iterative way to do this using the new oomMidiPorts hash
+        //FIXME: Provice a non-iterative way to do this using the new losMidiPorts hash
         //Or maintain a list of configured or inuse ports
         while((&midiPorts[mPort])->device() && mPort < MIDI_PORTS)
             mPort++;//Just incase we have a configured port after an empty one
@@ -453,7 +453,7 @@ bool OOMidi::importMidi(const QString name, bool merge)/*{{{*/
 }/*}}}*/
 #endif
 
-bool OOMidi::importMidi(const QString name, bool merge)/*{{{*/
+bool LOS::importMidi(const QString name, bool merge)/*{{{*/
 {
     bool popenFlag;
     FILE* fp = fileOpen(this, name, QString(".mid"), "r", popenFlag);
@@ -468,7 +468,7 @@ bool OOMidi::importMidi(const QString name, bool merge)/*{{{*/
         s += name;
         s += tr("\nfailed: ");
         s += mf.error();
-        QMessageBox::critical(this, QString("OOStudio"), s);
+        QMessageBox::critical(this, QString("LOS"), s);
         return rv;
     }
     //
@@ -566,7 +566,7 @@ bool OOMidi::importMidi(const QString name, bool merge)/*{{{*/
 
                     song->insertTrack(track, -1);
                     mPort++;
-                    //FIXME: Provice a non-iterative way to do this using the new oomMidiPorts hash
+                    //FIXME: Provice a non-iterative way to do this using the new losMidiPorts hash
                     //Or maintain a list of configured or inuse ports
                     while((&midiPorts[mPort])->device() && mPort < MIDI_PORTS)
                         mPort++;//Just incase we have a configured port after an empty one
@@ -644,7 +644,7 @@ bool OOMidi::importMidi(const QString name, bool merge)/*{{{*/
 //    divide events into parts
 //---------------------------------------------------------
 
-void OOMidi::processTrack(MidiTrack* track)
+void LOS::processTrack(MidiTrack* track)
 {
     EventList* tevents = track->events();
     if (tevents->empty())
@@ -788,7 +788,7 @@ void OOMidi::processTrack(MidiTrack* track)
 //   importController
 //---------------------------------------------------------
 
-void OOMidi::importController(int channel, MidiPort* mport, int n)
+void LOS::importController(int channel, MidiPort* mport, int n)
 {
     MidiInstrument* instr = mport->instrument();
     MidiCtrlValListList* vll = mport->controller();
@@ -831,7 +831,7 @@ void OOMidi::importController(int channel, MidiPort* mport, int n)
 //   importPart
 //---------------------------------------------------------
 
-void OOMidi::importPart()
+void LOS::importPart()
 {
     unsigned curPos = song->cpos();
     TrackList* tracks = song->tracks();
@@ -851,8 +851,8 @@ void OOMidi::importPart()
             }
             else
             {
-                //QMessageBox::warning(this, QString("OOMidi"), tr("Import part is only valid for midi tracks!"));
-                QMessageBox::warning(this, QString("OOStudio"), tr("Import part is only valid for midi and wave tracks!"));
+                //QMessageBox::warning(this, QString("LOS"), tr("Import part is only valid for midi tracks!"));
+                QMessageBox::warning(this, QString("LOS"), tr("Import part is only valid for midi and wave tracks!"));
                 return;
             }
         }
@@ -861,7 +861,7 @@ void OOMidi::importPart()
     if (track)
     {
         bool loadAll;
-        QString filename = getOpenFileName(QString(""), part_file_pattern, this, tr("OOStudio: load part"), &loadAll);
+        QString filename = getOpenFileName(QString(""), part_file_pattern, this, tr("LOS: load part"), &loadAll);
         if (!filename.isEmpty())
         {
             // Make a backup of the current clone list, to retain any 'copy' items,
@@ -881,7 +881,7 @@ void OOMidi::importPart()
     }
     else
     {
-        QMessageBox::warning(this, QString("OOStudio"), tr("No track selected for import"));
+        QMessageBox::warning(this, QString("LOS"), tr("No track selected for import"));
     }
 }
 
@@ -889,7 +889,7 @@ void OOMidi::importPart()
 //   importPartToTrack
 //---------------------------------------------------------
 
-void OOMidi::importPartToTrack(QString& filename, unsigned tick, Track* track)
+void LOS::importPartToTrack(QString& filename, unsigned tick, Track* track)
 {
     bool popenFlag = false;
     FILE* fp = fileOpen(this, filename, ".mpt", "r", popenFlag, false, false);
@@ -942,7 +942,7 @@ void OOMidi::importPartToTrack(QString& filename, unsigned tick, Track* track)
                         audio->msgAddPart(p, false);
                     }
                     else
-                        xml.unknown("OOMidi::importPartToTrack");
+                        xml.unknown("LOS::importPartToTrack");
                     break;
                 case Xml::TagEnd:
                     break;
@@ -959,7 +959,7 @@ void OOMidi::importPartToTrack(QString& filename, unsigned tick, Track* track)
         if (notDone)
         {
             int tot = notDone + done;
-            QMessageBox::critical(this, QString("OOStudio"),
+            QMessageBox::critical(this, QString("LOS"),
                     QString().setNum(notDone) + (tot > 1 ? (tr(" out of ") + QString().setNum(tot)) : QString("")) +
                     (tot > 1 ? tr(" parts") : tr(" part")) +
                     tr(" could not be imported.\nLikely the track is the wrong type."));

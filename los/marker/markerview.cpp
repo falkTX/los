@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //    $Id: markerview.cpp,v 1.7.2.6 2009/08/25 20:28:45 spamatica Exp $
 //  (C) Copyright 2000 Werner Schweer (ws@seh.de)
 //=========================================================
@@ -158,7 +158,7 @@ MarkerView::MarkerView(QWidget* parent)
 {
 	//setAttribute(Qt::WA_DeleteOnClose);
 
-	setWindowTitle(tr("OOStudio: Marker"));
+	setWindowTitle(tr("LOS: Marker"));
 
 	QAction* markerAdd = new QAction(QIcon(*plusIconSet3), tr("add marker"), this);
 	connect(markerAdd, SIGNAL(triggered()), SLOT(addMarker()));

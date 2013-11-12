@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  Inspired by the work in lcombo.cpp
 //  (C) Copyright 2000 Werner Schweer (ws@seh.de)
 //=========================================================

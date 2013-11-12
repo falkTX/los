@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //    $Id: pitchlabel.cpp,v 1.2 2004/05/16 16:55:01 wschweer Exp $
 //  (C) Copyright 2001 Werner Schweer (ws@seh.de)
 //=========================================================

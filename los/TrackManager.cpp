@@ -1,6 +1,6 @@
 //===========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  (C) Copyright 2011 Andrew Williams & Christopher Cherrett
 //===========================================================
 
@@ -336,7 +336,7 @@ qint64 TrackManager::addTrack(VirtualTrack* vtrack, int index)/*{{{*/
                                 openFlags ^= 0x1;
                                 outdev->setOpenFlags(openFlags);
                                 midiSeq->msgSetMidiDevice(outport, outdev);
-                                oom->changeConfig(true);
+                                los->changeConfig(true);
                                 song->update();
                             }
                         }
@@ -504,7 +504,7 @@ qint64 TrackManager::addTrack(VirtualTrack* vtrack, int index)/*{{{*/
             song->updateTrackViews();
         }
         break;
-        case Track::AUDIO_OUTPUT:
+        case Track::WAVE_OUTPUT_HELPER:
         {
         qFatal("Trying to manually add OUT track, stop!");
 #if 0
@@ -579,7 +579,7 @@ qint64 TrackManager::addTrack(VirtualTrack* vtrack, int index)/*{{{*/
 #endif
         }
         break;
-        case Track::AUDIO_INPUT:
+        case Track::WAVE_INPUT_HELPER:
         {
         qFatal("Trying to manually add IN track, stop!");
 #if 0
@@ -659,7 +659,7 @@ void TrackManager::setTrackInstrument(qint64 tid, const QString& instrument, int
         return;
     m_track = t;
     MidiTrack* track = (MidiTrack*) m_track;
-    MidiPort *mp = oomMidiPorts.value(track->outPortId());
+    MidiPort *mp = losMidiPorts.value(track->outPortId());
     if(mp)
     {
         MidiInstrument* oldins = mp->instrument();
@@ -749,7 +749,7 @@ void TrackManager::removeTrack(qint64 id)/*{{{*/
         if(idList.size())
         {
             QString msg(tr("You are about to delete the following track(s) \n%1 \nAre you sure this is what you want?"));
-            if(QMessageBox::question(oom,
+            if(QMessageBox::question(los,
                 tr("Delete Track(s)"),
                 msg.arg(names.join("\n")),
                 QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
@@ -834,7 +834,7 @@ void TrackManager::removeSelectedTracks()/*{{{*/
     if(idList.size())
     {
         QString msg(tr("You are about to delete the following track(s) \n%1 \nAre you sure this is what you want?"));
-        if(QMessageBox::question(oom,
+        if(QMessageBox::question(los,
             tr("Delete Track(s)"),
             msg.arg(names.join("\n")),
             QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)

@@ -21,7 +21,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>OOStudio: Instrument View Manager</string>
+   <string>LOS: Instrument View Manager</string>
   </property>
   <property name="sizeGripEnabled">
    <bool>true</bool>

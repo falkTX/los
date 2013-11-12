@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //    $Id: combobox.h,v 1.3 2004/02/29 12:12:36 wschweer Exp $
 //  (C) Copyright 2004 Werner Schweer (ws@seh.de)
 //=========================================================

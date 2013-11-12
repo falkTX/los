@@ -14,7 +14,7 @@
       </rect>
     </property>
     <property name="windowTitle">
-      <string>OOMidi: Config Midi File Import/Export</string>
+      <string>LOS: Config Midi File Import/Export</string>
     </property>
     <property name="sizeGripEnabled">
       <bool>true</bool>

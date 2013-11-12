@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: ctrlcombo.cpp,v 1.1.1.1 2003/10/27 18:55:02 wschweer Exp $
 //
 //  (C) Copyright 1999/2000 Werner Schweer (ws@seh.de)

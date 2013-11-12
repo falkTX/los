@@ -1,8 +1,8 @@
 //=========================================================
-//  OOStudio
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 
-//  (C) Copyright 2012 Filipe Coelho and the OOMidi team
+//  (C) Copyright 2012 Filipe Coelho and the LOS team
 //=========================================================
 
 #ifndef __STRETCH_DIALOG_H__

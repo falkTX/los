@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //    $Id: Performer.cpp,v 1.25.2.15 2009/11/16 11:29:33 lunar_shuttle Exp $
 //  (C) Copyright 1999 Werner Schweer (ws@seh.de)
 //=========================================================
@@ -2191,7 +2191,7 @@ void Performer::updateControllerForInstrument(qint64 trackId)/*{{{*/
     {
         qint64 portid = ((MidiTrack*)track)->outPortId();
         //int outport = ((MidiTrack*)track)->outPort();
-        MidiPort* port = oomMidiPorts.value(portid);//&midiPorts[outport];
+        MidiPort* port = losMidiPorts.value(portid);//&midiPorts[outport];
         if(port)
         {
             QString instrument = port->instrument()->iname();
@@ -2679,7 +2679,7 @@ void Performer::setEventColorMode(int mode)
 
 void Performer::clipboardChanged()
 {
-    editPasteAction->setEnabled(QApplication::clipboard()->mimeData()->hasFormat(QString("text/x-oom-eventlist")));
+    editPasteAction->setEnabled(QApplication::clipboard()->mimeData()->hasFormat(QString("text/x-los-eventlist")));
 }
 
 //---------------------------------------------------------
@@ -2715,76 +2715,6 @@ void Performer::setKeyBindings(Patch* p)/*{{{*/
         canvas->update();
     //}
 }/*}}}*/
-
-//---------------------------------------------------------
-//   setKeyBindings
-//---------------------------------------------------------
-
-#ifdef LSCP_SUPPORT
-void Performer::setKeyBindings(LSCPChannelInfo info)/*{{{*/
-{
-    printf("entering Performer::setKeyBindings\n");
-    if(!selected || audio->isPlaying())
-        return;
-    printf("not playing and selected\n");
-    //check if the lscp information is pertaining to this track and port
-    Track *t = curCanvasPart()->track();
-    //RouteList *rl = t->inRoutes();
-    printf("info.hbank = %d, info.lbank = %d, info.program = %d\n", info.hbank, info.lbank, info.program);
-    MidiTrack* midiTrack = static_cast<MidiTrack*>(t);
-    if (!midiTrack)
-    {
-        printf("not a midi track\n"); // Remon: fixed typo :)
-        return;
-    }
-    else
-    {
-        printf("found midi track\n");
-    }
-    //const char* pname = info.midi_portname;
-
-    printf("info midi portname %s\n", info.midi_portname.toAscii().data());
-    MidiPort* mp = &midiPorts[midiTrack->outPort()];
-    MidiDevice* dev = mp->device();
-    if (!dev)
-    {
-        return;
-    }
-    RouteList *rl = dev->outRoutes();
-
-    //printf("rl.size() %d\n", rl->size());
-
-    //for(iRoute ir = rl->begin(); ir != rl->end(); ++ir)
-    for(ciRoute ir = rl->begin(); ir != rl->end(); ++ir)
-    {
-        printf("oom-port-name: %s, lscp-port-name: %s\n", (*ir).name().toAscii().data(), info.midi_portname.toAscii().data());
-
-        QStringList tmp2 = (*ir).name().split(":", QString::SkipEmptyParts);
-        if(tmp2.size() > 1)
-        {
-            QString portname = tmp2.at(1).trimmed();
-            if(portname	== info.midi_portname)
-            {
-                printf("port names match\n");
-                if(isCurrentPatch(info.hbank, info.lbank, info.program))
-                {
-                    printf("is current patch calling setMIDIKeyBindings\n");
-                    piano->setMIDIKeyBindings(info.key_bindings, info.keyswitch_bindings);
-                }
-                else
-                {
-                    printf("hbank, lbank and program did not match\n");
-                }
-                break;
-            }
-            else
-            {
-                printf("no match\n");
-            }
-        }
-    }
-}/*}}}*/
-#endif
 
 bool Performer::isCurrentPatch(int hbank, int lbank, int prog)/*{{{*/
 {

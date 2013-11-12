@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //    $Id: utils.cpp,v 1.1.1.1.2.3 2009/11/14 03:37:48 terminator356 Exp $
 //  (C) Copyright 1999 Werner Schweer (ws@seh.de)
 //=========================================================
@@ -610,11 +610,11 @@ QString trackTypeString(int id)
         case Track::MIDI:
             return QString("MIDI");
         case Track::WAVE:
-            return QString("Audio Wave");
-        case Track::AUDIO_OUTPUT:
-            QString("Audio Output");
-        case Track::AUDIO_INPUT:
-            return QString("Audio Input");
+            return QString("Wave");
+        case Track::WAVE_OUTPUT_HELPER:
+            QString("Wave Output Helper");
+        case Track::WAVE_INPUT_HELPER:
+            return QString("Wave Input Helper");
         default:
         break;
     }

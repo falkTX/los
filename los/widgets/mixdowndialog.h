@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //    $Id: mixdowndialog.h,v 1.1.1.1 2003/10/27 18:54:28 wschweer Exp $
 //  (C) Copyright 2001 Werner Schweer (ws@seh.de)
 //=========================================================

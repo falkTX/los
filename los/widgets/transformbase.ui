@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>OOMidi: Midi Transformator</string>
+   <string>LOS: Midi Transformator</string>
   </property>
   <property name="sizeGripEnabled">
    <bool>true</bool>

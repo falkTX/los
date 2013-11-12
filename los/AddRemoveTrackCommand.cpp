@@ -1,59 +1,57 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //
 //    add ctrl value command class
 //
 //  (C) Copyright 2011 Remon Sijrier
 //=========================================================
 
-
 #include "AddRemoveTrackCommand.h"
 #include "TrackManager.h"
 
-AddRemoveTrackCommand::AddRemoveTrackCommand(Track *t, int type, int index)
-	: OOMCommand(tr("Add Track"))
-	, m_vtrack(0)
-	, m_track(t)
-	, m_type(type)
-	, m_index(index)
+AddRemoveTrackCommand::AddRemoveTrackCommand(Track* t, int type, int index)
+    : LOSCommand(tr("Add Track")),
+      fIndex(index),
+      fType(type),
+      fTrack(t),
+      fVirTrack(nullptr)
 {
 }
 
-AddRemoveTrackCommand::AddRemoveTrackCommand(VirtualTrack *vt, int type, int index)
-	: OOMCommand(tr("Add Track"))
-	, m_vtrack(vt)
-	, m_track(0)
-	, m_type(type)
-	, m_index(index)
+AddRemoveTrackCommand::AddRemoveTrackCommand(VirtualTrack* vt, int type, int index)
+    : LOSCommand(tr("Add Track")),
+      fIndex(index),
+      fType(type),
+      fTrack(nullptr),
+      fVirTrack(vt)
 {
 }
 
-int AddRemoveTrackCommand::do_action()
+int AddRemoveTrackCommand::doAction()
 {
-	if (m_type == ADD)
-	{
-		//Perform add track actions
-	}
-	else
-	{
-		//Perform delete track actions
-	}
+    if (fType == ADD)
+    {
+        //Perform add track actions
+    }
+    else
+    {
+        //Perform delete track actions
+    }
 
-
-	return 1;
+    return 1;
 }
 
-int AddRemoveTrackCommand::undo_action()
+int AddRemoveTrackCommand::undoAction()
 {
-	if (m_type == ADD)
-	{
-		//Perform delete track action
-	}
-	else
-	{
-		//Perform add track actions
-	}
+    if (fType == ADD)
+    {
+        //Perform delete track action
+    }
+    else
+    {
+        //Perform add track actions
+    }
 
-	return 1;
+    return 1;
 }

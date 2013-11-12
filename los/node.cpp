@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: node.cpp,v 1.36.2.25 2009/12/20 05:00:35 terminator356 Exp $
 //
 //  (C) Copyright 2000-2004 Werner Schweer (ws@seh.de)
@@ -293,15 +293,8 @@ void AudioTrack::copyData(unsigned pos, int dstChannels, int srcStartChan, int s
         srcTotalOutChans = 1;
 
 #ifdef NODE_DEBUG
-    printf("OOMidi: AudioTrack::copyData name:%s processed:%d\n", name().toLatin1().constData(), processed());
+    printf("LOS: AudioTrack::copyData name:%s processed:%d\n", name().toLatin1().constData(), processed());
 #endif
-
-    // Special consideration for metronome: It is not part of the track list,
-    //  and it has no in or out routes, yet multiple output tracks may call addData on it !
-    // We can't tell how many output tracks call it, so we can only assume there might be more than one.
-    // Not strictly necessary here because only addData is ever called, but just to be consistent...
-    //bool usedirectbuf = (outRoutes()->size() <= 1) || (type() == AUDIO_OUTPUT);
-    bool usedirectbuf = ((outRoutes()->size() <= 1) || (type() == AUDIO_OUTPUT)) && false; //(this != metronome);
 
     int i;
 
@@ -321,7 +314,7 @@ void AudioTrack::copyData(unsigned pos, int dstChannels, int srcStartChan, int s
         // If there is only one (or no) output routes, it's an error - we've been called more than once per process cycle!
 #ifdef NODE_DEBUG
         if (usedirectbuf)
-            printf("OOMidi: AudioTrack::copyData Error! One or no out routes, but already processed! Copying local buffers anyway...\n");
+            printf("LOS: AudioTrack::copyData Error! One or no out routes, but already processed! Copying local buffers anyway...\n");
 #endif
 
         // Is there already some data gathered from a previous call during this process cycle?
@@ -364,7 +357,7 @@ void AudioTrack::copyData(unsigned pos, int dstChannels, int srcStartChan, int s
         //if (off() || !getData(pos, srcTotalOutChans, nframes, buffer) || isMute())
         {
 #ifdef NODE_DEBUG
-            printf("OOMidi: AudioTrack::copyData name:%s dstChannels:%d zeroing buffers\n", name().toLatin1().constData(), dstChannels);
+            printf("LOS: AudioTrack::copyData name:%s dstChannels:%d zeroing buffers\n", name().toLatin1().constData(), dstChannels);
 #endif
 
             // No data was available. Zero the supplied buffers.
@@ -433,11 +426,8 @@ void AudioTrack::copyData(unsigned pos, int dstChannels, int srcStartChan, int s
         }
 
         // If we're using local cached 'pre-volume' buffers, copy the input buffers (as they are right now: post-effect pre-volume) back to them.
-        if (!usedirectbuf)
-        {
-            for (i = 0; i < srcTotalOutChans; ++i)
-                AL::dsp->cpy(outBuffers[i], buffer[i], nframes);
-        }
+        for (i = 0; i < srcTotalOutChans; ++i)
+            AL::dsp->cpy(outBuffers[i], buffer[i], nframes);
 
         // We have some data! Set to true.
         _haveData = true;
@@ -588,7 +578,7 @@ void AudioTrack::addData(unsigned pos, int dstChannels, int srcStartChan, int sr
     // Previously only WaveTrack used them. (Changed WaveTrack as well).
 
 #ifdef NODE_DEBUG
-    printf("OOMidi: AudioTrack::addData name:%s processed:%d\n", name().toLatin1().constData(), processed());
+    printf("LOS: AudioTrack::addData name:%s processed:%d\n", name().toLatin1().constData(), processed());
 #endif
 
     if (off())
@@ -604,11 +594,6 @@ void AudioTrack::addData(unsigned pos, int dstChannels, int srcStartChan, int sr
     int srcTotalOutChans = totalOutChannels();
     if (channels() == 1)
         srcTotalOutChans = 1;
-
-    // Special consideration for metronome: It is not part of the track list,
-    //  and it has no in or out routes, yet multiple output tracks may call addData on it !
-    // We can't tell how many output tracks call it, so we can only assume there might be more than one.
-    bool usedirectbuf = ((outRoutes()->size() <= 1) || (type() == AUDIO_OUTPUT)) && false; //(this != metronome);
 
     int i;
 
@@ -628,7 +613,7 @@ void AudioTrack::addData(unsigned pos, int dstChannels, int srcStartChan, int sr
         // If there is only one (or no) output routes, it's an error - we've been called more than once per process cycle!
 #ifdef NODE_DEBUG
         if (usedirectbuf)
-            printf("OOMidi: AudioTrack::addData Error! One or no out routes, but already processed! Copying local buffers anyway...\n");
+            printf("LOS: AudioTrack::addData Error! One or no out routes, but already processed! Copying local buffers anyway...\n");
 #endif
 
         // Is there already some data gathered from a previous call during this process cycle?
@@ -702,11 +687,8 @@ void AudioTrack::addData(unsigned pos, int dstChannels, int srcStartChan, int sr
         }
 
         // If we're using local cached 'pre-volume' buffers, copy the input buffers (as they are right now: post-effect pre-volume) back to them.
-        if (!usedirectbuf)
-        {
-            for (i = 0; i < srcTotalOutChans; ++i)
-                AL::dsp->cpy(outBuffers[i], buffer[i], nframes);
-        }
+        for (i = 0; i < srcTotalOutChans; ++i)
+            AL::dsp->cpy(outBuffers[i], buffer[i], nframes);
 
         // We have some data! Set to true.
         _haveData = true;
@@ -876,6 +858,7 @@ void AudioTrack::readVolume(Xml& xml)
         }
     }
 }
+
 //---------------------------------------------------------
 //   setChannels
 //---------------------------------------------------------
@@ -893,14 +876,14 @@ void Track::setChannels(int n)
     }
 }
 
-void AudioInput::setChannels(int n)
+void AudioInputHelper::setChannels(int n)
 {
     if (n == _channels)
         return;
     AudioTrack::setChannels(n);
 }
 
-void AudioOutput::setChannels(int n)
+void AudioOutputHelper::setChannels(int n)
 {
     if (n == _channels)
         return;
@@ -969,7 +952,7 @@ bool AudioTrack::getData(unsigned pos, int channels, unsigned nframes, float** b
 //    return true if data
 //---------------------------------------------------------
 
-bool AudioInput::getData(unsigned, int channels, unsigned nframes, float** buffer)
+bool AudioInputHelper::getData(unsigned, int channels, unsigned nframes, float** buffer)
 {
     if (!checkAudioDevice()) return false;
     for (int ch = 0; ch < channels; ++ch)
@@ -1023,7 +1006,7 @@ bool AudioInput::getData(unsigned, int channels, unsigned nframes, float** buffe
 //   setName
 //---------------------------------------------------------
 
-void AudioInput::setName(const QString& s)
+void AudioInputHelper::setName(const QString& s)
 {
     _name = s;
     if (!checkAudioDevice()) return;
@@ -1219,7 +1202,7 @@ void AudioTrack::record()
 //   processInit
 //---------------------------------------------------------
 
-void AudioOutput::processInit(unsigned nframes)
+void AudioOutputHelper::processInit(unsigned nframes)
 {
     _nframes = nframes;
     if (!checkAudioDevice()) return;
@@ -1245,10 +1228,10 @@ void AudioOutput::processInit(unsigned nframes)
 //    current frame position is "pos"
 //---------------------------------------------------------
 
-void AudioOutput::process(unsigned pos, unsigned offset, unsigned n)
+void AudioOutputHelper::process(unsigned pos, unsigned offset, unsigned n)
 {
 #ifdef NODE_DEBUG
-    printf("OOMidi: AudioOutput::process name:%s processed:%d\n", name().toLatin1().constData(), processed());
+    printf("LOS: AudioOutput::process name:%s processed:%d\n", name().toLatin1().constData(), processed());
 #endif
 
     for (int i = 0; i < _channels; ++i)
@@ -1263,7 +1246,7 @@ void AudioOutput::process(unsigned pos, unsigned offset, unsigned n)
 //   silence
 //---------------------------------------------------------
 
-void AudioOutput::silence(unsigned n)
+void AudioOutputHelper::silence(unsigned n)
 {
     processInit(n);
     for (int i = 0; i < channels(); ++i)
@@ -1282,7 +1265,7 @@ void AudioOutput::silence(unsigned n)
 //   processWrite
 //---------------------------------------------------------
 
-void AudioOutput::processWrite()
+void AudioOutputHelper::processWrite()
 {
     if (audio->isRecording() && song->bounceOutput == this)
     {
@@ -1308,7 +1291,7 @@ void AudioOutput::processWrite()
 //   setName
 //---------------------------------------------------------
 
-void AudioOutput::setName(const QString& s)
+void AudioOutputHelper::setName(const QString& s)
 {
     _name = s;
     if (!checkAudioDevice()) return;
@@ -1334,7 +1317,7 @@ void AudioOutput::setName(const QString& s)
 
 Fifo::Fifo()
 {
-    oom_atomic_init(&count);
+    los_atomic_init(&count);
     //nbuffer = FIFO_BUFFER;
     nbuffer = fifoLength;
     buffer = new FifoBuffer*[nbuffer];
@@ -1358,7 +1341,7 @@ Fifo::~Fifo()
     }
 
     delete[] buffer;
-    oom_atomic_destroy(&count);
+    los_atomic_destroy(&count);
 }
 
 //---------------------------------------------------------
@@ -1372,7 +1355,7 @@ bool Fifo::put(int segs, unsigned long samples, float** src, unsigned pos)
     printf("FIFO::put segs:%d samples:%lu pos:%u\n", segs, samples, pos);
 #endif
 
-    if (oom_atomic_read(&count) == nbuffer)
+    if (los_atomic_read(&count) == nbuffer)
     {
         if(debugMsg)
             printf("FIFO %p overrun... %d\n", this, count.counter);
@@ -1425,7 +1408,7 @@ bool Fifo::get(int segs, unsigned long samples, float** dst, unsigned* pos)
     printf("FIFO::get segs:%d samples:%lu\n", segs, samples);
 #endif
 
-    if (oom_atomic_read(&count) == 0)
+    if (los_atomic_read(&count) == 0)
     {
         if(debugMsg)
             printf("FIFO %p underrun... %d\n", this, count.counter);
@@ -1450,7 +1433,7 @@ bool Fifo::get(int segs, unsigned long samples, float** dst, unsigned* pos)
 
 int Fifo::getCount()
 {
-    return oom_atomic_read(&count);
+    return los_atomic_read(&count);
 }
 //---------------------------------------------------------
 //   remove
@@ -1459,7 +1442,7 @@ int Fifo::getCount()
 void Fifo::remove()
 {
     ridx = (ridx + 1) % nbuffer;
-    oom_atomic_dec(&count);
+    los_atomic_dec(&count);
 }
 
 //---------------------------------------------------------
@@ -1472,7 +1455,7 @@ bool Fifo::getWriteBuffer(int segs, unsigned long samples, float** buf, unsigned
     printf("Fifo::getWriteBuffer segs:%d samples:%lu pos:%u\n", segs, samples, pos);
 #endif
 
-    if (oom_atomic_read(&count) == nbuffer)
+    if (los_atomic_read(&count) == nbuffer)
         return true;
     FifoBuffer* b = buffer[widx];
     int n = segs * samples;
@@ -1517,7 +1500,7 @@ bool Fifo::getWriteBuffer(int segs, unsigned long samples, float** buf, unsigned
 void Fifo::add()
 {
     widx = (widx + 1) % nbuffer;
-    oom_atomic_inc(&count);
+    los_atomic_inc(&count);
 }
 
 //---------------------------------------------------------

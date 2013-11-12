@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //
 //    add ctrl value command class
 //
@@ -14,36 +14,25 @@
 
 #include "ctrl.h"
 
-class AddRemoveCtrlValues : public OOMCommand
+class AddRemoveCtrlValues : public LOSCommand
 {
-        Q_OBJECT
+    Q_OBJECT
 
 public:
-	AddRemoveCtrlValues(
-		CtrlList* cl,
-		QList<CtrlVal> ctrlValues,
-		int type);
+    AddRemoveCtrlValues(CtrlList* const cl, CtrlVal ctrlValues, const int type);
+    AddRemoveCtrlValues(CtrlList* const cl, QList<CtrlVal> ctrlValues, const int type);
+    AddRemoveCtrlValues(CtrlList* const cl, QList<CtrlVal> ctrlValues, QList<CtrlVal> newCtrlValues, const int type = MODIFY);
 
-	AddRemoveCtrlValues(
-		CtrlList* cl,
-		QList<CtrlVal> ctrlValues,
-		QList<CtrlVal> newCtrlValues,
-		int type = MODIFY);
-
-	AddRemoveCtrlValues(
-		CtrlList* cl,
-		CtrlVal ctrlValues,
-		int type);
-
-        int do_action();
-        int undo_action();
+protected:
+    int doAction() override;
+    int undoAction() override;
 
 private:
-	CtrlList*		m_cl;
-	QList<CtrlVal>		m_ctrlValues;
-	QList<CtrlVal>		m_newCtrlValues;
-	int			m_type;
-	double m_startValue;
+    const int fType;
+    double fStartValue;
+    CtrlList* fCtrlList;
+    QList<CtrlVal> fCtrlValues;
+    QList<CtrlVal> fNewCtrlValues;
 };
 
 #endif // ADD_CTRL_VALUE_H

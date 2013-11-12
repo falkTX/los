@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>OOMidi: Audio/Midi Connections Manager</string>
+   <string>LOS: Audio/Midi Connections Manager</string>
   </property>
   <property name="sizeGripEnabled">
    <bool>true</bool>
@@ -80,13 +80,13 @@
                 <bool>true</bool>
                </property>
                <property name="toolTip">
-                <string>Make OOMidi the Jack transport Timebase Master</string>
+                <string>Make LOS the Jack transport Timebase Master</string>
                </property>
                <property name="whatsThis">
-                <string>Make OOMidi the Jack transport Timebase Master.
+                <string>Make LOS the Jack transport Timebase Master.
 Allows Jack to show time as 
- OOMidi Bars, Beats, and Ticks. 
-OOMidi will try to become master, but other 
+ LOS Bars, Beats, and Ticks. 
+LOS will try to become master, but other 
  Jack clients can also take over later.
 You can always click here again for Master.</string>
                </property>
@@ -104,12 +104,12 @@ You can always click here again for Master.</string>
                 <bool>true</bool>
                </property>
                <property name="toolTip">
-                <string>Control OOMidi timing by external midi clock or MTC sync</string>
+                <string>Control LOS timing by external midi clock or MTC sync</string>
                </property>
                <property name="whatsThis">
                 <string>When in slave mode, tempo is
  controlled externally.
-OOMidi can sync to midi clock, or MTC quarter frame sync. 
+LOS can sync to midi clock, or MTC quarter frame sync. 
 Enabled inputs in the list will
  be in effect (RMC, RMMC, RMTC).</string>
                </property>
@@ -130,7 +130,7 @@ Enabled inputs in the list will
                  </property>
                  <property name="whatsThis">
                   <string>Allows 'slow sync' devices time
- to synchronize to OOMidi. This value is the
+ to synchronize to LOS. This value is the
  delay from sending start to sending
  the first clock.</string>
                  </property>

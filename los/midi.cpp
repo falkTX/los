@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: midi.cpp,v 1.43.2.22 2009/11/09 20:28:28 terminator356 Exp $
 //
 //  (C) Copyright 1999/2004 Werner Schweer (ws@seh.de)
@@ -211,7 +211,7 @@ QString nameSysex(unsigned int len, const unsigned char* buf)
             break;
         case 0x45: s = "Akai";
             break;
-        case 0x7c: s = "OOMidi Soft Synth";
+        case 0x7c: s = "LOS Soft Synth";
             break;
         case 0x7d: s = "Educational Use";
             break;
@@ -736,8 +736,6 @@ void Audio::initDevices()
         MidiTrack* track = *it;
         activePorts[track->outPort()] = true;
     }
-    if (song->click())
-        activePorts[clickPort] = true;
 
     //
     // test for explicit instrument initialization

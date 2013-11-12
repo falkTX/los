@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: part.cpp,v 1.12.2.17 2009/06/25 05:13:02 terminator356 Exp $
 //
 //  (C) Copyright 1999/2000 Werner Schweer (ws@seh.de)
@@ -199,7 +199,7 @@ void replaceClone(Part* p1, Part* p2)
         if (ret)
             return;
         // Note that two parts here with different event lists, each with more than one
-        //  reference count, would be an error. It's not done anywhere in oom. But just
+        //  reference count, would be an error. It's not done anywhere in los. But just
         //  to be sure, four lines above were changed to allow that condition.
         // If each of the two different event lists, has only one ref count, we
         //  handle it like a regular replacement, below...
@@ -913,7 +913,7 @@ iPart PartList::add(Part* part)
     // Also, when the tempo map is changed, every wavepart would have to be
     //  re-added to the part list so that the proper sorting order (by ticks)
     //  could be achieved.
-    // Note that in a oom file, the tempo list is loaded AFTER all the tracks.
+    // Note that in a los file, the tempo list is loaded AFTER all the tracks.
     // There was a bug that all the wave parts' tick values were not correct,
     // since they were computed BEFORE the tempo map was loaded.
     if (part->type() == Pos::FRAMES)
@@ -997,7 +997,7 @@ void Song::cmdResizePart(Track* track, Part* oPart, unsigned int len)/*{{{*/
                 startUndo();
 
                 // decide if we should change the current part or not. if not stretching, then always true
-                bool changePart = (oom->getCurrentTool() != StretchTool);
+                bool changePart = (los->getCurrentTool() != StretchTool);
 
                 //for (iEvent i = el->begin(); i != el->end(); i++)
                 if (!el->empty())
@@ -1040,7 +1040,7 @@ void Song::cmdResizePart(Track* track, Part* oPart, unsigned int len)/*{{{*/
                         nPart->setRightClip(rclip);
                         //printf("newEvent.setLenFrame(new_partlength:%d - event_startframe:%d) = %d right clip=%d\n",new_partlength, event_startframe, (new_partlength - event_startframe), rclip);
                         // Indicate no undo, and do not do port controller values and clone parts.
-                        if (oom->getCurrentTool() == StretchTool)
+                        if (los->getCurrentTool() == StretchTool)
                         {
                             StretchDialog sdialog;
                             sdialog.setFile(file.path(), file.dirPath());

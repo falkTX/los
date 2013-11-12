@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: audioconvert.h,v 1.1.1.1 2009/12/28 16:07:33 terminator356 Exp $
 //
 //  (C) Copyright 1999-2009 Werner Schweer (ws@seh.de)

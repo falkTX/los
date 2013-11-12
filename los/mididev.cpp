@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: mididev.cpp,v 1.10.2.6 2009/11/05 03:14:35 terminator356 Exp $
 //
 //  (C) Copyright 1999-2004 Werner Schweer (ws@seh.de)
@@ -48,7 +48,7 @@ void initMidiDevices()
 #endif
     if (initMidiAlsa())
     {
-        QMessageBox::critical(NULL, "OOMidi fatal error.", "OOMidi failed to initialize the\n"
+        QMessageBox::critical(NULL, "LOS fatal error.", "LOS failed to initialize the\n"
                 "Alsa midi subsystem, check\n"
                 "your configuration.");
         exit(-1);
@@ -56,7 +56,7 @@ void initMidiDevices()
 
     if (initMidiJack())
     {
-        QMessageBox::critical(NULL, "OOMidi fatal error.", "OOMidi failed to initialize the\n"
+        QMessageBox::critical(NULL, "LOS fatal error.", "LOS failed to initialize the\n"
                 "Jack midi subsystem, check\n"
                 "your configuration.");
         exit(-1);

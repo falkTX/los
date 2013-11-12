@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: app.h,v 1.34.2.14 2009/11/16 11:29:33 lunar_shuttle Exp $
 //
 //  (C) Copyright 1999-2004 Werner Schweer (ws@seh.de)
@@ -48,7 +48,6 @@ class Track;
 class PrinterConfig;
 class MidiSyncConfig;
 class MRConfig;
-class MetronomeConfig;
 class AudioConf;
 class Xml;
 class ClipListEdit;
@@ -66,7 +65,7 @@ class MidiInstrument;
 class MidiPort;
 class ShortcutConfig;
 class WaveTrack;
-class AudioOutput;
+class AudioOutputHelper;
 class EditInstrument;
 class AudioPortConfig;
 class QDocWidget;
@@ -78,10 +77,10 @@ class Performer;
 #define OOCMD_PORT 8415
 
 //---------------------------------------------------------
-//   OOMidi
+//   LOS
 //---------------------------------------------------------
 
-class OOMidi : public QMainWindow
+class LOS : public QMainWindow
 {
 
     Q_OBJECT
@@ -188,7 +187,6 @@ class OOMidi : public QMainWindow
     MidiSyncConfig* midiSyncConfig;
     MRConfig* midiRemoteConfig;
     RhythmGen* midiRhythmGenerator;
-    MetronomeConfig* metronomeConfig;
     AudioConf* audioConfig;
     MidiFileConfig* midiFileConfig;
     GlobalSettingsConfig* globalSettingsConfig;
@@ -378,7 +376,7 @@ public slots:
     bool save();
     bool saveAs();
     void configGlobalSettings(int tab = 0);
-    void bounceToFile(AudioOutput* ao = 0);
+    void bounceToFile(AudioOutputHelper* ao = 0);
     void closeEvent(QCloseEvent*e);
     void loadProjectFile(const QString&);
     void loadProjectFile(const QString&, bool songTemplate, bool loadAll);
@@ -393,7 +391,6 @@ public slots:
     void setUsedTool(int);
     void showDidYouKnowDialog();
     void importWave(Track* track = NULL);
-    void configMetronome();
 
     void routingPopupMenuAboutToHide();
     void configMidiAssign(int tab = -1);
@@ -410,8 +407,8 @@ public slots:
 
 
 public:
-    OOMidi(int argc, char** argv);
-    ~OOMidi();
+    LOS(int argc, char** argv);
+    ~LOS();
     Composer* composer;
     //FIXME: Hack to make projects loaded from the commandline not start PR
     //I need to track where and what is cause it to crash

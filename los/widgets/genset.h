@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: genset.h,v 1.3 2004/01/25 09:55:17 wschweer Exp $
 //
 //  (C) Copyright 2001 Werner Schweer (ws@seh.de)

@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: $
 //
 //  (C) Copyright 2010 Andrew Williams and Christopher Cherrett
@@ -131,7 +131,7 @@ void TrackViewEditor::buildViewList()
     if(m_templateMode)
     {
         cmbViews->addItem(tr("Select Instrument Template"), 0);
-        tvl = oom->instrumentTemplates();
+        tvl = los->instrumentTemplates();
     }
     else
     {
@@ -151,22 +151,22 @@ void TrackViewEditor::buildViewList()
 
 void TrackViewEditor::populateTypes()
 {
-    while(cmbType->count())
+    while (cmbType->count())
         cmbType->removeItem(0);
 
-//MIDI=0, DRUM, WAVE, AUDIO_OUTPUT, AUDIO_INPUT, AUDIO_BUSS,AUDIO_AUX
     //Populate trackTypes and pass it to cmbTypes
     cmbType->addItem(tr("All Types"), -1);
     cmbType->addItem(tr("Midi Tracks"), Track::MIDI);
     cmbType->addItem(tr("Audio Tracks"), Track::WAVE);
-    cmbType->addItem(tr("Inputs"), Track::AUDIO_INPUT);
-    cmbType->addItem(tr("Outputs"), Track::AUDIO_OUTPUT);
+    cmbType->addItem(tr("Input Helpers"), Track::WAVE_INPUT_HELPER);
+    cmbType->addItem(tr("Output Helpers"), Track::WAVE_OUTPUT_HELPER);
 }
 
 void TrackViewEditor::setType(int val)
 {//Translate tracktype to combo index
     Track::TrackType type = (Track::TrackType)val;
-    switch(type)
+
+    switch (type)
     {
         case Track::MIDI:
             cmbType->setCurrentIndex(1);
@@ -174,10 +174,10 @@ void TrackViewEditor::setType(int val)
         case Track::WAVE:
             cmbType->setCurrentIndex(2);
         break;
-        case Track::AUDIO_INPUT:
+        case Track::WAVE_INPUT_HELPER:
             cmbType->setCurrentIndex(3);
         break;
-        case Track::AUDIO_OUTPUT:
+        case Track::WAVE_OUTPUT_HELPER:
             cmbType->setCurrentIndex(4);
         break;
         default:
@@ -287,7 +287,7 @@ void TrackViewEditor::btnNewClicked(bool)/*{{{*/
     TrackView *v = 0;
     if(m_templateMode)
     {
-        v = oom->addInstrumentTemplate();
+        v = los->addInstrumentTemplate();
         if(v)
             _selected = v->id();
     }
@@ -332,7 +332,7 @@ void TrackViewEditor::cmbViewSelected(int ind)/*{{{*/
     txtName->setText(sl);
     TrackView* v = 0;
     if(m_templateMode)
-        v = oom->findInstrumentTemplateById(tvid);
+        v = los->findInstrumentTemplateById(tvid);
     else
         v = song->findTrackViewById(tvid);
     _editing = true;
@@ -465,19 +465,17 @@ void TrackViewEditor::cmbTypeSelected(int index)/*{{{*/
     Track::TrackType t = (Track::TrackType)type;
     switch (t)
     {
-        case Track::AUDIO_OUTPUT:
-            m_filterModel->setFilterRegExp(QRegExp(QString::number(Track::AUDIO_OUTPUT), Qt::CaseInsensitive, QRegExp::FixedString));
-            break;
-        case Track::AUDIO_INPUT:
-            m_filterModel->setFilterRegExp(QRegExp(QString::number(Track::AUDIO_INPUT), Qt::CaseInsensitive, QRegExp::FixedString));
-            break;
-        case Track::MIDI:
-            m_filterModel->setFilterRegExp(QRegExp(QString::number(Track::MIDI), Qt::CaseInsensitive, QRegExp::FixedString));
-            break;
-        case Track::WAVE:
-            m_filterModel->setFilterRegExp(QRegExp(QString::number(Track::WAVE), Qt::CaseInsensitive, QRegExp::FixedString));
-            break;
-        default:
+    case Track::MIDI:
+        m_filterModel->setFilterRegExp(QRegExp(QString::number(Track::MIDI), Qt::CaseInsensitive, QRegExp::FixedString));
+        break;
+    case Track::WAVE:
+        m_filterModel->setFilterRegExp(QRegExp(QString::number(Track::WAVE), Qt::CaseInsensitive, QRegExp::FixedString));
+        break;
+    case Track::WAVE_INPUT_HELPER:
+        m_filterModel->setFilterRegExp(QRegExp(QString::number(Track::WAVE_INPUT_HELPER), Qt::CaseInsensitive, QRegExp::FixedString));
+        break;
+    case Track::WAVE_OUTPUT_HELPER:
+        m_filterModel->setFilterRegExp(QRegExp(QString::number(Track::WAVE_OUTPUT_HELPER), Qt::CaseInsensitive, QRegExp::FixedString));
         break;
     }
 }/*}}}*/
@@ -490,7 +488,7 @@ void TrackViewEditor::btnApplyClicked(bool/* state*/)/*{{{*/
         TrackView *view = 0;
         if(m_templateMode)
         {
-            view = oom->findInstrumentTemplateById(_selected);
+            view = los->findInstrumentTemplateById(_selected);
         }
         else
         {
@@ -571,7 +569,7 @@ void TrackViewEditor::btnApplyClicked(bool/* state*/)/*{{{*/
         view->setComment(txtComment->toPlainText());
         if(m_templateMode)
         {
-            oom->changeConfig(true);
+            los->changeConfig(true);
             song->update(SC_CONFIG);
             //Make the virtual tracks of the new template available to others
             populateTrackList();
@@ -640,10 +638,10 @@ void TrackViewEditor::btnCancelClicked(bool/* state*/)/*{{{*/
     {//remove the trackview that was added to the song
         if(m_templateMode)
         {
-            TrackView* v = oom->findInstrumentTemplateById(_selected);
-            oom->removeInstrumentTemplate(_selected);
+            TrackView* v = los->findInstrumentTemplateById(_selected);
+            los->removeInstrumentTemplate(_selected);
             delete v;
-            oom->changeConfig(true);
+            los->changeConfig(true);
             song->update(SC_CONFIG);
         }
         else
@@ -673,7 +671,7 @@ void TrackViewEditor::btnCopyClicked()/*{{{*/
         qDebug("TrackViewEditor::btnCopyClicked:==========Selected ID: %lld", _selected);
         if(m_templateMode)
         {
-            tv = oom->findInstrumentTemplateById(_selected);
+            tv = los->findInstrumentTemplateById(_selected);
         }
         else
         {
@@ -689,7 +687,7 @@ void TrackViewEditor::btnCopyClicked()/*{{{*/
                 view->setViewName(TrackView::getValidName(tv->viewName(), m_templateMode));
                 if(m_templateMode)
                 {
-                    oom->insertInstrumentTemplate(view, -1);
+                    los->insertInstrumentTemplate(view, -1);
                 }
                 else
                 {
@@ -715,8 +713,8 @@ void TrackViewEditor::btnDeleteClicked(bool)/*{{{*/
     {
         if(m_templateMode)
         {
-            oom->removeInstrumentTemplate(_selected);
-            oom->changeConfig(true);
+            los->removeInstrumentTemplate(_selected);
+            los->changeConfig(true);
             song->update(SC_CONFIG);
             populateTrackList();
         }

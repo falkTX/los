@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //
 //
 //
@@ -9,35 +9,26 @@
 
 #include "CommandGroup.h"
 
-/** 	\class CommandGroup 
- *	\brief A class to return a group of Command objects as one history object to the historystack
- *	
- */
-
-
 CommandGroup::~ CommandGroup()
 {
-	foreach(OOMCommand* cmd, m_commands) {
-		delete cmd;
-	}
+    foreach (LOSCommand* cmd, fCommands)
+        delete cmd;
 }
 
-int CommandGroup::do_action()
+int CommandGroup::doAction()
 {
-	foreach(OOMCommand* cmd, m_commands) {
-		cmd->do_action();
-	}
-	
-	return 1;
+    foreach(LOSCommand* cmd, fCommands)
+        cmd->doAction();
+
+    return 1;
 }
 
-int CommandGroup::undo_action()
+int CommandGroup::undoAction()
 {
-	foreach(OOMCommand* cmd, m_commands) {
-		cmd->undo_action();
-	}
-	
-	return 1;
+    foreach(LOSCommand* cmd, fCommands)
+        cmd->undoAction();
+
+    return 1;
 }
 
 // eof

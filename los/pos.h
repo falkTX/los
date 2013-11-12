@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: pos.h,v 1.8 2004/07/14 15:27:26 wschweer Exp $
 //
 //  (C) Copyright 2000 Werner Schweer (ws@seh.de)

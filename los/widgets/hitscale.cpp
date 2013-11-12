@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //    $Id: hitscale.cpp,v 1.3.2.1 2007/01/27 14:52:43 spamatica Exp $
 //  (C) Copyright 1999 Werner Schweer (ws@seh.de)
 //=========================================================

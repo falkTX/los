@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  (C) Copyright 2010 Werner Schweer and others (ws@seh.de)
 //=========================================================
 
@@ -141,13 +141,13 @@ Conductor::Conductor(QWidget* parent, Track* sel_track) : QFrame(parent)//QWidge
     _matrix = new QList<int>;
     _tableModel = new ProgramChangeTableModel(this);
     tableView = new ProgramChangeTable(this);
-    tableView->installEventFilter(oom);
+    tableView->installEventFilter(los);
     tableView->setMinimumHeight(150);
     tableBox->addWidget(tableView);
     _selModel = new QItemSelectionModel(_tableModel);//tableView->selectionModel();
     _patchModel = new QStandardItemModel(0, 2, this);
     _patchSelModel = new QItemSelectionModel(_patchModel);
-    patchList->installEventFilter(oom);
+    patchList->installEventFilter(los);
 
     selected = sel_track;
 
@@ -244,7 +244,7 @@ Conductor::Conductor(QWidget* parent, Track* sel_track) : QFrame(parent)//QWidge
     //connect(oRButton, SIGNAL(pressed()), SLOT(outRoutesPressed()));
 
     connect(song, SIGNAL(songChanged(int)), SLOT(songChanged(int)));
-    connect(oom, SIGNAL(configChanged()), SLOT(configChanged()));
+    connect(los, SIGNAL(configChanged()), SLOT(configChanged()));
 
     connect(heartBeatTimer, SIGNAL(timeout()), SLOT(heartBeat()));
     //bool adv = tconfig().get_property("Conductor", "advanced", false).toBool();
@@ -482,9 +482,7 @@ void Conductor::heartBeat()/*{{{*/
         }
             break;
 
-        case Track::WAVE:
-        case Track::AUDIO_OUTPUT:
-        case Track::AUDIO_INPUT:
+        default:
             break;
     }
 }/*}}}*/
@@ -606,7 +604,7 @@ void Conductor::routingPopupMenuActivated(QAction* act)
     ///if(!midiConductor || gRoutingPopupMenuMaster != midiConductor || !selected || !selected->isMidiTrack())
     if ((gRoutingPopupMenuMaster != this) || !selected || !selected->isMidiTrack())
         return;
-    oom->routingPopupMenuActivated(selected, act->data().toInt());
+    los->routingPopupMenuActivated(selected, act->data().toInt());
 }
 
 #if 0
@@ -619,7 +617,7 @@ void Conductor::routingPopupViewActivated(const QModelIndex& mdi)
     ///if(!midiConductor || gRoutingPopupMenuMaster != midiConductor || !selected || !selected->isMidiTrack())
     if (gRoutingPopupMenuMaster != this || !selected || !selected->isMidiTrack())
         return;
-    oom->routingPopupMenuActivated(selected, mdi.data().toInt());
+    los->routingPopupMenuActivated(selected, mdi.data().toInt());
 }
 #endif
 
@@ -634,8 +632,8 @@ void Conductor::inRoutesPressed()/*{{{*/
     if (!selected->isMidiTrack())
         return;
 
-    PopupMenu* pup = oom->prepareRoutingPopupMenu(selected, false);
-    //PopupView* pup = oom->prepareRoutingPopupView(selected, false);
+    PopupMenu* pup = los->prepareRoutingPopupMenu(selected, false);
+    //PopupView* pup = los->prepareRoutingPopupView(selected, false);
 
     if (!pup)
     {
@@ -647,7 +645,7 @@ void Conductor::inRoutesPressed()/*{{{*/
         if (ret == QMessageBox::Ok)
         {
             // printf("open config midi ports\n");
-            oom->configMidiAssign(1);
+            los->configMidiAssign(1);
         }
         return;
     }
@@ -656,8 +654,8 @@ void Conductor::inRoutesPressed()/*{{{*/
     gRoutingPopupMenuMaster = this;
     connect(pup, SIGNAL(triggered(QAction*)), SLOT(routingPopupMenuActivated(QAction*)));
     //connect(pup, SIGNAL(activated(const QModelIndex&)), SLOT(routingPopupViewActivated(const QModelIndex&)));
-    connect(pup, SIGNAL(aboutToHide()), oom, SLOT(routingPopupMenuAboutToHide()));
-    //connect(pup, SIGNAL(aboutToHide()), oom, SLOT(routingPopupViewAboutToHide()));
+    connect(pup, SIGNAL(aboutToHide()), los, SLOT(routingPopupMenuAboutToHide()));
+    //connect(pup, SIGNAL(aboutToHide()), los, SLOT(routingPopupViewAboutToHide()));
     pup->popup(QCursor::pos());
     //pup->setVisible(true);
     iRButton->setDown(false);
@@ -675,14 +673,14 @@ void Conductor::outRoutesPressed()/*{{{*/
     if (!selected->isMidiTrack())
         return;
 
-    PopupMenu* pup = oom->prepareRoutingPopupMenu(selected, true);
+    PopupMenu* pup = los->prepareRoutingPopupMenu(selected, true);
     if (!pup)
         return;
 
     ///gRoutingPopupMenuMaster = midiConductor;
     gRoutingPopupMenuMaster = this;
     connect(pup, SIGNAL(triggered(QAction*)), SLOT(routingPopupMenuActivated(QAction*)));
-    connect(pup, SIGNAL(aboutToHide()), oom, SLOT(routingPopupMenuAboutToHide()));
+    connect(pup, SIGNAL(aboutToHide()), los, SLOT(routingPopupMenuAboutToHide()));
     pup->popup(QCursor::pos());
     ///oRButton->setDown(false);
     return;
@@ -1322,7 +1320,7 @@ void Conductor::updateConductor(int flags)
     MidiTrack* track = (MidiTrack*) selected;
 
     if (flags & (SC_ROUTE | SC_CHANNELS | SC_CONFIG))
-        oom->updateRouteMenus(selected, this);
+        los->updateRouteMenus(selected, this);
 
     if (flags & (SC_MIDI_TRACK_PROP))
     {

@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: audioconvert.cpp,v 1.1.1.1 2009/12/28 16:07:33 terminator356 Exp $
 //
 //  (C) Copyright 1999-2009 Werner Schweer (ws@seh.de)
@@ -137,14 +137,14 @@ off_t AudioConverter::readAudio(SndFileR& f, unsigned offset, float** buffer, in
 	}
 
 	// Is a 'transport' seek requested? (Not to be requested with every read! Should only be for 'first read' seeks, or positional 'transport' seeks.)
-	// Due to the support of sound file references in OOMidi, seek must ALWAYS be done before read, as before,
+	// Due to the support of sound file references in LOS, seek must ALWAYS be done before read, as before,
 	//  except now we alter the seek position if sample rate conversion is being used and remember the seek positions.
 	if (doSeek)
 	{
 		// Sample rates are different. Seek to a calculated 'sample rate ratio factored' position.
 
 		double srcratio = (double) fsrate / (double) sampleRate;
-		//long inSize = long((double)frames * _src_ratio) + 1     // From OOMidi-2 file converter.
+		//long inSize = long((double)frames * _src_ratio) + 1     // From LOS-2 file converter.
 		off_t newfr = (off_t) floor(((double) frame * srcratio)); // From simplesynth.
 
 		_sfCurFrame = f.seek(newfr, 0);
@@ -350,7 +350,7 @@ off_t SRCAudioConverter::process(SndFileR& f, float** buffer, int channel, int n
 	//long outSize   = outFrames * channel;
 	long outSize = outFrames * fchan;
 
-	//long inSize = long(outSize * srcratio) + 1                      // From OOMidi-2 file converter.
+	//long inSize = long(outSize * srcratio) + 1                      // From LOS-2 file converter.
 	//long inSize = (long)floor(((double)outSize / srcratio));        // From simplesynth.
 	//long inFrames = (long)floor(((double)outFrames / srcratio));    // From simplesynth.
 	long inFrames = (long) ceil(((double) outFrames / srcratio)) + inComp; // From simplesynth.
@@ -647,7 +647,7 @@ off_t RubberBandAudioConverter::process(SndFileR& f, float** buffer, int channel
 	//long outSize   = outFrames * channel;
 	long outSize = outFrames * fchan;
 
-	//long inSize = long(outSize * srcratio) + 1                      // From OOMidi-2 file converter.
+	//long inSize = long(outSize * srcratio) + 1                      // From LOS-2 file converter.
 	//long inSize = (long)floor(((double)outSize / srcratio));        // From simplesynth.
 	//long inFrames = (long)floor(((double)outFrames / srcratio));    // From simplesynth.
 	long inFrames = (long) ceil(((double) outFrames / srcratio)) + inComp; // From simplesynth.

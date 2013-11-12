@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: event.cpp,v 1.8.2.5 2009/12/20 05:00:35 terminator356 Exp $
 //
 //  (C) Copyright 2000-2003 Werner Schweer (ws@seh.de)

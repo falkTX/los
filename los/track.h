@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: track.h,v 1.39.2.17 2009/12/20 05:00:35 terminator356 Exp $
 //
 //  (C) Copyright 1999-2004 Werner Schweer (ws@seh.de)
@@ -24,21 +24,19 @@
 #include "ctrl.h"
 #include "globaldefs.h"
 
-class Pipeline;
 class Xml;
 class SndFile;
 class MPEventList;
-class BasePlugin;
 class MidiAssignData;
 class MidiPort;
 class CCInfo;
-
 class Track;
-struct MonitorLog
-{
+
+struct MonitorLog {
     unsigned pos;
     int value;
 };
+
 struct MidiAssignData {/*{{{*/
     Track* track;
     QHash<int, CCInfo*> midimap;
@@ -57,6 +55,7 @@ struct MidiAssignData {/*{{{*/
         return (m.channel ^ m.port)*qrand();
     }
 };/*}}}*/
+
 //---------------------------------------------------------
 //   Track
 //---------------------------------------------------------
@@ -73,8 +72,8 @@ public:
     enum TrackType {
         MIDI = 0,
         WAVE,
-        AUDIO_OUTPUT,
-        AUDIO_INPUT
+        WAVE_OUTPUT_HELPER,
+        WAVE_INPUT_HELPER
     };
 
 private:
@@ -87,7 +86,6 @@ private:
     bool _reminder1;
     bool _reminder2;
     bool _reminder3;
-
 
 protected:
     qint64 m_id;
@@ -619,19 +617,6 @@ public:
     AudioTrack* getAutomationTrack();
 };
 
-typedef QPair<bool, double> AuxInfo;
-/*typedef struct _AuxInfo
-{
-    double value;
-    bool pre;
-    _AuxInfo(double v, bool p = false)
-    {
-        value = v;
-        pre = p;
-    }
-} AuxInfo;
-*/
-
 //---------------------------------------------------------
 //   AudioTrack
 //    this track can hold audio automation data and can
@@ -649,8 +634,6 @@ class AudioTrack : public Track
     bool _prefader; // prefader metering
 
     AutomationType _automationType;
-
-    bool _sendMetronome;
 
 protected:
     float** outBuffers;
@@ -731,16 +714,6 @@ public:
     virtual void setMute(bool val, bool monitor = false);
     virtual void setOff(bool val);
 
-    void setSendMetronome(bool val)
-    {
-        _sendMetronome = val;
-    }
-
-    bool sendMetronome() const
-    {
-        return _sendMetronome;
-    }
-
     bool volFromAutomation();
     double volume() const;
     double volume(unsigned) const;
@@ -791,10 +764,10 @@ public:
 };
 
 //---------------------------------------------------------
-//   AudioInput
+//   AudioInputHelper
 //---------------------------------------------------------
 
-class AudioInput : public AudioTrack
+class AudioInputHelper : public AudioTrack
 {
     bool _slave;
     Track* _master;
@@ -802,19 +775,20 @@ class AudioInput : public AudioTrack
     virtual bool getData(unsigned, int, unsigned, float**);
 
 public:
-    AudioInput();
-    AudioInput(const AudioInput&, bool cloneParts);
-    virtual ~AudioInput();
+    AudioInputHelper();
+    AudioInputHelper(const AudioInputHelper&, bool cloneParts);
+    virtual ~AudioInputHelper();
 
-    AudioInput* clone(bool cloneParts) const
+    AudioInputHelper* clone(bool cloneParts) const
     {
-        return new AudioInput(*this, cloneParts);
+        return new AudioInputHelper(*this, cloneParts);
     }
 
-    virtual AudioInput* newTrack() const
+    virtual AudioInputHelper* newTrack() const
     {
-        return new AudioInput();
+        return new AudioInputHelper();
     }
+
     virtual void read(Xml&);
     virtual void write(int, Xml&) const;
     virtual void setName(const QString& s);
@@ -859,10 +833,10 @@ public:
 };
 
 //---------------------------------------------------------
-//   AudioOutput
+//   AudioOutputHelper
 //---------------------------------------------------------
 
-class AudioOutput : public AudioTrack
+class AudioOutputHelper : public AudioTrack
 {
     bool _slave;
     Track* _master;
@@ -874,19 +848,20 @@ class AudioOutput : public AudioTrack
     float* _monitorBuffer[MAX_CHANNELS];
 
 public:
-    AudioOutput();
-    AudioOutput(const AudioOutput&, bool cloneParts);
-    virtual ~AudioOutput();
+    AudioOutputHelper();
+    AudioOutputHelper(const AudioOutputHelper&, bool cloneParts);
+    virtual ~AudioOutputHelper();
 
-    AudioOutput* clone(bool cloneParts) const
+    AudioOutputHelper* clone(bool cloneParts) const
     {
-        return new AudioOutput(*this, cloneParts);
+        return new AudioOutputHelper(*this, cloneParts);
     }
 
-    virtual AudioOutput* newTrack() const
+    virtual AudioOutputHelper* newTrack() const
     {
-        return new AudioOutput();
+        return new AudioOutputHelper();
     }
+
     virtual void read(Xml&);
     virtual void write(int, Xml&) const;
     virtual void setName(const QString& s);
@@ -947,8 +922,8 @@ public:
 class WaveTrack : public AudioTrack
 {
     Fifo _prefetchFifo; // prefetch Fifo
-    AudioInput* _input;
-    AudioOutput* _output;
+    AudioInputHelper* _input;
+    AudioOutputHelper* _output;
 
 public:
     static bool firstWaveTrack;
@@ -1003,19 +978,20 @@ public:
         return true;
     }
 
-    void setOutputTrack(AudioOutput* out)
+    void setOutputTrack(AudioOutputHelper* out)
     {
         _output = out;
     }
-    AudioOutput* output()
+    AudioOutputHelper* output()
     {
         return _output;
     }
-    void setInputTrack(AudioInput* in)
+
+    void setInputTrack(AudioInputHelper* in)
     {
         _input = in;
     }
-    AudioInput* input()
+    AudioInputHelper* input()
     {
         return _input;
     }
@@ -1232,13 +1208,13 @@ typedef tracklist<WaveTrack*>::iterator iWaveTrack;
 typedef tracklist<WaveTrack*>::const_iterator ciWaveTrack;
 typedef tracklist<WaveTrack*> WaveTrackList;
 
-typedef tracklist<AudioInput*>::iterator iAudioInput;
-typedef tracklist<AudioInput*>::const_iterator ciAudioInput;
-typedef tracklist<AudioInput*> InputList;
+typedef tracklist<AudioInputHelper*>::iterator iAudioInputHelper;
+typedef tracklist<AudioInputHelper*>::const_iterator ciAudioInputHelper;
+typedef tracklist<AudioInputHelper*> InputHelperList;
 
-typedef tracklist<AudioOutput*>::iterator iAudioOutput;
-typedef tracklist<AudioOutput*>::const_iterator ciAudioOutput;
-typedef tracklist<AudioOutput*> OutputList;
+typedef tracklist<AudioOutputHelper*>::iterator iAudioOutputHelper;
+typedef tracklist<AudioOutputHelper*>::const_iterator ciAudioOutputHelper;
+typedef tracklist<AudioOutputHelper*> OutputHelperList;
 
 extern void addPortCtrlEvents(MidiTrack* t);
 extern void removePortCtrlEvents(MidiTrack* t);

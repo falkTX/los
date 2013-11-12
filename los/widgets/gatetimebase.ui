@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>OOMidi: Modify Gate Time</string>
+   <string>LOS: Modify Gate Time</string>
   </property>
   <layout class="QVBoxLayout">
    <property name="spacing">

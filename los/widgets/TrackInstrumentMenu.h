@@ -1,8 +1,8 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //    $Id: $
-//  (C) Copyright 2011 Andrew Williams and the OOMidi team
+//  (C) Copyright 2011 Andrew Williams and the LOS team
 //=========================================================
 
 #ifndef _OOM_TRACK_INSTRUMENTMENU_

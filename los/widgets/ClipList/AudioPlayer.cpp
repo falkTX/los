@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //
 //  (C) Copyright 2010 Andrew Williams and Christopher Cherrett
 //
@@ -250,7 +250,7 @@ bool AudioPlayer::startClient()/*{{{*/
 	{
 		int channels = info.channels;
 		jack_status_t status;
-		m_client = jack_client_open("OOMidi_ClipList", JackNoStartServer, &status);
+		m_client = jack_client_open("LOS_ClipList", JackNoStartServer, &status);
 		if (!m_client)
 		{
 			fprintf (stderr, "Jack server not running?\n") ;

@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //    $Id: jack.cpp,v 1.30.2.17 2009/12/20 05:00:35 terminator356 Exp $
 //  (C) Copyright 2002 Werner Schweer (ws@seh.de)
 //=========================================================
@@ -67,7 +67,7 @@ bool checkAudioDevice()
     if (audioDevice == NULL)
     {
         if(debugMsg)
-            printf("OOMidi:checkAudioDevice: no audioDevice\n");
+            printf("LOS:checkAudioDevice: no audioDevice\n");
         return false;
     }
     return true;
@@ -262,12 +262,12 @@ int JackAudioDevice::realtimePriority() const
     int rv = pthread_getschedparam(t, &policy, &param);
     if (rv)
     {
-        perror("OOMidi: JackAudioDevice::realtimePriority: Error: Get jack schedule parameter");
+        perror("LOS: JackAudioDevice::realtimePriority: Error: Get jack schedule parameter");
         return 0;
     }
     if (policy != SCHED_FIFO)
     {
-        printf("OOMidi: JackAudioDevice::realtimePriority: JACK is not running realtime\n");
+        printf("LOS: JackAudioDevice::realtimePriority: JACK is not running realtime\n");
         return 0;
     }
     return param.sched_priority;
@@ -294,7 +294,7 @@ bool initJackAudio()
     //doSetuid();
 
     jack_status_t status;
-    jack_client_t* client = jack_client_open("OOMidi", JackNoStartServer, &status);
+    jack_client_t* client = jack_client_open("LOS", JackNoStartServer, &status);
     if (!client)
     {
         if (status & JackServerStarted)
@@ -490,10 +490,10 @@ void JackAudioDevice::graphChanged()
     if (JACK_DEBUG)
         printf("graphChanged()\n");
     if (!checkJackClient(_client)) return;
-    InputList* il = song->inputs();
-    for (iAudioInput ii = il->begin(); ii != il->end(); ++ii)
+    InputHelperList* il = song->inputs();
+    for (iAudioInputHelper ii = il->begin(); ii != il->end(); ++ii)
     {
-        AudioInput* it = *ii;
+        AudioInputHelper* it = *ii;
         int channels = it->channels();
         for (int channel = 0; channel < channels; ++channel)
         {
@@ -595,10 +595,10 @@ void JackAudioDevice::graphChanged()
             }
         }
     }
-    OutputList* ol = song->outputs();
-    for (iAudioOutput ii = ol->begin(); ii != ol->end(); ++ii)
+    OutputHelperList* ol = song->outputs();
+    for (iAudioOutputHelper ii = ol->begin(); ii != ol->end(); ++ii)
     {
-        AudioOutput* it = *ii;
+        AudioOutputHelper* it = *ii;
         int channels = it->channels();
         for (int channel = 0; channel < channels; ++channel)
         {
@@ -1047,10 +1047,10 @@ void JackAudioDevice::start(int /*priority*/)
        running.
      */
 
-    InputList* il = song->inputs();
-    for (iAudioInput i = il->begin(); i != il->end(); ++i)
+    InputHelperList* il = song->inputs();
+    for (iAudioInputHelper i = il->begin(); i != il->end(); ++i)
     {
-        AudioInput* ai = *i;
+        AudioInputHelper* ai = *i;
         int channel = ai->channels();
         for (int ch = 0; ch < channel; ++ch)
         {
@@ -1063,10 +1063,10 @@ void JackAudioDevice::start(int /*priority*/)
             }
         }
     }
-    OutputList* ol = song->outputs();
-    for (iAudioOutput i = ol->begin(); i != ol->end(); ++i)
+    OutputHelperList* ol = song->outputs();
+    for (iAudioOutputHelper i = ol->begin(); i != ol->end(); ++i)
     {
-        AudioOutput* ai = *i;
+        AudioOutputHelper* ai = *i;
         int channel = ai->channels();
         for (int ch = 0; ch < channel; ++ch)
         {
@@ -1114,7 +1114,7 @@ jack_transport_state_t JackAudioDevice::transportQuery(jack_position_t* pos)
     if (JACK_DEBUG)
         printf("JackAudioDevice::transportQuery pos:%d\n", (unsigned int) pos->frame);
 
-    // TODO: Compose and return a state if OOMidi is disengaged from Jack transport.
+    // TODO: Compose and return a state if LOS is disengaged from Jack transport.
 
     return jack_transport_query(_client, pos);
 }
@@ -1458,7 +1458,7 @@ void JackAudioDevice::seekTransport(unsigned frame)
         //  as if processSync was called.
         int tempState = dummyState;
 
-        // Is OOMidi audio ready yet?
+        // Is LOS audio ready yet?
         if (dummySync(Audio::START_PLAY))
         {
             dummyState = tempState;
@@ -1490,7 +1490,7 @@ void JackAudioDevice::seekTransport(const Pos &p)
         //  as if processSync was called.
         int tempState = dummyState;
 
-        // Is OOMidi audio ready yet?
+        // Is LOS audio ready yet?
         if (dummySync(Audio::START_PLAY))
         {
             dummyState = tempState;
@@ -1535,7 +1535,7 @@ int JackAudioDevice::setMaster(bool f)
     {
         if (useJackTransport.value())
         {
-            // Make OOMidi the Jack timebase master. Do it unconditionally (second param = 0).
+            // Make LOS the Jack timebase master. Do it unconditionally (second param = 0).
             r = jack_set_timebase_callback(_client, 0, (JackTimebaseCallback) timebase_callback, 0);
             if (debugMsg || JACK_DEBUG)
             {

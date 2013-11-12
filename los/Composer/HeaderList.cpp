@@ -1,6 +1,6 @@
 //===============================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  (C) Copyright 1999 Werner Schweer (ws@seh.de)
 //  (C) Copyright 2011 Andrew Williams and Christopher Cherrett
 //===============================================================
@@ -489,7 +489,7 @@ void HeaderList::moveSelectedTrack(int dir)/*{{{*/
                     int dTrack = song->visibletracks()->index(t);
                     audio->msgMoveTrack(i, dTrack);
                     //The selection event should be harmless enough to call here to update
-                    oom->composer->verticalScrollSetYpos(oom->composer->getCanvas()->track2Y(src));
+                    los->composer->verticalScrollSetYpos(los->composer->getCanvas()->track2Y(src));
                 }
                 else
                     return;
@@ -510,7 +510,7 @@ void HeaderList::moveSelectedTrack(int dir)/*{{{*/
                     int dTrack = song->visibletracks()->index(t);
                     audio->msgMoveTrack(i, dTrack);
                     //The selection event should be harmless enough to call here to update
-                    oom->composer->verticalScrollSetYpos(oom->composer->getCanvas()->track2Y(t));
+                    los->composer->verticalScrollSetYpos(los->composer->getCanvas()->track2Y(t));
                 }
                 else
                     return;
@@ -523,7 +523,7 @@ void HeaderList::moveSelectedTrack(int dir)/*{{{*/
 
 void HeaderList::dragEnterEvent(QDragEnterEvent *event)/*{{{*/
 {
-    if (event->mimeData()->hasFormat("oomidi/x-trackinfo"))
+    if (event->mimeData()->hasFormat("los/x-trackinfo"))
     {
         if (children().contains(event->source()))
         {
@@ -550,7 +550,7 @@ void HeaderList::dragEnterEvent(QDragEnterEvent *event)/*{{{*/
 
 void HeaderList::dragMoveEvent(QDragMoveEvent *event)/*{{{*/
 {
-    if (event->mimeData()->hasFormat("oomidi/x-trackinfo"))
+    if (event->mimeData()->hasFormat("los/x-trackinfo"))
     {
         if (children().contains(event->source()))
         {
@@ -577,10 +577,10 @@ void HeaderList::dragMoveEvent(QDragMoveEvent *event)/*{{{*/
 
 void HeaderList::dropEvent(QDropEvent *event)/*{{{*/
 {
-    if (event->mimeData()->hasFormat("oomidi/x-trackinfo"))
+    if (event->mimeData()->hasFormat("los/x-trackinfo"))
     {
         const QMimeData *mime = event->mimeData();
-        QByteArray itemData = mime->data("oomidi/x-trackinfo");
+        QByteArray itemData = mime->data("los/x-trackinfo");
         QDataStream dataStream(&itemData, QIODevice::ReadOnly);
 
         QString trackName;
@@ -660,18 +660,18 @@ void HeaderList::dropEvent(QDropEvent *event)/*{{{*/
                             (text.endsWith(".wav", Qt::CaseInsensitive) ||
                             (text.endsWith(".ogg", Qt::CaseInsensitive))))
                     {
-                        oom->importWaveToTrack(text, song->cpos(), track);
+                        los->importWaveToTrack(text, song->cpos(), track);
                     }
                     else if ((track->isMidiTrack() || track->type() == Track::WAVE) && text.endsWith(".mpt", Qt::CaseInsensitive))
                     {//Who saves a wave part as anything but a wave file?
-                        oom->importPartToTrack(text, song->cpos(), track);
+                        los->importPartToTrack(text, song->cpos(), track);
                     }
                 }
             }
             else if(text.endsWith(".mid", Qt::CaseInsensitive) ||
                 text.endsWith(".kar", Qt::CaseInsensitive))
             {
-                oom->importMidi(text);
+                los->importMidi(text);
             }
         }
         else

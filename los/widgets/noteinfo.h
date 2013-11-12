@@ -1,5 +1,5 @@
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //    $Id: noteinfo.h,v 1.3 2004/01/09 17:12:54 wschweer Exp $
 //  (C) Copyright 1999 Werner Schweer (ws@seh.de)
 //=========================================================

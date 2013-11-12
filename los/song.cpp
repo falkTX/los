@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: song.cpp,v 1.59.2.52 2009/12/15 03:39:58 terminator356 Exp $
 //
 //  (C) Copyright 2000-2004 Werner Schweer (ws@seh.de)
@@ -84,6 +84,7 @@ Song::Song(QUndoStack* stack, const char* name)
 : QObject(0)
 {
     setObjectName(name);
+    bounceOutput = 0;
     _composerRaster = 0; // Set to measure, the same as Composer intial value. Composer snap combo will set this.
     noteFifoSize = 0;
     noteFifoWindex = 0;
@@ -218,7 +219,7 @@ Track* Song::addNewTrack(QAction* action)
     if (n < 0)
         return 0;
 
-    CreateTrackDialog *ctdialog = new CreateTrackDialog(n, -1, oom);
+    CreateTrackDialog *ctdialog = new CreateTrackDialog(n, -1, los);
     connect(ctdialog, SIGNAL(trackAdded(qint64)), this, SLOT(newTrackAdded(qint64)));
     ctdialog->exec();
 
@@ -244,44 +245,44 @@ void Song::newTrackAdded(qint64 id)
 Track* Song::addTrack(int t, bool doUndo)/*{{{*/
 {
     Track::TrackType type = (Track::TrackType) t;
-    Track* track = 0;
+    Track* track = nullptr;
     switch (type)
     {
-        case Track::MIDI:
-            track = new MidiTrack();
-            track->setType(Track::MIDI);
+    case Track::MIDI:
+        track = new MidiTrack();
+        track->setType(Track::MIDI);
 
-            if(config.partColorNames[lastTrackPartColorIndex].contains("menu:", Qt::CaseSensitive))
-                lastTrackPartColorIndex ++;
-
-            track->setDefaultPartColor(lastTrackPartColorIndex);
+        if(config.partColorNames[lastTrackPartColorIndex].contains("menu:", Qt::CaseSensitive))
             lastTrackPartColorIndex ++;
 
-            if(lastTrackPartColorIndex == NUM_PARTCOLORS)
-                lastTrackPartColorIndex = 1;
+        track->setDefaultPartColor(lastTrackPartColorIndex);
+        lastTrackPartColorIndex ++;
 
-            break;
-        case Track::WAVE:
-            track = new WaveTrack();
+        if(lastTrackPartColorIndex == NUM_PARTCOLORS)
+            lastTrackPartColorIndex = 1;
 
-            if(config.partColorNames[lastTrackPartColorIndex].contains("menu:", Qt::CaseSensitive))
-                lastTrackPartColorIndex ++;
+        break;
+    case Track::WAVE:
+        track = new WaveTrack();
 
-            track->setDefaultPartColor(lastTrackPartColorIndex);
+        if(config.partColorNames[lastTrackPartColorIndex].contains("menu:", Qt::CaseSensitive))
             lastTrackPartColorIndex ++;
 
-            if(lastTrackPartColorIndex == NUM_PARTCOLORS)
-                lastTrackPartColorIndex = 1;
-            break;
-        case Track::AUDIO_OUTPUT:
-            track = new AudioOutput();
-            break;
-        case Track::AUDIO_INPUT:
-            track = new AudioInput();
-            break;
-        default:
-            printf("Song::addTrack() illegal type %d\n", type);
-            abort();
+        track->setDefaultPartColor(lastTrackPartColorIndex);
+        lastTrackPartColorIndex ++;
+
+        if(lastTrackPartColorIndex == NUM_PARTCOLORS)
+            lastTrackPartColorIndex = 1;
+        break;
+    case Track::WAVE_INPUT_HELPER:
+        track = new AudioInputHelper();
+        break;
+    case Track::WAVE_OUTPUT_HELPER:
+        track = new AudioOutputHelper();
+        break;
+    default:
+        printf("Song::addTrack() illegal type %d\n", type);
+        abort();
     }
     track->setDefaultName();
     track->setHeight(DEFAULT_TRACKHEIGHT);
@@ -332,9 +333,9 @@ Track* Song::addTrack(int t, bool doUndo)/*{{{*/
         WaveTrack* wt = (WaveTrack*) track;
 
         //Create the Audio input side of the track
-        if (Track* input = addTrackByName(QString("%1 (in)").arg(track->name()), Track::AUDIO_INPUT, -1, false))
+        if (Track* input = addTrackByName(QString("%1 (in)").arg(track->name()), Track::WAVE_INPUT_HELPER, -1, false))
         {
-            wt->setInputTrack((AudioInput*)input);
+            wt->setInputTrack((AudioInputHelper*)input);
 
             input->setMasterFlag(false);
             input->setChainMaster(track->id());
@@ -348,9 +349,9 @@ Track* Song::addTrack(int t, bool doUndo)/*{{{*/
         }
 
         //Create the Audio output side of the track
-        if (Track* output = addTrackByName(QString("%1 (out)").arg(track->name()), Track::AUDIO_OUTPUT, -1, false))
+        if (Track* output = addTrackByName(QString("%1 (out)").arg(track->name()), Track::WAVE_OUTPUT_HELPER, -1, false))
         {
-            wt->setOutputTrack((AudioOutput*)output);
+            wt->setOutputTrack((AudioOutputHelper*)output);
 
             output->setMasterFlag(false);
             output->setChainMaster(track->id());
@@ -360,7 +361,7 @@ Track* Song::addTrack(int t, bool doUndo)/*{{{*/
             audio->msgAddRoute(Route(track, -1), Route(output, -1));
 
             //Route the output track to master
-            if (AudioOutput* ao = (AudioOutput*)findTrackByIdAndType(m_masterId, Track::AUDIO_OUTPUT))
+            if (AudioOutputHelper* ao = (AudioOutputHelper*)findTrackByIdAndType(m_masterId, Track::WAVE_OUTPUT_HELPER))
                 audio->msgAddRoute(Route(track, -1), Route(ao, -1));
 
             updateFlags |= SC_ROUTE;
@@ -378,41 +379,41 @@ Track* Song::addTrackByName(QString name, int t, int pos, bool doUndo)/*{{{*/
     Track* track = 0;
     switch (type)
     {
-        case Track::MIDI:
-            track = new MidiTrack();
-            track->setType(Track::MIDI);
+    case Track::MIDI:
+        track = new MidiTrack();
+        track->setType(Track::MIDI);
 
-            if(config.partColorNames[lastTrackPartColorIndex].contains("menu:", Qt::CaseSensitive))
-                lastTrackPartColorIndex ++;
-
-            track->setDefaultPartColor(lastTrackPartColorIndex);
+        if(config.partColorNames[lastTrackPartColorIndex].contains("menu:", Qt::CaseSensitive))
             lastTrackPartColorIndex ++;
 
-            if(lastTrackPartColorIndex == NUM_PARTCOLORS)
-                lastTrackPartColorIndex = 1;
+        track->setDefaultPartColor(lastTrackPartColorIndex);
+        lastTrackPartColorIndex ++;
 
-            break;
-        case Track::WAVE:
-            track = new WaveTrack();
+        if(lastTrackPartColorIndex == NUM_PARTCOLORS)
+            lastTrackPartColorIndex = 1;
 
-            if(config.partColorNames[lastTrackPartColorIndex].contains("menu:", Qt::CaseSensitive))
-                lastTrackPartColorIndex ++;
+        break;
+    case Track::WAVE:
+        track = new WaveTrack();
 
-            track->setDefaultPartColor(lastTrackPartColorIndex);
+        if(config.partColorNames[lastTrackPartColorIndex].contains("menu:", Qt::CaseSensitive))
             lastTrackPartColorIndex ++;
 
-            if(lastTrackPartColorIndex == NUM_PARTCOLORS)
-                lastTrackPartColorIndex = 1;
-            break;
-        case Track::AUDIO_OUTPUT:
-            track = new AudioOutput();
-            break;
-        case Track::AUDIO_INPUT:
-            track = new AudioInput();
-            break;
-        default:
-            printf("Song::addTrack() illegal type %d\n", type);
-            abort();
+        track->setDefaultPartColor(lastTrackPartColorIndex);
+        lastTrackPartColorIndex ++;
+
+        if(lastTrackPartColorIndex == NUM_PARTCOLORS)
+            lastTrackPartColorIndex = 1;
+        break;
+    case Track::WAVE_INPUT_HELPER:
+        track = new AudioInputHelper();
+        break;
+    case Track::WAVE_OUTPUT_HELPER:
+        track = new AudioOutputHelper();
+        break;
+    default:
+        printf("Song::addTrack() illegal type %d\n", type);
+        abort();
     }
     track->setName(track->getValidName(name));
     track->setHeight(DEFAULT_TRACKHEIGHT);
@@ -470,9 +471,9 @@ Track* Song::addTrackByName(QString name, int t, int pos, bool doUndo)/*{{{*/
         WaveTrack* wt = (WaveTrack*) track;
 
         //Create the Audio input side of the track
-        if (Track* input = addTrackByName(QString("%1 (in)").arg(track->name()), Track::AUDIO_INPUT, -1, false))
+        if (Track* input = addTrackByName(QString("%1 (in)").arg(track->name()), Track::WAVE_INPUT_HELPER, -1, false))
         {
-            wt->setInputTrack((AudioInput*)input);
+            wt->setInputTrack((AudioInputHelper*)input);
 
             input->setMasterFlag(false);
             input->setChainMaster(track->id());
@@ -485,9 +486,9 @@ Track* Song::addTrackByName(QString name, int t, int pos, bool doUndo)/*{{{*/
             updateFlags |= SC_ROUTE;
         }
         //Create the Audio output side of the track
-        if (Track* output = addTrackByName(QString("%1 (out)").arg(track->name()), Track::AUDIO_OUTPUT, -1, false))
+        if (Track* output = addTrackByName(QString("%1 (out)").arg(track->name()), Track::WAVE_OUTPUT_HELPER, -1, false))
         {
-            wt->setOutputTrack((AudioOutput*)output);
+            wt->setOutputTrack((AudioOutputHelper*)output);
 
             output->setMasterFlag(false);
             output->setChainMaster(track->id());
@@ -497,7 +498,7 @@ Track* Song::addTrackByName(QString name, int t, int pos, bool doUndo)/*{{{*/
             audio->msgAddRoute(Route(track, -1), Route(output, -1));
 
             //Route the output track to master
-            if (AudioOutput* ao = (AudioOutput*)findTrackByIdAndType(m_masterId, Track::AUDIO_OUTPUT))
+            if (AudioOutputHelper* ao = (AudioOutputHelper*)findTrackByIdAndType(m_masterId, Track::WAVE_OUTPUT_HELPER))
                 audio->msgAddRoute(Route(track, -1), Route(ao, -1));
 
             updateFlags |= SC_ROUTE;
@@ -932,52 +933,47 @@ Track* Song::findTrackById(qint64 id) const
 //    find track by id and type
 //---------------------------------------------------------
 
-Track* Song::findTrackByIdAndType(qint64 id, int ttype) const
+Track* Song::findTrackByIdAndType(qint64 id, int type) const
 {
     if (id == 0)
-        return 0;
+        return nullptr;
 
-    Track::TrackType type = (Track::TrackType)ttype;
-    switch(type)
+    switch (static_cast<Track::TrackType>(type))
     {
-        case Track::MIDI:
-        {/*{{{*/
-            for (ciTrack i = _midis.begin(); i != _midis.end(); ++i)
-            {
-                if ((*i)->id() == id)
-                    return *i;
-            }
-        }/*}}}*/
-        break;
-        case Track::WAVE:
+    case Track::MIDI:
+        for (ciTrack i = _midis.begin(); i != _midis.end(); ++i)
         {
-            for (ciTrack i = _waves.begin(); i != _waves.end(); ++i)
-            {
-                if ((*i)->id() == id)
-                    return *i;
-            }
+            if ((*i)->id() == id)
+                return *i;
         }
         break;
-        case Track::AUDIO_OUTPUT:
+
+    case Track::WAVE:
+        for (ciTrack i = _waves.begin(); i != _waves.end(); ++i)
         {
-            for (ciTrack i = _outputs.begin(); i != _outputs.end(); ++i)
-            {
-                if ((*i)->id() == id)
-                    return *i;
-            }
+            if ((*i)->id() == id)
+                return *i;
         }
         break;
-        case Track::AUDIO_INPUT:
+
+    case Track::WAVE_INPUT_HELPER:
+        for (ciTrack i = _inputs.begin(); i != _inputs.end(); ++i)
         {
-            for (ciTrack i = _inputs.begin(); i != _inputs.end(); ++i)
-            {
-                if ((*i)->id() == id)
-                    return *i;
-            }
+            if ((*i)->id() == id)
+                return *i;
+        }
+        break;
+
+    case Track::WAVE_OUTPUT_HELPER:
+        for (ciTrack i = _outputs.begin(); i != _outputs.end(); ++i)
+        {
+            if ((*i)->id() == id)
+                return *i;
         }
         break;
     }
-    return 0;
+
+    return nullptr;
 }
 
 //---------------------------------------------------------
@@ -1035,10 +1031,10 @@ void Song::setRecord(bool f, bool autoRecEnable)
 {
     if(debugMsg)
         printf("Song::setRecord recordflag =%d f(record state)=%d autoRecEnable=%d\n", recordFlag, f, autoRecEnable);
-    if (f && oomProject == oomProjectInitPath)
+    if (f && losProject == losProjectInitPath)
     { // check that there is a project stored before commencing
         // no project, we need to create one.
-        if (!oom->saveAs())
+        if (!los->saveAs())
             return; // could not store project, won't enable record
     }
     if (recordFlag != f)
@@ -1112,7 +1108,7 @@ void Song::setRecord(bool f, bool autoRecEnable)
             }
             if (!portFound)
             {
-                QMessageBox::critical(qApp->mainWidget(), "OOMidi: Record",
+                QMessageBox::critical(qApp->mainWidget(), "LOS: Record",
                         "There are no midi devices configured for recording");
                 f = false;
             }
@@ -1157,40 +1153,6 @@ void Song::setPunchout(bool f)
         punchoutFlag = f;
         punchoutAction->setChecked(punchoutFlag);
         emit punchoutChanged(punchoutFlag);
-    }
-}
-
-//---------------------------------------------------------
-//   setClick
-//---------------------------------------------------------
-
-void Song::setClick(bool val)
-{
-    if(val)/*{{{*/
-    {
-        AudioOutput* master = (AudioOutput*)findTrackByIdAndType(m_masterId, Track::AUDIO_OUTPUT);
-        bool hasoutput = (master && master->sendMetronome());
-        if(!hasoutput)
-        {
-            for (iAudioOutput iao = _outputs.begin(); iao != _outputs.end(); ++iao)
-            {
-                AudioOutput* t = (AudioOutput*)*iao;
-                if(t && t->sendMetronome())
-                {
-                    hasoutput = true;
-                    break;
-                }
-            }
-        }
-        if(!hasoutput || !audioClickFlag)
-        {
-            oom->configMetronome();
-        }
-    }/*}}}*/
-    if (_click != val)
-    {
-        _click = val;
-        emit clickChanged(_click);
     }
 }
 
@@ -2207,7 +2169,7 @@ void Song::panic()
 //   clear
 //    signal - emit signals for changes if true
 //    called from constructor as clear(false) and
-//    from OOMidi::clearSong() as clear(false)
+//    from LOS::clearSong() as clear(false)
 //---------------------------------------------------------
 
 void Song::clear(bool signal)
@@ -2333,7 +2295,6 @@ void Song::clear(bool signal)
     _mtype = MT_UNKNOWN;
     _recMode = REC_OVERDUP;
     _cycleMode = CYCLE_NORMAL;
-    _click = false;
     _quantize = false;
     _len = 405504; // song len in ticks
     _follow = JUMP;
@@ -2349,7 +2310,7 @@ void Song::clear(bool signal)
 
 //---------------------------------------------------------
 //   cleanupForQuit
-//   called from OOMidi::closeEvent
+//   called from LOS::closeEvent
 //---------------------------------------------------------
 
 void Song::cleanupForQuit()
@@ -2358,7 +2319,7 @@ void Song::cleanupForQuit()
     invalid = true;
 
     if (debugMsg)
-        printf("OOMidi: Song::cleanupForQuit...\n");
+        printf("LOS: Song::cleanupForQuit...\n");
 
     m_tracks.clear();
     m_trackIndex.clear();
@@ -2442,9 +2403,8 @@ void Song::cleanupForQuit()
 void Song::addMasterTrack()
 {
     if(!m_masterId)
-    {//Create the default oom verb aux track if it dont exist, no undo
-        Track* t = addTrackByName("Master", Track::AUDIO_OUTPUT, -1, false);
-        if(t)
+    {//Create the default los verb aux track if it dont exist, no undo
+        if (Track* t = addTrackByName("Master", Track::WAVE_OUTPUT_HELPER, -1, false))
         {
             m_masterId = t->id();
             //Route master to system playback
@@ -2562,32 +2522,32 @@ void Song::seqSignal(int fd)/*{{{*/
                 setPos(0, audio->tickPos(), true, false, true);
                 break;
             case 'S': // shutdown audio
-                oom->seqStop();
+                los->seqStop();
 
             {
                 // give the user a sensible explanation
                 jackErrorBox = new QMessageBox(QMessageBox::Critical, tr("Jack shutdown!"),
-                //int btn = QMessageBox::critical(oom, tr("Jack shutdown!"),
+                //int btn = QMessageBox::critical(los, tr("Jack shutdown!"),
                         tr("Jack has detected a performance problem which has lead to\n"
-                        "OOMidi being disconnected.\n"
+                        "LOS being disconnected.\n"
                         "This could happen due to a number of reasons:\n"
                         "- a performance issue with your particular setup.\n"
-                        "- a bug in OOMidi (or possibly in another connected software).\n"
+                        "- a bug in LOS (or possibly in another connected software).\n"
                         "- a random hiccup which might never occur again.\n"
                         "- jack was voluntary stopped by you or someone else\n"
                         "- jack crashed\n"
                         "If there is a persisting problem you are much welcome to discuss it\n"
-                        "on the OOMidi mailinglist.\n"
-                        "(there is information about joining the mailinglist on the OOMidi\n"
+                        "on the LOS mailinglist.\n"
+                        "(there is information about joining the mailinglist on the LOS\n"
                         " homepage which is available through the help menu)\n"
                         "\n"
                         "To proceed check the status of Jack and try to restart it and then .\n"
-                        "click \"Audio > Restart Audio\" menu."), QMessageBox::Close, oom);
+                        "click \"Audio > Restart Audio\" menu."), QMessageBox::Close, los);
                 jackErrorBox->exec();
                 /*if (btn == 0)
                 {
                     printf("restarting!\n");
-                    oom->seqRestart();
+                    los->seqRestart();
                 }*/
             }
 
@@ -2871,7 +2831,7 @@ int Song::execAutomationCtlPopup(AudioTrack* track, const QPoint& menupos, int a
             break;
 
         case CLEAR_ALL_EVENTS:
-            if (QMessageBox::question(oom, QString("OOMidi"),
+            if (QMessageBox::question(los, QString("LOS"),
                     tr("Clear all controller events?"), tr("&Ok"), tr("&Cancel"),
                     QString::null, 0, 1) == 0)
                 audio->msgClearControllerEvents(track, acid);
@@ -3130,9 +3090,9 @@ void Song::connectJackRoutes(AudioTrack* track, bool disconnect)
 {
     switch (track->type())
     {
-        case Track::AUDIO_OUTPUT:
+        case Track::WAVE_OUTPUT_HELPER:
         {
-            AudioOutput* ao = (AudioOutput*) track;
+            AudioOutputHelper* ao = (AudioOutputHelper*) track;
             // This will re-register the track's jack ports.
             if (!disconnect)
                 ao->setName(ao->name());
@@ -3163,9 +3123,9 @@ void Song::connectJackRoutes(AudioTrack* track, bool disconnect)
             }
         }
             break;
-        case Track::AUDIO_INPUT:
+        case Track::WAVE_INPUT_HELPER:
         {
-            AudioInput* ai = (AudioInput*) track;
+            AudioInputHelper* ai = (AudioInputHelper*) track;
             // This will re-register the track's jack ports.
             if (!disconnect)
                 ai->setName(ai->name());
@@ -3531,17 +3491,17 @@ void Song::insertTrackRealtime(Track* track, int idx)
             m_composerTrackIndex.insert(idx, track->id());
             _autotviews.value(m_workingViewId)->addTrack(track->id());
             break;
-        case Track::AUDIO_OUTPUT:
-            _outputs.push_back((AudioOutput*) track);
+        case Track::WAVE_OUTPUT_HELPER:
+            _outputs.push_back((AudioOutputHelper*) track);
             // set default master & monitor if not defined
             if (audio->audioMaster() == 0)
-                audio->setMaster((AudioOutput*) track);
+                audio->setMaster((AudioOutputHelper*) track);
             if (audio->audioMonitor() == 0)
-                audio->setMonitor((AudioOutput*) track);
+                audio->setMonitor((AudioOutputHelper*) track);
             _autotviews.value(m_outputViewId)->addTrack(track->id());
             break;
-        case Track::AUDIO_INPUT:
-            _inputs.push_back((AudioInput*) track);
+        case Track::WAVE_INPUT_HELPER:
+            _inputs.push_back((AudioInputHelper*) track);
             _autotviews.value(m_inputViewId)->addTrack(track->id());
             break;
         default:
@@ -3566,7 +3526,7 @@ void Song::insertTrackRealtime(Track* track, int idx)
     //  add routes
     //
 
-    if (track->type() == Track::AUDIO_OUTPUT)
+    if (track->type() == Track::WAVE_OUTPUT_HELPER)
     {
         const RouteList* rl = track->inRoutes();
         for (ciRoute r = rl->begin(); r != rl->end(); ++r)
@@ -3576,7 +3536,7 @@ void Song::insertTrackRealtime(Track* track, int idx)
             r->track->outRoutes()->push_back(src);
         }
     }
-    else if (track->type() == Track::AUDIO_INPUT)
+    else if (track->type() == Track::WAVE_INPUT_HELPER)
     {
         const RouteList* rl = track->outRoutes();
         for (ciRoute r = rl->begin(); r != rl->end(); ++r)
@@ -3646,8 +3606,8 @@ void Song::removeTrack1(Track* track)
 {
     switch (track->type())
     {
-        case Track::AUDIO_OUTPUT:
-        case Track::AUDIO_INPUT:
+        case Track::WAVE_INPUT_HELPER:
+        case Track::WAVE_OUTPUT_HELPER:
             connectJackRoutes((AudioTrack*) track, true);
             break;
         default:
@@ -3676,6 +3636,7 @@ void Song::removeTrackRealtime(Track* track)
             m_composerTracks.erase(m_composerTracks.find(track->id()));
             _autotviews.value(m_workingViewId)->removeTrack(track->id());
             break;
+
         case Track::WAVE:
             unchainTrackParts(track, true);
 
@@ -3684,15 +3645,15 @@ void Song::removeTrackRealtime(Track* track)
             m_composerTracks.erase(m_composerTracks.find(track->id()));
             _autotviews.value(m_workingViewId)->removeTrack(track->id());
             break;
-        case Track::AUDIO_OUTPUT:
+
+        case Track::WAVE_OUTPUT_HELPER:
             _outputs.erase(track);
             _autotviews.value(m_outputViewId)->removeTrack(track->id());
             break;
-        case Track::AUDIO_INPUT:
+
+        case Track::WAVE_INPUT_HELPER:
             _inputs.erase(track);
             _autotviews.value(m_inputViewId)->removeTrack(track->id());
-            break;
-        default:
             break;
     }
     _tracks.erase(track);
@@ -3714,7 +3675,7 @@ void Song::removeTrackRealtime(Track* track)
     //  remove routes
     //
 
-    if (track->type() == Track::AUDIO_OUTPUT)
+    if (track->type() == Track::WAVE_OUTPUT_HELPER)
     {
         //qDebug("Song::removeTrackRealtime: ~~~~~~~~~~~~~~~~~~~~Removing route for output track");
         const RouteList* rl = track->inRoutes();
@@ -3725,7 +3686,7 @@ void Song::removeTrackRealtime(Track* track)
             r->track->outRoutes()->removeRoute(src);
         }
     }
-    else if (track->type() == Track::AUDIO_INPUT)
+    else if (track->type() == Track::WAVE_INPUT_HELPER)
     {
         //qDebug("Song::removeTrackRealtime: ~~~~~~~~~~~~~~~~~~~~Removing route for input track");
         const RouteList* rl = track->outRoutes();
@@ -3798,7 +3759,7 @@ void Song::executeScript(const char* scriptfile, PartList* parts, int quant, boo
     for (iPart i = parts->begin(); i != parts->end(); i++)
     {
         //const char* tmp = tmpnam(NULL);
-        char tmp[16] = "oom-tmp-XXXXXX";
+        char tmp[16] = "los-tmp-XXXXXX";
         int fd = mkstemp(tmp);
         printf("script input filename=%s\n", tmp);
         //FILE *fp = fopen(tmp, "w");
@@ -3860,8 +3821,8 @@ void Song::executeScript(const char* scriptfile, PartList* parts, int quant, boo
             waitpid(pid, &status, 0);
             if (WEXITSTATUS(status) != 0)
             {
-                QMessageBox::warning(oom, tr("OOMidi - external script failed"),
-                        tr("OOMidi was unable to launch the script\n")
+                QMessageBox::warning(los, tr("LOS - external script failed"),
+                        tr("LOS was unable to launch the script\n")
                         );
                 endUndo(SC_EVENT_REMOVED);
                 return;
@@ -3927,7 +3888,7 @@ void Song::populateScriptMenu(QMenu* menuPlugins, QObject* receiver)
     //
     // List scripts
     //
-    QString distScripts = oomGlobalShare + "/scripts";
+    QString distScripts = losGlobalShare + "/scripts";
 
     QString userScripts = configPath + "/scripts";
 
@@ -3991,7 +3952,7 @@ QString Song::getScriptPath(int id, bool isdelivered)
 {
     if (isdelivered)
     {
-        QString path = oomGlobalShare + "/scripts/" + deliveredScriptNames[id];
+        QString path = losGlobalShare + "/scripts/" + deliveredScriptNames[id];
         return path;
     }
 

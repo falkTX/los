@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //    $Id: comment.cpp,v 1.2 2004/02/08 18:30:00 wschweer Exp $
 //  (C) Copyright 2001 Werner Schweer (ws@seh.de)
 //=========================================================
@@ -38,7 +38,7 @@ TrackComment::TrackComment(Track* t, QWidget* parent)
 : Comment(parent)
 {
 	setAttribute(Qt::WA_DeleteOnClose);
-	setWindowTitle(tr("OOMidi: Track Comment"));
+	setWindowTitle(tr("LOS: Track Comment"));
 	m_track = t;
 	connect(song, SIGNAL(songChanged(int)), SLOT(songChanged(int)));
 	textentry->setText(m_track->comment());

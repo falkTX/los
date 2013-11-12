@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: audio.h,v 1.25.2.13 2009/12/20 05:00:35 terminator356 Exp $
 //
 //  (C) Copyright 2001 Werner Schweer (ws@seh.de)
@@ -66,7 +66,7 @@ enum
     AUDIO_ERASE_AC_EVENT,
     AUDIO_ERASE_RANGE_AC_EVENTS,
     AUDIO_ADD_AC_EVENT,
-    AUDIO_SET_SOLO, AUDIO_SET_SEND_METRONOME,
+    AUDIO_SET_SOLO,
     MS_PROCESS, MS_STOP, MS_SET_RTC, MS_UPDATE_POLL_FD,
     SEQM_IDLE, SEQM_SEEK, SEQM_PRELOAD_PROGRAM, SEQM_REMOVE_TRACK_GROUP
 };
@@ -112,7 +112,7 @@ struct ProcessList {
     int dataB;
 };
 
-class AudioOutput;
+class AudioOutputHelper;
 
 //---------------------------------------------------------
 //   Audio
@@ -142,12 +142,6 @@ private:
     unsigned curTickPos; // pos at start of frame during play/record
     unsigned nextTickPos; // pos at start of next frame during play/record
 
-    //metronome values
-    unsigned midiClick;
-    int clickno; // precount values
-    int clicksMeasure;
-    int ticksBeat;
-
     double syncTime; // wall clock at last sync point
     unsigned syncFrame; // corresponding frame no. to syncTime
     int frameOffset; // offset to free running hw frame counter
@@ -164,8 +158,8 @@ private:
     Pos endRecordPos;
 
     //
-    AudioOutput* _audioMaster;
-    AudioOutput* _audioMonitor;
+    AudioOutputHelper* _audioMaster;
+    AudioOutputHelper* _audioMonitor;
 
     void sendLocalOff();
     bool filterEvent(const MidiPlayEvent* event, int type, bool thru);
@@ -339,22 +333,22 @@ public:
     }
     void initDevices();
 
-    AudioOutput* audioMaster() const
+    AudioOutputHelper* audioMaster() const
     {
         return _audioMaster;
     }
 
-    AudioOutput* audioMonitor() const
+    AudioOutputHelper* audioMonitor() const
     {
         return _audioMonitor;
     }
 
-    void setMaster(AudioOutput* track)
+    void setMaster(AudioOutputHelper* track)
     {
         _audioMaster = track;
     }
 
-    void setMonitor(AudioOutput* track)
+    void setMonitor(AudioOutputHelper* track)
     {
         _audioMonitor = track;
     }

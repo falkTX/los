@@ -1,6 +1,6 @@
 //========================================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //
 //    Add Track commands
 //
@@ -13,31 +13,25 @@
 #include "traverso_shared/OOMCommand.h"
 
 #include "track.h"
+
 class VirtualTrack;
 
-class AddRemoveTrackCommand : public OOMCommand
+class AddRemoveTrackCommand : public LOSCommand
 {
-        Q_OBJECT
+    Q_OBJECT
 
 public:
-	AddRemoveTrackCommand(
-		Track* t,
-		int type,
-		int index = -1);
+    AddRemoveTrackCommand(Track* t, int type, int index = -1);
+    AddRemoveTrackCommand(VirtualTrack* t, int type, int index = -1);
 
-	AddRemoveTrackCommand(
-		VirtualTrack* t,
-		int type,
-		int index = -1);
-
-        int do_action();
-        int undo_action();
+    int doAction() override;
+    int undoAction() override;
 
 private:
-	VirtualTrack* m_vtrack;
-	Track* m_track;
-	int m_type;
-	int m_index;
+    int fIndex;
+    int fType;
+    Track* fTrack;
+    VirtualTrack* fVirTrack;
 };
 
 #endif // ADD_TRACK_H

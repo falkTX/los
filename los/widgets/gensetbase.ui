@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>544</width>
-    <height>579</height>
+    <width>542</width>
+    <height>577</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>OOStudio: Global Settings</string>
+   <string>LOS: Global Settings</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_4">
    <item>
@@ -137,7 +137,7 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string>start with template: default.oom</string>
+             <string>start with template: default.los</string>
             </property>
             <property name="checked">
              <bool>false</bool>

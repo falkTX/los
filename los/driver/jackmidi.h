@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: jackmidi.h,v 1.1.1.1 2010/01/27 09:06:43 terminator356 Exp $
 //  (C) Copyright 1999-2010 Werner Schweer (ws@seh.de)
 //=========================================================
@@ -54,7 +54,7 @@ private:
     //bool putEvent(int*);
 
     bool processEvent(const MidiPlayEvent&);
-    // Port is not midi port, it is the port(s) created for OOMidi.
+    // Port is not midi port, it is the port(s) created for LOS.
     bool queueEvent(const MidiPlayEvent&);
 
     virtual bool putMidiEvent(const MidiPlayEvent&);

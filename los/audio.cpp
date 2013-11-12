@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: audio.cpp,v 1.59.2.30 2009/12/20 05:00:35 terminator356 Exp $
 //
 //  (C) Copyright 2001-2004 Werner Schweer (ws@seh.de)
@@ -105,11 +105,6 @@ Audio::Audio()
     _pos.setFrame(0);
     curTickPos = 0;
 
-    midiClick = 0;
-    clickno = 0;
-    clicksMeasure = 0;
-    ticksBeat = 0;
-
     syncTime = 0.0;
     syncFrame = 0;
     frameOffset = 0;
@@ -164,13 +159,13 @@ bool Audio::start()
     //process(segmentSize);   // warm up caches
     state = STOP;
     _loopCount = 0;
-    oom->setHeartBeat();
+    los->setHeartBeat();
     if (!audioDevice)
     {
         if (!initJackAudio())
         {
-            InputList* itl = song->inputs();
-            for (iAudioInput i = itl->begin(); i != itl->end(); ++i)
+            InputHelperList* itl = song->inputs();
+            for (iAudioInputHelper i = itl->begin(); i != itl->end(); ++i)
             {
                 //printf("reconnecting input %s\n", (*i)->name().ascii());
                 for (int x = 0; x < (*i)->channels(); x++)
@@ -178,8 +173,8 @@ bool Audio::start()
                 (*i)->setName((*i)->name()); // restore jack connection
             }
 
-            OutputList* otl = song->outputs();
-            for (iAudioOutput i = otl->begin(); i != otl->end(); ++i)
+            OutputHelperList* otl = song->outputs();
+            for (iAudioOutputHelper i = otl->begin(); i != otl->end(); ++i)
             {
                 //printf("reconnecting output %s\n", (*i)->name().ascii());
                 for (int x = 0; x < (*i)->channels(); x++)
@@ -329,11 +324,11 @@ void Audio::process(unsigned frames)
         }
     }
 
-    OutputList* ol = song->outputs();
+    OutputHelperList* ol = song->outputs();
     if (idle)
     {
         // deliver no audio
-        for (iAudioOutput i = ol->begin(); i != ol->end(); ++i)
+        for (iAudioOutputHelper i = ol->begin(); i != ol->end(); ++i)
             (*i)->silence(frames);
         return;
     }
@@ -398,7 +393,7 @@ void Audio::process(unsigned frames)
 
     // printf("p %s %s %d\n", audioStates[jackState], audioStates[state], _pos.frame());
 
-    for (iAudioOutput i = ol->begin(); i != ol->end(); ++i)
+    for (iAudioOutputHelper i = ol->begin(); i != ol->end(); ++i)
         (*i)->processInit(frames);
     int samplePos = _pos.frame();
     int offset = 0; // buffer offset in audio buffers
@@ -501,7 +496,7 @@ void Audio::process(unsigned frames)
     //printf("Audio::process calling process1:\n");
 
     process1(samplePos, offset, frames);
-    for (iAudioOutput i = ol->begin(); i != ol->end(); ++i)
+    for (iAudioOutputHelper i = ol->begin(); i != ol->end(); ++i)
         (*i)->processWrite();
     if (isPlaying())
     {
@@ -550,8 +545,8 @@ void Audio::process1(unsigned samplePos, unsigned offset, unsigned frames)
         track->preProcessAlways();
     }
 
-    OutputList* ol = song->outputs();
-    for (ciAudioOutput i = ol->begin(); i != ol->end(); ++i)
+    OutputHelperList* ol = song->outputs();
+    for (ciAudioOutputHelper i = ol->begin(); i != ol->end(); ++i)
         (*i)->process(samplePos, offset, frames);
 
     // Were ANY tracks unprocessed as a result of processing all the AudioOutputs, above?
@@ -568,7 +563,7 @@ void Audio::process1(unsigned samplePos, unsigned offset, unsigned frames)
         track = (AudioTrack*) t;
         // Ignore unprocessed tracks which have an output route, because they will be processed by
         //  whatever track(s) they are routed to.
-        if (!track->processed() && track->noOutRoute() && (track->type() != Track::AUDIO_OUTPUT))
+        if (!track->processed() && track->noOutRoute() && (track->type() != Track::WAVE_OUTPUT_HELPER))
         {
             channels = track->channels();
             // Just a dummy buffer.
@@ -642,10 +637,6 @@ void Audio::processMsg(AudioMsg* msg)
         case AUDIO_SET_SOLO:
             msg->track->setSolo((bool)msg->ival);
             //TODO: hook this and send midi cc to bcf2000
-            break;
-
-        case AUDIO_SET_SEND_METRONOME:
-            msg->snode->setSendMetronome((bool)msg->ival);
             break;
 
         case AUDIO_SET_SEG_SIZE:
@@ -807,7 +798,7 @@ void Audio::seek(const Pos& p)
 
 void Audio::writeTick()
 {
-    AudioOutput* ao = song->bounceOutput;
+    AudioOutputHelper* ao = song->bounceOutput;
     if (ao && song->outputs()->find(ao) != song->outputs()->end())
     {
         if (ao->recordFlag())
@@ -875,39 +866,6 @@ void Audio::startRolling()
                     mp->sendStart();
             }
         }
-    }
-
-    if (precountEnableFlag
-            && song->click()
-            && !extSyncFlag.value()
-            && song->record())
-    {
-#if 0
-        state = PRECOUNT;
-        int z, n;
-        if (precountFromMastertrackFlag)
-            AL::sigmap.timesig(playTickPos, z, n);
-        else
-        {
-            z = precountSigZ;
-            n = precountSigN;
-        }
-        clickno = z * preMeasures;
-        clicksMeasure = z;
-        ticksBeat = (division * 4) / n;
-#endif
-    }
-    else
-    {
-        //
-        // compute next midi metronome click position
-        //
-        int bar, beat;
-        unsigned tick;
-        AL::sigmap.tickValues(curTickPos, &bar, &beat, &tick);
-        if (tick)
-            beat += 1;
-        midiClick = AL::sigmap.bar2tick(bar, beat, 0);
     }
 
     // reenable sustain
@@ -1061,7 +1019,7 @@ void Audio::recordStop()
     // selected output port
     //
 
-    AudioOutput* ao = song->bounceOutput;
+    AudioOutputHelper* ao = song->bounceOutput;
     if (ao && song->outputs()->find(ao) != song->outputs()->end())
     {
         if (ao->recordFlag())

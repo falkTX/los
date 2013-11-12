@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  $Id: editinstrument.cpp,v 1.2.2.6 2009/05/31 05:12:12 terminator356 Exp $
 //
 //  (C) Copyright 2003 Werner Schweer (ws@seh.de)
@@ -394,9 +394,9 @@ void EditInstrument::fileSave()/*{{{*/
         return;
     }
 
-    // Do not allow a direct overwrite of a 'built-in' oom instrument.
+    // Do not allow a direct overwrite of a 'built-in' los instrument.
     QFileInfo qfi(workingInstrument.filePath());
-    if (qfi.absolutePath() == oomInstruments)
+    if (qfi.absolutePath() == losInstruments)
     {
         //fileSaveAs();
         saveAs();
@@ -427,7 +427,7 @@ void EditInstrument::fileSave()/*{{{*/
                 //+ f.errorString();
                 + QString(strerror(errno));
         //fprintf(stderr, "poll failed: %s\n", strerror(errno));
-        QMessageBox::critical(this, tr("OOMidi: Create file failed"), s);
+        QMessageBox::critical(this, tr("LOS: Create file failed"), s);
         return;
     }
 
@@ -448,7 +448,7 @@ bool EditInstrument::fileSave(MidiInstrument* instrument, const QString& name)/*
         //  printf("READ IDF %s\n", fi->filePath().toLatin1().constData());
         QString s("Creating file failed: ");
         s += QString(strerror(errno));
-        QMessageBox::critical(this, tr("OOMidi: Create file failed"), s);
+        QMessageBox::critical(this, tr("LOS: Create file failed"), s);
         return false;
     }
 
@@ -477,7 +477,7 @@ bool EditInstrument::fileSave(MidiInstrument* instrument, const QString& name)/*
                 //+ f.errorString();
                 + QString(strerror(errno));
         //fprintf(stderr, "poll failed: %s\n", strerror(errno));
-        QMessageBox::critical(this, tr("OOMidi: Write File failed"), s);
+        QMessageBox::critical(this, tr("LOS: Write File failed"), s);
         return false;
     }
     return true;
@@ -494,30 +494,30 @@ void EditInstrument::saveAs()/*{{{*/
     patchNameReturn();
     ctrlNameReturn();
 
-    QString path = oomUserInstruments;
+    QString path = losUserInstruments;
 
-    if (!QDir(oomUserInstruments).exists())
+    if (!QDir(losUserInstruments).exists())
     {
         if (QMessageBox::question(this,
-                tr("OOMidi:"),
-                tr("The user instrument directory\n") + oomUserInstruments + tr("\ndoes not exist yet. Create it now?\n") +
+                tr("LOS:"),
+                tr("The user instrument directory\n") + losUserInstruments + tr("\ndoes not exist yet. Create it now?\n") +
                 tr("(You can change the user instruments directory at Settings->Global Settings->Midi)"),
                 QMessageBox::Ok | QMessageBox::Default,
                 QMessageBox::Cancel | QMessageBox::Escape,
                 Qt::NoButton) == QMessageBox::Ok)
         {
-            if (QDir().mkdir(oomUserInstruments))
-                printf("Created user instrument directory: %s\n", oomUserInstruments.toLatin1().constData());
+            if (QDir().mkdir(losUserInstruments))
+                printf("Created user instrument directory: %s\n", losUserInstruments.toLatin1().constData());
             else
             {
-                printf("Unable to create user instrument directory: %s\n", oomUserInstruments.toLatin1().constData());
-                QMessageBox::critical(this, tr("OOMidi:"), tr("Unable to create user instrument directory\n") + oomUserInstruments);
-                path = oomUser;
+                printf("Unable to create user instrument directory: %s\n", losUserInstruments.toLatin1().constData());
+                QMessageBox::critical(this, tr("LOS:"), tr("Unable to create user instrument directory\n") + losUserInstruments);
+                path = losUser;
             }
         }
         else
             //  return;
-            path = oomUser;
+            path = losUser;
     }
 
     if (workingInstrument.filePath().isEmpty())
@@ -536,7 +536,7 @@ void EditInstrument::saveAs()/*{{{*/
                 {
                     // Prompt only if it's a user instrument, to avoid duplicates in the user instrument dir.
                     // This will still allow a user instrument to override a built-in instrument with the same name.
-                    if (fi.absolutePath() != oomInstruments)
+                    if (fi.absolutePath() != losInstruments)
                     {
                         printf("EditInstrument::saveAs Error: Instrument name %s already used!\n", workingInstrument.iname().toLatin1().constData());
                         return;
@@ -547,7 +547,7 @@ void EditInstrument::saveAs()/*{{{*/
         path += QString("/%1.idf").arg(fi.baseName());
     }
 
-    QString s = QFileDialog::getSaveFileName(this, tr("OOMidi: Save Instrument Definition").toLatin1().constData(),
+    QString s = QFileDialog::getSaveFileName(this, tr("LOS: Save Instrument Definition").toLatin1().constData(),
             path, tr("Instrument Definition (*.idf)"));
     if (s.isEmpty())
         return;
@@ -632,7 +632,7 @@ void EditInstrument::fileSaveAs()/*{{{*/
             {
                 // Allow override of built-in instrument names.
                 QFileInfo fi((*imi)->filePath());
-                if (fi.absolutePath() == oomInstruments)
+                if (fi.absolutePath() == losInstruments)
                     break;
                 found = true;
                 break;
@@ -642,7 +642,7 @@ void EditInstrument::fileSaveAs()/*{{{*/
             continue;
 
         bool ok;
-        s = QInputDialog::getText(this, tr("OOMidi: Save instrument as"), tr("Enter a new unique instrument name:"),
+        s = QInputDialog::getText(this, tr("LOS: Save instrument as"), tr("Enter a new unique instrument name:"),
                 QLineEdit::Normal, s, &ok);
         if (!ok)
             return;
@@ -666,12 +666,12 @@ void EditInstrument::fileSaveAs()/*{{{*/
                     QFileInfo fi((*imi)->filePath());
                     // Allow override of built-in and user instruments:
                     // If it's a user instrument, not a built-in instrument...
-                    if (fi.absolutePath() == oomUserInstruments)
+                    if (fi.absolutePath() == losUserInstruments)
                     {
                         // No choice really but to overwrite the destination instrument file!
                         // Can not have two user files containing the same instrument name.
                         if (QMessageBox::question(this,
-                                tr("OOMidi: Save instrument as"),
+                                tr("LOS: Save instrument as"),
                                 tr("The user instrument:\n") + s + tr("\nalready exists. This will overwrite its .idf instrument file.\nAre you sure?"),
                                 QMessageBox::Ok | QMessageBox::Default,
                                 QMessageBox::Cancel | QMessageBox::Escape,
@@ -744,30 +744,30 @@ void EditInstrument::fileSaveAs()/*{{{*/
         break;
     }
 
-    QString path = oomUserInstruments;
+    QString path = losUserInstruments;
 
-    if (!QDir(oomUserInstruments).exists())
+    if (!QDir(losUserInstruments).exists())
     {
         if (QMessageBox::question(this,
-                tr("OOMidi:"),
-                tr("The user instrument directory\n") + oomUserInstruments + tr("\ndoes not exist yet. Create it now?\n") +
+                tr("LOS:"),
+                tr("The user instrument directory\n") + losUserInstruments + tr("\ndoes not exist yet. Create it now?\n") +
                 tr("(You can change the user instruments directory at Settings->Global Settings->Midi)"),
                 QMessageBox::Ok | QMessageBox::Default,
                 QMessageBox::Cancel | QMessageBox::Escape,
                 Qt::NoButton) == QMessageBox::Ok)
         {
-            if (QDir().mkdir(oomUserInstruments))
-                printf("Created user instrument directory: %s\n", oomUserInstruments.toLatin1().constData());
+            if (QDir().mkdir(losUserInstruments))
+                printf("Created user instrument directory: %s\n", losUserInstruments.toLatin1().constData());
             else
             {
-                printf("Unable to create user instrument directory: %s\n", oomUserInstruments.toLatin1().constData());
-                QMessageBox::critical(this, tr("OOMidi:"), tr("Unable to create user instrument directory\n") + oomUserInstruments);
+                printf("Unable to create user instrument directory: %s\n", losUserInstruments.toLatin1().constData());
+                QMessageBox::critical(this, tr("LOS:"), tr("Unable to create user instrument directory\n") + losUserInstruments);
                 //return;
-                path = oomUser;
+                path = losUser;
             }
         }
         else
-            path = oomUser;
+            path = losUser;
     }
     path += QString("/%1.idf").arg(so);
 
@@ -777,7 +777,7 @@ void EditInstrument::fileSaveAs()/*{{{*/
         sfn = path;
     else
     {
-        sfn = QFileDialog::getSaveFileName(this, tr("OOMidi: Save Instrument Definition").toLatin1().constData(),
+        sfn = QFileDialog::getSaveFileName(this, tr("LOS: Save Instrument Definition").toLatin1().constData(),
                 path, tr("Instrument Definition (*.idf)"));
         if (sfn.isEmpty())
             return;
@@ -1047,7 +1047,7 @@ void EditInstrument::instrumentNameReturn()
             instrumentName->blockSignals(false);
 
             QMessageBox::critical(this,
-                    tr("OOMidi: Bad instrument name"),
+                    tr("LOS: Bad instrument name"),
                     tr("Please choose a unique instrument name.\n(The name might be used by a hidden instrument.)"),
                     QMessageBox::Ok,
                     Qt::NoButton,
@@ -1167,7 +1167,7 @@ void EditInstrument::patchNameReturn()
                     patchNameEdit->blockSignals(false);
 
                     QMessageBox::critical(this,
-                            tr("OOMidi: Bad patch name"),
+                            tr("LOS: Bad patch name"),
                             tr("Please choose a unique patch name"),
                             QMessageBox::Ok,
                             Qt::NoButton,
@@ -1189,7 +1189,7 @@ void EditInstrument::patchNameReturn()
                 patchNameEdit->blockSignals(false);
 
                 QMessageBox::critical(this,
-                        tr("OOMidi: Bad patchgroup name"),
+                        tr("LOS: Bad patchgroup name"),
                         tr("Please choose a unique patchgroup name"),
                         QMessageBox::Ok,
                         Qt::NoButton,
@@ -1683,7 +1683,7 @@ void EditInstrument::ctrlNameReturn()
             ctrlName->blockSignals(false);
 
             QMessageBox::critical(this,
-                    tr("OOMidi: Bad controller name"),
+                    tr("LOS: Bad controller name"),
                     tr("Please choose a unique controller name"),
                     QMessageBox::Ok,
                     Qt::NoButton,
@@ -2673,7 +2673,7 @@ void EditInstrument::addControllerClicked()
         if (c->name() == name)
         {
             QMessageBox::critical(this,
-                    tr("OOMidi: Cannot add common controller"),
+                    tr("LOS: Cannot add common controller"),
                     tr("A controller named ") + name + tr(" already exists."),
                     QMessageBox::Ok,
                     Qt::NoButton,
@@ -2685,7 +2685,7 @@ void EditInstrument::addControllerClicked()
         if (c->num() == num)
         {
             QMessageBox::critical(this,
-                    tr("OOMidi: Cannot add common controller"),
+                    tr("LOS: Cannot add common controller"),
                     tr("A controller number ") + QString().setNum(num) + tr(" already exists."),
                     QMessageBox::Ok,
                     Qt::NoButton,
@@ -2884,12 +2884,12 @@ int EditInstrument::checkDirty(MidiInstrument* i, bool isClose)
         return 0;
     int n;
     if (isClose)
-        n = QMessageBox::warning(this, tr("OOMidi"),
+        n = QMessageBox::warning(this, tr("LOS"),
             tr("The current Instrument contains unsaved data\n"
             "Save Current Instrument?"),
             tr("&Save"), tr("&Don't Save"), tr("&Cancel"), 0, 2);
     else
-        n = QMessageBox::warning(this, tr("OOMidi"),
+        n = QMessageBox::warning(this, tr("LOS"),
             tr("The current Instrument contains unsaved data\n"
             "Save Current Instrument?"),
             tr("&Save"), tr("&Don't Save"), 0, 1);

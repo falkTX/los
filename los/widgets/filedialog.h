@@ -1,6 +1,6 @@
 //=========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //    $Id: filedialog.h,v 1.2.2.2 2008/01/19 13:33:46 wschweer Exp $
 //  (C) Copyright 2000 Werner Schweer (ws@seh.de)
 //=========================================================
@@ -98,7 +98,7 @@ FILE* fileOpen(QWidget*, QString, const QString&,
 
 //---------------------------------------------------------
 //   MFile
-//    "OOMidi" File
+//    "LOS" File
 //---------------------------------------------------------
 
 class MFile

@@ -1,6 +1,6 @@
 //===========================================================
-//  OOMidi
-//  OpenOctave Midi and Audio Editor
+//  LOS
+//  Libre Octave Studio
 //  (C) Copyright 2011 Andrew Williams & Christopher Cherrett
 //===========================================================
 
@@ -180,7 +180,7 @@ void TrackHeader::setTrack(Track* track)/*{{{*/
     }
     if(m_track->isMidiTrack())
     {
-        MidiPort *mp = oomMidiPorts.value(((MidiTrack*)m_track)->outPortId());
+        MidiPort *mp = losMidiPorts.value(((MidiTrack*)m_track)->outPortId());
         m_btnInstrument->setIcon(*instrument_trackIconSet3);
         if(mp)
             m_btnInstrument->setToolTip(QString(tr("Change Instrument: ")).append(mp->instrument()->iname()));
@@ -206,7 +206,7 @@ void TrackHeader::setTrack(Track* track)/*{{{*/
         m_btnAutomation->setToolTip(tr("Toggle Automation"));
     }
 
-    if(type == Track::AUDIO_INPUT)
+    if(type == Track::WAVE_INPUT_HELPER)
     {
         m_btnRecord->setIcon(QIcon(*input_indicator_OffIcon));
         m_btnRecord->setToolTip("");
@@ -680,7 +680,7 @@ void TrackHeader::generatePopupMenu()/*{{{*/
     {
         currentTrackHeightString += tr("6");
     }
-    if (m_track->height() == oom->composer->getCanvas()->height())
+    if (m_track->height() == los->composer->getCanvas()->height())
     {
         currentTrackHeightString += tr("Full Screen");
     }
@@ -735,7 +735,7 @@ void TrackHeader::generatePopupMenu()/*{{{*/
 
             case 1: // Import audio file
             {
-                oom->importWave(m_track);
+                los->importWave(m_track);
             }
             break;
             case 2:
@@ -852,39 +852,39 @@ void TrackHeader::generatePopupMenu()/*{{{*/
             }
             case 12:
             {
-                int canvasHeight = oom->composer->getCanvas()->height();
+                int canvasHeight = los->composer->getCanvas()->height();
 
                 if (multipleSelectedTracks)
                 {
                     song->setTrackHeights(selectedTracksList, canvasHeight);
                     Track* firstSelectedTrack = *selectedTracksList.begin();
-                    oom->composer->verticalScrollSetYpos(oom->composer->getCanvas()->track2Y(firstSelectedTrack));
+                    los->composer->verticalScrollSetYpos(los->composer->getCanvas()->track2Y(firstSelectedTrack));
 
                 }
                 else
                 {
                     m_track->setHeight(canvasHeight);
                     song->update(SC_TRACK_MODIFIED);
-                    oom->composer->verticalScrollSetYpos(oom->composer->getCanvas()->track2Y(m_track));
+                    los->composer->verticalScrollSetYpos(los->composer->getCanvas()->track2Y(m_track));
                 }
                 emit trackHeightChanged();
                 break;
             }
             case 13:
             {
-                int canvasHeight = oom->composer->getCanvas()->height();
+                int canvasHeight = los->composer->getCanvas()->height();
                 if (multipleSelectedTracks)
                 {
                     song->setTrackHeights(selectedTracksList, canvasHeight / selectedTracksList.size());
                     Track* firstSelectedTrack = *selectedTracksList.begin();
-                    oom->composer->verticalScrollSetYpos(oom->composer->getCanvas()->track2Y(firstSelectedTrack));
+                    los->composer->verticalScrollSetYpos(los->composer->getCanvas()->track2Y(firstSelectedTrack));
 
                 }
                 else
                 {
                     m_track->setHeight(canvasHeight);
                     song->update(SC_TRACK_MODIFIED);
-                    oom->composer->verticalScrollSetYpos(oom->composer->getCanvas()->track2Y(m_track));
+                    los->composer->verticalScrollSetYpos(los->composer->getCanvas()->track2Y(m_track));
                 }
                 emit trackHeightChanged();
                 break;
@@ -994,14 +994,14 @@ void TrackHeader::toggleRecord(bool state)/*{{{*/
         return;
     if (!m_track->isMidiTrack())
     {
-        if (m_track->type() == Track::AUDIO_OUTPUT)
+        if (m_track->type() == Track::WAVE_OUTPUT_HELPER)
         {
             if (state && !m_track->recordFlag())
             {
-                oom->bounceToFile((AudioOutput*) m_track);
+                los->bounceToFile((AudioOutputHelper*) m_track);
             }
-            audio->msgSetRecord((AudioOutput*) m_track, state);
-            if (!((AudioOutput*) m_track)->recFile())
+            audio->msgSetRecord((AudioOutputHelper*) m_track, state);
+            if (!((AudioOutputHelper*) m_track)->recFile())
             {
                 state = false;
             }
@@ -1134,7 +1134,7 @@ void TrackHeader::updateTrackName()/*{{{*/
             if ((*i)->name() == name)
             {
                 QMessageBox::critical(this,
-                        tr("OOMidi: bad trackname"),
+                        tr("LOS: bad trackname"),
                         tr("please choose a unique track name"),
                         QMessageBox::Ok,
                         Qt::NoButton,
@@ -1754,20 +1754,25 @@ void TrackHeader::initPan()/*{{{*/
         return;
     QString img(":images/knob_midi_new.png");
     Track::TrackType type = m_track->type();
+
     switch (type)
     {
-        case Track::MIDI:
-            img = QString(":images/knob_audio_new.png");
+    case Track::MIDI:
+        img = QString(":images/knob_midi_new.png");
         break;
-        case Track::WAVE:
-            img = QString(":images/knob_input_new.png");
+    case Track::WAVE:
+        img = QString(":images/knob_audio_new.png");
         break;
+    default:
+        break;
+#if 0 // XXX
         case Track::AUDIO_OUTPUT:
             img = QString(":images/knob_output_new.png");
         break;
         case Track::AUDIO_INPUT:
             img = QString(":images/knob_midi_new.png");
         break;
+#endif
     }
     bool update = false;
     if(m_pan)
@@ -2036,13 +2041,13 @@ void TrackHeader::setupStyles()/*{{{*/
 {
     m_style.insert(Track::MIDI, styletemplate.arg(QString("939393"), QString("1a1a1a")));
     m_style.insert(Track::WAVE, styletemplate.arg(QString("939393"), QString("1a1a1a")));
-    m_style.insert(Track::AUDIO_OUTPUT, styletemplate.arg(QString("939393"), QString("1a1a1a")));
-    m_style.insert(Track::AUDIO_INPUT, styletemplate.arg(QString("939393"), QString("1a1a1a")));
+    m_style.insert(Track::WAVE_INPUT_HELPER, styletemplate.arg(QString("939393"), QString("1a1a1a")));
+    m_style.insert(Track::WAVE_OUTPUT_HELPER, styletemplate.arg(QString("939393"), QString("1a1a1a")));
 
-    m_selectedStyle.insert(Track::AUDIO_INPUT, styletemplate.arg(QString("e18fff"), QString("0a0a0a")));
     m_selectedStyle.insert(Track::MIDI, styletemplate.arg(QString("01e6ee"), QString("0a0a0a")));
-    m_selectedStyle.insert(Track::AUDIO_OUTPUT, styletemplate.arg(QString("fc7676"), QString("0a0a0a")));
     m_selectedStyle.insert(Track::WAVE, styletemplate.arg(QString("81f476"), QString("0a0a0a")));
+    m_selectedStyle.insert(Track::WAVE_INPUT_HELPER, styletemplate.arg(QString("e18fff"), QString("0a0a0a")));
+    m_selectedStyle.insert(Track::WAVE_OUTPUT_HELPER, styletemplate.arg(QString("fc7676"), QString("0a0a0a")));
 }/*}}}*/
 
 void TrackHeader::updateSelection(bool shift)/*{{{*/
@@ -2168,7 +2173,7 @@ void TrackHeader::mouseMoveEvent(QMouseEvent* ev)/*{{{*/
             dataStream << m_track->name() << index << QPoint(hotSpot);
 
             QMimeData *mimeData = new QMimeData;
-            mimeData->setData("oomidi/x-trackinfo", itemData);
+            mimeData->setData("los/x-trackinfo", itemData);
             mimeData->setText(m_track->name());
 
             QDrag *drag = new QDrag(this);
