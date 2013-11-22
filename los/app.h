@@ -103,7 +103,7 @@ class LOS : public QMainWindow
     CMD_OPEN_LIST, CMD_OPEN_LIST_MASTER, CMD_GLOBAL_CONFIG,
     CMD_OPEN_GRAPHIC_MASTER, CMD_OPEN_MIDI_TRANSFORM, CMD_TRANSPOSE,
     CMD_GLOBAL_CUT, CMD_GLOBAL_INSERT, CMD_GLOBAL_SPLIT, CMD_COPY_RANGE,
-    CMD_CUT_EVENTS, CMD_CONFIG_SHORTCUTS, CMD_CONFIG_METRONOME, CMD_CONFIG_MIDISYNC,
+    CMD_CUT_EVENTS, CMD_CONFIG_SHORTCUTS, CMD_CONFIG_MIDISYNC,
     CMD_MIDI_FILE_CONFIG, CMD_APPEARANCE_SETTINGS, CMD_CONFIG_MIDI_PORTS, CMD_CONFIG_AUDIO_PORTS,
     CMD_MIDI_EDIT_INSTRUMENTS, CMD_MIDI_RESET, CMD_MIDI_INIT, CMD_MIDI_LOCAL_OFF,
     CMD_MIXER_SNAPSHOT, CMD_MIXER_AUTOMATION_CLEAR, CMD_OPEN_HELP, CMD_OPEN_HOMEPAGE,
@@ -149,7 +149,7 @@ class LOS : public QMainWindow
     QAction *autoMixerAction, *autoSnapshotAction, *autoClearAction;
 
     // Settings Menu Actions
-    QAction *settingsGlobalAction, *settingsShortcutsAction, *settingsMetronomeAction;
+    QAction *settingsGlobalAction, *settingsShortcutsAction;
     QAction *settingsMidiIOAction, *settingsMidiAssignAction;
     QAction *dontFollowAction, *followPageAction, *followCtsAction;
 

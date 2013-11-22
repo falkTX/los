@@ -138,7 +138,6 @@ file(GLOB widgets_ui_files
     gatetimebase.ui
     gensetbase.ui
     itransformbase.ui
-    metronomebase.ui
     mittransposebase.ui
     mixdowndialogbase.ui
     conductor/ConductorBase.ui

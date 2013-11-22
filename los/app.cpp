@@ -787,7 +787,6 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
     followCtsAction = new QAction(tr("Follow Continuous"), this);
     followCtsAction->setCheckable(true);
 
-    settingsMetronomeAction = new QAction(QIcon(*settings_metronomeIcon), tr("Metronome"), this);
     settingsMidiIOAction = new QAction(QIcon(*settings_midifileexportIcon), tr("Midi File Import/Export"), this);
     settingsMidiAssignAction = new QAction(QIcon(*settings_midiport_softsynthsIcon), tr("Connections Manager"), this);
 
@@ -918,7 +917,6 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
     //-------- Settings connections
     connect(settingsGlobalAction, SIGNAL(triggered()), SLOT(configGlobalSettings()));
     connect(settingsShortcutsAction, SIGNAL(triggered()), SLOT(configShortCuts()));
-    connect(settingsMetronomeAction, SIGNAL(triggered()), SLOT(configMetronome()));
     connect(settingsMidiIOAction, SIGNAL(triggered()), SLOT(configMidiFile()));
     connect(settingsMidiAssignAction, SIGNAL(triggered()), SLOT(configMidiAssign()));
 
@@ -1036,7 +1034,6 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
 
     menuView->addMenu(master);
     master->addAction(masterGraphicAction);
-    master->addAction(settingsMetronomeAction);
     master->addAction(masterListAction);
     menuView->addAction(viewTransportAction);
     menuView->addAction(viewBigtimeAction);
@@ -4253,16 +4250,13 @@ void LOS::updateConfiguration()
 
     settingsGlobalAction->setShortcut(shortcuts[SHRT_GLOBAL_CONFIG].key);
     settingsShortcutsAction->setShortcut(shortcuts[SHRT_CONFIG_SHORTCUTS].key);
-    settingsMetronomeAction->setShortcut(shortcuts[SHRT_CONFIG_METRONOME].key);
     settingsMidiAssignAction->setShortcut(shortcuts[SHRT_CONFIG_MIDI_PORTS].key);
-
 
     dontFollowAction->setShortcut(shortcuts[SHRT_FOLLOW_NO].key);
     followPageAction->setShortcut(shortcuts[SHRT_FOLLOW_JUMP].key);
     followCtsAction->setShortcut(shortcuts[SHRT_FOLLOW_CONTINUOUS].key);
 
     helpManualAction->setShortcut(shortcuts[SHRT_OPEN_HELP].key);
-
 
     loopAction->setShortcut(shortcuts[SHRT_TOGGLE_LOOP].key);
     //punchinAction->setShortcut(shortcuts[].key);

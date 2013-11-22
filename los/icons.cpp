@@ -34,7 +34,6 @@
 #include "xpm/settings_configureshortcuts.xpm"
 #include "xpm/settings_follow_song.xpm"
 #include "xpm/settings_globalsettings.xpm"
-#include "xpm/settings_metronome.xpm"
 #include "xpm/settings_midifileexport.xpm"
 #include "xpm/settings_midiport_softsynths.xpm"
 #include "xpm/settings_midisync.xpm"
@@ -581,11 +580,6 @@ QPixmap* previous_OffIcon;
 QPixmap* previous_OverIcon;
 QIcon*   previousIconSet3;
 
-QPixmap* metronome_OnIcon;
-QPixmap* metronome_OffIcon;
-QPixmap* metronome_OverIcon;
-QIcon*   metronomeIconSet3;
-
 QPixmap* dragMidiIcon;
 QPixmap* dragAudioIcon;
 QPixmap* dragInputIcon;
@@ -734,7 +728,6 @@ QPixmap* settings_appearance_settingsIcon;
 QPixmap* settings_configureshortcutsIcon;
 QPixmap* settings_follow_songIcon;
 QPixmap* settings_globalsettingsIcon;
-QPixmap* settings_metronomeIcon;
 QPixmap* settings_midifileexportIcon;
 QPixmap* settings_midiport_softsynthsIcon;
 QPixmap* settings_midisyncIcon;
@@ -1389,14 +1382,6 @@ void initIcons()
       commentIconSet3->addPixmap(*comment_OffIcon, QIcon::Normal, QIcon::Off);
       commentIconSet3->addPixmap(*comment_OverIcon, QIcon::Active);
 
-      metronome_OnIcon= new MPIXMAP(":/images/icons/metronome_new_on.png", NULL);
-      metronome_OffIcon= new MPIXMAP(":/images/icons/metronome_new_off.png", NULL);
-      metronome_OverIcon= new MPIXMAP(":/images/icons/metronome_new_over.png", NULL);
-      metronomeIconSet3         = new QIcon();
-      metronomeIconSet3->addPixmap(*metronome_OnIcon, QIcon::Normal, QIcon::On);
-      metronomeIconSet3->addPixmap(*metronome_OffIcon, QIcon::Normal, QIcon::Off);
-      metronomeIconSet3->addPixmap(*metronome_OverIcon, QIcon::Active);
-
       dragMidiIcon= new MPIXMAP(":/images/drag_midi.png", NULL);
       dragAudioIcon= new MPIXMAP(":/images/drag_audio.png", NULL);
       dragInputIcon= new MPIXMAP(":/images/drag_input.png", NULL);
@@ -1557,7 +1542,6 @@ void initIcons()
       settings_configureshortcutsIcon               = new MPIXMAP(settings_configureshortcuts_xpm, NULL);
       settings_follow_songIcon                      = new MPIXMAP(settings_follow_song_xpm, NULL);
       settings_globalsettingsIcon                   = new MPIXMAP(settings_globalsettings_xpm, NULL);
-      settings_metronomeIcon                        = new MPIXMAP(settings_metronome_xpm, NULL);
       settings_midifileexportIcon                   = new MPIXMAP(settings_midifileexport_xpm, NULL);
       settings_midiport_softsynthsIcon              = new MPIXMAP(settings_midiport_softsynths_xpm, NULL);
       settings_midisyncIcon                         = new MPIXMAP(settings_midisync_xpm, NULL);

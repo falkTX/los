@@ -437,7 +437,6 @@ extern QPixmap* settings_appearance_settingsIcon;
 extern QPixmap* settings_configureshortcutsIcon;
 extern QPixmap* settings_follow_songIcon;
 extern QPixmap* settings_globalsettingsIcon;
-extern QPixmap* settings_metronomeIcon;
 extern QPixmap* settings_midifileexportIcon;
 extern QPixmap* settings_midiport_softsynthsIcon;
 extern QPixmap* settings_midisyncIcon;
@@ -566,11 +565,6 @@ extern QPixmap* previous_OnIcon;
 extern QPixmap* previous_OffIcon;
 extern QPixmap* previous_OverIcon;
 extern QIcon*   previousIconSet3;
-
-extern QPixmap* metronome_OnIcon;
-extern QPixmap* metronome_OffIcon;
-extern QPixmap* metronome_OverIcon;
-extern QIcon*   metronomeIconSet3;
 
 extern QPixmap* dragMidiIcon;
 extern QPixmap* dragAudioIcon;

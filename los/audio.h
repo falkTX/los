@@ -278,7 +278,6 @@ public:
     void msgSetHwCtrlStates(MidiPort*, int, int, int, int);
     void msgSetTrackOutChannel(MidiTrack*, int);
     void msgSetTrackOutPort(MidiTrack*, int);
-    void msgSetSendMetronome(AudioTrack*, bool);
 
     void msgPlayMidiEvent(const MidiPlayEvent* event);
     void msgPreloadCtrl();
