@@ -244,8 +244,6 @@ QObject* gRoutingPopupMenuMaster = 0;
 RouteMenuMap gRoutingMenuMap;
 bool gIsOutRoutingPopupMenu = false;
 
-uid_t euid, ruid;  // effective user id, real user id
-
 bool midiSeqRunning = false;
 
 int lastTrackPartColorIndex = 1;
@@ -263,46 +261,3 @@ TrackManager* trackManager;
 QList<QPair<int, QString> > gInputList;
 QList<int> gInputListPorts;
 bool gSamplerStarted = false;
-//---------------------------------------------------------
-//   doSetuid
-//    Restore the effective UID to its original value.
-//---------------------------------------------------------
-
-void doSetuid()
-      {
-#ifndef RTCAP
-      int status;
-#ifdef _POSIX_SAVED_IDS
-      status = seteuid (euid);
-#else
-      status = setreuid (ruid, euid);
-#endif
-      if (status < 0) {
-            perror("doSetuid: Couldn't set uid");
-            }
-#endif
-      }
-
-//---------------------------------------------------------
-//   undoSetuid
-//    Set the effective UID to the real UID.
-//---------------------------------------------------------
-
-void undoSetuid()
-      {
-#ifndef RTCAP
-      int status;
-
-#ifdef _POSIX_SAVED_IDS
-      status = seteuid (ruid);
-#else
-      status = setreuid (euid, ruid);
-#endif
-      if (status < 0) {
-            fprintf(stderr, "undoSetuid: Couldn't set uid (eff:%d,real:%d): %s\n",
-               euid, ruid, strerror(errno));
-            exit (status);
-            }
-#endif
-      }
-

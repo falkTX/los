@@ -64,9 +64,7 @@ void MidiSeq::processMsg(const ThreadMsg* m)
             processStop();
             break;
         case MS_SET_RTC:
-            doSetuid();
             setRtcTicks();
-            undoSetuid();
             break;
         case MS_UPDATE_POLL_FD:
             updatePollFd();
@@ -237,10 +235,7 @@ MidiSeq::MidiSeq(const char* name)
     lastTempo = 0;
     storedtimediffs = 0;
     playStateExt = false; // not playing
-    doSetuid();
     timerFd = selectTimer();
-    undoSetuid();
-
 }
 
 //---------------------------------------------------------
@@ -426,9 +421,7 @@ void MidiSeq::start(int priority)
 {
     prio = priority;
 
-    doSetuid();
     setRtcTicks();
-    undoSetuid();
     Thread::start(priority);
 }
 

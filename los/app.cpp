@@ -2180,19 +2180,6 @@ void LOS::closeEvent(QCloseEvent* event)
         d.remove(f.completeBaseName() + ".wca");
     }
 
-    // Added by Tim. p3.3.14
-
-#ifdef HAVE_LASH
-    // Disconnect gracefully from LASH.
-    if (lash_client)
-    {
-        if (debugMsg)
-            printf("LOS: Disconnecting from LASH\n");
-        lash_event_t* lashev = lash_event_new_with_type(LASH_Quit);
-        lash_send_event(lash_client, lashev);
-    }
-#endif
-
     if (debugMsg)
         printf("LOS: Exiting Dsp\n");
     AL::exitDsp();

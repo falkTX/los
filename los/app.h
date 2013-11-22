@@ -487,9 +487,6 @@ public:
         return AL::sigmap.raster2(v, m_rasterVal);
     }/*}}}*/
     int raster(){return m_rasterVal;}
-#ifdef HAVE_LASH
-    void lash_idle_cb();
-#endif
 };
 
 extern void addProject(const QString& name);

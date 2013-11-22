@@ -33,15 +33,7 @@
 
 #include "jackmidi.h"
 
-
 #define JACK_DEBUG 0
-
-//#include "errorhandler.h"
-
-#ifndef RTCAP
-extern void doSetuid();
-extern void undoSetuid();
-#endif
 
 JackAudioDevice* jackAudio;
 
@@ -77,14 +69,6 @@ bool checkAudioDevice()
 //---------------------------------------------------------
 //   jack_thread_init
 //---------------------------------------------------------
-
-#if 0
-static void jack_thread_init(void*) // data
-{
-    //doSetuid();
-    //undoSetuid();
-}
-#endif
 
 int JackAudioDevice::processAudio(jack_nframes_t frames, void*)
 {
@@ -291,8 +275,6 @@ bool initJackAudio()
     else
         jack_set_error_function(noJackError);
 
-    //doSetuid();
-
     jack_status_t status;
     jack_client_t* client = jack_client_open("LOS", JackNoStartServer, &status);
     if (!client)
@@ -308,7 +290,6 @@ bool initJackAudio()
         if (status & JackVersionError)
             printf("jack server has wrong version\n");
         printf("cannot create jack client\n");
-        undoSetuid();
         return true;
     }
 
@@ -329,8 +310,6 @@ bool initJackAudio()
         //jack_set_thread_init_callback(client, (JackThreadInitCallback) jack_thread_init, 0);
         //jack_set_timebase_callback(client, 0, (JackTimebaseCallback) timebase_callback, 0);
     }
-
-    //undoSetuid();
 
     if (client)
     {
@@ -1033,11 +1012,8 @@ void JackAudioDevice::start(int /*priority*/)
         printf("JackAudioDevice::start()\n");
     if (!checkJackClient(_client)) return;
 
-    doSetuid();
-
     if (jack_activate(_client))
     {
-        undoSetuid();
         fprintf(stderr, "JACK: cannot activate client\n");
         exit(-1);
     }
@@ -1084,8 +1060,6 @@ void JackAudioDevice::start(int /*priority*/)
 
     // Connect the Jack midi client ports to device ports.
     connectJackMidiPorts();
-
-    undoSetuid();
 
     fflush(stdin);
 }

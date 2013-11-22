@@ -40,47 +40,6 @@ void set_last_error(const char* error);
 
 static QString locale_override;
 
-#ifdef HAVE_LASH
-#include <lash/lash.h>
-extern lash_client_t * lash_client;
-extern snd_seq_t * alsaSeq;
-#endif
-
-//GTK2 LV2 GUI support
-#ifdef GTK2UI_SUPPORT
-#undef signals
-#include <gtk/gtk.h>
-#endif
-
-//---------------------------------------------------------
-//   getCapabilities
-//---------------------------------------------------------
-
-static void getCapabilities()
-{
-#ifdef RTCAP
-#ifdef __linux__
-    const char* napp = getenv("GIVERTCAP");
-    if (napp == 0)
-        napp = "givertcap";
-    int pid = fork();
-    if (pid == 0)
-    {
-        if (execlp(napp, napp, 0) == -1)
-            perror("exec givertcap failed");
-    }
-    else if (pid == -1)
-    {
-        perror("fork givertcap failed");
-    }
-    else
-    {
-        waitpid(pid, 0, 0);
-    }
-#endif // __linux__
-#endif
-}
-
 //---------------------------------------------------------
 //   printVersion
 //---------------------------------------------------------
@@ -240,15 +199,6 @@ static void usage(const char* prog, const char* txt)
     fprintf(stderr, "   -P  n    set audio driver real time priority to n (Dummy only, default 40. Else fixed by Jack.)\n");
     fprintf(stderr, "   -Y  n    force midi real time priority to n (default: audio driver prio +2)\n");
     fprintf(stderr, "   -p       don't load LADSPA plugins\n");
-#ifdef JACK_SESSION_SUPPORT
-    fprintf(stderr, "   -U       Jack session UUID\n");
-#endif
-#ifdef ENABLE_PYTHON
-    fprintf(stderr, "   -y       enable Python control support\n");
-#endif
-#ifdef HAVE_LASH
-    fprintf(stderr, "   -L       don't use LASH\n");
-#endif
     fprintf(stderr, "   -l  xx   force locale to the given language/country code (xx = %s)\n", localeList().toLatin1().constData());
 }
 
@@ -258,13 +208,6 @@ static void usage(const char* prog, const char* txt)
 
 int main(int argc, char* argv[])
 {
-
-    //      error = ErrorHandler::create(argv[0]);
-    Q_INIT_RESOURCE(los);
-    ruid = getuid();
-    euid = geteuid();
-    undoSetuid();
-    getCapabilities();
     int noAudio = false;
 
     losUser = QDir::homePath();//QString(getenv("HOME"));
@@ -282,16 +225,6 @@ int main(int argc, char* argv[])
     QDir rPath = QDir(routePath);
     if(!rPath.exists())
         rPath.mkpath(".");
-
-#ifdef HAVE_LASH
-    lash_args_t * lash_args = 0;
-    if (useLASH)
-        lash_args = lash_extract_args(&argc, &argv);
-#endif
-
-#ifdef GTK2UI_SUPPORT
-    gtk_init(&argc, &argv);
-#endif
 
     srand(time(0)); // initialize random number generator
     initMidiController();
@@ -355,9 +288,6 @@ int main(int argc, char* argv[])
 
     AL::initDsp();
 
-    if (debugMsg)
-        printf("Start euid: %d ruid: %d, Now euid %d\n",
-            euid, ruid, geteuid());
     if (debugMode)
     {
         initDummyAudio();
