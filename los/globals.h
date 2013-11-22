@@ -138,23 +138,6 @@ extern QAction* masterEnableAction;
 class LOS;
 extern LOS* los;
 
-extern int preMeasures;
-extern unsigned char measureClickNote;
-extern unsigned char measureClickVelo;
-extern unsigned char beatClickNote;
-extern unsigned char beatClickVelo;
-extern unsigned char clickChan;
-extern unsigned char clickPort;
-extern bool precountEnableFlag;
-extern bool precountFromMastertrackFlag;
-extern int precountSigZ;
-extern int precountSigN;
-extern bool precountPrerecord;
-extern bool precountPreroll;
-extern bool midiClickFlag;
-extern bool audioClickFlag;
-extern float audioClickVolume;
-
 extern bool rcEnable;
 extern unsigned char rcStopNote;
 extern unsigned char rcRecordNote;

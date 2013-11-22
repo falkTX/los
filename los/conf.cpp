@@ -473,65 +473,6 @@ static void readConfigMidiPort(Xml& xml)/*{{{*/
 }/*}}}*/
 
 //---------------------------------------------------------
-//   loadConfigMetronom
-//---------------------------------------------------------
-
-static void loadConfigMetronom(Xml& xml)/*{{{*/
-{
-    for (;;)
-    {
-        Xml::Token token = xml.parse();
-        if (token == Xml::Error || token == Xml::End)
-            break;
-        QString tag = xml.s1();
-        switch (token)
-        {
-            case Xml::TagStart:
-                if (tag == "premeasures")
-                    preMeasures = xml.parseInt();
-                else if (tag == "measurepitch")
-                    measureClickNote = xml.parseInt();
-                else if (tag == "measurevelo")
-                    measureClickVelo = xml.parseInt();
-                else if (tag == "beatpitch")
-                    beatClickNote = xml.parseInt();
-                else if (tag == "beatvelo")
-                    beatClickVelo = xml.parseInt();
-                else if (tag == "channel")
-                    clickChan = xml.parseInt();
-                else if (tag == "port")
-                    clickPort = xml.parseInt();
-                else if (tag == "precountEnable")
-                    precountEnableFlag = xml.parseInt();
-                else if (tag == "fromMastertrack")
-                    precountFromMastertrackFlag = xml.parseInt();
-                else if (tag == "signatureZ")
-                    precountSigZ = xml.parseInt();
-                else if (tag == "signatureN")
-                    precountSigN = xml.parseInt();
-                else if (tag == "prerecord")
-                    precountPrerecord = xml.parseInt();
-                else if (tag == "preroll")
-                    precountPreroll = xml.parseInt();
-                else if (tag == "midiClickEnable")
-                    midiClickFlag = xml.parseInt();
-                else if (tag == "audioClickEnable")
-                    audioClickFlag = xml.parseInt();
-                else if (tag == "audioClickVolume")
-                    audioClickVolume = xml.parseFloat();
-                else
-                    xml.skip(tag);
-                break;
-            case Xml::TagEnd:
-                if (tag == "metronom")
-                    return;
-            default:
-                break;
-        }
-    }
-}/*}}}*/
-
-//---------------------------------------------------------
 //   readSeqConfiguration
 //---------------------------------------------------------
 
@@ -547,9 +488,7 @@ static void readSeqConfiguration(Xml& xml)
         switch (token)
         {
             case Xml::TagStart:
-                if (tag == "metronom")
-                    loadConfigMetronom(xml);
-                else if (tag == "midiport")
+                if (tag == "midiport")
                 {
                     //updatePorts = true;
                     readConfigMidiPort(xml);
@@ -1035,26 +974,6 @@ bool readConfiguration()/*{{{*/
 static void writeSeqConfiguration(int level, Xml& xml, bool writePortInfo)/*{{{*/
 {
     xml.tag(level++, "sequencer");
-
-    xml.tag(level++, "metronom");
-    xml.intTag(level, "premeasures", preMeasures);
-    xml.intTag(level, "measurepitch", measureClickNote);
-    xml.intTag(level, "measurevelo", measureClickVelo);
-    xml.intTag(level, "beatpitch", beatClickNote);
-    xml.intTag(level, "beatvelo", beatClickVelo);
-    xml.intTag(level, "channel", clickChan);
-    xml.intTag(level, "port", clickPort);
-
-    xml.intTag(level, "precountEnable", precountEnableFlag);
-    xml.intTag(level, "fromMastertrack", precountFromMastertrackFlag);
-    xml.intTag(level, "signatureZ", precountSigZ);
-    xml.intTag(level, "signatureN", precountSigN);
-    xml.intTag(level, "prerecord", precountPrerecord);
-    xml.intTag(level, "preroll", precountPreroll);
-    xml.intTag(level, "midiClickEnable", midiClickFlag);
-    xml.intTag(level, "audioClickEnable", audioClickFlag);
-    xml.floatTag(level, "audioClickVolume", audioClickVolume);
-    xml.tag(--level, "/metronom");
 
     if (writePortInfo)
     {
