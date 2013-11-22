@@ -149,23 +149,6 @@
 		<file>images/icons/transport-tracking.png</file>
 		<file>images/icons/un-mute-all.png</file>
 		<file>images/icons/velocity.png</file>
-		<file>images/icons/mixer-record.png</file>
-		<file>images/icons/mixer-record_on.png</file>
-		<file>images/icons/mixer-solo.png</file>
-		<file>images/icons/mixer-solo_on.png</file>
-		<file>images/icons/mixer-solo_over.png</file>
-		<file>images/icons/mixer-mute.png</file>
-		<file>images/icons/mixer-mute_on.png</file>
-		<file>images/icons/mixer-mute_over.png</file>
-		<file>images/icons/mixer-stereo.png</file>
-		<file>images/icons/mixer-mono.png</file>
-		<file>images/icons/mixer-expand.png</file>
-		<file>images/icons/mixer-exit.png</file>
-		<file>images/icons/mixer-exit_on.png</file>
-		<file>images/icons/mixer-in.png</file>
-		<file>images/icons/mixer-out.png</file>
-		<file>images/icons/mixer-pre.png</file>
-		<file>images/icons/mixer-pre_on.png</file>
 		<file>images/icons/blank_record.png</file>
 		<file>images/icons/multi_display.png</file>
 		<file>images/icons/multi_display_off.png</file>
@@ -175,19 +158,11 @@
 		<file>images/icons/feedback.png</file>
 		<file>images/icons/feedback_off.png</file>
 		<file>images/icons/feedback_over.png</file>
-		<file>images/mixer_bg_audio.png</file>
-		<file>images/mixer_bg_midi.png</file>
-		<file>images/mixer_bg_buss.png</file>
-		<file>images/mixer_bg_out.png</file>
-		<file>images/mixer_bg_in.png</file>
-		<file>images/mixer_bg_aux.png</file>
-		<file>images/mixer_rack_border2.png</file>
 		<file>images/tracklist_rack.png</file>
 		<file>images/vugrad.png</file>
 		<file>images/vugrad_h.png</file>
 		<file>images/vugrad_wave.png</file>
 		<file>images/vugrad_wave_highlight.png</file>
-		<file>images/icons/showmixer.png</file>
 		<file>images/top_rack.png</file>
 		<file>images/bottom_rack.png</file>
 		<file>images/top_rack_large.png</file>
@@ -235,7 +210,6 @@
 		<file>images/icons/speaker.png</file>
 		<file>images/icons/speaker_off.png</file>
 		<file>images/icons/speaker_over.png</file>
-		<file>images/icons/mixeraudioS.png</file>
 		<file>images/icons/deselectall.png</file>
 		<file>images/icons/select_invert_selection.png</file>
 		<file>images/icons/initSong.png</file>
@@ -354,26 +328,6 @@
 		<file>images/instrument_new_over.png</file>
 		<file>images/instrument_new_off.png</file>
 
-		<file>images/icons/mixer_record_new_on.png</file>
-		<file>images/icons/mixer_record_new_over.png</file>
-		<file>images/icons/mixer_record_new_off.png</file>
-		<file>images/icons/mixer_mute_new_on.png</file>
-		<file>images/icons/mixer_mute_new_over.png</file>
-		<file>images/icons/mixer_mute_new_off.png</file>
-		<file>images/icons/mixer_solo_new_on.png</file>
-		<file>images/icons/mixer_solo_new_over.png</file>
-		<file>images/icons/mixer_solo_new_off.png</file>
-		<file>images/icons/mixer_resize_new_over.png</file>
-		<file>images/icons/mixer_resize_new_off.png</file>
-		<file>images/icons/mixer_power_new_on.png</file>
-		<file>images/icons/mixer_power_new_off.png</file>
-		<file>images/icons/mixer_input_new_over.png</file>
-		<file>images/icons/mixer_input_new_off.png</file>
-		<file>images/icons/mixer_output_new_over.png</file>
-		<file>images/icons/mixer_output_new_off.png</file>
-		<file>images/icons/mixer_mono_new_on.png</file>
-		<file>images/icons/mixer_stereo_new_on.png</file>
-		<file>images/icons/mixer_blank_new_off.png</file>
 		<file>images/slider_thumb_new.png</file>
 		<file>images/slider_thumb_new_h.png</file>
 		<file>images/slider_thumb_new_small.png</file>
@@ -381,9 +335,6 @@
 		<file>images/slider_thumb_small.png</file>
 		<file>images/doubleslider_border.png</file>
 		<file>images/doubleslider_middle_border.png</file>
-		<file>images/icons/mixer_new_on.png</file>
-		<file>images/icons/mixer_new_over.png</file>
-		<file>images/icons/mixer_new_off.png</file>
 		<file>images/icons/pcloader_new_on.png</file>
 		<file>images/icons/pcloader_new_over.png</file>
 		<file>images/icons/pcloader_new_off.png</file>
@@ -472,7 +423,6 @@
         <file>images/icons/views_synth_menu.png</file>
 
 		<file>images/icons/oomidi_icon_the_composer.png</file>
-		<file>images/icons/oomidi_icon_the_mixer.png</file>
 		<file>images/icons/oomidi_icon_the_performer.png</file>
 
 		<file>images/icons/clip-file-audio.png</file>

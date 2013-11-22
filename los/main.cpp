@@ -208,6 +208,7 @@ static void usage(const char* prog, const char* txt)
 
 int main(int argc, char* argv[])
 {
+    Q_INIT_RESOURCE(los);
     int noAudio = false;
 
     losUser = QDir::homePath();//QString(getenv("HOME"));

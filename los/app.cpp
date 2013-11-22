@@ -768,8 +768,8 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
     audioBounce2FileAction = new QAction(QIcon(*audio_bounce_to_fileIcon), tr("Bounce to File"), this);
     audioRestartAction = new QAction(QIcon(*audio_restartaudioIcon), tr("Restart Audio"), this);
 
-    //-------- Automation Actions
-    autoMixerAction = new QAction(QIcon(*automation_mixerIcon), tr("Mixer Automation"), this);
+    //-------- Automation Actions XXX
+    autoMixerAction = new QAction(/*QIcon(*automation_mixerIcon),*/ tr("Mixer Automation"), this);
     autoMixerAction->setCheckable(true);
     autoSnapshotAction = new QAction(QIcon(*automation_take_snapshotIcon), tr("Take Snapshot"), this);
     autoClearAction = new QAction(QIcon(*automation_clear_dataIcon), tr("Clear Automation Data"), this);
