@@ -111,10 +111,6 @@ Composer::Composer(QMainWindow* parent, const char* name)
     QWidget* dockWidget = new QWidget(this);
     QVBoxLayout* dockLayout = new QVBoxLayout(dockWidget);
     dockLayout->setContentsMargins(0,0,0,0);
-    QLabel* logoLabel = new QLabel(dockWidget);
-    logoLabel->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-    logoLabel->setPixmap(QPixmap(":/images/icons/oomidi_icon_the_composer.png"));
-    dockLayout->addWidget(logoLabel);
     dockLayout->addWidget(_rtabs);
     los->resourceDock()->setWidget(dockWidget);
     connect(los->resourceDock(), SIGNAL(dockLocationChanged(Qt::DockWidgetArea)), SLOT(resourceDockAreaChanged(Qt::DockWidgetArea)));

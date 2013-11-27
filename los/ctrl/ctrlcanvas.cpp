@@ -142,7 +142,6 @@ CtrlCanvas::CtrlCanvas(AbstractMidiEditor* e, QWidget* parent, int xmag,
     }
     connect(song, SIGNAL(songChanged(int)), SLOT(songChanged(int)));
 
-    connect(editor, SIGNAL(curDrumInstrumentChanged(int)), SLOT(setCurDrumInstrument(int)));
     connect(heartBeatTimer, SIGNAL(timeout()), SLOT(heartBeat()));
     updateItems();
 }

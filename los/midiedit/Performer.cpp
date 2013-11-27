@@ -116,16 +116,7 @@ Performer::Performer(PartList* pl, QWidget* parent, const char* name, unsigned i
     //m_tabs->setMinimumSize(QSize(200, 150));
     m_tabs->setMinimumWidth(250);
     //connect(m_rtabs, SIGNAL(currentChanged(int)), SLOT(currentTabChanged(int)));
-    QWidget* dockWidget = new QWidget(this);
-    dockWidget->setMinimumWidth(250);
-    QVBoxLayout* dockLayout = new QVBoxLayout(dockWidget);
-    dockLayout->setContentsMargins(0,0,0,0);
-    QLabel* logoLabel = new QLabel(dockWidget);
-    logoLabel->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-    logoLabel->setPixmap(QPixmap(":/images/icons/oomidi_icon_the_performer.png"));
-    dockLayout->addWidget(logoLabel);
-    dockLayout->addWidget(m_tabs);
-    m_prDock->setWidget(dockWidget);
+    m_prDock->setWidget(m_tabs);
     connect(m_prDock, SIGNAL(dockLocationChanged(Qt::DockWidgetArea)), SLOT(dockAreaChanged(Qt::DockWidgetArea)));
 
     midiConductor = new Conductor(this, 0);
