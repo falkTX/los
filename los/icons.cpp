@@ -226,7 +226,6 @@ QPixmap* track_deleteIcon;
 QPixmap* listSIcon;
 QPixmap* inputpluginSIcon;
 QPixmap* cliplistSIcon;
-QPixmap* mixerAudioSIcon;
 QPixmap* initSIcon;
 QPixmap* songInfoIcon;
 
@@ -239,7 +238,6 @@ QPixmap* addAuxIcon;
 QPixmap* addSynthIcon;
 
 QPixmap* exitIcon;
-QPixmap* exit1Icon;
 QPixmap* newmuteIcon;
 QPixmap* soloIcon;
 
@@ -325,29 +323,12 @@ QPixmap* multiDisplay;
 QPixmap* previousPartIcon;
 QPixmap* nextPartIcon;
 QPixmap* blankRecord;
-QPixmap* preIcon;
-QPixmap* preIconOn;
-QPixmap* mixerIn;
-QPixmap* mixerOut;
-QPixmap* recEchoIconOn;
-QPixmap* recEchoIconOff;
 
-QPixmap* muteIconOn;
-QPixmap* muteIconOff;
-QPixmap* muteIconOver;
 QIcon* muteIconSet4;
 
-QPixmap* soloIconOn;
-QPixmap* soloIconOff;
-QPixmap* soloIconOver;
 QPixmap* transport_soloIconOn;
 QPixmap* transport_soloIconOff;
 QPixmap* transport_soloIconOver;
-QPixmap* soloblksqIconOn;
-QPixmap* soloblksqIconOff;
-QPixmap* soloblksqIconOver;
-QIcon* soloIconSet1;
-QIcon* soloIconSet2;
 QIcon* soloIconSet3;
 
 QPixmap* transport_muteIconOn;
@@ -514,15 +495,6 @@ QPixmap* refreshIconOff;
 QPixmap* refreshIconOver;
 QIcon*   refreshIconSet3;
 
-QIcon* mixer_resizeIconSet3;
-QIcon* mixer_inputIconSet3;
-QIcon* mixer_outputIconSet3;
-QIcon* mixer_powerIconSet3;
-QIcon* mixer_recordIconSet3;
-QIcon* mixer_muteIconSet3;
-QIcon* mixer_soloIconSet3;
-QIcon* mixer_stereoIconSet3;
-QIcon* mixerIconSet3;
 QIcon* pcloaderIconSet3;
 
 QPixmap* enabled_OnIcon;
@@ -614,31 +586,6 @@ QPixmap* dragOutputIcon;
 QPixmap* dragAuxIcon;
 QPixmap* dragBussIcon;
 
-QPixmap* mixer_record_OnIcon;
-QPixmap* mixer_record_OffIcon;
-QPixmap* mixer_record_OverIcon;
-QPixmap* mixer_mute_OnIcon;
-QPixmap* mixer_mute_OffIcon;
-QPixmap* mixer_mute_OverIcon;
-QPixmap* mixer_solo_OnIcon;
-QPixmap* mixer_solo_OffIcon;
-QPixmap* mixer_solo_OverIcon;
-QPixmap* mixer_resize_OffIcon;
-QPixmap* mixer_resize_OverIcon;
-QPixmap* mixer_input_OffIcon;
-QPixmap* mixer_input_OverIcon;
-QPixmap* mixer_output_OffIcon;
-QPixmap* mixer_output_OverIcon;
-QPixmap* mixer_power_OnIcon;
-QPixmap* mixer_power_OffIcon;
-QPixmap* mixer_power_OverIcon;
-QPixmap* mixer_blank_OffIcon;
-QPixmap* mixer_stereo_OnIcon;
-QPixmap* mixer_mono_OnIcon;
-
-QPixmap* mixer_OnIcon;
-QPixmap* mixer_OffIcon;
-QPixmap* mixer_OverIcon;
 QPixmap* pcloader_OnIcon;
 QPixmap* pcloader_OffIcon;
 QPixmap* pcloader_OverIcon;
@@ -764,10 +711,6 @@ QPixmap* view_markerIcon;
 QPixmap* view_mixerIcon;
 QPixmap* view_transport_windowIcon;
 
-QPixmap* mixerIcon;
-QPixmap* expandIcon;
-QPixmap* monoIcon;
-QPixmap* stereoIcon;
 QPixmap* automationIcon;
 QPixmap* portIcon;
 QPixmap* automationDisabledIcon;
@@ -946,8 +889,7 @@ void initIcons()
     editpaste2TrackIconSet = new LOSIcon(editpaste2trackS_xpm, nullptr);
     editpasteCloneIconSet  = new LOSIcon(editpastecloneS_xpm, nullptr);
     editpasteClone2TrackIconSet = new LOSIcon(editpasteclone2trackS_xpm, nullptr); // ..
-    exitIcon             = new LOSPixmap(":/images/icons/mixer-exit.png", nullptr);//"application-exit");
-    exit1Icon            = new LOSPixmap(":/images/icons/mixer-exit_on.png", nullptr);//"application-exit");
+    exitIcon             = new LOSPixmap(":/images/icons/exit.png", nullptr);//"application-exit");
 
     // 2 lines odd code
     newmuteIcon          = new LOSPixmap(newmutebutton_xpm, nullptr);
@@ -957,33 +899,10 @@ void initIcons()
     previousPartIcon     = new LOSPixmap(":/images/icons/previous_part.png", nullptr);
     nextPartIcon         = new LOSPixmap(":/images/icons/next_part.png", nullptr);
     blankRecord          = new LOSPixmap(":/images/icons/blank_record.png", nullptr);
-    preIcon        	   = new LOSPixmap(":/images/icons/mixer-pre.png", nullptr);
-    preIconOn        	   = new LOSPixmap(":/images/icons/mixer-pre_on.png", nullptr);
-    mixerIn        	   = new LOSPixmap(":/images/icons/mixer-in.png", nullptr);
-    mixerOut        	   = new LOSPixmap(":/images/icons/mixer-out.png", nullptr);
-    recEchoIconOn        = new LOSPixmap(":/images/icons/mixer-record.png", nullptr);
-    recEchoIconOff       = new LOSPixmap(":/images/icons/mixer-record.png", nullptr);
-    muteIconOn           = new LOSPixmap(":/images/icons/mixer-mute_on.png", nullptr);
-    muteIconOff          = new LOSPixmap(":/images/icons/mixer-mute.png", nullptr);
-    muteIconOver         = new LOSPixmap(":/images/icons/mixer-mute_over.png", nullptr);
-    soloIconOn           = new LOSPixmap(":/images/icons/mixer-solo_on.png", nullptr);
-    soloIconOff          = new LOSPixmap(":/images/icons/mixer-solo.png", nullptr);
-    soloIconOver         = new LOSPixmap(":/images/icons/mixer-solo_over.png", nullptr);
-    soloblksqIconOn      = new LOSPixmap(":/images/icons/mixer-solo_on.png", nullptr);
-    soloblksqIconOff     = new LOSPixmap(":/images/icons/mixer-solo.png", nullptr);
-    soloblksqIconOver    = new LOSPixmap(":/images/icons/mixer-solo_over.png", nullptr);
     transport_soloIconOn = new LOSPixmap(":/images/icons/transport-solo_new_on.png", nullptr);
     transport_soloIconOff= new LOSPixmap(":/images/icons/transport-solo_new_off.png", nullptr);
     transport_soloIconOver= new LOSPixmap(":/images/icons/transport-solo_new_over.png", nullptr);
-    soloIconSet1         = new QIcon();
-    soloIconSet2         = new QIcon();
-    soloIconSet3         = new QIcon();
-    soloIconSet1->addPixmap(*soloIconOn, QIcon::Normal, QIcon::On);
-    soloIconSet1->addPixmap(*soloIconOff, QIcon::Normal, QIcon::Off);
-    soloIconSet1->addPixmap(*soloIconOver, QIcon::Active);
-    soloIconSet2->addPixmap(*soloblksqIconOn, QIcon::Normal, QIcon::On);
-    soloIconSet2->addPixmap(*soloblksqIconOff, QIcon::Normal, QIcon::Off);
-    soloIconSet2->addPixmap(*soloblksqIconOver, QIcon::Active);
+    soloIconSet3  = new QIcon();
     soloIconSet3->addPixmap(*transport_soloIconOn, QIcon::Normal, QIcon::On);
     soloIconSet3->addPixmap(*transport_soloIconOff, QIcon::Normal, QIcon::Off);
     soloIconSet3->addPixmap(*transport_soloIconOver, QIcon::Active);
@@ -1261,72 +1180,6 @@ void initIcons()
     panicIconSet3->addPixmap(*panicIconOff, QIcon::Normal, QIcon::Off);
     panicIconSet3->addPixmap(*panicIconOver, QIcon::Active);
 
-    mixer_resize_OffIcon= new LOSPixmap(":/images/icons/mixer_resize_new_off.png", nullptr);
-    mixer_resize_OverIcon= new LOSPixmap(":/images/icons/mixer_resize_new_over.png", nullptr);
-    mixer_resizeIconSet3         = new QIcon();
-    mixer_resizeIconSet3->addPixmap(*mixer_resize_OffIcon, QIcon::Normal, QIcon::Off);
-    mixer_resizeIconSet3->addPixmap(*mixer_resize_OverIcon, QIcon::Active);
-
-    mixer_record_OnIcon = new LOSPixmap(":/images/icons/mixer_record_new_on.png", nullptr);
-    mixer_record_OffIcon= new LOSPixmap(":/images/icons/mixer_record_new_off.png", nullptr);
-    mixer_record_OverIcon= new LOSPixmap(":/images/icons/mixer_record_new_over.png", nullptr);
-    mixer_recordIconSet3         = new QIcon();
-    mixer_recordIconSet3->addPixmap(*mixer_record_OnIcon, QIcon::Normal, QIcon::On);
-    mixer_recordIconSet3->addPixmap(*mixer_record_OffIcon, QIcon::Normal, QIcon::Off);
-    mixer_recordIconSet3->addPixmap(*mixer_record_OverIcon, QIcon::Active);
-
-    mixer_mute_OnIcon = new LOSPixmap(":/images/icons/mixer_mute_new_on.png", nullptr);
-    mixer_mute_OffIcon= new LOSPixmap(":/images/icons/mixer_mute_new_off.png", nullptr);
-    mixer_mute_OverIcon= new LOSPixmap(":/images/icons/mixer_mute_new_over.png", nullptr);
-    mixer_muteIconSet3         = new QIcon();
-    mixer_muteIconSet3->addPixmap(*mixer_mute_OnIcon, QIcon::Normal, QIcon::On);
-    mixer_muteIconSet3->addPixmap(*mixer_mute_OffIcon, QIcon::Normal, QIcon::Off);
-    mixer_muteIconSet3->addPixmap(*mixer_mute_OverIcon, QIcon::Active);
-
-    mixer_solo_OnIcon = new LOSPixmap(":/images/icons/mixer_solo_new_on.png", nullptr);
-    mixer_solo_OffIcon= new LOSPixmap(":/images/icons/mixer_solo_new_off.png", nullptr);
-    mixer_solo_OverIcon= new LOSPixmap(":/images/icons/mixer_solo_new_over.png", nullptr);
-    mixer_soloIconSet3         = new QIcon();
-    mixer_soloIconSet3->addPixmap(*mixer_solo_OnIcon, QIcon::Normal, QIcon::On);
-    mixer_soloIconSet3->addPixmap(*mixer_solo_OffIcon, QIcon::Normal, QIcon::Off);
-    mixer_soloIconSet3->addPixmap(*mixer_solo_OverIcon, QIcon::Active);
-
-    mixer_input_OffIcon= new LOSPixmap(":/images/icons/mixer_input_new_off.png", nullptr);
-    mixer_input_OverIcon= new LOSPixmap(":/images/icons/mixer_input_new_over.png", nullptr);
-    mixer_inputIconSet3         = new QIcon();
-    mixer_inputIconSet3->addPixmap(*mixer_input_OffIcon, QIcon::Normal, QIcon::Off);
-    mixer_inputIconSet3->addPixmap(*mixer_input_OverIcon, QIcon::Active);
-
-    mixer_output_OffIcon= new LOSPixmap(":/images/icons/mixer_output_new_off.png", nullptr);
-    mixer_output_OverIcon= new LOSPixmap(":/images/icons/mixer_output_new_over.png", nullptr);
-    mixer_outputIconSet3         = new QIcon();
-    mixer_outputIconSet3->addPixmap(*mixer_output_OffIcon, QIcon::Normal, QIcon::Off);
-    mixer_outputIconSet3->addPixmap(*mixer_output_OverIcon, QIcon::Active);
-
-    mixer_power_OnIcon= new LOSPixmap(":/images/icons/mixer_power_new_on.png", nullptr);
-    mixer_power_OffIcon= new LOSPixmap(":/images/icons/mixer_power_new_off.png", nullptr);
-    mixer_power_OverIcon= new LOSPixmap(":/images/icons/mixer_power_new_over.png", nullptr);
-    mixer_powerIconSet3         = new QIcon();
-    mixer_powerIconSet3->addPixmap(*mixer_power_OnIcon, QIcon::Normal, QIcon::On);
-    mixer_powerIconSet3->addPixmap(*mixer_power_OffIcon, QIcon::Normal, QIcon::Off);
-    mixer_powerIconSet3->addPixmap(*mixer_power_OverIcon, QIcon::Active);
-
-    mixer_blank_OffIcon= new LOSPixmap(":/images/icons/mixer_blank_new_off.png", nullptr);
-
-    mixer_stereo_OnIcon= new LOSPixmap(":/images/icons/mixer_stereo_new_on.png", nullptr);
-    mixer_mono_OnIcon= new LOSPixmap(":/images/icons/mixer_mono_new_on.png", nullptr);
-    mixer_stereoIconSet3         = new QIcon();
-    mixer_stereoIconSet3->addPixmap(*mixer_stereo_OnIcon, QIcon::Normal, QIcon::On);
-    mixer_stereoIconSet3->addPixmap(*mixer_mono_OnIcon, QIcon::Normal, QIcon::Off);
-
-    mixer_OnIcon= new LOSPixmap(":/images/icons/mixer_new_on.png", nullptr);
-    mixer_OffIcon= new LOSPixmap(":/images/icons/mixer_new_off.png", nullptr);
-    mixer_OverIcon= new LOSPixmap(":/images/icons/mixer_new_over.png", nullptr);
-    mixerIconSet3         = new QIcon();
-    mixerIconSet3->addPixmap(*mixer_OnIcon, QIcon::Normal, QIcon::On);
-    mixerIconSet3->addPixmap(*mixer_OffIcon, QIcon::Normal, QIcon::Off);
-    mixerIconSet3->addPixmap(*mixer_OverIcon, QIcon::Active);
-
     pcloader_OnIcon= new LOSPixmap(":/images/icons/pcloader_new_on.png", nullptr);
     pcloader_OffIcon= new LOSPixmap(":/images/icons/pcloader_new_off.png", nullptr);
     pcloader_OverIcon= new LOSPixmap(":/images/icons/pcloader_new_over.png", nullptr);
@@ -1501,7 +1354,6 @@ void initIcons()
     listSIcon            = new LOSPixmap(listS_xpm, nullptr);
     inputpluginSIcon     = new LOSPixmap(inputpluginS_xpm, nullptr);
     cliplistSIcon        = new LOSPixmap(cliplistS_xpm, nullptr);
-    mixerAudioSIcon      = new LOSPixmap(":/images/icons/mixeraudioS.png", nullptr);
     initSIcon            = new LOSPixmap(initS_xpm, nullptr);
     songInfoIcon         = new LOSPixmap(":/images/icons/initSong.png", nullptr);
 
@@ -1571,10 +1423,6 @@ void initIcons()
     view_markerIcon                               = new LOSPixmap(view_marker_xpm, nullptr);
     view_transport_windowIcon                     = new LOSPixmap(view_transport_window_xpm, nullptr);
 
-    mixerIcon                                     = new LOSPixmap(":/images/icons/showmixer.png", nullptr);
-    expandIcon                                    = new LOSPixmap(":/images/icons/mixer-expand.png", nullptr);
-    monoIcon                                      = new LOSPixmap(":/images/icons/mixer-mono.png", nullptr);
-    stereoIcon                                    = new LOSPixmap(":/images/icons/mixer-stereo.png", nullptr);
     automationIcon                                = new LOSPixmap(":/images/icons/automation.png", nullptr);
     portIcon                                		= new LOSPixmap(":/images/icons/ports.png", nullptr);
     automationDisabledIcon                        = new LOSPixmap(":/images/icons/automation_disabled.png", nullptr);

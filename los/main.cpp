@@ -339,7 +339,7 @@ int main(int argc, char* argv[])
     {//TODO: Change all these debugMsg/debugMode stuff to just use qDebug
         printf("global lib:       <%s>\n", losGlobalLib.toLatin1().constData());
         printf("global share:     <%s>\n", losGlobalShare.toLatin1().constData());
-        printf("los home:        <%s>\n", losUser.toLatin1().constData());
+        printf("los home:         <%s>\n", losUser.toLatin1().constData());
         printf("project dir:      <%s>\n", losProject.toLatin1().constData());
         printf("user instruments: <%s>\n", losUserInstruments.toLatin1().constData());
     }
