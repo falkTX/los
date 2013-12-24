@@ -346,12 +346,12 @@ void MidiAssignDialog::btnDeleteController()/*{{{*/
 void MidiAssignDialog::btnUpdateDefault()/*{{{*/
 {
     //printf("MidiAssignDialog::btnUpdateDefault rowCount:%d \n", m_model->rowCount());
-    bool override = false;
+    bool override2 = false;
     if(m_chkOverride->isChecked())
     {
         int btn = QMessageBox::question(this, tr("Midi Assign Change"), tr("You are about to override the settings of pre-assigned tracks.\nAre you sure you want to do this?"),QMessageBox::Ok|QMessageBox::Cancel);
         if(btn == QMessageBox::Ok)
-            override = true;
+            override2 = true;
         else
             return; //Dont do anything as they canceled
     }
@@ -365,7 +365,7 @@ void MidiAssignDialog::btnUpdateDefault()/*{{{*/
             bool unassigned = true;
             int p = data->port;
             QHashIterator<int, CCInfo*> iter(data->midimap);
-            if(!override)
+            if(!override2)
             {
                 while(iter.hasNext())
                 {
