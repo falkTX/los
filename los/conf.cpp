@@ -1067,7 +1067,7 @@ static void writeSeqConfiguration(int level, Xml& xml, bool writePortInfo)/*{{{*
                 {
                     PatchSequence* ps = patchSequences->at(p);
                     QString pm = ps->name.replace('\n', " ");
-                    xml.put(level, "<patchSequence id=\"%d\" name=\"%s\" checked=\"%d\" />", ps->id, pm.toStdString().c_str(), ps->selected);
+                    xml.put(level, "<patchSequence id=\"%d\" name=\"%s\" checked=\"%d\" />", ps->id, pm.toLatin1().constData(), ps->selected);
                 }
             }
             if(!mport->presets()->isEmpty())
@@ -1169,8 +1169,8 @@ void LOS::writeGlobalConfiguration(int level, Xml& xml) const
     xml.intTag(level, "vuColorStrip", vuColorStrip);
     if(gInputList.size())
     {
-        std::string tag = "globalInputList";
-        xml.put(level, "<%s count=\"%d\">", tag.c_str(), gInputList.size());
+        const char* const tag = "globalInputList";
+        xml.put(level, "<%s count=\"%d\">", tag, gInputList.size());
         level++;
         for(int i = 0; i < gInputList.size(); ++i)
         {
@@ -1178,7 +1178,7 @@ void LOS::writeGlobalConfiguration(int level, Xml& xml) const
             xml.put(level, "<globalInput deviceType=\"%d\" deviceName=\"%s\" />", in.first, in.second.toUtf8().constData());
         }
         level--;
-        xml.put(level--, "</%s>", tag.c_str());
+        xml.put(level--, "</%s>", tag);
         level++;
     }
 
