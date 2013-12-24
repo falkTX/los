@@ -14,6 +14,8 @@
 #include <QUndoCommand>
 #include <QUndoStack>
 
+#include "../globals.h"
+
 class LOSCommand : public QObject,
                    public QUndoCommand
 {
