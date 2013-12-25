@@ -26,6 +26,8 @@
 
 #include "QMessageBox"
 
+#include <string>
+
 VirtualTrack::VirtualTrack()
 {/*{{{*/
     id = create_id();
