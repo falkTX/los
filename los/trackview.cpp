@@ -21,6 +21,8 @@
 #include "track.h"
 #include "TrackManager.h"
 
+#include <string>
+
 TrackView::TrackView(bool istemplate)
 {
     m_id = create_id();
