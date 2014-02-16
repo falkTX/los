@@ -1242,8 +1242,8 @@ LOS::~LOS()
     // Save the new global settings to the configuration file
     tconfig().save();
 
-    delete style;
-    style = nullptr;
+    //delete style;
+    //style = nullptr;
 }
 
 void LOS::loadInitialProject()
