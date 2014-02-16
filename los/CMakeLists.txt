@@ -34,6 +34,7 @@ set(SubDirs
     master
     midiedit
     midiplugins
+    theme
     widgets
 )
 
@@ -251,6 +252,7 @@ target_link_libraries(los
     master
     midiedit
     midiplugins
+    theme
     widgets
 # needed for linking
     core

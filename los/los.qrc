@@ -430,5 +430,8 @@
     <file>images/pluginGUI_new_off.png</file>
 
     <file>images/icons/exit.png</file>
+
+    <file>images/style/arrow.png</file>
+    <file>images/style/groupbox.png</file>
   </qresource>
 </RCC>

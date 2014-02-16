@@ -70,6 +70,8 @@
 #include "TrackManager.h"
 #include "utils.h"
 
+#include "theme/CarlaStyle.hpp"
+
 #include "ccinfo.h"
 
 #include "traverso_shared/TConfig.h"
@@ -431,14 +433,25 @@ QActionGroup* populateAddTrack(QMenu* addTrack)
 
 LOS::LOS(int argc, char** argv) : QMainWindow()
 {
-
     // Very first thing we should do is loading global configuration values
     tconfig().check_and_load_configuration();
 
-    //loadTheme(config.style);
-    loadTheme("plastique");
+    // set theme
+    style = new CarlaStyle();
+    qApp->setStyle(style);
+
+    // set font
     QApplication::setFont(config.fonts[0]);
-    loadStyleSheetFile(config.styleSheetFile);
+
+    // set styleSheet
+    QFile cf(":/style.qss");
+    if (cf.open(QIODevice::ReadOnly))
+    {
+        QByteArray ss = cf.readAll();
+        QString sheet(QString::fromUtf8(ss.data()));
+        qApp->setStyleSheet(sheet);
+        cf.close();
+    }
 
     setIconSize(ICON_SIZE);
     setFocusPolicy(Qt::WheelFocus);
@@ -1228,6 +1241,9 @@ LOS::~LOS()
     tconfig().set_property("Interface", "geometry", saveGeometry());
     // Save the new global settings to the configuration file
     tconfig().save();
+
+    delete style;
+    style = nullptr;
 }
 
 void LOS::loadInitialProject()
@@ -3492,40 +3508,6 @@ void LOS::createMeasure()
 void LOS::mixTrack()
 {
     printf("not implemented\n");
-}
-
-//---------------------------------------------------------
-//   loadTheme
-//---------------------------------------------------------
-
-void LOS::loadTheme(const QString& s)
-{
-    if (style()->objectName() != s)
-        QApplication::setStyle(s);
-}
-
-//---------------------------------------------------------
-//   loadStyleSheetFile
-//---------------------------------------------------------
-
-void LOS::loadStyleSheetFile(const QString& s)
-{
-    if (s.isEmpty())
-    {
-        qApp->setStyleSheet(s);
-        return;
-    }
-
-    QFile cf(s);
-    if (cf.open(QIODevice::ReadOnly))
-    {
-        QByteArray ss = cf.readAll();
-        QString sheet(QString::fromUtf8(ss.data()));
-        qApp->setStyleSheet(sheet);
-        cf.close();
-    }
-    else
-        printf("loading style sheet <%s> failed\n", qPrintable(s));
 }
 
 //---------------------------------------------------------

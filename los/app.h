@@ -73,6 +73,7 @@ class MidiAssignDialog;
 class MidiPlayEvent;
 class VirtualTrack;
 class Performer;
+class CarlaStyle;
 
 #define OOCMD_PORT 8415
 
@@ -193,7 +194,6 @@ class LOS : public QMainWindow
     MidiFilterConfig* midiFilterConfig;
     MidiInputTransformDialog* midiInputTransform;
     ShortcutConfig* shortcutConfig;
-    //Appearance* appearance;
     AudioPortConfig* routingDialog;
 
     ToplevelList toplevels;
@@ -201,6 +201,8 @@ class LOS : public QMainWindow
     MarkerView* markerView;
     MidiTransformerDialog* midiTransformerDialog;
     QMenu* openRecent;
+
+    CarlaStyle* style;
 
     QDockWidget* _resourceDock;
     QMessageBox *pipelineBox;
@@ -381,8 +383,6 @@ public slots:
     void loadProjectFile(const QString&);
     void loadProjectFile(const QString&, bool songTemplate, bool loadAll);
     void toplevelDeleted(unsigned long tl);
-    void loadTheme(const QString&);
-    void loadStyleSheetFile(const QString&);
     bool seqRestart();
     void loadTemplate();
     void showBigtime(bool);
