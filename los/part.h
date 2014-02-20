@@ -15,7 +15,6 @@
 #include <QList>
 
 #include "event.h"
-#include "audioconvert.h"
 #include "FadeCurve.h"
 
 class QString;
@@ -57,10 +56,10 @@ protected:
     EventList* _events;
     Part* _prevClone;
     Part* _nextClone;
-	int m_zIndex;
+    int m_zIndex;
  //currently on used for wavetrack
-	unsigned int m_leftClip;
-	unsigned int m_rightClip;
+    unsigned int m_leftClip;
+    unsigned int m_rightClip;
 
 public:
     Part(Track*);
@@ -82,23 +81,23 @@ public:
         return snGen++;
     }
 
-	void setLeftClip(unsigned int clip)
-	{
-		m_leftClip = clip;
-	}
-	unsigned int leftClip()
-	{
-		return m_leftClip;
-	}
+    void setLeftClip(unsigned int clip)
+    {
+        m_leftClip = clip;
+    }
+    unsigned int leftClip()
+    {
+        return m_leftClip;
+    }
 
-	void setRightClip(unsigned int clip)
-	{
-		m_rightClip = clip;
-	}
-	unsigned int rightClip()
-	{
-		return m_rightClip;
-	}
+    void setRightClip(unsigned int clip)
+    {
+        m_rightClip = clip;
+    }
+    unsigned int rightClip()
+    {
+        return m_rightClip;
+    }
 
     virtual Part* clone() const = 0;
 
@@ -117,7 +116,7 @@ public:
         return _selected;
     }
 
-	void setSelected(bool f);
+    void setSelected(bool f);
 
     bool mute() const
     {
@@ -179,12 +178,12 @@ public:
         _nextClone = p;
     }
 
-	void setZIndex(int i);
-	int getZIndex()
-	{	
-		return m_zIndex;
-	}
-	static bool smallerZValue(Part* first, Part* second);
+    void setZIndex(int i);
+    int getZIndex()
+    {
+        return m_zIndex;
+    }
+    static bool smallerZValue(Part* first, Part* second);
 
     iEvent addEvent(Event& p);
 
@@ -230,15 +229,14 @@ public:
 
 class WavePart : public Part
 {
-	AudioConvertMap _converters;
-	FadeCurve *m_fadeIn;
-	FadeCurve *m_fadeOut;
-	FadeCurve *m_crossFadeIn;
-	FadeCurve *m_crossFadeOut;
-	bool m_hasCrossFadeForPartialOverlapLeft;
-	bool m_hasCrossFadeForPartialOverlapRight;
+    FadeCurve *m_fadeIn;
+    FadeCurve *m_fadeOut;
+    FadeCurve *m_crossFadeIn;
+    FadeCurve *m_crossFadeOut;
+    bool m_hasCrossFadeForPartialOverlapLeft;
+    bool m_hasCrossFadeForPartialOverlapRight;
 
-	void init();
+    void init();
 
 public:
     WavePart(WaveTrack* t);
@@ -254,24 +252,24 @@ public:
     {
         return (WaveTrack*) Part::track();
     }
-	FadeCurve* fadeIn()
-	{
-		return m_fadeIn;
-	}
-	FadeCurve* fadeOut()
-	{
-		return m_fadeOut;
-	}
-	FadeCurve* crossFadeIn() { return m_crossFadeIn;}
-	FadeCurve* crossFadeOut() { return m_crossFadeOut;}
+    FadeCurve* fadeIn()
+    {
+        return m_fadeIn;
+    }
+    FadeCurve* fadeOut()
+    {
+        return m_fadeOut;
+    }
+    FadeCurve* crossFadeIn() { return m_crossFadeIn;}
+    FadeCurve* crossFadeOut() { return m_crossFadeOut;}
 
-	float gain(unsigned);
-	float getFadeOutValue(unsigned pos, QList<FadeCurve*> fades);
-	float getFadeInValue(unsigned pos, QList<FadeCurve*> fades);
-	void setHasCrossFadeForPartialOverlapLeft(bool crossFade) {m_hasCrossFadeForPartialOverlapLeft = crossFade;}
-	void setHasCrossFadeForPartialOverlapRight(bool crossFade) {m_hasCrossFadeForPartialOverlapRight = crossFade;}
-	bool hasCrossFadeForPartialOverlapLeft() const {return m_hasCrossFadeForPartialOverlapLeft;}
-	bool hasCrossFadeForPartialOverlapRight() const {return m_hasCrossFadeForPartialOverlapRight;}
+    float gain(unsigned);
+    float getFadeOutValue(unsigned pos, QList<FadeCurve*> fades);
+    float getFadeInValue(unsigned pos, QList<FadeCurve*> fades);
+    void setHasCrossFadeForPartialOverlapLeft(bool crossFade) {m_hasCrossFadeForPartialOverlapLeft = crossFade;}
+    void setHasCrossFadeForPartialOverlapRight(bool crossFade) {m_hasCrossFadeForPartialOverlapRight = crossFade;}
+    bool hasCrossFadeForPartialOverlapLeft() const {return m_hasCrossFadeForPartialOverlapLeft;}
+    bool hasCrossFadeForPartialOverlapRight() const {return m_hasCrossFadeForPartialOverlapRight;}
 
 
     virtual void dump(int n = 0) const;
@@ -285,8 +283,8 @@ public:
 class PartList;
 
 struct PartMap {
-	PartList* parts;
-	Track* track;
+    PartList* parts;
+    Track* track;
 };
 
 typedef std::multimap<int, Part*, std::less<unsigned> >::iterator iPart;
@@ -302,8 +300,8 @@ public:
     Part* find(int idx);
     Part* find(unsigned tick, int sn);
     Part* findAtTick(unsigned tick);
-	PartMap partMap(Track*);
-	QList<Track*> tracks();
+    PartMap partMap(Track*);
+    QList<Track*> tracks();
 };
 
 extern void chainClone(Part* p);

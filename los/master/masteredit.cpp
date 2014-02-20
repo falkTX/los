@@ -9,7 +9,6 @@
 
 #include "masteredit.h"
 #include "mtscale.h"
-#include "hitscale.h"
 #include "sigscale.h"
 #include "scrollscale.h"
 #include "poslabel.h"

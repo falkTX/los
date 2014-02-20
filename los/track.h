@@ -18,7 +18,6 @@
 #include <algorithm>
 
 #include "part.h"
-#include "key.h"
 #include "node.h"
 #include "route.h"
 #include "ctrl.h"

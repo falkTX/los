@@ -26,8 +26,6 @@
 #include "scrollscale.h"
 #include "Piano.h"
 #include "ctrl/ctrledit.h"
-#include "splitter.h"
-#include "ttoolbar.h"
 #include "utils.h"
 #include "globals.h"
 #include "gconfig.h"

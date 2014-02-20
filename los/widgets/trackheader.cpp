@@ -32,7 +32,6 @@
 #include "instruments/minstrument.h"
 #include "Composer.h"
 #include "event.h"
-#include "menulist.h"
 #include "midimonitor.h"
 #include "ComposerCanvas.h"
 #include "trackheader.h"

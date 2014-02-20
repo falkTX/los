@@ -6,7 +6,6 @@
 //  (C) Copyright 2000-2003 Werner Schweer (ws@seh.de)
 //=========================================================
 
-#include "audioconvert.h"
 #include "globals.h"
 #include "event.h"
 #include "waveevent.h"

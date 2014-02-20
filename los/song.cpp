@@ -26,7 +26,6 @@
 #include "song.h"
 #include "track.h"
 #include "undo.h"
-#include "key.h"
 #include "globals.h"
 #include "event.h"
 #include "marker/marker.h"
