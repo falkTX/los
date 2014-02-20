@@ -24,7 +24,6 @@
 #include "driver/alsamidi.h"
 #include "driver/jackmidi.h"
 #include "wave.h"
-#include "sync.h"
 #include "midiseq.h"
 #include "gconfig.h"
 #include "minstrument.h"
@@ -905,10 +904,7 @@ void Audio::collectEvents(MidiTrack* track, unsigned int cts, unsigned int nts)
                         // p3.3.25
                         // If syncing to external midi sync, we cannot use the tempo map.
                         // Therefore we cannot get sub-tick resolution. Just use ticks instead of frames.
-                        if (extSyncFlag.value())
-                            playEvents->add(MidiPlayEvent(tick, port, channel, 0x90, pitch, velo, (Track*)track));
-                        else
-                            playEvents->add(MidiPlayEvent(frame, port, channel, 0x90, pitch, velo, (Track*)track));
+                        playEvents->add(MidiPlayEvent(frame, port, channel, 0x90, pitch, velo, (Track*)track));
 
                         stuckNotes->add(MidiPlayEvent(tick + len, port, channel, veloOff ? 0x80 : 0x90, pitch, veloOff, (Track*)track));
                     }
@@ -917,10 +913,7 @@ void Audio::collectEvents(MidiTrack* track, unsigned int cts, unsigned int nts)
                         MidiDevice* mdAlt = midiPorts[port].device();
                         if (mdAlt)
                         {
-                            if (extSyncFlag.value())
-                                mdAlt->playEvents()->add(MidiPlayEvent(tick, port, channel, 0x90, pitch, velo, (Track*)track));
-                            else
-                                mdAlt->playEvents()->add(MidiPlayEvent(frame, port, channel, 0x90, pitch, velo, (Track*)track));
+                            mdAlt->playEvents()->add(MidiPlayEvent(frame, port, channel, 0x90, pitch, velo, (Track*)track));
 
                             mdAlt->stuckNotes()->add(MidiPlayEvent(tick + len, port, channel, veloOff ? 0x80 : 0x90, pitch, veloOff, (Track*)track));
                         }
@@ -938,19 +931,13 @@ void Audio::collectEvents(MidiTrack* track, unsigned int cts, unsigned int nts)
                     //int pitch = ev.pitch();
 
                     // p3.3.25
-                    if (extSyncFlag.value())
-                        playEvents->add(MidiPlayEvent(tick, port, channel, ev, (Track*)track));
-                    else
-                        playEvents->add(MidiPlayEvent(frame, port, channel, ev, (Track*)track));
+                    playEvents->add(MidiPlayEvent(frame, port, channel, ev, (Track*)track));
                 }
                     break;
 
 
                 default:
-                    if (extSyncFlag.value())
-                        playEvents->add(MidiPlayEvent(tick, port, channel, ev, (Track*)track));
-                    else
-                        playEvents->add(MidiPlayEvent(frame, port, channel, ev, (Track*)track));
+                    playEvents->add(MidiPlayEvent(frame, port, channel, ev, (Track*)track));
 
                     break;
             }
@@ -982,8 +969,6 @@ void Audio::processMidi()
         //  because they may change while here in process, asynchronously.
         md->beforeProcess();
     }
-
-    bool extsync = extSyncFlag.value();
 
     for (iMidiTrack t = song->midis()->begin(); t != song->midis()->end(); ++t)
     {
@@ -1053,10 +1038,7 @@ void Audio::processMidi()
                                 playEvents->add(event);
 
                             // If syncing externally the event time is already in units of ticks, set above.
-                            if (!extsync)
-                            {
-                                event.setTime(tempomap.frame2tick(event.time())); // set tick time
-                            }
+                            event.setTime(tempomap.frame2tick(event.time())); // set tick time
 
                             if (recording)
                                 rl->add(event);
@@ -1149,7 +1131,6 @@ void Audio::processMidi()
 
                             // p3.3.25
                             // If syncing externally the event time is already in units of ticks, set above.
-                            if (!extsync)
                             {
                                 //printf("7777777777777777777777777777777777777777777\n");
                                 // p3.3.35
@@ -1209,11 +1190,6 @@ void Audio::processMidi()
                 break;
             MidiPlayEvent ev(*k);
 
-            if (extsync)
-            {
-                ev.setTime(k->time());
-            }
-            else
             {
                 int frame = tempomap.tick2frame(k->time()) + frameOffset;
                 ev.setTime(frame);

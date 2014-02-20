@@ -774,25 +774,10 @@ void alsaProcessMidiInput()
                 break;
 
             case SND_SEQ_EVENT_CLOCK:
-                midiSeq->realtimeSystemInput(curPort, ME_CLOCK);
-                //mdev->syncInfo().trigMCSyncDetect();
-                break;
-
             case SND_SEQ_EVENT_START:
-                midiSeq->realtimeSystemInput(curPort, ME_START);
-                break;
-
             case SND_SEQ_EVENT_CONTINUE:
-                midiSeq->realtimeSystemInput(curPort, ME_CONTINUE);
-                break;
-
             case SND_SEQ_EVENT_STOP:
-                midiSeq->realtimeSystemInput(curPort, ME_STOP);
-                break;
-
             case SND_SEQ_EVENT_TICK:
-                midiSeq->realtimeSystemInput(curPort, ME_TICK);
-                //mdev->syncInfo().trigTickDetect();
                 break;
 
             case SND_SEQ_EVENT_SYSEX:
@@ -816,12 +801,8 @@ void alsaProcessMidiInput()
             case SND_SEQ_EVENT_PORT_UNSUBSCRIBED: // write port is released
                 break;
             case SND_SEQ_EVENT_SONGPOS:
-                midiSeq->setSongPosition(curPort, ev->data.control.value);
-                break;
             case SND_SEQ_EVENT_SENSING:
-                break;
             case SND_SEQ_EVENT_QFRAME:
-                midiSeq->mtcInputQuarter(curPort, ev->data.control.value);
                 break;
                 // case SND_SEQ_EVENT_CLIENT_START:
                 // case SND_SEQ_EVENT_CLIENT_EXIT:

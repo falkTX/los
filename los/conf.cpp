@@ -12,6 +12,7 @@
 #include <QPair>
 #include <QHash>
 
+#include "al/al.h"
 #include "app.h"
 #include "transport.h"
 #include "icons.h"
@@ -35,7 +36,6 @@
 #include "genset.h"
 //#include "midiitransform.h"
 #include "audio.h"
-#include "sync.h"
 #include "wave.h"
 #include "midiseq.h"
 #include "TrackManager.h"
@@ -296,7 +296,6 @@ static void readConfigMidiPort(Xml& xml)/*{{{*/
     int openFlags = 1;
     int dic = 0;
     int doc = 0;
-    MidiSyncInfo tmpSi;
     int type = MidiDevice::ALSA_MIDI;
     bool cachenrpn = false;
 
@@ -333,8 +332,6 @@ static void readConfigMidiPort(Xml& xml)/*{{{*/
                     dic = xml.parseInt();
                 else if (tag == "defaultOutChans")
                     doc = xml.parseInt();
-                else if (tag == "midiSyncInfo")
-                    tmpSi.read(xml);
                 else if (tag == "instrument")
                 {
                     instrument = xml.parse1();
@@ -434,7 +431,6 @@ static void readConfigMidiPort(Xml& xml)/*{{{*/
                     mp->setDefaultInChannels(dic);
                     mp->setDefaultOutChannels(doc);
 
-                    mp->syncInfo().copyParams(tmpSi);
                     //Indicate the port was found in the song file, even if no device is assigned to it.
                     mp->setFoundInSongFile(true);
 
@@ -739,29 +735,13 @@ void readConfiguration(Xml& xml, bool readOnlySequencer)/*{{{*/
                     lastTrackPartColorIndex = xml.parseInt();
                 }
                 else if (tag == "mtctype")
-                    mtcType = xml.parseInt();
-                else if (tag == "sendClockDelay")
-                    syncSendFirstClockDelay = xml.parseUInt();
-                else if (tag == "extSync")
-                    extSyncFlag.setValue(xml.parseInt());
-                else if (tag == "useJackTransport")
-                {
-                    useJackTransport.setValue(xml.parseInt());
-                }
+                    AL::mtcType = xml.parseInt();
                 else if (tag == "jackTransportMaster")
                 {
-                    jackTransportMaster = xml.parseInt();
+                    // XXX FIXME
+                    bool jackTransportMaster = xml.parseInt();
                     if (audioDevice)
                         audioDevice->setMaster(jackTransportMaster);
-                }
-                else if (tag == "mtcoffset")
-                {
-                    QString qs(xml.parse1());
-                    QByteArray ba = qs.toLatin1();
-                    const char* str = ba.constData();
-                    int h, m, s, f, sf;
-                    sscanf(str, "%d:%d:%d:%d:%d", &h, &m, &s, &f, &sf);
-                    mtcOffset = MTC(h, m, s, f, sf);
                 }
                 else if (tag == "shortcuts")
                     readShortCuts(xml);
@@ -919,7 +899,7 @@ static void writeSeqConfiguration(int level, Xml& xml, bool writePortInfo)/*{{{*
             // Also, check for other non-defaults and save port, to preserve settings even if no device.
             // Dont write the config for the global inputs list they will be auto created with each startup
             if (mport->defaultInChannels() || mport->defaultOutChannels() ||
-                    (mport->instrument() && !mport->instrument()->iname().isEmpty() && mport->instrument()->iname() != "GM") || !mport->syncInfo().isDefault() )
+                    (mport->instrument() && !mport->instrument()->iname().isEmpty() && mport->instrument()->iname() != "GM") /*|| !mport->syncInfo().isDefault()*/ )
             {
                 used = true;
             }
@@ -964,7 +944,6 @@ static void writeSeqConfiguration(int level, Xml& xml, bool writePortInfo)/*{{{*
 
                 xml.intTag(level, "openFlags", dev->openFlags());
             }
-            mport->syncInfo().write(level, xml);
             // write out registered controller for all channels
             MidiCtrlValListList* vll = mport->controller();
             for (int k = 0; k < MIDI_CHANNELS; ++k)
@@ -1092,12 +1071,6 @@ void LOS::writeGlobalConfiguration(int level, Xml& xml) const
         level++;
     }
 
-    xml.intTag(level, "mtctype", mtcType);
-    xml.nput(level, "<mtcoffset>%02d:%02d:%02d:%02d:%02d</mtcoffset>\n",
-            mtcOffset.h(), mtcOffset.m(), mtcOffset.s(),
-            mtcOffset.f(), mtcOffset.sf());
-    extSyncFlag.save(level, xml);
-
     writeSeqConfiguration(level, xml, false);
 
     writeShortCuts(level, xml);
@@ -1222,15 +1195,6 @@ void LOS::writeConfiguration(int level, Xml& xml) const
     xml.intTag(level, "midiFilterCtrl2", midiFilterCtrl2);
     xml.intTag(level, "midiFilterCtrl3", midiFilterCtrl3);
     xml.intTag(level, "midiFilterCtrl4", midiFilterCtrl4);
-
-    xml.intTag(level, "mtctype", mtcType);
-    xml.nput(level, "<mtcoffset>%02d:%02d:%02d:%02d:%02d</mtcoffset>\n",
-            mtcOffset.h(), mtcOffset.m(), mtcOffset.s(),
-            mtcOffset.f(), mtcOffset.sf());
-    xml.uintTag(level, "sendClockDelay", syncSendFirstClockDelay);
-    xml.intTag(level, "useJackTransport", useJackTransport.value());
-    xml.intTag(level, "jackTransportMaster", jackTransportMaster);
-    extSyncFlag.save(level, xml);
 
     composer->writeStatus(level, xml);
     writeSeqConfiguration(level, xml, true);

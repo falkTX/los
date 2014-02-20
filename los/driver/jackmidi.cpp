@@ -22,7 +22,6 @@
 #include "../midictrl.h"
 #include "../audio.h"
 #include "mpevent.h"
-//#include "sync.h"
 #include "audiodev.h"
 #include "../midiplugins/midiitransform.h"
 #include "../midiplugins/mitplugin.h"
@@ -31,9 +30,6 @@
 
 // Turn on debug messages.
 //#define JACK_MIDI_DEBUG
-
-extern unsigned int volatile lastExtMidiSyncTick;
-
 
 //---------------------------------------------------------
 //   MidiJackDevice
@@ -309,44 +305,6 @@ void MidiJackDevice::recordEvent(MidiRecordEvent& event)/*{{{*/
 
     if (_port != -1)
     {
-        int idin = midiPorts[_port].syncInfo().idIn();
-
-        //---------------------------------------------------
-        // filter some SYSEX events
-        //---------------------------------------------------
-
-        if (typ == ME_SYSEX)
-        {
-            const unsigned char* p = event.data();
-            int n = event.len();
-            if (n >= 4)
-            {
-                if ((p[0] == 0x7f) && ((p[1] == 0x7f) || (idin == 0x7f) || (p[1] == idin)))
-                {
-                    if (p[2] == 0x06)
-                    {
-                        midiSeq->mmcInput(_port, p, n);
-                        return;
-                    }
-                    if (p[2] == 0x01)
-                    {
-                        midiSeq->mtcInputFull(_port, p, n);
-                        return;
-                    }
-                }
-                else if (p[0] == 0x7e)
-                {
-                    midiSeq->nonRealtimeSystemSysex(_port, p, n);
-                    return;
-                }
-            }
-        }
-        else
-        {
-            // Trigger general activity indicator detector. Sysex has no channel, don't trigger.
-            midiPorts[_port].syncInfo().trigActDetect(event.channel());
-        }
-
         //call our midimonitor with the data, it can then decide what to do
         monitorEvent(event);
     }
@@ -417,7 +375,7 @@ void MidiJackDevice::eventReceived(jack_midi_event_t* ev)/*{{{*/
 
     unsigned pos = audio->pos().frame();
 
-    event.setTime(extSyncFlag.value() ? lastExtMidiSyncTick : (pos + ev->time));
+    event.setTime(pos + ev->time);
 
     event.setChannel(*(ev->buffer) & 0xf);
     int type = *(ev->buffer) & 0xf0;
@@ -461,20 +419,12 @@ void MidiJackDevice::eventReceived(jack_midi_event_t* ev)/*{{{*/
                     event.setData((unsigned char*) (ev->buffer + 1), ev->size - 2);
                     break;
                 case ME_MTC_QUARTER:
-                    if (_port != -1)
-                        midiSeq->mtcInputQuarter(_port, *(ev->buffer + 1));
-                    return;
                 case ME_SONGPOS:
-                    if (_port != -1)
-                        midiSeq->setSongPosition(_port, *(ev->buffer + 1) | (*(ev->buffer + 2) >> 2)); // LSB then MSB
-                    return;
                 case ME_CLOCK:
                 case ME_TICK:
                 case ME_START:
                 case ME_CONTINUE:
                 case ME_STOP:
-                    if (_port != -1)
-                        midiSeq->realtimeSystemInput(_port, type);
                     return;
                 default:
                     printf("MidiJackDevice::eventReceived unsupported system event 0x%02x\n", type);
@@ -677,7 +627,7 @@ bool MidiJackDevice::processEvent(const MidiPlayEvent& event)
     // Just do this 'standard midi 64T timing thing' for now until we figure out more precise external timings.
     // Does require relatively short audio buffers, in order to catch the resolution, but buffer <= 256 should be OK...
     // Tested OK so far with 128.
-    if (t == 0 || extSyncFlag.value())
+    if (t == 0 /*|| extSyncFlag.value()*/)
         t = audio->getFrameOffset() + audio->pos().frame();
 
 #ifdef JACK_MIDI_DEBUG

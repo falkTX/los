@@ -12,7 +12,6 @@
 #include <list>
 
 #include "mpevent.h"
-//#include "sync.h"
 #include "route.h"
 #include "globaldefs.h"
 

@@ -22,7 +22,6 @@
 #include "globals.h"
 #include "audio.h"
 #include "midiseq.h"
-//#include "sync.h"
 #include "midiplugins/midiitransform.h"
 #include "midimonitor.h"
 
@@ -279,7 +278,7 @@ void MidiDevice::recordEvent(MidiRecordEvent& event)
     // p3.3.35
     // TODO: Tested, but record resolution not so good. Switch to wall clock based separate list in MidiDevice. And revert this line.
     //event.setTime(audio->timestamp());
-    event.setTime(extSyncFlag.value() ? lastExtMidiSyncTick : audio->timestamp());
+    event.setTime(audio->timestamp());
 
     //printf("MidiDevice::recordEvent event time:%d\n", event.time());
 
@@ -300,43 +299,6 @@ void MidiDevice::recordEvent(MidiRecordEvent& event)
 
     if (_port != -1)
     {
-        int idin = midiPorts[_port].syncInfo().idIn();
-
-        //---------------------------------------------------
-        // filter some SYSEX events
-        //---------------------------------------------------
-
-        if (typ == ME_SYSEX)
-        {
-            const unsigned char* p = event.data();
-            int n = event.len();
-            if (n >= 4)
-            {
-                if ((p[0] == 0x7f) && ((p[1] == 0x7f) || (idin == 0x7f) || (p[1] == idin)))
-                {
-                    if (p[2] == 0x06)
-                    {
-                        midiSeq->mmcInput(_port, p, n);
-                        return;
-                    }
-                    if (p[2] == 0x01)
-                    {
-                        midiSeq->mtcInputFull(_port, p, n);
-                        return;
-                    }
-                }
-                else if (p[0] == 0x7e)
-                {
-                    midiSeq->nonRealtimeSystemSysex(_port, p, n);
-                    return;
-                }
-            }
-        }
-        else
-            // p3.3.26 1/23/10 Moved here from alsaProcessMidiInput(). Anticipating Jack midi support, so don't make it ALSA specific. Tim.
-            // Trigger general activity indicator detector. Sysex has no channel, don't trigger.
-            midiPorts[_port].syncInfo().trigActDetect(event.channel());
-
         //call our midimonitor with the data, it can then decide what to do
         monitorEvent(event);
 

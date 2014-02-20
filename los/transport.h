@@ -91,8 +91,6 @@ class Transport : public QWidget
     QComboBox* recMode;
     QComboBox* cycleMode;
     QToolButton* quantizeButton;
-    QToolButton* syncButton;
-    QToolButton* jackTransportButton;
     QLabel* l2;
     QLabel* l3;
     QLabel* l5;
@@ -111,7 +109,6 @@ private slots:
     void setCycleMode(int);
     void songChanged(int);
     void syncChanged(bool);
-    void jackSyncChanged(bool);
     void setRecord(bool flag);
     void stopToggled(bool);
     void playToggled(bool);
@@ -124,7 +121,6 @@ public slots:
     void setMasterFlag(bool);
     //void setClickFlag(bool);
     void setQuantizeFlag(bool);
-    void setSyncFlag(bool);
     void setPlay(bool f);
     void setHandleColor(QColor);
 

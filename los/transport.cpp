@@ -23,7 +23,6 @@
 #include "siglabel.h"
 #include "globals.h"
 #include "icons.h"
-#include "sync.h"
 #include "shortcuts.h"
 #include "gconfig.h"
 #include "app.h"
@@ -347,28 +346,12 @@ Transport::Transport(QWidget* parent, const char* name)
     button1->setSpacing(0);
 
     quantizeButton = newButton(tr("AC"), tr("quantize during record"), true, 19);
-
-    syncButton = newButton(tr("Sync"), tr("external sync on/off"), true, 19);
-
-    jackTransportButton = newButton(tr("Jack"), tr("Jack transport sync on/off"), true, 19);
-
     quantizeButton->setChecked(song->quantize());
-    syncButton->setChecked(extSyncFlag.value());
-    jackTransportButton->setChecked(useJackTransport.value());
     quantizeButton->setFocusPolicy(Qt::NoFocus);
-    syncButton->setFocusPolicy(Qt::NoFocus);
-    jackTransportButton->setFocusPolicy(Qt::NoFocus);
 
     button1->addWidget(quantizeButton);
-    button1->addWidget(syncButton);
-    button1->addWidget(jackTransportButton);
 
     connect(quantizeButton, SIGNAL(toggled(bool)), song, SLOT(setQuantize(bool)));
-
-    connect(syncButton, SIGNAL(toggled(bool)), &extSyncFlag, SLOT(setValue(bool)));
-    connect(jackTransportButton, SIGNAL(toggled(bool)), &useJackTransport, SLOT(setValue(bool)));
-    connect(&extSyncFlag, SIGNAL(valueChanged(bool)), SLOT(syncChanged(bool)));
-    connect(&useJackTransport, SIGNAL(valueChanged(bool)), SLOT(jackSyncChanged(bool)));
 
     connect(song, SIGNAL(quantizeChanged(bool)), this, SLOT(setQuantizeFlag(bool)));
 
@@ -574,15 +557,6 @@ void Transport::setQuantizeFlag(bool f)
 }
 
 //---------------------------------------------------------
-//   setSyncFlag
-//---------------------------------------------------------
-
-void Transport::setSyncFlag(bool f)
-{
-    syncButton->setChecked(f);
-}
-
-//---------------------------------------------------------
 //   toggleRecMode
 //---------------------------------------------------------
 
@@ -615,10 +589,7 @@ void Transport::songChanged(int flags)
     int t = tempomap.tempo(cpos);
     if (flags & (SC_MASTER | SC_TEMPO))
     {
-        if (extSyncFlag.value())
-            setTempo(0);
-        else
-            setTempo(t);
+        setTempo(t);
     }
     if (flags & SC_SIG)
     {
@@ -636,7 +607,6 @@ void Transport::songChanged(int flags)
 
 void Transport::syncChanged(bool flag)
 {
-    syncButton->setChecked(flag);
     slider->setEnabled(!flag);
     masterButton->setEnabled(!flag);
     if (flag)
@@ -654,10 +624,6 @@ void Transport::syncChanged(bool flag)
     forwardAction->setEnabled(!flag);
 }
 
-void Transport::jackSyncChanged(bool flag)
-{
-    jackTransportButton->setChecked(flag);
-}
 //---------------------------------------------------------
 //   stopToggled
 //---------------------------------------------------------

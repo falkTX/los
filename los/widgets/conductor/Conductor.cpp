@@ -296,7 +296,8 @@ void Conductor::heartBeat()/*{{{*/
                 if (mpt < 0 || mpt >= MIDI_PORTS)
                     continue;
 
-                if (midiPorts[mpt].syncInfo().actDetectBits() & r->channel)
+                /// XXX FIXME
+                //if (midiPorts[mpt].syncInfo().actDetectBits() & r->channel)
                 {
                     if (!_midiDetect)
                     {

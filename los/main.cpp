@@ -25,7 +25,6 @@
 #include "gconfig.h"
 #include "globals.h"
 #include "icons.h"
-#include "sync.h"
 
 extern bool initDummyAudio();
 extern void initIcons();
@@ -266,8 +265,9 @@ int main(int argc, char* argv[])
                 break;
             case 'M': midiOutputTrace = true;
                 break;
-            case 's': debugSync = true;
-                break;
+            // XXX remove var
+            //case 's': debugSync = true;
+            //    break;
             case 'P': realTimePriority = atoi(optarg);
                 break;
             case 'Y': midiRTPrioOverride = atoi(optarg);
@@ -325,9 +325,7 @@ int main(int argc, char* argv[])
     else
         realTimeScheduling = audioDevice->isRealtime();
 
-    useJackTransport.setValue(true);
     fifoLength = 131072 / segmentSize;
-
 
     argc -= optind;
     ++argc;

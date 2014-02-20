@@ -30,7 +30,6 @@ class MidiSeq : public Thread
     int timerFd;
     int idle;
     int prio; // realtime priority
-    int midiClock;
     static int ticker;
 
     /* Testing */
@@ -46,9 +45,7 @@ class MidiSeq : public Thread
     double timediff[24];
     int storedtimediffs;
 
-    void alignAllTicks(int frameOverride = 0);
     /* Testing */
-
     Timer *timer;
 
     signed int selectTimer();
@@ -57,13 +54,8 @@ class MidiSeq : public Thread
     void processTimerTick();
     void processSeek();
     void processStop();
-    void processMidiClock();
     virtual void processMsg(const ThreadMsg*);
     void updatePollFd();
-
-    void mtcSyncMsg(const MTC&, int, bool);
-    //void mtcInputFull(const unsigned char* p, int n);
-    //void nonRealtimeSystemSysex(const unsigned char* p, int n);
 
 public:
     //MidiSeq(int prio, const char* name);
@@ -77,18 +69,9 @@ public:
     virtual void threadStop();
     virtual void threadStart(void*);
 
-    void realtimeSystemInput(int, int);
-    void mtcInputQuarter(int, unsigned char);
-    void setSongPosition(int, int);
-    // void eventReceived(MidiRecordEvent& event);
-    //void mmcInput(const unsigned char* p, int n);
-    void mmcInput(int, const unsigned char*, int);
-    void mtcInputFull(int, const unsigned char*, int);
-    void nonRealtimeSystemSysex(int, const unsigned char*, int);
-
     void msgMsg(int id);
     void msgProcess();
-	void msgPreloadCtrl();
+    void msgPreloadCtrl();
     void msgSeek();
     void msgStop();
     void msgSetRtc();

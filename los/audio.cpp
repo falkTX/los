@@ -24,7 +24,6 @@
 #include "wave.h"
 #include "midictrl.h"
 #include "midiseq.h"
-#include "sync.h"
 #include "midi.h"
 #include "event.h"
 #include "gconfig.h"
@@ -428,7 +427,7 @@ void Audio::process(unsigned frames)
         //
         //  check for loop end
         //
-        if (state == PLAY && song->loop() && !_bounce && !extSyncFlag.value())
+        if (state == PLAY && song->loop() && !_bounce)
         {
             const Pos& loop = song->rPos();
             unsigned n = loop.frame() - samplePos - (3 * frames);
@@ -472,15 +471,7 @@ void Audio::process(unsigned frames)
 
 
         // p3.3.25
-        if (extSyncFlag.value())
         {
-            nextTickPos = curTickPos + midiExtSyncTicks;
-            // Probably not good - interfere with midi thread.
-            midiExtSyncTicks = 0;
-        }
-        else
-        {
-
             Pos ppp(_pos);
             ppp += frames;
             nextTickPos = ppp.tick();
@@ -754,30 +745,6 @@ void Audio::seek(const Pos& p)
     midiSeq->msgSeek(); // handle stuck notes and set
     // controller for new position
 
-    // Don't send if external sync is on. The master, and our sync routing system will take care of that.
-    if (!extSyncFlag.value())
-    {
-
-        for (int port = 0; port < MIDI_PORTS; ++port)
-        {
-            MidiPort* mp = &midiPorts[port];
-            MidiDevice* dev = mp->device();
-            if (!dev || !mp->syncInfo().MRTOut())
-                continue;
-
-            int beat = (curTickPos * 4) / config.division;
-
-            bool isPlaying = false;
-            if (state == PLAY)
-                isPlaying = true;
-
-            mp->sendStop();
-            mp->sendSongpos(beat);
-            if (isPlaying)
-                mp->sendContinue();
-        }
-    }
-
     if (state != LOOP2 && !freewheel())
     {
         // We need to force prefetch to update,
@@ -842,32 +809,6 @@ void Audio::startRolling()
     state = PLAY;
     write(sigFd, "1", 1); // Play
 
-    // Don't send if external sync is on. The master, and our sync routing system will take care of that.
-    if (!extSyncFlag.value())
-    {
-
-        for (int port = 0; port < MIDI_PORTS; ++port)
-        {
-            MidiPort* mp = &midiPorts[port];
-            MidiDevice* dev = mp->device();
-            if (!dev)
-                continue;
-
-            MidiSyncInfo& si = mp->syncInfo();
-
-            if (si.MMCOut())
-                mp->sendMMCDeferredPlay();
-
-            if (si.MRTOut())
-            {
-                if (curTickPos)
-                    mp->sendContinue();
-                else
-                    mp->sendStart();
-            }
-        }
-    }
-
     // reenable sustain
     for (int i = 0; i < MIDI_PORTS; ++i)
     {
@@ -926,33 +867,6 @@ void Audio::stopRolling()
     }
 
 #endif
-
-    // Don't send if external sync is on. The master, and our sync routing system will take care of that.
-    if (!extSyncFlag.value())
-    {
-        for (int port = 0; port < MIDI_PORTS; ++port)
-        {
-            MidiPort* mp = &midiPorts[port];
-            MidiDevice* dev = mp->device();
-            if (!dev)
-                continue;
-
-            MidiSyncInfo& si = mp->syncInfo();
-
-            if (si.MMCOut())
-            {
-                mp->sendMMCStop();
-            }
-
-            if (si.MRTOut()) //
-            {
-                // send STOP and
-                // "set song position pointer"
-                mp->sendStop();
-            }
-        }
-    }
-
 
     WaveTrackList* tracks = song->waves();
     for (iWaveTrack i = tracks->begin(); i != tracks->end(); ++i)

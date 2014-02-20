@@ -114,7 +114,6 @@ file(GLOB core_source_files
     song.cpp
     songfile.cpp
     stringparam.cpp
-    sync.cpp
     tempo.cpp
     thread.cpp
     track.cpp

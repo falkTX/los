@@ -39,7 +39,6 @@ void initMidiPorts()
         MidiPort* port = &midiPorts[i];
         ///port->setInstrument(genericMidiInstrument);
         port->setInstrument(registerMidiInstrument("GM")); // Changed by Tim.
-        port->syncInfo().setPort(i);
     }
 }
 
@@ -351,121 +350,6 @@ void MidiPort::sendSysex(const unsigned char* p, int n)
     if (_device)
     {
         MidiPlayEvent event(0, 0, ME_SYSEX, p, n);
-        _device->putEvent(event);
-    }
-}
-
-//---------------------------------------------------------
-//   sendMMCLocate
-//---------------------------------------------------------
-
-void MidiPort::sendMMCLocate(unsigned char ht, unsigned char m, unsigned char s, unsigned char f, unsigned char sf, int devid)
-{
-    unsigned char msg[mmcLocateMsgLen];
-    memcpy(msg, mmcLocateMsg, mmcLocateMsgLen);
-    if (devid != -1)
-        msg[1] = devid;
-    else
-        msg[1] = _syncInfo.idOut();
-    msg[6] = ht;
-    msg[7] = m;
-    msg[8] = s;
-    msg[9] = f;
-    msg[10] = sf;
-    sendSysex(msg, mmcLocateMsgLen);
-}
-
-//---------------------------------------------------------
-//   sendMMCStop
-//---------------------------------------------------------
-
-void MidiPort::sendMMCStop(int devid)
-{
-    unsigned char msg[mmcStopMsgLen];
-    memcpy(msg, mmcStopMsg, mmcStopMsgLen);
-    if (devid != -1)
-        msg[1] = devid;
-    else
-        msg[1] = _syncInfo.idOut();
-    sendSysex(msg, mmcStopMsgLen);
-}
-
-//---------------------------------------------------------
-//   sendMMCDeferredPlay
-//---------------------------------------------------------
-
-void MidiPort::sendMMCDeferredPlay(int devid)
-{
-    unsigned char msg[mmcDeferredPlayMsgLen];
-    memcpy(msg, mmcDeferredPlayMsg, mmcDeferredPlayMsgLen);
-    if (devid != -1)
-        msg[1] = devid;
-    else
-        msg[1] = _syncInfo.idOut();
-    sendSysex(msg, mmcDeferredPlayMsgLen);
-}
-
-//---------------------------------------------------------
-//   sendStart
-//---------------------------------------------------------
-
-void MidiPort::sendStart()
-{
-    if (_device)
-    {
-        MidiPlayEvent event(0, 0, 0, ME_START, 0, 0);
-        _device->putEvent(event);
-    }
-}
-
-//---------------------------------------------------------
-//   sendStop
-//---------------------------------------------------------
-
-void MidiPort::sendStop()
-{
-    if (_device)
-    {
-        MidiPlayEvent event(0, 0, 0, ME_STOP, 0, 0);
-        _device->putEvent(event);
-    }
-}
-
-//---------------------------------------------------------
-//   sendClock
-//---------------------------------------------------------
-
-void MidiPort::sendClock()
-{
-    if (_device)
-    {
-        MidiPlayEvent event(0, 0, 0, ME_CLOCK, 0, 0);
-        _device->putEvent(event);
-    }
-}
-
-//---------------------------------------------------------
-//   sendContinue
-//---------------------------------------------------------
-
-void MidiPort::sendContinue()
-{
-    if (_device)
-    {
-        MidiPlayEvent event(0, 0, 0, ME_CONTINUE, 0, 0);
-        _device->putEvent(event);
-    }
-}
-
-//---------------------------------------------------------
-//   sendSongpos
-//---------------------------------------------------------
-
-void MidiPort::sendSongpos(int pos)
-{
-    if (_device)
-    {
-        MidiPlayEvent event(0, 0, 0, ME_SONGPOS, pos, 0);
         _device->putEvent(event);
     }
 }

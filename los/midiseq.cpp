@@ -25,7 +25,6 @@
 #include "audio.h"
 #include "driver/alsamidi.h"
 #include "driver/jackmidi.h"
-#include "sync.h"
 #include "song.h"
 #include "gconfig.h"
 
@@ -228,7 +227,6 @@ MidiSeq::MidiSeq(const char* name)
     prio = 0;
 
     idle = false;
-    midiClock = 0;
     mclock1 = 0.0;
     mclock2 = 0.0;
     songtick1 = songtick2 = 0;
@@ -365,7 +363,7 @@ void MidiSeq::updatePollFd()
         const QString name = dev->name();
         if (port == -1)
             continue;
-        if ((dev->rwFlags() & 0x2) || (extSyncFlag.value() && (midiPorts[port].syncInfo().MCIn())))
+        if ((dev->rwFlags() & 0x2) /*|| (extSyncFlag.value() && (midiPorts[port].syncInfo().MCIn()))*/)
         {
             if (dev->selectRfd() < 0)
             {
@@ -426,14 +424,6 @@ void MidiSeq::start(int priority)
 }
 
 //---------------------------------------------------------
-//   processMidiClock
-//---------------------------------------------------------
-
-void MidiSeq::processMidiClock()
-{
-}
-
-//---------------------------------------------------------
 //   midiTick
 //---------------------------------------------------------
 
@@ -482,62 +472,8 @@ void MidiSeq::processTimerTick()
 
     unsigned curFrame = audio->curFrame();
 
-    if (!extSyncFlag.value())
-    {
-        int curTick = lrint((double(curFrame) / double(sampleRate)) * double(tempomap.globalTempo()) * double(config.division) * 10000.0 / double(tempomap.tempo(song->cpos())));
+    //int tickpos = audio->tickPos();
 
-        if (midiClock > curTick)
-            midiClock = curTick;
-
-        int div = config.division / 24;
-        if (curTick >= midiClock + div)
-        {
-            int perr = (curTick - midiClock) / div;
-
-            bool used = false;
-
-            for (int port = 0; port < MIDI_PORTS; ++port)
-            {
-                MidiPort* mp = &midiPorts[port];
-
-                // No device? Clock out not turned on?
-                if (!mp->device() || !mp->syncInfo().MCOut())
-                    continue;
-
-                used = true;
-
-                mp->sendClock();
-            }
-
-            if (debugMsg && used && perr > 1)
-                printf("Dropped %d midi out clock(s). curTick:%d midiClock:%d div:%d\n", perr, curTick, midiClock, div);
-
-            // Keeping in mind how (receiving end) Phase Locked Loops (usually) operate...
-            // Increment as if we had caught the timer exactly on the mark, even if the timer
-            //  has passed beyond the mark, or even beyond 2 * div.
-            // If we missed some chances to send clock, resume the count where it would have been,
-            //  had we not missed chances.
-            // We can't do anything about missed chances except send right away, and make up
-            //  for gained time by losing time in the next count...
-            // In other words, use equalization periods to counter gained/lost time, so that
-            //  ultimately, over time, the receiver remains in phase, despite any short dropouts / phase glitches.
-            // (midiClock only increments by div units).
-            //
-            // Tested: With midi thread set to high priority, very few clock dropouts ocurred (P4 1.6Ghz).
-            // But target device tick drifts out of phase with los tick slowly over time, say 20 bars or so.
-            // May need more tweaking, possibly use round with/instead of lrint (above), and/or
-            //  do not use equalization periods - set midiClock to fractions of div.
-            // Tested: With RTC resolution at 1024, stability was actually better than with 8192!
-            // It stayed in sync more than 64 bars...
-            //
-            //
-            // Using equalization periods...
-            midiClock += (perr * div);
-        }
-    }
-
-    int tickpos = audio->tickPos();
-    bool extsync = extSyncFlag.value();
     //
     // play all events upto curFrame
     //
@@ -557,7 +493,7 @@ void MidiSeq::processTimerTick()
         {
             // If syncing to external midi sync, we cannot use the tempo map.
             // Therefore we cannot get sub-tick resolution. Just use ticks instead of frames.
-            if (i->time() > (extsync ? tickpos : curFrame))
+            if (i->time() > curFrame)
             {
                 break; // skip this event
             }

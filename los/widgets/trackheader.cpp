@@ -518,6 +518,7 @@ void TrackHeader::heartBeat()/*{{{*/
             int mpt = 0;
             RouteList* rl = track->inRoutes();
 
+#if 0
             ciRoute r = rl->begin();
             for (; r != rl->end(); ++r)
             {
@@ -558,6 +559,7 @@ void TrackHeader::heartBeat()/*{{{*/
                         m_btnAutomation->setIcon(QIcon(*input_indicator_OffIcon));*/
                 }
             }
+#endif
         }
         else
         {

@@ -24,7 +24,6 @@
 #include "track.h"
 #include "pos.h"
 #include "tempo.h"
-#include "sync.h"
 #include "utils.h"
 
 #include "midi.h"
@@ -92,9 +91,6 @@ static int processSync(jack_transport_state_t state, jack_position_t* pos, void*
     if (JACK_DEBUG)
         printf("processSync()\n");
 
-    if (!useJackTransport.value())
-        return 1;
-
     int audioState = Audio::STOP;
     switch (state)
     {
@@ -136,7 +132,7 @@ static void timebase_callback(jack_transport_state_t /* state */,
 {
     //printf("Jack timebase_callback pos->frame:%u audio->tickPos:%d song->cpos:%d\n", pos->frame, audio->tickPos(), song->cpos());
 
-    Pos p(extSyncFlag.value() ? audio->tickPos() : pos->frame, extSyncFlag.value() ? true : false);
+    Pos p(pos->frame, false);
 
     pos->valid = JackPositionBBT;
     p.mbt(&pos->bar, &pos->beat, &pos->tick);
@@ -1102,9 +1098,6 @@ unsigned int JackAudioDevice::getCurFrame()
     if (JACK_DEBUG)
         printf("JackAudioDevice::getCurFrame pos.frame:%d\n", pos.frame);
 
-    if (!useJackTransport.value())
-        return (unsigned int) dummyPos;
-
     return pos.frame;
 }
 
@@ -1295,12 +1288,6 @@ void JackAudioDevice::unregisterPort(void* p)
 
 int JackAudioDevice::getState()
 {
-    // If we're not using Jack's transport, just return current state.
-    if (!useJackTransport.value())
-    {
-        return dummyState;
-    }
-
     if (!checkJackClient(_client)) return 0;
     transportState = jack_transport_query(_client, &pos);
 
@@ -1374,20 +1361,6 @@ void JackAudioDevice::startTransport()
     if (JACK_DEBUG)
         printf("JackAudioDevice::startTransport()\n");
 
-    // If we're not using Jack's transport, just pass PLAY and current frame along
-    //  as if processSync was called.
-    if (!useJackTransport.value())
-    {
-        if (dummySync(Audio::START_PLAY))
-        {
-            dummyState = Audio::PLAY;
-            return;
-        }
-
-        dummyState = Audio::PLAY;
-        return;
-    }
-
     if (!checkJackClient(_client)) return;
     jack_transport_start(_client);
 }
@@ -1402,11 +1375,6 @@ void JackAudioDevice::stopTransport()
         printf("JackAudioDevice::stopTransport()\n");
 
     dummyState = Audio::STOP;
-
-    if (!useJackTransport.value())
-    {
-        return;
-    }
 
     if (!checkJackClient(_client)) return;
     if (transportState != JackTransportStopped)
@@ -1426,23 +1394,6 @@ void JackAudioDevice::seekTransport(unsigned frame)
         printf("JackAudioDevice::seekTransport() frame:%d\n", frame);
 
     dummyPos = frame;
-    if (!useJackTransport.value())
-    {
-        // If we're not using Jack's transport, just pass the current state and new frame along
-        //  as if processSync was called.
-        int tempState = dummyState;
-
-        // Is LOS audio ready yet?
-        if (dummySync(Audio::START_PLAY))
-        {
-            dummyState = tempState;
-            return;
-        }
-
-        // Not ready, resume previous state anyway.
-        dummyState = Audio::STOP;
-        return;
-    }
 
     if (!checkJackClient(_client)) return;
     jack_transport_locate(_client, frame);
@@ -1458,22 +1409,6 @@ void JackAudioDevice::seekTransport(const Pos &p)
         printf("JackAudioDevice::seekTransport() frame:%d\n", p.frame());
 
     dummyPos = p.frame();
-    if (!useJackTransport.value())
-    {
-        // If we're not using Jack's transport, just pass the current state and new frame along
-        //  as if processSync was called.
-        int tempState = dummyState;
-
-        // Is LOS audio ready yet?
-        if (dummySync(Audio::START_PLAY))
-        {
-            dummyState = tempState;
-            return;
-        }
-
-        dummyState = Audio::STOP;
-        return;
-    }
 
     if (!checkJackClient(_client)) return;
 
@@ -1507,20 +1442,12 @@ int JackAudioDevice::setMaster(bool f)
     int r = 0;
     if (f)
     {
-        if (useJackTransport.value())
+        // Make LOS the Jack timebase master. Do it unconditionally (second param = 0).
+        r = jack_set_timebase_callback(_client, 0, (JackTimebaseCallback) timebase_callback, 0);
+        if (debugMsg || JACK_DEBUG)
         {
-            // Make LOS the Jack timebase master. Do it unconditionally (second param = 0).
-            r = jack_set_timebase_callback(_client, 0, (JackTimebaseCallback) timebase_callback, 0);
-            if (debugMsg || JACK_DEBUG)
-            {
-                if (r)
-                    printf("JackAudioDevice::setMaster jack_set_timebase_callback failed: result:%d\n", r);
-            }
-        }
-        else
-        {
-            r = 1;
-            printf("JackAudioDevice::setMaster cannot set master because useJackTransport is false\n");
+            if (r)
+                printf("JackAudioDevice::setMaster jack_set_timebase_callback failed: result:%d\n", r);
         }
     }
     else

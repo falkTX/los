@@ -10,7 +10,6 @@
 #define __MIDIPORT_H__
 
 #include "globaldefs.h"
-#include "sync.h"
 #include "route.h"
 #include <QHash>
 
@@ -21,7 +20,6 @@ class MidiPlayEvent;
 class MidiController;
 class MidiCtrlValList;
 class Part;
-//class MidiSyncInfo;
 
 typedef struct pnode
 {
@@ -43,8 +41,6 @@ class MidiPort
     QList<PatchSequence*> _patchSequences;
     MidiInstrument* _instrument;
     AutomationType _automationType[MIDI_CHANNELS];
-    // Holds sync settings and detection monitors.
-    MidiSyncInfo _syncInfo;
     // p3.3.50 Just a flag to say the port was found in the song file, even if it has no device right now.
     bool _foundInSongFile;
     // When creating a new midi track, add these global default channel routes to/from this port. Ignored if 0.
@@ -196,16 +192,7 @@ public:
     void sendGmInitValues();
     void sendGsInitValues();
     void sendXgInitValues();
-    void sendStart();
-    void sendStop();
-    void sendContinue();
-    void sendSongpos(int);
-    void sendClock();
     void sendSysex(const unsigned char* p, int n);
-    void sendMMCLocate(unsigned char ht, unsigned char m,
-            unsigned char s, unsigned char f, unsigned char sf, int devid = -1);
-    void sendMMCStop(int devid = -1);
-    void sendMMCDeferredPlay(int devid = -1);
 
     //bool sendEvent(const MidiPlayEvent&);
     bool sendEvent(const MidiPlayEvent&, bool forceSend = false );
@@ -218,11 +205,6 @@ public:
     void setAutomationType(int channel, AutomationType t)
     {
         _automationType[channel] = t;
-    }
-
-    MidiSyncInfo& syncInfo()
-    {
-        return _syncInfo;
     }
 
     void addPreset(int i, QString p) { m_presets.insert(i, p); }

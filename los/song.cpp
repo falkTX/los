@@ -36,7 +36,6 @@
 #include "midiseq.h"
 #include "audiodev.h"
 #include "gconfig.h"
-#include "sync.h"
 #include "midictrl.h"
 #include "menutitleitem.h"
 #include "midi.h"
@@ -1193,12 +1192,6 @@ void Song::setMasterFlag(bool val)
 
 void Song::setPlay(bool f)
 {
-    if (extSyncFlag.value())
-    {
-        if (debugMsg)
-            printf("not allowed while using external sync");
-        return;
-    }
     // only allow the user to set the button "on"
     if (!f)
         playAction->setChecked(true);
@@ -1211,12 +1204,6 @@ void Song::setPlay(bool f)
 
 void Song::setStop(bool f)
 {
-    if (extSyncFlag.value())
-    {
-        if (debugMsg)
-            printf("not allowed while using external sync");
-        return;
-    }
     // only allow the user to set the button "on"
     if (!f)
         stopAction->setChecked(true);
@@ -1292,7 +1279,7 @@ void Song::setPos(int idx, const Pos& val, bool sig,
     if (idx == CPOS)
     {
         _vcpos = val;
-        if (isSeek && !extSyncFlag.value())
+        if (isSeek)
         {
             audio->msgSeek(val);
             // p3.3.23
@@ -1666,15 +1653,6 @@ void Song::setMType(MType t)
 
 void Song::beat()
 {
-    // Keep the sync detectors running...
-    for (int port = 0; port < MIDI_PORTS; ++port)
-    {
-        // Must keep them running even if there's no device...
-        //if(midiPorts[port].device())
-        midiPorts[port].syncInfo().setTime();
-    }
-
-
     int tick = audio->tickPos();
     if (audio->isPlaying())
         setPos(0, tick, true, false, true);
