@@ -34,7 +34,7 @@
 #include "mididev.h"
 #include "midiport.h"
 #include "midiseq.h"
-#include "audiodev.h"
+#include "driver/audiodev.h"
 #include "gconfig.h"
 #include "midictrl.h"
 #include "menutitleitem.h"

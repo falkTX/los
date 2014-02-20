@@ -16,7 +16,7 @@
 #include "icons.h"
 #include "gconfig.h"
 #include "midiport.h"
-#include "minstrument.h"
+#include "instruments/minstrument.h"
 #include "mididev.h"
 #include "utils.h"
 #include "audio.h"

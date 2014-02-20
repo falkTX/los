@@ -8,7 +8,7 @@
 #include "NameValidator.h"
 
 #include "audio.h"
-#include "audiodev.h"
+#include "driver/audiodev.h"
 #include "gconfig.h"
 #include "genset.h"
 #include "globals.h"

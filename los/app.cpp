@@ -28,9 +28,9 @@
 #include "app.h"
 #include "master/lmaster.h"
 #include "al/dsp.h"
-#include "Composer.h"
+#include "Composer/Composer.h"
 #include "audio.h"
-#include "audiodev.h"
+#include "driver/audiodev.h"
 #include "audioprefetch.h"
 #include "apconfig.h"
 #include "bigtime.h"
@@ -43,7 +43,8 @@
 #include "gui.h"
 #include "icons.h"
 #include "instruments/editinstrument.h"
-#include "listedit.h"
+#include "instruments/minstrument.h"
+#include "liste/listedit.h"
 #include "marker/markerview.h"
 #include "master/masteredit.h"
 #include "midiseq.h"
@@ -51,7 +52,7 @@
 #include "mididev.h"
 #include "driver/jackmidi.h"
 #include "mixdowndialog.h"
-#include "Performer.h"
+#include "midiedit/Performer.h"
 #include "popupmenu.h"
 #include "shortcuts.h"
 #include "shortcutconfig.h"
@@ -74,8 +75,6 @@
 #include "ccinfo.h"
 
 #include "traverso_shared/TConfig.h"
-
-//extern void cacheJackRouteNames();
 
 static pthread_t watchdogThread;
 //ErrorHandler *error;

@@ -21,7 +21,7 @@
 #include "audiodev.h"
 #include "alsamidi.h"
 #include "audio.h"
-#include "Composer.h"
+#include "Composer/Composer.h"
 #include "driver/jackmidi.h"
 
 //---------------------------------------------------------

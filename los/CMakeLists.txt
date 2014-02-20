@@ -54,14 +54,14 @@ QT4_WRAP_CPP(los_moc_headers
     thread.h
     transport.h
     transpose.h
-    value.h
+#     value.h
     traverso_shared/TConfig.h
     traverso_shared/AddRemoveCtrlValues.h
     traverso_shared/CommandGroup.h
     traverso_shared/OOMCommand.h
     midimonitor.h
     FadeCurve.h
-    AddRemoveTrackCommand.h
+#     AddRemoveTrackCommand.h
     TrackManager.h
     NameValidator.h
 )
@@ -77,7 +77,7 @@ QT4_ADD_RESOURCES(los_qrc_files
 file(GLOB core_source_files
     app.cpp
     audio.cpp
-    audioconvert.cpp
+#     audioconvert.cpp
     audioprefetch.cpp
     audiotrack.cpp
     cobject.cpp
@@ -91,7 +91,7 @@ file(GLOB core_source_files
     help.cpp
     helper.cpp
     importmidi.cpp
-    key.cpp
+#    key.cpp
     memory.cpp
     midi.cpp
     midictrl.cpp
@@ -112,7 +112,7 @@ file(GLOB core_source_files
     sig.cpp
     song.cpp
     songfile.cpp
-    stringparam.cpp
+#     stringparam.cpp
     tempo.cpp
     thread.cpp
     track.cpp
@@ -121,7 +121,7 @@ file(GLOB core_source_files
     transpose.cpp
     utils.cpp
     undo.cpp
-    value.cpp
+#     value.cpp
     wave.cpp
     waveevent.cpp
     wavetrack.cpp
@@ -133,7 +133,7 @@ file(GLOB core_source_files
     midimonitor.cpp
     ccinfo.cpp
     FadeCurve.cpp
-    AddRemoveTrackCommand.cpp
+#     AddRemoveTrackCommand.cpp
     TrackManager.cpp
     NameValidator.cpp
 )
@@ -187,12 +187,12 @@ include_directories(
 
 # Make sure to include the uic generated headers paths.
 include_directories(
-    ${CMAKE_CURRENT_BINARY_DIR}/Composer
-    ${CMAKE_CURRENT_BINARY_DIR}/driver
-    ${CMAKE_CURRENT_BINARY_DIR}/instruments
-    ${CMAKE_CURRENT_BINARY_DIR}/liste
-    ${CMAKE_CURRENT_BINARY_DIR}/midiedit
-    ${CMAKE_CURRENT_BINARY_DIR}/midiplugins
+#     ${CMAKE_CURRENT_BINARY_DIR}/Composer
+#     ${CMAKE_CURRENT_BINARY_DIR}/driver
+#     ${CMAKE_CURRENT_BINARY_DIR}/instruments
+#     ${CMAKE_CURRENT_BINARY_DIR}/liste
+#     ${CMAKE_CURRENT_BINARY_DIR}/midiedit
+#     ${CMAKE_CURRENT_BINARY_DIR}/midiplugins
     ${CMAKE_CURRENT_BINARY_DIR}/widgets
 )
 

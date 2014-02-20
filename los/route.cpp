@@ -13,7 +13,7 @@
 #include "node.h"
 #include "audio.h"
 #include "track.h"
-#include "audiodev.h"
+#include "driver/audiodev.h"
 #include "xml.h"
 #include "globals.h"
 #include "midiport.h"

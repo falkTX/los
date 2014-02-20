@@ -21,7 +21,7 @@
 #include "al/dsp.h"
 #include "app.h"
 #include "audio.h"
-#include "audiodev.h"
+#include "driver/audiodev.h"
 #include "gconfig.h"
 #include "globals.h"
 #include "icons.h"
