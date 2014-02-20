@@ -41,14 +41,6 @@ const unsigned int gsOnMsg2Len = sizeof (gsOnMsg2);
 const unsigned int gsOnMsg3Len = sizeof (gsOnMsg3);
 const unsigned int xgOnMsgLen = sizeof (xgOnMsg);
 
-const unsigned char mmcDeferredPlayMsg[] = {0x7f, 0x7f, 0x06, 0x03};
-const unsigned char mmcStopMsg[] = {0x7f, 0x7f, 0x06, 0x01};
-const unsigned char mmcLocateMsg[] = {0x7f, 0x7f, 0x06, 0x44, 0x06, 0x01, 0, 0, 0, 0, 0};
-
-const unsigned int mmcDeferredPlayMsgLen = sizeof (mmcDeferredPlayMsg);
-const unsigned int mmcStopMsgLen = sizeof (mmcStopMsg);
-const unsigned int mmcLocateMsgLen = sizeof (mmcLocateMsg);
-
 #define CALC_TICK(the_tick) lrintf((float(the_tick) * float(config.division) + float(div/2)) / float(div));
 
 /*---------------------------------------------------------

@@ -35,22 +35,25 @@
 # define nullptr (0)
 #endif
 
-#include "value.h"
-#include "mtc.h"
 #include "route.h"
+#include "value.h"
 
 #include <unistd.h>
-#include <QList>
-#include <QHash>
-#include <QPair>
 
-class QString;
+#include <QColor>
+#include <QHash>
+#include <QIcon>
+#include <QList>
+#include <QPair>
+#include <QString>
+
 class QAction;
 class QActionGroup;
-class QStringList;
-class QIcon;
-class QColor;
 class QPixmap;
+class QStringList;
+class QTimer;
+
+class LOS;
 class TrackManager;
 
 extern const float denormalBias;
@@ -65,7 +68,6 @@ extern int segmentCount;
 extern bool overrideAudioOutput;
 extern bool overrideAudioInput;
 
-class QTimer;
 extern QTimer* heartBeatTimer;
 
 extern bool hIsB;
@@ -93,7 +95,6 @@ extern bool debugMode;
 extern bool midiInputTrace;
 extern bool midiOutputTrace;
 extern bool debugMsg;
-extern bool debugSync;
 
 extern bool realTimeScheduling;
 extern int realTimePriority;
@@ -158,7 +159,6 @@ extern QAction* noteAlphaAction;
 extern QAction* multiPartSelectionAction;
 extern QAction* masterEnableAction;
 
-class LOS;
 extern LOS* los;
 
 extern bool rcEnable;
@@ -172,12 +172,13 @@ extern int lastTrackPartColorIndex;
 extern bool midiSeqRunning;
 extern bool automation;
 
-class QObject;
 // Which audio strip, midi strip, or midi track info strip
 //  was responsible for popping up the routing menu.
 extern QObject* gRoutingPopupMenuMaster;
+
 // Map of routing popup menu item IDs to Routes.
 extern RouteMenuMap gRoutingMenuMap;
+
 // Whether the routes popup was shown by clicking the output routes button, or input routes button.
 extern bool gIsOutRoutingPopupMenu;
 

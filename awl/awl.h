@@ -21,11 +21,5 @@
 #ifndef __AWL_H__
 #define __AWL_H__
 
-namespace Awl
-{
-    //      extern int sampleRate;
-    //      extern int mtcType;
-};
-
 #endif
 

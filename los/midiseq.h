@@ -14,11 +14,9 @@
 #include "driver/alsatimer.h"
 #include "driver/rtctimer.h"
 
-class MPEventList;
-class SynthI;
-class MTC;
 class MidiPort;
 class MidiDevice;
+class MPEventList;
 
 //---------------------------------------------------------
 //   MidiSeq
@@ -76,8 +74,6 @@ public:
     void msgStop();
     void msgSetRtc();
     void msgUpdatePollFd();
-    void msgAddSynthI(SynthI* synth);
-    void msgRemoveSynthI(SynthI* synth);
     void msgSetMidiDevice(MidiPort*, MidiDevice*);
 };
 

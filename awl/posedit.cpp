@@ -28,11 +28,8 @@
 #include <QLineEdit>
 #include <QStyle>
 
-extern int mtcType;
-
 namespace Awl {
 
-    ///using AL::mtcType;
     using AL::sigmap;
 
     //---------------------------------------------------------

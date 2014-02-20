@@ -103,7 +103,6 @@ file(GLOB core_source_files
     midiseq.cpp
     miditransform.cpp
     mpevent.cpp
-    mtc.cpp
     node.cpp
     part.cpp
     pos.cpp

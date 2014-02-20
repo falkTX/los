@@ -23,13 +23,10 @@
 
 namespace AL
 {
-
     extern bool debugMsg;
     //extern int sampleRate;
     extern int mtcType;
     //extern int division;
-
 }
 
 #endif
-

@@ -18,12 +18,9 @@
 #include "xml.h"
 #include "ui_cliplisteditorbase.h"
 
-
-extern int mtcType;
-
 enum
 {
-	COL_NAME = 0, COL_REFS, COL_POS, COL_LEN
+    COL_NAME = 0, COL_REFS, COL_POS, COL_LEN
 };
 
 //---------------------------------------------------------
@@ -32,15 +29,15 @@ enum
 
 class ClipItem : public QTreeWidgetItem
 {
-	SndFileR _wf;
+    SndFileR _wf;
 
 public:
-	ClipItem(QTreeWidget*, const SndFileR&);
+    ClipItem(QTreeWidget*, const SndFileR&);
 
-	SndFileR* wf()
-	{
-		return &_wf;
-	}
+    SndFileR* wf()
+    {
+        return &_wf;
+    }
 
         virtual QString text(int) const;
 };
@@ -75,22 +72,22 @@ static QString frames_to_hms(const uint frames, uint rate)
 
 QString ClipItem::text(int col) const
 {
-	QString s("");
-	switch (col)
-	{
-		case COL_NAME:
-			s = _wf.name();
-			break;
-		case COL_POS:
+    QString s("");
+    switch (col)
+    {
+        case COL_NAME:
+            s = _wf.name();
+            break;
+        case COL_POS:
                         break;
-		case COL_LEN:
+        case COL_LEN:
                         s = frames_to_hms(_wf.samples(), _wf.samplerate());
-			break;
-		case COL_REFS:
-			s.setNum(_wf.getRefCount());
-			break;
-	}
-	return s;
+            break;
+        case COL_REFS:
+            s.setNum(_wf.getRefCount());
+            break;
+    }
+    return s;
 }
 
 //---------------------------------------------------------
@@ -100,22 +97,22 @@ QString ClipItem::text(int col) const
 ClipListEdit::ClipListEdit(QWidget* parent)
 : TopWin(parent, "cliplist", Qt::Window)
 {
-	//setAttribute(Qt::WA_DeleteOnClose);
-	setWindowTitle(tr("LOS: Clip List Editor"));
+    //setAttribute(Qt::WA_DeleteOnClose);
+    setWindowTitle(tr("LOS: Clip List Editor"));
 
-	editor = new ClipListEditorBaseWidget;
-	setCentralWidget(editor);
+    editor = new ClipListEditorBaseWidget;
+    setCentralWidget(editor);
 
         editor->view->header()->resizeSection(0, 250);
 
-	connect(editor->view, SIGNAL(itemSelectionChanged()), SLOT(clipSelectionChanged()));
-	connect(editor->view, SIGNAL(itemClicked(QTreeWidgetItem*, int)), SLOT(clicked(QTreeWidgetItem*, int)));
+    connect(editor->view, SIGNAL(itemSelectionChanged()), SLOT(clipSelectionChanged()));
+    connect(editor->view, SIGNAL(itemClicked(QTreeWidgetItem*, int)), SLOT(clicked(QTreeWidgetItem*, int)));
 
-	connect(song, SIGNAL(songChanged(int)), SLOT(songChanged(int)));
-	connect(editor->start, SIGNAL(valueChanged(const Pos&)), SLOT(startChanged(const Pos&)));
-	connect(editor->len, SIGNAL(valueChanged(const Pos&)), SLOT(lenChanged(const Pos&)));
+    connect(song, SIGNAL(songChanged(int)), SLOT(songChanged(int)));
+    connect(editor->start, SIGNAL(valueChanged(const Pos&)), SLOT(startChanged(const Pos&)));
+    connect(editor->len, SIGNAL(valueChanged(const Pos&)), SLOT(lenChanged(const Pos&)));
 
-	updateList();
+    updateList();
 }
 
 ClipListEdit::~ClipListEdit()
@@ -129,9 +126,9 @@ ClipListEdit::~ClipListEdit()
 
 void ClipListEdit::updateList()
 {
-	editor->view->clear();
-	for (iSndFile f = SndFile::sndFiles.begin(); f != SndFile::sndFiles.end(); ++f)
-	{
+    editor->view->clear();
+    for (iSndFile f = SndFile::sndFiles.begin(); f != SndFile::sndFiles.end(); ++f)
+    {
                 ClipItem* item = new ClipItem(editor->view, *f);
                 item->setText(0, item->text(0));
                 item->setText(1, item->text(1));
@@ -139,7 +136,7 @@ void ClipListEdit::updateList()
                 item->setText(3, item->text(3));
                 item->setText(4, item->text(4));
         }
-	clipSelectionChanged();
+    clipSelectionChanged();
 }
 
 //---------------------------------------------------------
@@ -148,8 +145,8 @@ void ClipListEdit::updateList()
 
 void ClipListEdit::closeEvent(QCloseEvent* e)
 {
-	emit deleted((unsigned long) this);
-	e->accept();
+    emit deleted((unsigned long) this);
+    e->accept();
 }
 
 //---------------------------------------------------------
@@ -158,11 +155,11 @@ void ClipListEdit::closeEvent(QCloseEvent* e)
 
 void ClipListEdit::songChanged(int type)
 {
-	// Is it simply a midi controller value adjustment? Forget it.
-	if (type == SC_MIDI_CONTROLLER)
-		return;
+    // Is it simply a midi controller value adjustment? Forget it.
+    if (type == SC_MIDI_CONTROLLER)
+        return;
 
-	updateList();
+    updateList();
 }
 
 //---------------------------------------------------------
@@ -171,27 +168,27 @@ void ClipListEdit::songChanged(int type)
 
 void ClipListEdit::readStatus(Xml& xml)
 {
-	for (;;)
-	{
-		Xml::Token token = xml.parse();
-		const QString& tag = xml.s1();
-		if (token == Xml::Error || token == Xml::End)
-			break;
-		switch (token)
-		{
-			case Xml::TagStart:
-				if (tag == "topwin")
-					TopWin::readStatus(xml);
-				else
-					xml.unknown("CliplistEdit");
-				break;
-			case Xml::TagEnd:
-				if (tag == "cliplist")
-					return;
-			default:
-				break;
-		}
-	}
+    for (;;)
+    {
+        Xml::Token token = xml.parse();
+        const QString& tag = xml.s1();
+        if (token == Xml::Error || token == Xml::End)
+            break;
+        switch (token)
+        {
+            case Xml::TagStart:
+                if (tag == "topwin")
+                    TopWin::readStatus(xml);
+                else
+                    xml.unknown("CliplistEdit");
+                break;
+            case Xml::TagEnd:
+                if (tag == "cliplist")
+                    return;
+            default:
+                break;
+        }
+    }
 }
 
 //---------------------------------------------------------
@@ -200,9 +197,9 @@ void ClipListEdit::readStatus(Xml& xml)
 
 void ClipListEdit::writeStatus(int level, Xml& xml) const
 {
-	xml.tag(level++, "cliplist");
-	TopWin::writeStatus(level, xml);
-	xml.etag(level, "cliplist");
+    xml.tag(level++, "cliplist");
+    TopWin::writeStatus(level, xml);
+    xml.etag(level, "cliplist");
 }
 
 //---------------------------------------------------------
@@ -211,7 +208,7 @@ void ClipListEdit::writeStatus(int level, Xml& xml) const
 
 void ClipListEdit::startChanged(const Pos& /*pos*/)//prevent compiler warning: unsused parameter
 {
-	//      editor->view->triggerUpdate();
+    //      editor->view->triggerUpdate();
 }
 
 //---------------------------------------------------------
@@ -220,8 +217,8 @@ void ClipListEdit::startChanged(const Pos& /*pos*/)//prevent compiler warning: u
 
 void ClipListEdit::lenChanged(const Pos& /*pos*/) //prevent compiler warning: unsused parameter
 {
-	//      curClip.setLenFrame(pos.frame());
-	//      editor->view->triggerUpdate();
+    //      curClip.setLenFrame(pos.frame());
+    //      editor->view->triggerUpdate();
 }
 
 //---------------------------------------------------------
@@ -230,12 +227,12 @@ void ClipListEdit::lenChanged(const Pos& /*pos*/) //prevent compiler warning: un
 
 void ClipListEdit::clipSelectionChanged()
 {
-	//      ClipItem* item = (ClipItem*)(editor->view->selectedItem());
+    //      ClipItem* item = (ClipItem*)(editor->view->selectedItem());
 
-	//      if (item == 0) {
-	editor->start->setEnabled(false);
-	editor->len->setEnabled(false);
-	return;
+    //      if (item == 0) {
+    editor->start->setEnabled(false);
+    editor->len->setEnabled(false);
+    return;
 #if 0
 }
 editor->start->setEnabled(true);
@@ -256,6 +253,6 @@ editor->len->setValue(len);
 
 void ClipListEdit::clicked(QTreeWidgetItem*, int)
 {
-	//      printf("clicked\n");
+    //      printf("clicked\n");
 }
 

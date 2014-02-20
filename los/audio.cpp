@@ -36,13 +36,6 @@ extern double curTime();
 Audio* audio;
 AudioDevice* audioDevice; // current audio device in use
 
-// p3.3.25
-extern unsigned int volatile midiExtSyncTicks;
-
-
-//static const unsigned char mmcDeferredPlayMsg[] = { 0x7f, 0x7f, 0x06, 0x03 };
-//static const unsigned char mmcStopMsg[] =         { 0x7f, 0x7f, 0x06, 0x01 };
-
 const char* seqMsgList[] = {
     "SEQM_ADD_TRACK", "SEQM_REMOVE_TRACK", "SEQM_CHANGE_TRACK", "SEQM_MOVE_TRACK",
     "SEQM_ADD_PART", "SEQM_REMOVE_PART", "SEQM_REMOVE_PART_LIST", "SEQM_CHANGE_PART",
