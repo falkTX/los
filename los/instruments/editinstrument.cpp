@@ -157,11 +157,6 @@ EditInstrument::EditInstrument(QWidget* parent, Qt::WFlags fl)
 
     //disable this until we find LSCP_SUPPORT
     btnImport->setEnabled(false);
-#ifdef LSCP_SUPPORT
-    import = 0;
-    btnImport->setEnabled(true);
-    connect(btnImport, SIGNAL(clicked(bool)), SLOT(btnImportClicked(bool)));
-#endif
 }
 
 void EditInstrument::populateInstruments()
@@ -202,18 +197,6 @@ void EditInstrument::populateInstruments()
         instrumentList->setCurrentItem(instrumentList->item(0));
     changeInstrument();
 }
-
-#ifdef LSCP_SUPPORT
-void EditInstrument::btnImportClicked(bool)
-{
-    if(!import)
-    {
-        import = new LSCPImport(this);
-        connect(import, SIGNAL(instrumentsImported()), SLOT(populateInstruments()));
-    }
-    import->show();
-}
-#endif
 
 void EditInstrument::autoLoadChecked(bool)
 {

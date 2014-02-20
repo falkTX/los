@@ -227,7 +227,6 @@ void GlobalSettingsConfig::updateSettings()
     projectSaveCheckBox->setChecked(config.useProjectSaveDialog);
 
     populateInputs();
-    //TODO: Set icon for status of lsClient
 }
 
 //---------------------------------------------------------

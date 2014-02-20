@@ -6,12 +6,12 @@
 .\" it under the terms of the GNU General Public License as published by
 .\" the Free Software Foundation; either version 2 of the License, or
 .\" (at your option) any later version.
-.\" 
+.\"
 .\" This program is distributed in the hope that it will be useful,
 .\" but WITHOUT ANY WARRANTY; without even the implied warranty of
 .\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 .\" GNU General Public License for more details.
-.\" 
+.\"
 .\" You should have received a copy of the GNU General Public License
 .\" along with this program; if not, write to the Free Software
 .\" Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
@@ -30,8 +30,7 @@ LOS \- MIDI/Audio Sequencer
 is a MIDI/Audio sequencer that can also record and edit sound files, apply
 effects and filters from an intuitive graphical interface.  It is based on
 the Linux-specific ALSA interface for audio i/o.  The Jack Audio Connection
-Kit is used for routing.  LADSPA-compliant plugins allow to extend the
-list of available effects.
+Kit is used for routing.
 .PP
 The optional
 .I file
@@ -51,23 +50,14 @@ Enable verbose debugging messages.
 .B -h
 Display usage information.
 .TP
-.B -I
-Do not attempt to load any DSSI plugins.
-.TP
 .B -l \fIxx\fR
 Force locale to the language/country code xx.
-.TP
-.B -L
-Do not se LASH.
 .TP
 .B -m
 Provide debugging messages about midi input events.
 .TP
 .B -M
 Provide debugging messages about midi output events.
-.TP
-.B -p
-Do not attempt to load any LADSPA plugins.
 .TP
 .B -P \fIn\fR
 Set scheduling priority of real-time threads to \fIn\fR (Dummy only, default 40. Else fixed by Jack.).
@@ -77,12 +67,6 @@ Provide debugging messages about sync events.
 .TP
 .B -v
 Print version information.
-.TP
-.B -V
-Do not attempt to load any VST plugins.
-.TP
-.B -y
-Enable Python control support.
 .TP
 .B -Y \fIn\fR
 Force midi real time priority to n.
@@ -94,12 +78,12 @@ provides integrated links to our online documentation in the graphical user inte
 was written by Andrew Williams and Christopher Cherrett.
 Documentation written by Alex Stone.
 .PP
-.B LOS 
+.B LOS
 is a fork of the MusE project that was written by Werner Schweer, Robert Jonnson, Mathias Lundgren,
-Frank Neumann, Joachim Schiele, Tim Donnelly, Nil Geisweiller, 
+Frank Neumann, Joachim Schiele, Tim Donnelly, Nil Geisweiller,
 Orcan Ogetbil and others.
 .PP
-This manual page was originally written by Daniel Kobras 
+This manual page was originally written by Daniel Kobras
 <kobras@debian.org> for the Debian GNU/Linux system
 (but may be used by others). It was updated later by
 Orcan Ogetbil of MusE2 then by Andrew Williams for LOS2.

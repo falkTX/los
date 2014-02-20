@@ -94,7 +94,6 @@ extern bool midiInputTrace;
 extern bool midiOutputTrace;
 extern bool debugMsg;
 extern bool debugSync;
-extern bool usePythonBridge;
 
 extern bool realTimeScheduling;
 extern int realTimePriority;

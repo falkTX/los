@@ -11,7 +11,6 @@
 #include <QKeyEvent>
 #include <QMessageBox>
 #include <QLocale>
-#include <QSplashScreen>
 #include <QTimer>
 #include <QTranslator>
 
@@ -198,7 +197,6 @@ static void usage(const char* prog, const char* txt)
     fprintf(stderr, "   -a       no audio\n");
     fprintf(stderr, "   -P  n    set audio driver real time priority to n (Dummy only, default 40. Else fixed by Jack.)\n");
     fprintf(stderr, "   -Y  n    force midi real time priority to n (default: audio driver prio +2)\n");
-    fprintf(stderr, "   -p       don't load LADSPA plugins\n");
     fprintf(stderr, "   -l  xx   force locale to the given language/country code (xx = %s)\n", localeList().toLatin1().constData());
 }
 
@@ -273,8 +271,6 @@ int main(int argc, char* argv[])
             case 'P': realTimePriority = atoi(optarg);
                 break;
             case 'Y': midiRTPrioOverride = atoi(optarg);
-                break;
-            case 'y': usePythonBridge = true;
                 break;
             case 'l': locale_override = QString(optarg);
                 break;

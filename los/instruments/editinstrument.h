@@ -103,9 +103,6 @@ private slots:
     void browseFilenameClicked();
     void panChanged(double);
     void auxChanged(double);
-#ifdef LSCP_SUPPORT
-    void btnImportClicked(bool);
-#endif
 
 public:
     EditInstrument(QWidget* parent = 0, Qt::WFlags fl = Qt::Window);

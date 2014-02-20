@@ -338,9 +338,6 @@ static void readConfigMidiPort(Xml& xml)/*{{{*/
                 else if (tag == "instrument")
                 {
                     instrument = xml.parse1();
-
-                    if (instrument.endsWith(" [LV2]") || instrument.endsWith(" [VST]"))
-                        dev = midiDevices.find(instrument);
                 }
                 else if (tag == "channel")
                 {
@@ -723,8 +720,6 @@ void readConfiguration(Xml& xml, bool readOnlySequencer)/*{{{*/
                     midiFilterCtrl3 = xml.parseInt();
                 else if (tag == "midiFilterCtrl4")
                     midiFilterCtrl4 = xml.parseInt();
-                else if (tag == "showSplashScreen")
-                    config.showSplashScreen = xml.parseInt();
                 else if (tag == "canvasShowPartType")
                     config.canvasShowPartType = xml.parseInt();
                 else if (tag == "canvasShowPartEvent")
@@ -784,12 +779,8 @@ void readConfiguration(Xml& xml, bool readOnlySequencer)/*{{{*/
                     config.freewheelMode = xml.parseInt();
                 else if (tag == "denormalProtection")
                     config.useDenormalBias = xml.parseInt();
-                else if (tag == "didYouKnow")
-                    config.showDidYouKnow = xml.parseInt();
                 else if (tag == "outputLimiter")
                     config.useOutputLimiter = xml.parseInt();
-                else if (tag == "vstInPlace")
-                    config.vstInPlace = xml.parseInt();
                 else if (tag == "dummyAudioSampleRate")
                     config.dummyAudioSampleRate = xml.parseInt();
                 else if (tag == "dummyAudioBufSize")
@@ -814,70 +805,8 @@ void readConfiguration(Xml& xml, bool readOnlySequencer)/*{{{*/
                     config.useProjectSaveDialog = xml.parseInt();
                 else if (tag == "useAutoCrossFades")
                     config.useAutoCrossFades = xml.parseInt();
-                else if(tag == "lsClientHost")
-                {
-                    config.lsClientHost = xml.parse1();
-                }
-                else if(tag == "lsClientPort")
-                {
-                    config.lsClientPort = xml.parseInt();;
-                }
-                else if(tag == "lsClientTimeout")
-                {
-                    config.lsClientTimeout = xml.parseInt();
-                }
-                else if(tag == "lsClientRetry")
-                {
-                    config.lsClientRetry = xml.parseInt();
-                }
-                else if(tag == "lsClientBankAsNumber")
-                {
-                    config.lsClientBankAsNumber = xml.parseInt();
-                }
-                else if(tag == "lsClientAutoStart")
-                {
-                    config.lsClientAutoStart = xml.parseInt();
-                }
-                else if(tag == "lsClientResetOnStart")
-                {
-                    config.lsClientResetOnStart = xml.parseInt();
-                }
-                else if(tag == "lsClientResetOnSongStart")
-                {
-                    config.lsClientResetOnSongStart = xml.parseInt();
-                }
-                else if(tag == "lsClientStartLS")
-                {
-                    config.lsClientStartLS = xml.parseInt();
-                }
-                else if(tag == "lsClientLSPath")
-                {
-                    config.lsClientLSPath = xml.parse1();
-                }
                 else if(tag == "globalInputList")
-                {
                     readGlobalInputList(xml);
-                }
-                else if(tag == "loadLV2")
-                {
-                    config.loadLV2 = xml.parseInt();
-                }
-                else if(tag == "loadLADSPA")
-                {
-                    config.loadLADSPA = xml.parseInt();
-                }
-                else if(tag == "loadVST")
-                {
-                    config.loadVST = xml.parseInt();
-                }
-                else if(tag == "vstPaths")
-                {
-                    config.vstPaths = xml.parse1();
-                }
-                else if(tag == "ladspaPaths")
-                {
-                    config.ladspaPaths = xml.parse1();
-                }
                 else
                     xml.skip(tag);
                 break;
@@ -1116,9 +1045,7 @@ void LOS::writeGlobalConfiguration(int level, Xml& xml) const
     xml.doubleTag(level, "minSlider", config.minSlider);
     xml.intTag(level, "freewheelMode", config.freewheelMode);
     xml.intTag(level, "denormalProtection", config.useDenormalBias);
-    xml.intTag(level, "didYouKnow", config.showDidYouKnow);
     xml.intTag(level, "outputLimiter", config.useOutputLimiter);
-    xml.intTag(level, "vstInPlace", config.vstInPlace);
     xml.intTag(level, "dummyAudioBufSize", config.dummyAudioBufSize);
     xml.intTag(level, "dummyAudioSampleRate", config.dummyAudioSampleRate);
 
@@ -1148,23 +1075,6 @@ void LOS::writeGlobalConfiguration(int level, Xml& xml) const
     xml.strTag(level, "externalWavEditor", config.externalWavEditor);
     xml.intTag(level, "useOldStyleStopShortCut", config.useOldStyleStopShortCut);
     xml.intTag(level, "moveArmedCheckBox", config.moveArmedCheckBox);
-
-    xml.strTag(level, "lsClientHost", config.lsClientHost);
-    xml.intTag(level, "lsClientPort", config.lsClientPort);
-    xml.intTag(level, "lsClientTimeout", config.lsClientTimeout);
-    xml.intTag(level, "lsClientRetry", config.lsClientRetry);
-    xml.intTag(level, "lsClientBankAsNumber", config.lsClientBankAsNumber);
-    xml.intTag(level, "lsClientAutoStart", config.lsClientAutoStart);
-    xml.intTag(level, "lsClientResetOnStart", config.lsClientResetOnStart);
-    xml.intTag(level, "lsClientResetOnSongStart", config.lsClientResetOnSongStart);
-    xml.strTag(level, "lsClientLSPath", config.lsClientLSPath);
-    xml.intTag(level, "lsClientStartLS", config.lsClientStartLS);
-
-    xml.intTag(level, "loadLV2", config.loadLV2);
-    xml.intTag(level, "loadLADSPA", config.loadLADSPA);
-    xml.intTag(level, "loadVST", config.loadVST);
-    xml.strTag(level, "ladspaPaths", config.ladspaPaths);
-    xml.strTag(level, "vstPaths", config.vstPaths);
 
     xml.intTag(level, "vuColorStrip", vuColorStrip);
     if(gInputList.size())
@@ -1438,74 +1348,3 @@ void LOS::configGlobalSettings(int tab)
     else
         globalSettingsConfig->show();
 }
-
-
-//---------------------------------------------------------
-//   write
-//---------------------------------------------------------
-
-void MixerConfig::write(int level, Xml& xml)
-{
-    xml.tag(level++, "Mixer");
-
-    xml.strTag(level, "name", name);
-
-    xml.qrectTag(level, "geometry", geometry);
-
-    xml.intTag(level, "showMidiTracks", showMidiTracks);
-    xml.intTag(level, "showDrumTracks", showDrumTracks);
-    xml.intTag(level, "showInputTracks", showInputTracks);
-    xml.intTag(level, "showOutputTracks", showOutputTracks);
-    xml.intTag(level, "showWaveTracks", showWaveTracks);
-    xml.intTag(level, "showGroupTracks", showGroupTracks);
-    xml.intTag(level, "showAuxTracks", showAuxTracks);
-    xml.intTag(level, "showSyntiTracks", showSyntiTracks);
-
-    xml.etag(level, "Mixer");
-}
-
-//---------------------------------------------------------
-//   read
-//---------------------------------------------------------
-
-void MixerConfig::read(Xml& xml)
-{
-    for (;;)
-    {
-        Xml::Token token(xml.parse());
-        const QString & tag(xml.s1());
-        switch (token)
-        {
-            case Xml::Error:
-            case Xml::End:
-                return;
-            case Xml::TagStart:
-                if (tag == "name")
-                    name = xml.parse1();
-                else if (tag == "geometry")
-                    geometry = readGeometry(xml, tag);
-                else if (tag == "showMidiTracks")
-                    showMidiTracks = xml.parseInt();
-                else if (tag == "showInputTracks")
-                    showInputTracks = xml.parseInt();
-                else if (tag == "showOutputTracks")
-                    showOutputTracks = xml.parseInt();
-                else if (tag == "showWaveTracks")
-                    showWaveTracks = xml.parseInt();
-                else if (tag == "showGroupTracks")
-                    showGroupTracks = xml.parseInt();
-                else if (tag == "showAuxTracks")
-                    showAuxTracks = xml.parseInt();
-                else
-                    xml.skip(tag);
-                break;
-            case Xml::TagEnd:
-                if (tag == "Mixer")
-                    return;
-            default:
-                break;
-        }
-    }
-
-}
-

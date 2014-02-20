@@ -20,9 +20,6 @@
 #include "mididev.h"
 #include "toolbars/tools.h"
 #include "event.h"
-#ifdef LSCP_SUPPORT
-#include "network/lsclient.h"
-#endif
 
 class MidiPart;
 class TimeLabel;
@@ -72,18 +69,18 @@ class Performer : public AbstractMidiEditor
     MidiPart* selPart;
     int selTick;
 
-	QString m_currentInstrument;
+    QString m_currentInstrument;
 
     QMenu *menuEdit, *menuFunctions, *menuSelect, *menuConfig, *eventColor, *menuPlugins;
     Conductor *midiConductor;
     Track* selected;
     PCScale* pcbar;
-	SigScale* m_sigRuler;
-	Piano* piano;
+    SigScale* m_sigRuler;
+    Piano* piano;
 
-	QSignalMapper* mapper;
-	QSignalMapper* functionMapper;
-	QSignalMapper* colorMapper;
+    QSignalMapper* mapper;
+    QSignalMapper* functionMapper;
+    QSignalMapper* colorMapper;
 
     QAction* editCutAction;
     QAction* editCopyAction;
@@ -157,26 +154,26 @@ class Performer : public AbstractMidiEditor
     QToolButton* solo;
     PosLabel* posLabel;
     PitchLabel* pitchLabel;
-	QLabel *patchLabel;
+    QLabel *patchLabel;
 
     QFrame* canvasFrame;
-	QVBoxLayout *m_layout;
+    QVBoxLayout *m_layout;
 
     QToolButton* speaker;
     QToolButton* m_globalKey;
     QToolButton* m_globalArm;
     QToolButton* m_mutePart;
-	QToolButton* m_btnNext;
-	QToolButton* m_btnPrev;
-	QToolButton* m_btnAddProgram;
-	QToolButton* m_btnDeleteProgram;
+    QToolButton* m_btnNext;
+    QToolButton* m_btnPrev;
+    QToolButton* m_btnAddProgram;
+    QToolButton* m_btnDeleteProgram;
 
-	QAction* m_muteAction;
-	QAction* m_soloAction;
-	QAction* m_globalKeyAction;
-	QAction* m_globalArmAction;
-	QAction* m_stepAction;
-	QAction* m_speakerAction;
+    QAction* m_muteAction;
+    QAction* m_soloAction;
+    QAction* m_globalKeyAction;
+    QAction* m_globalArmAction;
+    QAction* m_stepAction;
+    QAction* m_speakerAction;
     QToolBar* cursorBar;
     QToolBar* editToolbar;
     EditToolBar* editTools;
@@ -200,12 +197,12 @@ class Performer : public AbstractMidiEditor
     bool _playEvents;
 
     QScrollArea* infoScroll;
-	QDockWidget* m_prDock;
-	QTabWidget* m_tabs;
-	TrackListView* m_trackListView;
+    QDockWidget* m_prDock;
+    QTabWidget* m_tabs;
+    TrackListView* m_trackListView;
 
     void initShortcuts();
-	void initFunctions();
+    void initFunctions();
     void setEventColorMode(int);
     QWidget* genToolbar(QWidget* parent);
     virtual void closeEvent(QCloseEvent*);
@@ -215,7 +212,7 @@ class Performer : public AbstractMidiEditor
     bool eventFilter(QObject *obj, QEvent *event);
 
 private slots:
-	void toggleMuteCurrentPart(bool);
+    void toggleMuteCurrentPart(bool);
     void toggleMultiPartSelection(bool);
     void toggleEpicEdit(bool);
     void setSelection(int, Event&, Part*);
@@ -257,22 +254,19 @@ private slots:
     void songChanged1(int);
     void configChanged();
     void updateConductor();
-	void dockAreaChanged(Qt::DockWidgetArea);
-	void selectPrevPart();
-	void selectNextPart();
-	void checkPartLengthForRecord(bool);
-#ifdef LSCP_SUPPORT
-	void setKeyBindings(LSCPChannelInfo);
-#endif
-	void toggleCollapseAllControllers(bool);
-	void updateControllerForInstrument(qint64);
-	void saveInstrumentControllerState();
+    void dockAreaChanged(Qt::DockWidgetArea);
+    void selectPrevPart();
+    void selectNextPart();
+    void checkPartLengthForRecord(bool);
+    void toggleCollapseAllControllers(bool);
+    void updateControllerForInstrument(qint64);
+    void saveInstrumentControllerState();
 
 signals:
     void deleted();
-	void showComments(bool);
-	void showComments(bool, bool);
-	void controllerMaxHeightChanged(int);
+    void showComments(bool);
+    void showComments(bool, bool);
+    void controllerMaxHeightChanged(int);
 
 public slots:
     virtual void updateHScrollRange();
@@ -280,18 +274,18 @@ public slots:
     void execUserScript(int id);
     CtrlEdit* addCtrl(QString name = "Velocity", bool collapsed = false, int height = 80);
     void removeCtrl(CtrlEdit* ctrl);
-	void setKeyBindings(Patch*);
-	void updateControllerSizes();
+    void setKeyBindings(Patch*);
+    void updateControllerSizes();
 
 public:
     Performer(PartList*, QWidget* parent = 0, const char* name = 0, unsigned initPos = MAXINT);
     ~Performer();
     //void setSolo(bool val);
-	bool isCurrentPatch(int, int, int);
-	bool isGlobalEdit();
+    bool isCurrentPatch(int, int, int);
+    bool isGlobalEdit();
 
     virtual void setCurCanvasPart(Part*);
-	virtual void updateCanvas();
+    virtual void updateCanvas();
     virtual void readStatus(Xml&);
     virtual void writeStatus(int, Xml&) const;
     static void readConfiguration(Xml&);

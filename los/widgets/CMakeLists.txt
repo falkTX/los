@@ -44,7 +44,6 @@ QT4_WRAP_CPP(widget_mocs
     commentdock.h
     ctrlcombo.h
     dentry.h
-    didyouknow.h
     doublelabel.h
     filedialog.h
     gatetime.h
@@ -131,7 +130,6 @@ file(GLOB widgets_ui_files
     commentbase.ui
     commentdockbase.ui
     configmidifilebase.ui
-    didyouknow.ui
     editnotedialogbase.ui
     editsysexdialogbase.ui
     fdialogbuttons.ui

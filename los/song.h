@@ -645,9 +645,6 @@ public:
     //-----------------------------------------
     //   Python bridge related
     //-----------------------------------------
-#ifdef ENABLE_PYTHON
-    virtual bool event(QEvent* e);
-#endif
     void executeScript(const char* scriptfile, PartList* parts, int quant, bool onlyIfSelected);
 
 public slots:

@@ -639,8 +639,7 @@ GlobalConfigValues config = {
     QColor(125, 73, 32), // synthTrackBg;
 
     QColor(63,63,63), // part canvas bg
-    QColor(255, 170, 0), // ctrlGraphFg;    Medium orange
-    QColor(0, 0, 0), // mixerBg;
+    QColor(255, 170, 0), // ctrlGraphFg; Medium orange
 
     384, // division;
     1024, // rtcTicks
@@ -649,7 +648,6 @@ GlobalConfigValues config = {
     false, // use Jack freewheel
     20, // int guiRefresh;
     QString(""), // userInstrumentsDir
-    //QString(""),                  // helpBrowser; // Obsolete
     true, // extendedMidi
     384, // division for smf export
     QString(""), // copyright string for smf export
@@ -665,26 +663,10 @@ GlobalConfigValues config = {
     QRect(0, 0, 600, 200), // GeometryBigTime;
     QRect(0, 0, 400, 300), // GeometryPerformer;
     QRect(0, 0, 400, 300), // GeometryDrumedit;
-    //QRect(0, 0, 300, 500),        // GeometryMixer;  // Obsolete
-    {
-        QString("Mixer A"),
-        QRect(0, 0, 300, 500), // Mixer1
-        true, true, true, true,
-        true, true, true, true
-    },
-    {
-        QString("Mixer B"),
-        QRect(200, 200, 300, 500), // Mixer2
-        true, true, true, true,
-        true, true, true, true
-    },
     false, // TransportVisible;
     false, // BigTimeVisible;
-    false, // mixer1Visible;
-    false, // mixer2Visible;
 
     false, // markerVisible;
-    true, // showSplashScreen
     1, // canvasShowPartType 1 - names, 2 events
     5, // canvasShowPartEvent
     true, // canvasShowGrid;
@@ -697,29 +679,12 @@ GlobalConfigValues config = {
     true, // moveArmedCheckBox
     true, // useDenormalBias
     false, // useOutputLimiter
-    true, // showDidYouKnow
-    false, // vstInPlace  Enable VST in-place processing
     44100, // Dummy audio preferred sample rate
     512, // Dummy audio buffer size
     QString("./"), // projectBaseFolder
     true,	 // projectStoreInFolder
     false,	// useProjectSaveDialog
-    8888, //LSCP client port
-    QString("localhost"), //LSCP default hostname
-    5, //LSCP client retries
-    1,  //LSCP client timeout
-    true, //LSCP client use bank name as patch group name
-    true, //LSCP client auto start
-    false, //Reset LS on client start
-    false, //Reset LS on song start
-    true, //Start LinuxSampler on startup
-    QString("linuxsampler"), //LinuxSampler Path
-    true, //Load LV2 plugins
-    true, //Load LADSPA plugins with search path below
-    //TODO: Update this when windows and mac support comes into play
-    QString(QString("/usr/local/lib64/ladspa:/usr/lib64/ladspa:/usr/local/lib/ladspa:/usr/lib/ladspa:").append(QDir::homePath()).append(QDir::separator()).append(".ladspa")),
-    true, //Load VST plugins with search path below
-    QString(QString("/usr/local/lib64/vst:/usr/lib64/vst:/usr/local/lib/vst:/usr/lib/vst:").append(QDir::homePath()).append(QDir::separator()).append(".vst")),
+
     0, //Default audio raster index
     1, //Default midi raster index
     true //Use auto crossfades

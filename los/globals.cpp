@@ -99,11 +99,6 @@ bool midiOutputTrace = false;
 bool realTimeScheduling = false;
 int realTimePriority = 40;  // 80
 int midiRTPrioOverride = -1;
-bool loadPlugins = true;
-bool loadVST = true;
-bool loadDSSI = true;
-bool usePythonBridge = false;
-bool useLASH = true;
 
 const QStringList midi_file_pattern =
       QT_TRANSLATE_NOOP("@default",

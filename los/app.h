@@ -260,11 +260,6 @@ class LOS : public QMainWindow
 
 signals:
     void configChanged();
-#ifdef LSCP_SUPPORT
-    void channelInfoChanged(const LSCPChannelInfo&);
-    void lscpStartListener();
-    void lscpStopListener();
-#endif
 
     //-------------------------------------------------------------
     // Instrument Templates
@@ -280,7 +275,6 @@ protected:
     virtual void showEvent(QShowEvent*);
 
 private slots:
-    //void runPythonScript();
     void loadProject();
     void about();
     void aboutQt();
@@ -389,7 +383,6 @@ public slots:
     void showMarker(bool);
     void importMidi(const QString &file);
     void setUsedTool(int);
-    void showDidYouKnowDialog();
     void importWave(Track* track = NULL);
 
     void routingPopupMenuAboutToHide();

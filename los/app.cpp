@@ -37,7 +37,6 @@
 #include "cliplist/cliplist.h"
 #include "conf.h"
 #include "debug.h"
-#include "didyouknow.h"
 #include "filedialog.h"
 #include "gatetime.h"
 #include "gconfig.h"
@@ -107,7 +106,7 @@ extern void exitJackAudio();
 extern void exitDummyAudio();
 
 int watchAudio, watchAudioPrefetch, watchMidi;
-pthread_t splashThread;
+
 //static int performerTools = PointerTool | PencilTool | RubberTool | CutTool | GlueTool | DrawTool;
 
 //---------------------------------------------------------
@@ -289,9 +288,6 @@ bool LOS::seqStart()
 
     midiMonitor->populateList();
 
-#ifdef LSCP_SUPPORT
-    //emit lscpStartListener();
-#endif
     return true;
 }
 
@@ -303,9 +299,6 @@ void LOS::seqStop()
 {
     // label sequencer as disabled before it actually happened to minimize race condition
     midiSeqRunning = false;
-#ifdef LSCP_SUPPORT
-    //emit lscpStopListener();
-#endif
 
     song->setStop(true);
     song->setStopPlay(false);
@@ -527,26 +520,6 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
     heartBeatTimer = new QTimer(this);
     heartBeatTimer->setObjectName("timer");
     connect(heartBeatTimer, SIGNAL(timeout()), song, SLOT(beat()));
-
-#ifdef LSCP_SUPPORT
-    lscpRestart = false;
-#endif
-
-#ifdef ENABLE_PYTHON
-    //---------------------------------------------------
-    //    Python bridge
-    //---------------------------------------------------
-    // Uncomment in order to enable LOS Python bridge:
-    if (usePythonBridge)
-    {
-        printf("Initializing python bridge!\n");
-        if (initPythonBridge() == false)
-        {
-            printf("Could not initialize Python bridge\n");
-            exit(1);
-        }
-    }
-#endif
 
     //---------------------------------------------------
     //    undo/redo
@@ -2824,29 +2797,6 @@ void LOS::startSongInfo(bool editable)
 
 }
 
-//---------------------------------------------------------
-//   showDidYouKnowDialog
-//---------------------------------------------------------
-
-void LOS::showDidYouKnowDialog()
-{
-    if ((bool)config.showDidYouKnow == true)
-    {
-        printf("show did you know dialog!!!!\n");
-        DidYouKnowWidget dyk;
-        dyk.tipText->setText("To get started with LOS why don't you try some demo songs available at http://www.openoctave.org/");
-        dyk.show();
-        if (dyk.exec())
-        {
-            if (dyk.dontShowCheckBox->isChecked())
-            {
-                printf("disables dialog!\n");
-                config.showDidYouKnow = false;
-                los->changeConfig(true); // save settings
-            }
-        }
-    }
-}
 //---------------------------------------------------------
 //   startDefineController
 //---------------------------------------------------------
