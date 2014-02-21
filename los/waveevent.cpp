@@ -14,9 +14,6 @@
 #include <iostream>
 #include <math.h>
 
-// Added by Tim. p3.3.18
-//#define USE_SAMPLERATE
-//
 //#define WAVEEVENT_DEBUG
 //#define WAVEEVENT_DEBUG_PRC
 
@@ -160,32 +157,10 @@ void WaveEventBase::readAudio(WavePart* part, unsigned offset, float** buffer, i
     printf("WaveEventBase::readAudio audConv:%p sfCurFrame:%ld offset:%u channel:%d n:%d\n", audConv, sfCurFrame, offset, channel, n);
 #endif
 
-#ifdef USE_SAMPLERATE
-
-    // TODO:
-    >> >> >> >> >> >+++++++++++++++++++++++++++++
-    // If we have a valid audio converter then use it to do the processing. Otherwise just a normal seek + read.
-    if (audConv)
-        sfCurFrame = audConv->readAudio(f, sfCurFrame, offset, buffer, channel, n, doSeek, overwrite);
-    else
-    {
-        if (!f.isNull())
-        {
-            sfCurFrame = f.seek(offset + _spos, 0);
-            sfCurFrame += f.read(channel, buffer, n, offset, overwrite, part);
-        }
-    }
-    return;
-
-#else
     if (f.isNull())
         return;
 
     f.seek(offset + _spos, 0);
     f.read(channel, buffer, n, offset, overwrite, part);
-
-    return;
-#endif
-
 }
 

@@ -10,7 +10,6 @@
 #define __EVENT_H__
 
 #include <map>
-//#include <samplerate.h>
 #include <sys/types.h>
 
 #include "wave.h"   // wg. SndFile
@@ -26,7 +25,6 @@ class QString;
 
 class Xml;
 class EventBase;
-//class AudioConverter;
 class WavePart;
 
 //---------------------------------------------------------
@@ -37,19 +35,11 @@ class Event
 {
     EventBase* ev;
 
-    //off_t _sfCurFrame;
-    //AudioConverter* _audConv;
-
 public:
-    //Event() { ev = 0; }
     Event();
     Event(EventType t);
     Event(const Event& e);
     Event(EventBase* eb);
-
-    //#ifdef USE_SAMPLERATE
-    //Event(EventBase* eb, AudioConverter* cv);
-    //#endif
 
     virtual ~Event();
 
@@ -97,11 +87,10 @@ public:
     void setName(const QString& s);
     int spos() const;
     void setSpos(int s);
-	int rightClip() const;
-	void setRightClip(int clip);
-	int leftClip() const;
-	void setLeftClip(int clip);
-    //AudioConverter* audioConverter() { return _audConv;}
+    int rightClip() const;
+    void setRightClip(int clip);
+    int leftClip() const;
+    void setLeftClip(int clip);
     SndFileR sndFile() const;
     virtual void setSndFile(SndFileR& sf);
 

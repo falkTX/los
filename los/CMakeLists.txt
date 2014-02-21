@@ -260,7 +260,6 @@ target_link_libraries(los
     ${QT_LIBRARIES}
     ${ALSA_LIBRARIES}
     ${JACK_LIBRARIES}
-    ${SAMPLERATE_LIBRARIES}
     ${SNDFILE_LIBRARIES}
     ${UUID_LIBRARIES}
     pthread

@@ -9,12 +9,10 @@
 #ifndef __WAVE_EVENT_H__
 #define __WAVE_EVENT_H__
 
-//#include <samplerate.h>
 #include <sys/types.h>
 
 #include "eventbase.h"
 
-class AudioConverter;
 class WavePart;
 
 //---------------------------------------------------------
@@ -28,8 +26,6 @@ class WaveEventBase : public EventBase
     int _spos; // start sample position in WaveFile
     bool deleted;
 
-    // p3.3.31
-    //virtual EventBase* clone() { return new WaveEventBase(*this); }
     virtual EventBase* clone();
 
 public:
@@ -66,22 +62,22 @@ public:
         _spos = s;
     }
 
-	virtual int rightClip() const
-	{
-		return m_rightclip;
-	}
-	virtual void setRightClip(int clip)
-	{
-		m_rightclip = clip;
-	}
-	virtual int leftClip() const
-	{
-		return m_leftclip;
-	}
-	virtual void setLeftClip(int clip)
-	{
-		m_leftclip = clip;
-	}
+    virtual int rightClip() const
+    {
+        return m_rightclip;
+    }
+    virtual void setRightClip(int clip)
+    {
+        m_rightclip = clip;
+    }
+    virtual int leftClip() const
+    {
+        return m_leftclip;
+    }
+    virtual void setLeftClip(int clip)
+    {
+        m_leftclip = clip;
+    }
 
     virtual SndFileR sndFile() const
     {
