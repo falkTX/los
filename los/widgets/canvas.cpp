@@ -1830,7 +1830,7 @@ QMenu* Canvas::genCanvasPopup(bool colors)
     {
         if ((_canvasTools & (1 << i)) == 0)
             continue;
-        QAction* act = canvasPopup->addAction(QIcon(**toolList[i].icon), tr(toolList[i].tip));
+        QAction* act = canvasPopup->addAction(QIcon(*toolList[i].icon), tr(toolList[i].tip));
         act->setData(1 << i); // ddskrjo
         if (!act0)
             act0 = act;

@@ -5,37 +5,41 @@
 //  (C) Copyright 1999 Werner Schweer (ws@seh.de)
 //=========================================================
 
-#ifndef __TOOLS_H__
-#define __TOOLS_H__
+#ifndef TOOLBARS_TOOLS_H_INCLUDED
+#define TOOLBARS_TOOLS_H_INCLUDED
 
+#include <QActionGroup>
 #include <QFrame>
+#include <QHBoxLayout>
 #include <QList>
 
 class Action;
-
-class QHBoxLayout;
-class QToolButton;
-class QAction;
-class QPixmap;
 class QIcon;
-class QWidget;
-class QActionGroup;
 
-enum Tool
-{
-    PointerTool = 1, PencilTool = 2, RubberTool = 4, CutTool = 8,
-    ScoreTool=16, GlueTool=32, QuantTool=64, DrawTool=128, StretchTool=256, MuteTool=512, AutomationTool=1024, MasterTool=2048
+//---------------------------------------------------------
+
+enum Tool {
+    PointerTool=1,
+    PencilTool=2,
+    RubberTool=4,
+    CutTool=8,
+    ScoreTool=16,
+    GlueTool=32,
+    QuantTool=64,
+    DrawTool=128,
+    StretchTool=256,
+    MuteTool=512,
+    AutomationTool=1024,
+    MasterTool=2048
 };
 
 //const int composerTools = PointerTool | PencilTool | RubberTool | CutTool | GlueTool | StretchTool | MuteTool | AutomationTool;
 const int composerTools = PointerTool | PencilTool | RubberTool | CutTool | GlueTool | MuteTool | AutomationTool;
 const int masterTools = PointerTool | PencilTool | RubberTool | MasterTool;
 
-struct ToolB
-{
-    //QPixmap** icon;
-	QIcon** icon;
-	const char* tip;
+struct ToolB {
+    QIcon* icon;
+    const char* tip;
     const char* ltip;
 };
 
@@ -48,13 +52,13 @@ extern ToolB toolList[];
 class EditToolBar : public QFrame
 {
     Q_OBJECT
-	QHBoxLayout* m_layout;
-    Action** actions;
-	QActionGroup* action;
-    int nactions;
 
-private slots:
-    void toolChanged(QAction* action);
+public:
+    EditToolBar(QWidget*, int, bool addSpacer = false, const char* name = nullptr);
+    ~EditToolBar() override;
+
+    int curTool() const;
+    QList<QAction*> getActions() const;
 
 signals:
     void toolChanged(int);
@@ -63,13 +67,15 @@ public slots:
     void set(int id);
     void setNoUpdate(int id);
 
-public:
-    //EditToolBar(QMainWindow*, int, const char* name = 0);
-    EditToolBar(QWidget* /*parent*/, int /*tools*/, bool addSpacer = false, const char* name = 0); // Needs a parent !
-    ~EditToolBar();
-    int curTool();
-	QList<QAction*> getActions();
+private:
+    QHBoxLayout  layout;
+    QActionGroup action;
+
+    Action** actions;
+    int     nactions;
+
+private slots:
+    void toolChanged(QAction* action);
 };
 
-#endif
-
+#endif // TOOLBARS_TOOLS_H_INCLUDED

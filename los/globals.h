@@ -25,11 +25,6 @@
 #endif
 
 #if defined(__cplusplus) && !defined(LOS_PROPER_CPP11_SUPPORT)
-# ifndef __clang__
-#  define noexcept throw()
-# else
-#  define noexcept
-# endif
 # define override
 # define final
 # define nullptr (0)

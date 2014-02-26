@@ -5,8 +5,8 @@
 //  (C) Copyright 2001 Werner Schweer (ws@seh.de)
 //=========================================================
 
-#ifndef __ACTION_H__
-#define __ACTION_H__
+#ifndef WIDGETS_ACTION_H_INCLUDED
+#define WIDGETS_ACTION_H_INCLUDED
 
 #include <QAction>
 
@@ -17,28 +17,29 @@
 class Action : public QAction
 {
     Q_OBJECT
-    int _id;
 
 public:
-
     Action(QObject* parent, int i, const char* name = 0, bool toggle = false)
-    : QAction(name, parent)
+        : QAction(name, parent),
+          _id(i)
     {
-        _id = i;
         setCheckable(toggle);
     }
 
-    void setId(int i)
+    int id() const noexcept
+    {
+        return _id;
+    }
+
+    void setId(int i) noexcept
     {
         _id = i;
     }
 
-    int id() const
-    {
-        return _id;
-    }
+private:
+    int _id;
 };
 
+//---------------------------------------------------------
 
-#endif
-
+#endif // WIDGETS_ACTION_H_INCLUDED

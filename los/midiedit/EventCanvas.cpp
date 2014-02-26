@@ -635,7 +635,7 @@ QMenu* EventCanvas::genItemPopup(CItem* item)/*{{{*/
     {
         if ((_canvasTools & (1 << i)) == 0)
             continue;
-        QAction* act = notePopup->addAction(QIcon(**toolList[i].icon), tr(toolList[i].tip));
+        QAction* act = notePopup->addAction(QIcon(*toolList[i].icon), tr(toolList[i].tip));
         act->setData(1 << i);
     }
 
