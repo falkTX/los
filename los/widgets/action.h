@@ -26,12 +26,12 @@ public:
         setCheckable(toggle);
     }
 
-    int id() const noexcept
+    int id() const
     {
         return _id;
     }
 
-    void setId(int i) noexcept
+    void setId(int i)
     {
         _id = i;
     }

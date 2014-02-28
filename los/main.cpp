@@ -28,6 +28,7 @@
 
 extern bool initDummyAudio();
 extern void initIcons();
+extern void initToolbars();
 extern bool initJackAudio();
 extern void initMidiController();
 extern void initShortCuts();
@@ -365,6 +366,7 @@ int main(int argc, char* argv[])
     }
 
     initIcons();
+    initToolbars();
 
     QApplication::addLibraryPath(losGlobalLib + "/qtplugins");
     if (debugMsg)

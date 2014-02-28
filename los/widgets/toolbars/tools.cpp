@@ -58,6 +58,22 @@ ToolB toolList[] = {
     { drawIconSet3,    QT_TRANSLATE_NOOP("@default", "Enable Tempo Editor"), infoMaster},
 };
 
+void initToolbars()
+{
+    toolList[0].icon = pointerIconSet3;
+    toolList[1].icon = pencilIconSet3;
+    toolList[2].icon = deleteIconSet3;
+    toolList[3].icon = cutIconSet3;
+    toolList[4].icon = note1IconSet3;
+    toolList[5].icon = glueIconSet3;
+    toolList[6].icon = quantIconSet3;
+    toolList[7].icon = drawIconSet3;
+    toolList[8].icon = stretchIconSet3;
+    toolList[9].icon = muteIconSet3;
+    toolList[10].icon = drawIconSet3;
+    toolList[11].icon = drawIconSet3;
+}
+
 //---------------------------------------------------------
 //   EditToolBar
 //---------------------------------------------------------

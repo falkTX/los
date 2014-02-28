@@ -54,8 +54,8 @@ class EditToolBar : public QFrame
     Q_OBJECT
 
 public:
-    EditToolBar(QWidget*, int, bool addSpacer = false, const char* name = nullptr);
-    ~EditToolBar() override;
+    EditToolBar(QWidget*, int, bool addSpacer = false, const char* name = 0);
+    ~EditToolBar();
 
     int curTool() const;
     QList<QAction*> getActions() const;

@@ -428,12 +428,75 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
     // Very first thing we should do is loading global configuration values
     tconfig().check_and_load_configuration();
 
+    QApplication* const app(qApp);
+
     // set theme
     style = new CarlaStyle();
-    qApp->setStyle(style);
+    app->setStyle(style);
 
     // set font
+    app->setFont(config.fonts[0]);
     QApplication::setFont(config.fonts[0]);
+
+    QPalette palBlack;
+    palBlack.setColor(QPalette::Disabled, QPalette::Window, QColor(14, 14, 14));
+    palBlack.setColor(QPalette::Active,   QPalette::Window, QColor(17, 17, 17));
+    palBlack.setColor(QPalette::Inactive, QPalette::Window, QColor(17, 17, 17));
+    palBlack.setColor(QPalette::Disabled, QPalette::WindowText, QColor(83, 83, 83));
+    palBlack.setColor(QPalette::Active,   QPalette::WindowText, QColor(240, 240, 240));
+    palBlack.setColor(QPalette::Inactive, QPalette::WindowText, QColor(240, 240, 240));
+    palBlack.setColor(QPalette::Disabled, QPalette::Base, QColor(6, 6, 6));
+    palBlack.setColor(QPalette::Active,   QPalette::Base, QColor(7, 7, 7));
+    palBlack.setColor(QPalette::Inactive, QPalette::Base, QColor(7, 7, 7));
+    palBlack.setColor(QPalette::Disabled, QPalette::AlternateBase, QColor(12, 12, 12));
+    palBlack.setColor(QPalette::Active,   QPalette::AlternateBase, QColor(14, 14, 14));
+    palBlack.setColor(QPalette::Inactive, QPalette::AlternateBase, QColor(14, 14, 14));
+    palBlack.setColor(QPalette::Disabled, QPalette::ToolTipBase, QColor(4, 4, 4));
+    palBlack.setColor(QPalette::Active,   QPalette::ToolTipBase, QColor(4, 4, 4));
+    palBlack.setColor(QPalette::Inactive, QPalette::ToolTipBase, QColor(4, 4, 4));
+    palBlack.setColor(QPalette::Disabled, QPalette::ToolTipText, QColor(230, 230, 230));
+    palBlack.setColor(QPalette::Active,   QPalette::ToolTipText, QColor(230, 230, 230));
+    palBlack.setColor(QPalette::Inactive, QPalette::ToolTipText, QColor(230, 230, 230));
+    palBlack.setColor(QPalette::Disabled, QPalette::Text, QColor(74, 74, 74));
+    palBlack.setColor(QPalette::Active,   QPalette::Text, QColor(230, 230, 230));
+    palBlack.setColor(QPalette::Inactive, QPalette::Text, QColor(230, 230, 230));
+    palBlack.setColor(QPalette::Disabled, QPalette::Button, QColor(24, 24, 24));
+    palBlack.setColor(QPalette::Active,   QPalette::Button, QColor(28, 28, 28));
+    palBlack.setColor(QPalette::Inactive, QPalette::Button, QColor(28, 28, 28));
+    palBlack.setColor(QPalette::Disabled, QPalette::ButtonText, QColor(90, 90, 90));
+    palBlack.setColor(QPalette::Active,   QPalette::ButtonText, QColor(240, 240, 240));
+    palBlack.setColor(QPalette::Inactive, QPalette::ButtonText, QColor(240, 240, 240));
+    palBlack.setColor(QPalette::Disabled, QPalette::BrightText, QColor(255, 255, 255));
+    palBlack.setColor(QPalette::Active,   QPalette::BrightText, QColor(255, 255, 255));
+    palBlack.setColor(QPalette::Inactive, QPalette::BrightText, QColor(255, 255, 255));
+    palBlack.setColor(QPalette::Disabled, QPalette::Light, QColor(191, 191, 191));
+    palBlack.setColor(QPalette::Active,   QPalette::Light, QColor(191, 191, 191));
+    palBlack.setColor(QPalette::Inactive, QPalette::Light, QColor(191, 191, 191));
+    palBlack.setColor(QPalette::Disabled, QPalette::Midlight, QColor(155, 155, 155));
+    palBlack.setColor(QPalette::Active,   QPalette::Midlight, QColor(155, 155, 155));
+    palBlack.setColor(QPalette::Inactive, QPalette::Midlight, QColor(155, 155, 155));
+    palBlack.setColor(QPalette::Disabled, QPalette::Dark, QColor(129, 129, 129));
+    palBlack.setColor(QPalette::Active,   QPalette::Dark, QColor(129, 129, 129));
+    palBlack.setColor(QPalette::Inactive, QPalette::Dark, QColor(129, 129, 129));
+    palBlack.setColor(QPalette::Disabled, QPalette::Mid, QColor(94, 94, 94));
+    palBlack.setColor(QPalette::Active,   QPalette::Mid, QColor(94, 94, 94));
+    palBlack.setColor(QPalette::Inactive, QPalette::Mid, QColor(94, 94, 94));
+    palBlack.setColor(QPalette::Disabled, QPalette::Shadow, QColor(155, 155, 155));
+    palBlack.setColor(QPalette::Active,   QPalette::Shadow, QColor(155, 155, 155));
+    palBlack.setColor(QPalette::Inactive, QPalette::Shadow, QColor(155, 155, 155));
+    palBlack.setColor(QPalette::Disabled, QPalette::Highlight, QColor(14, 14, 14));
+    palBlack.setColor(QPalette::Active,   QPalette::Highlight, QColor(60, 60, 60));
+    palBlack.setColor(QPalette::Inactive, QPalette::Highlight, QColor(34, 34, 34));
+    palBlack.setColor(QPalette::Disabled, QPalette::HighlightedText, QColor(83, 83, 83));
+    palBlack.setColor(QPalette::Active,   QPalette::HighlightedText, QColor(255, 255, 255));
+    palBlack.setColor(QPalette::Inactive, QPalette::HighlightedText, QColor(240, 240, 240));
+    palBlack.setColor(QPalette::Disabled, QPalette::Link, QColor(34, 34, 74));
+    palBlack.setColor(QPalette::Active,   QPalette::Link, QColor(100, 100, 230));
+    palBlack.setColor(QPalette::Inactive, QPalette::Link, QColor(100, 100, 230));
+    palBlack.setColor(QPalette::Disabled, QPalette::LinkVisited, QColor(74, 34, 74));
+    palBlack.setColor(QPalette::Active,   QPalette::LinkVisited, QColor(230, 100, 230));
+    palBlack.setColor(QPalette::Inactive, QPalette::LinkVisited, QColor(230, 100, 230));
+    app->setPalette(palBlack);
 
     // set styleSheet
     QFile cf(":/style.qss");
