@@ -1051,7 +1051,7 @@ void MidiTransformerDialog::apply()
     if (!tl.empty())
     {
         flags |= SC_TRACK_INSERTED;
-        for (iTrack t = tl.begin(); t != tl.end(); ++t)
+        for (iMidiTrack t = tl.begin(); t != tl.end(); ++t)
         {
             song->insertTrack(*t, -1);
         }

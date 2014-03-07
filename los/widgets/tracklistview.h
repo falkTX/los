@@ -34,55 +34,54 @@ class QShowEvent;
 
 class Part;
 class PartList;
-class Track;
 class AbstractMidiEditor;
 
 class TrackListView : public QFrame
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	QTableView* m_table;
-	QStandardItemModel* m_model;
-	QItemSelectionModel* m_selmodel;
-	QVBoxLayout* m_layout;
-	QHBoxLayout* m_buttonBox;
-	AbstractMidiEditor* m_editor;
-	QList<qint64> m_selectedTracks;
-	QToolButton* m_btnRefresh;;
-	QCheckBox* m_chkWorkingView;
-	QCheckBox* m_chkSnapToPart;
-	int m_displayRole;
-	int m_selectedIndex;
-	bool m_editing;
-	QStringList m_headers;
-	QPoint scrollPos;
-	QBrush m_tempColor;
-	QList<int> m_colorRows;
-	
-	void updatePartSelection(Part*);
+    QTableView* m_table;
+    QStandardItemModel* m_model;
+    QItemSelectionModel* m_selmodel;
+    QVBoxLayout* m_layout;
+    QHBoxLayout* m_buttonBox;
+    AbstractMidiEditor* m_editor;
+    QList<qint64> m_selectedTracks;
+    QToolButton* m_btnRefresh;;
+    QCheckBox* m_chkWorkingView;
+    QCheckBox* m_chkSnapToPart;
+    int m_displayRole;
+    int m_selectedIndex;
+    bool m_editing;
+    QStringList m_headers;
+    QPoint scrollPos;
+    QBrush m_tempColor;
+    QList<int> m_colorRows;
+
+    void updatePartSelection(Part*);
 
 
 private slots:
-	void songChanged(int);
-	void displayRoleChanged(int);
-	void contextPopupMenu(QPoint);
-	void selectionChanged(const QModelIndex, const QModelIndex);
-	void updateCheck(PartList*, bool);
-	void updateCheck();
-	void snapToPartChanged(int);
-	void updateColor();
+    void songChanged(int);
+    void displayRoleChanged(int);
+    void contextPopupMenu(QPoint);
+    void selectionChanged(const QModelIndex, const QModelIndex);
+    void updateCheck(PartList*, bool);
+    void updateCheck();
+    void snapToPartChanged(int);
+    void updateColor();
 
 protected:
-	virtual void showEvent(QShowEvent*);
+    virtual void showEvent(QShowEvent*);
 
 public slots:
-	void toggleTrackPart(QStandardItem*);
-	void populateTable();
+    void toggleTrackPart(QStandardItem*);
+    void populateTable();
 
 public:
-	TrackListView(AbstractMidiEditor* e, QWidget* parent = 0);
-	virtual ~TrackListView();
-	QTableView* getView(){return m_table;}
+    TrackListView(AbstractMidiEditor* e, QWidget* parent = 0);
+    virtual ~TrackListView();
+    QTableView* getView(){return m_table;}
 };
 
 #endif

@@ -156,7 +156,7 @@ void PerformerCanvas::drawTopItem(QPainter& p, const QRect& rect)
             cmag = 4000;
         //printf("PerformerCanvas::drawCanvas(): Current xMag: %f, cMag: %d\n", xmag, cmag);
         Track* track = _curPart->track();
-        if(track && track->isMidiTrack())
+        if(track)
         {
             //printf("PerformerCanvas::drawCanvas() track is MidiTrack\n");
             MidiTrack* mtrack = (MidiTrack*)track;
@@ -636,9 +636,9 @@ bool PerformerCanvas::moveItem(CItem* item, const QPoint& pos, DragType dtype)/*
         int port = track()->outPort();
         int channel = track()->outChannel();
         // release note:
-        MidiPlayEvent ev1(0, port, channel, 0x90, playedPitch, 0, (Track*)track());
+        MidiPlayEvent ev1(0, port, channel, 0x90, playedPitch, 0, track());
         audio->msgPlayMidiEvent(&ev1);
-        MidiPlayEvent ev2(0, port, channel, 0x90, npitch + track()->getTransposition(), event.velo(), (Track*)track());
+        MidiPlayEvent ev2(0, port, channel, 0x90, npitch + track()->getTransposition(), event.velo(), track());
         audio->msgPlayMidiEvent(&ev2);
         playedPitch = npitch + track()->getTransposition();
     }
@@ -1040,7 +1040,7 @@ void PerformerCanvas::pianoPressed(int pitch, int velocity, bool shift)/*{{{*/
     ipitch += track()->getTransposition();
 
     // play note:
-    MidiPlayEvent e(0, port, channel, 0x90, ipitch, velocity, (Track*)track());
+    MidiPlayEvent e(0, port, channel, 0x90, ipitch, velocity, track());
     audio->msgPlayMidiEvent(&e);
 
     if (_steprec && _pos[0] >= start_tick && _pos[0] < end_tick)
@@ -1117,7 +1117,7 @@ void PerformerCanvas::pianoReleased(int pitch, bool)/*{{{*/
             int port = ctrack->outPort();
             int channel = ctrack->outChannel();
 
-            MidiPlayEvent e(0, port, channel, 0x90, tpitch, 0, (Track*)track());
+            MidiPlayEvent e(0, port, channel, 0x90, tpitch, 0, track());
             audio->msgPlayMidiEvent(&e);
         }
     }
@@ -1128,7 +1128,7 @@ void PerformerCanvas::pianoReleased(int pitch, bool)/*{{{*/
         pitch += track()->getTransposition();
 
     // release key:
-        MidiPlayEvent e(0, port, channel, 0x90, pitch, 0, (Track*)track());
+        MidiPlayEvent e(0, port, channel, 0x90, pitch, 0, track());
         audio->msgPlayMidiEvent(&e);
     }
 }/*}}}*/
@@ -1388,10 +1388,10 @@ void PerformerCanvas::cmd(int cmd, int quantStrength, int quantLimit, bool quant
         case CMD_SELECT_PREV_PART: // select previous part
         {
             Part* pt = editor->curCanvasPart();
-            Track* cTrack = pt->track();
+            MidiTrack* cTrack = pt->track();
             Part* newpt = pt;
             PartList* pl = editor->parts();
-            QList<Track*> editorTracks = pl->tracks();
+            QList<MidiTrack*> editorTracks = pl->tracks();
             int listSize = (editorTracks.size() - 1);
             int trackIndex = editorTracks.indexOf(pt->track());
             PartMap partMap = pl->partMap(cTrack);
@@ -1437,7 +1437,7 @@ void PerformerCanvas::cmd(int cmd, int quantStrength, int quantLimit, bool quant
                 {
                     for(iPart p = pl->begin(); p != pl->end(); ++p)
                     {
-                        Track* t = p->second->track();
+                        MidiTrack* t = p->second->track();
                         if(t != track() && t != newpt->track())
                             song->setRecordFlag(t, false);
                     }
@@ -1457,10 +1457,10 @@ void PerformerCanvas::cmd(int cmd, int quantStrength, int quantLimit, bool quant
         case CMD_SELECT_NEXT_PART: // select next part
         {
             Part* pt = editor->curCanvasPart();
-            Track* cTrack = pt->track();
+            MidiTrack* cTrack = pt->track();
             Part* newpt = pt;
             PartList* pl = editor->parts();
-            QList<Track*> editorTracks = pl->tracks();
+            QList<MidiTrack*> editorTracks = pl->tracks();
             int listSize = (editorTracks.size() - 1);
             int trackIndex = editorTracks.indexOf(pt->track());
             PartMap partMap = pl->partMap(cTrack);
@@ -1505,7 +1505,7 @@ void PerformerCanvas::cmd(int cmd, int quantStrength, int quantLimit, bool quant
                 {
                     for(iPart p = pl->begin(); p != pl->end(); ++p)
                     {
-                        Track* t = p->second->track();
+                        MidiTrack* t = p->second->track();
                         if(t != track() && t != newpt->track())
                             song->setRecordFlag(t, false);
                     }
@@ -2098,7 +2098,7 @@ void PerformerCanvas::processKeySwitches(Part* part, int pitch, int songtick)/*{
                 }
 
                 //printf("Should be adding the program now\n");
-                MidiPlayEvent ev(0, port, channel, ME_CONTROLLER, CTRL_PROGRAM, km->program, (Track*)track);
+                MidiPlayEvent ev(0, port, channel, ME_CONTROLLER, CTRL_PROGRAM, km->program, track);
                 audio->msgPlayMidiEvent(&ev);
 
                 MidiPort* mport = &midiPorts[port];
@@ -2300,7 +2300,7 @@ void PerformerCanvas::itemPressed(const CItem* item)
     int velo = event.velo();
 
     // play note:
-    MidiPlayEvent e(0, port, channel, 0x90, playedPitch, velo, (Track*)track());
+    MidiPlayEvent e(0, port, channel, 0x90, playedPitch, velo, track());
     audio->msgPlayMidiEvent(&e);
 }
 
@@ -2316,7 +2316,7 @@ void PerformerCanvas::itemReleased(const CItem*, const QPoint&)
     int channel = track()->outChannel();
 
     // release note:
-    MidiPlayEvent ev(0, port, channel, 0x90, playedPitch, 0, (Track*)track());
+    MidiPlayEvent ev(0, port, channel, 0x90, playedPitch, 0, track());
     audio->msgPlayMidiEvent(&ev);
     playedPitch = -1;
 }
@@ -2338,10 +2338,10 @@ void PerformerCanvas::itemMoved(const CItem* item, const QPoint& pos)
         Event event = nevent->event();
 
         // release note:
-        MidiPlayEvent ev1(0, port, channel, 0x90, playedPitch, 0, (Track*)track());
+        MidiPlayEvent ev1(0, port, channel, 0x90, playedPitch, 0, track());
         audio->msgPlayMidiEvent(&ev1);
         // play note:
-        MidiPlayEvent e2(0, port, channel, 0x90, npitch + track()->getTransposition(), event.velo(), (Track*)track());
+        MidiPlayEvent e2(0, port, channel, 0x90, npitch + track()->getTransposition(), event.velo(), track());
         audio->msgPlayMidiEvent(&e2);
         playedPitch = npitch + track()->getTransposition();
     }
@@ -2432,11 +2432,11 @@ void PerformerCanvas::doModify(NoteInfo::ValType type, int delta, CItem* item, b
             int channel = track()->outChannel();
 
             // release key:
-            MidiPlayEvent pe2(0, port, channel, 0x90, epitch, 0, (Track*)track());
+            MidiPlayEvent pe2(0, port, channel, 0x90, epitch, 0, track());
             audio->msgPlayMidiEvent(&pe2);
-            MidiPlayEvent pe(0, port, channel, 0x90, newEvent.pitch(), newEvent.velo(), (Track*)track());
+            MidiPlayEvent pe(0, port, channel, 0x90, newEvent.pitch(), newEvent.velo(), track());
             audio->msgPlayMidiEvent(&pe);
-            MidiPlayEvent pe3(0, port, channel, 0x90, newEvent.pitch(), 0, (Track*)track());
+            MidiPlayEvent pe3(0, port, channel, 0x90, newEvent.pitch(), 0, track());
             audio->msgPlayMidiEvent(&pe3);
         }
         // Indicate do not do port controller values and clone parts.

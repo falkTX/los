@@ -126,27 +126,6 @@ void UndoList::clearDelete()
                     case UndoOp::ModifyTrack:
                         if (i->oTrack)
                         {
-                            // Prevent delete i->oTrack from crashing.
-                            switch (i->oTrack->type())
-                            {
-                                case Track::WAVE_OUTPUT_HELPER:
-                                {
-                                    AudioOutputHelper* ao = (AudioOutputHelper*) i->oTrack;
-                                    for (int ch = 0; ch < ao->channels(); ++ch)
-                                        ao->setJackPort(ch, 0);
-                                }
-                                    break;
-                                case Track::WAVE_INPUT_HELPER:
-                                {
-                                    AudioInputHelper* ai = (AudioInputHelper*) i->oTrack;
-                                    for (int ch = 0; ch < ai->channels(); ++ch)
-                                        ai->setJackPort(ch, 0);
-                                }
-                                    break;
-                                default:
-                                    break;
-                            }
-
                             //FIXME: I suspect this is causing a double free error in the destructor
                             //of AudioAux, testin just commenting for now and seeing the side effects
                             delete i->oTrack;
@@ -260,34 +239,13 @@ void Song::doUndo2()
                 unchainTrackParts(i->nTrack, false);
 
                 //Track* track = i->nTrack->clone();
-                Track* track = i->nTrack->clone(false);
+                MidiTrack* track = i->nTrack->clone(false);
 
                 // A Track custom assignment operator was added by Tim.
                 *(i->nTrack) = *(i->oTrack);
 
                 // Added by Tim. p3.3.6
                 //printf("Song::doUndo2 ModifyTrack #2 oTrack %p %s nTrack %p %s\n", i->oTrack, i->oTrack->name().toLatin1().constData(), i->nTrack, i->nTrack->name().toLatin1().constData());
-
-                // Prevent delete i->oTrack from crashing.
-                switch (i->oTrack->type())
-                {
-                    case Track::WAVE_OUTPUT_HELPER:
-                    {
-                        AudioOutputHelper* ao = (AudioOutputHelper*) i->oTrack;
-                        for (int ch = 0; ch < ao->channels(); ++ch)
-                            ao->setJackPort(ch, 0);
-                    }
-                        break;
-                    case Track::WAVE_INPUT_HELPER:
-                    {
-                        AudioInputHelper* ai = (AudioInputHelper*) i->oTrack;
-                        for (int ch = 0; ch < ai->channels(); ++ch)
-                            ai->setJackPort(ch, 0);
-                    }
-                        break;
-                    default:
-                        break;
-                }
 
                 delete i->oTrack;
                 i->oTrack = track;
@@ -297,25 +255,6 @@ void Song::doUndo2()
 
                 // Added by Tim. p3.3.6
                 //printf("Song::doUndo2 ModifyTrack #3 oTrack %p %s nTrack %p %s\n", i->oTrack, i->oTrack->name().toLatin1().constData(), i->nTrack, i->nTrack->name().toLatin1().constData());
-
-                // Connect and register ports.
-                switch (i->nTrack->type())
-                {
-                    case Track::WAVE_OUTPUT_HELPER:
-                    {
-                        AudioOutputHelper* ao = (AudioOutputHelper*) i->nTrack;
-                        ao->setName(ao->name());
-                    }
-                        break;
-                    case Track::WAVE_INPUT_HELPER:
-                    {
-                        AudioInputHelper* ai = (AudioInputHelper*) i->nTrack;
-                        ai->setName(ai->name());
-                    }
-                        break;
-                    default:
-                        break;
-                }
 
                 // Update solo states, since the user may have changed soloing on other tracks.
                 updateSoloStates();
@@ -327,13 +266,13 @@ void Song::doUndo2()
             {
                 if(viewselected)
                 {
-                    Track* track = _tracks[i->a];
+                    MidiTrack* track = _tracks[i->a];
                     _tracks[i->a] = _tracks[i->b];
                     _tracks[i->b] = track;
                 }
                 else
                 {
-                    Track* track = _artracks[i->a];
+                    MidiTrack* track = _artracks[i->a];
                     _artracks[i->a] = _artracks[i->b];
                     _artracks[i->b] = track;
                 }
@@ -458,55 +397,15 @@ void Song::doRedo2()
                 unchainTrackParts(i->nTrack, false);
 
                 //Track* track = i->nTrack->clone();
-                Track* track = i->nTrack->clone(false);
+                MidiTrack* track = i->nTrack->clone(false);
 
                 *(i->nTrack) = *(i->oTrack);
-
-                // Prevent delete i->oTrack from crashing.
-                switch (i->oTrack->type())
-                {
-                    case Track::WAVE_OUTPUT_HELPER:
-                    {
-                        AudioOutputHelper* ao = (AudioOutputHelper*) i->oTrack;
-                        for (int ch = 0; ch < ao->channels(); ++ch)
-                            ao->setJackPort(ch, 0);
-                    }
-                        break;
-                    case Track::WAVE_INPUT_HELPER:
-                    {
-                        AudioInputHelper* ai = (AudioInputHelper*) i->oTrack;
-                        for (int ch = 0; ch < ai->channels(); ++ch)
-                            ai->setJackPort(ch, 0);
-                    }
-                        break;
-                    default:
-                        break;
-                }
 
                 delete i->oTrack;
                 i->oTrack = track;
 
                 // Chain the track parts, but don't touch the ref counts.
                 chainTrackParts(i->nTrack, false);
-
-                // Connect and register ports.
-                switch (i->nTrack->type())
-                {
-                    case Track::WAVE_OUTPUT_HELPER:
-                    {
-                        AudioOutputHelper* ao = (AudioOutputHelper*) i->nTrack;
-                        ao->setName(ao->name());
-                    }
-                        break;
-                    case Track::WAVE_INPUT_HELPER:
-                    {
-                        AudioInputHelper* ai = (AudioInputHelper*) i->nTrack;
-                        ai->setName(ai->name());
-                    }
-                        break;
-                    default:
-                        break;
-                }
 
                 // Update solo states, since the user may have changed soloing on other tracks.
                 updateSoloStates();
@@ -516,7 +415,7 @@ void Song::doRedo2()
                 break;
             case UndoOp::SwapTrack:
             {
-                Track* track = _tracks[i->a];
+                MidiTrack* track = _tracks[i->a];
                 _tracks[i->a] = _tracks[i->b];
                 _tracks[i->b] = track;
                 updateFlags |= SC_TRACK_MODIFIED;
@@ -611,7 +510,7 @@ void Song::undoOp(UndoOp::UndoType type, int a, int b, int c)
 
 //void Song::undoOp(UndoOp::UndoType type, Track* oldTrack, Track* newTrack)
 
-void Song::undoOp(UndoOp::UndoType type, int n, Track* oldTrack, Track* newTrack)
+void Song::undoOp(UndoOp::UndoType type, int n, MidiTrack* oldTrack, MidiTrack* newTrack)
 {
     UndoOp i;
     i.type = type;
@@ -624,7 +523,7 @@ void Song::undoOp(UndoOp::UndoType type, int n, Track* oldTrack, Track* newTrack
     addUndo(i);
 }
 
-void Song::undoOp(UndoOp::UndoType type, int n, Track* track)
+void Song::undoOp(UndoOp::UndoType type, int n, MidiTrack* track)
 {
     UndoOp i;
     i.type = type;
@@ -777,26 +676,6 @@ bool Song::doUndo1()
                 break;
             case UndoOp::DeleteTrack:
                 insertTrack1(i->oTrack, i->trackno);
-
-                // FIXME: Would like to put this part in Undo2, but indications
-                //  elsewhere are that (dis)connecting jack routes must not be
-                //  done in the realtime thread. The result is that we get a few
-                //  "PANIC Process init: No buffer from audio device" messages
-                //  before the routes are (dis)connected. So far seems to do no harm though...
-                switch (i->oTrack->type())
-                {
-                    case Track::WAVE_OUTPUT_HELPER:
-                    case Track::WAVE_INPUT_HELPER:
-                        connectJackRoutes((AudioTrack*) i->oTrack, false);
-                        break;
-                        //case Track::AUDIO_SOFTSYNTH:
-                        //SynthI* si = (SynthI*)i->oTrack;
-                        //si->synth()->init(
-                        //      break;
-                    default:
-                        break;
-                }
-
                 break;
             case UndoOp::ModifyClip:
                 SndFile::applyUndoFile(i->filename, i->tmpwavfile, i->startframe, i->endframe);
@@ -871,22 +750,6 @@ bool Song::doRedo1()
             }
             case UndoOp::AddTrack:
                 insertTrack1(i->oTrack, i->trackno);
-
-                // FIXME: See comments in Undo1.
-                switch (i->oTrack->type())
-                {
-                    case Track::WAVE_OUTPUT_HELPER:
-                    case Track::WAVE_INPUT_HELPER:
-                        connectJackRoutes((AudioTrack*) i->oTrack, false);
-                        break;
-                        //case Track::AUDIO_SOFTSYNTH:
-                        //SynthI* si = (SynthI*)i->oTrack;
-                        //si->synth()->init(
-                        //      break;
-                    default:
-                        break;
-                }
-
                 break;
             case UndoOp::DeleteTrack:
                 removeTrack1(i->oTrack);

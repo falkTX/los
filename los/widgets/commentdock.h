@@ -10,8 +10,8 @@
 
 #include "ui_commentdockbase.h"
 
+class MidiTrack;
 class Xml;
-class Track;
 class QWidget;
 
 //---------------------------------------------------------
@@ -23,23 +23,23 @@ class CommentDock : public QWidget, public Ui::CommentDockBase
     Q_OBJECT
 
 private:
-    Track* m_track;
+    MidiTrack* m_track;
 
 private slots:
     void textChanged();
-	void songCommentChanged();
+    void songCommentChanged();
     void songChanged(int);
 
 public:
-    CommentDock(QWidget* parent = 0, Track* t = 0);
+    CommentDock(QWidget* parent = 0, MidiTrack* t = 0);
     ~CommentDock();
-	void setTrack(Track* t) 
-	{ 
-		m_track = t; 
-		updateComments();
-	}
-	Track* track() { return m_track; }
-	void updateComments();
+    void setTrack(MidiTrack* t)
+    {
+        m_track = t;
+        updateComments();
+    }
+    MidiTrack* track() { return m_track; }
+    void updateComments();
 };
 
 #endif

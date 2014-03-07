@@ -82,7 +82,6 @@ Song::Song(QUndoStack* stack, const char* name)
 : QObject(0)
 {
     setObjectName(name);
-    bounceOutput = 0;
     _composerRaster = 0; // Set to measure, the same as Composer intial value. Composer snap combo will set this.
     noteFifoSize = 0;
     noteFifoWindex = 0;
@@ -98,8 +97,6 @@ Song::Song(QUndoStack* stack, const char* name)
     invalid = false;
     _replay = false;
     _replayPos = 0;
-    //Master track ID
-    m_masterId = 0;
     //Create the AutoView
     TrackView* wv = new TrackView();
     wv->setViewName(tr("Working View"));
@@ -210,17 +207,11 @@ void Song::setSig(const AL::TimeSignature& sig)
 //    Besides normal track types, n includes synth menu ids from populateAddTrack()
 //---------------------------------------------------------
 
-Track* Song::addNewTrack(QAction* action)
+MidiTrack* Song::addNewTrack(QAction*)
 {
-    int n = action->data().toInt();
-    // Ignore negative numbers since this slot could be called by a menu or list etc. passing -1.
-    if (n < 0)
-        return 0;
-
-    CreateTrackDialog *ctdialog = new CreateTrackDialog(n, -1, los);
+    CreateTrackDialog *ctdialog = new CreateTrackDialog(-1, los);
     connect(ctdialog, SIGNAL(trackAdded(qint64)), this, SLOT(newTrackAdded(qint64)));
     ctdialog->exec();
-
     return 0;
 }
 
@@ -240,15 +231,12 @@ void Song::newTrackAdded(qint64 id)
 //    called from GUI context
 //---------------------------------------------------------
 
-Track* Song::addTrack(int t, bool doUndo)/*{{{*/
+MidiTrack* Song::addTrack(bool doUndo)/*{{{*/
 {
-    Track::TrackType type = (Track::TrackType) t;
-    Track* track = nullptr;
-    switch (type)
+    MidiTrack* track = nullptr;
+
     {
-    case Track::MIDI:
         track = new MidiTrack();
-        track->setType(Track::MIDI);
 
         if(config.partColorNames[lastTrackPartColorIndex].contains("menu:", Qt::CaseSensitive))
             lastTrackPartColorIndex ++;
@@ -258,38 +246,14 @@ Track* Song::addTrack(int t, bool doUndo)/*{{{*/
 
         if(lastTrackPartColorIndex == NUM_PARTCOLORS)
             lastTrackPartColorIndex = 1;
-
-        break;
-    case Track::WAVE:
-        track = new WaveTrack();
-
-        if(config.partColorNames[lastTrackPartColorIndex].contains("menu:", Qt::CaseSensitive))
-            lastTrackPartColorIndex ++;
-
-        track->setDefaultPartColor(lastTrackPartColorIndex);
-        lastTrackPartColorIndex ++;
-
-        if(lastTrackPartColorIndex == NUM_PARTCOLORS)
-            lastTrackPartColorIndex = 1;
-        break;
-    case Track::WAVE_INPUT_HELPER:
-        track = new AudioInputHelper();
-        break;
-    case Track::WAVE_OUTPUT_HELPER:
-        track = new AudioOutputHelper();
-        break;
-    default:
-        printf("Song::addTrack() illegal type %d\n", type);
-        abort();
     }
+
     track->setDefaultName();
     track->setHeight(DEFAULT_TRACKHEIGHT);
     insertTrack1(track, -1);
     msgInsertTrack(track, -1, doUndo);
     midiMonitor->msgAddMonitoredTrack(track);
 
-    // Add default track <-> midiport routes.
-    if (track->isMidiTrack())
     {
         MidiTrack* mt = (MidiTrack*) track;
         int c, cbi, ch;
@@ -326,60 +290,18 @@ Track* Song::addTrack(int t, bool doUndo)/*{{{*/
             }
         }
     }
-    else if(track->type() == Track::WAVE)
-    {
-        WaveTrack* wt = (WaveTrack*) track;
-
-        //Create the Audio input side of the track
-        if (Track* input = addTrackByName(QString("%1 (in)").arg(track->name()), Track::WAVE_INPUT_HELPER, -1, false))
-        {
-            wt->setInputTrack((AudioInputHelper*)input);
-
-            input->setMasterFlag(false);
-            input->setChainMaster(track->id());
-            track->addManagedTrack(input->id());
-
-            //Route the input to the wave track
-            Route srcRoute(input->name(), true, -1);
-            Route dstRoute(track, 0, track->channels());
-            audio->msgAddRoute(srcRoute, dstRoute);
-            updateFlags |= SC_ROUTE;
-        }
-
-        //Create the Audio output side of the track
-        if (Track* output = addTrackByName(QString("%1 (out)").arg(track->name()), Track::WAVE_OUTPUT_HELPER, -1, false))
-        {
-            wt->setOutputTrack((AudioOutputHelper*)output);
-
-            output->setMasterFlag(false);
-            output->setChainMaster(track->id());
-            track->addManagedTrack(output->id());
-
-            //Route the wave track to the output one
-            audio->msgAddRoute(Route(track, -1), Route(output, -1));
-
-            //Route the output track to master
-            if (AudioOutputHelper* ao = (AudioOutputHelper*)findTrackByIdAndType(m_masterId, Track::WAVE_OUTPUT_HELPER))
-                audio->msgAddRoute(Route(track, -1), Route(ao, -1));
-
-            updateFlags |= SC_ROUTE;
-        }
-    }
 
     audio->msgUpdateSoloStates();
     //updateTrackViews();
     return track;
 }/*}}}*/
 
-Track* Song::addTrackByName(QString name, int t, int pos, bool doUndo)/*{{{*/
+MidiTrack* Song::addTrackByName(QString name, int pos, bool doUndo)/*{{{*/
 {
-    Track::TrackType type = (Track::TrackType) t;
-    Track* track = 0;
-    switch (type)
+    MidiTrack* track = 0;
+
     {
-    case Track::MIDI:
         track = new MidiTrack();
-        track->setType(Track::MIDI);
 
         if(config.partColorNames[lastTrackPartColorIndex].contains("menu:", Qt::CaseSensitive))
             lastTrackPartColorIndex ++;
@@ -389,38 +311,14 @@ Track* Song::addTrackByName(QString name, int t, int pos, bool doUndo)/*{{{*/
 
         if(lastTrackPartColorIndex == NUM_PARTCOLORS)
             lastTrackPartColorIndex = 1;
-
-        break;
-    case Track::WAVE:
-        track = new WaveTrack();
-
-        if(config.partColorNames[lastTrackPartColorIndex].contains("menu:", Qt::CaseSensitive))
-            lastTrackPartColorIndex ++;
-
-        track->setDefaultPartColor(lastTrackPartColorIndex);
-        lastTrackPartColorIndex ++;
-
-        if(lastTrackPartColorIndex == NUM_PARTCOLORS)
-            lastTrackPartColorIndex = 1;
-        break;
-    case Track::WAVE_INPUT_HELPER:
-        track = new AudioInputHelper();
-        break;
-    case Track::WAVE_OUTPUT_HELPER:
-        track = new AudioOutputHelper();
-        break;
-    default:
-        printf("Song::addTrack() illegal type %d\n", type);
-        abort();
     }
+
     track->setName(track->getValidName(name));
     track->setHeight(DEFAULT_TRACKHEIGHT);
     insertTrack1(track, pos);
     msgInsertTrack(track, pos, doUndo);
     midiMonitor->msgAddMonitoredTrack(track);
 
-    // Add default track <-> midiport routes.
-    if (track->isMidiTrack())
     {
         MidiTrack* mt = (MidiTrack*) track;
         int c, cbi, ch;
@@ -464,44 +362,6 @@ Track* Song::addTrackByName(QString name, int t, int pos, bool doUndo)/*{{{*/
             }
         }
     }
-    else if(track->type() == Track::WAVE)
-    {
-        WaveTrack* wt = (WaveTrack*) track;
-
-        //Create the Audio input side of the track
-        if (Track* input = addTrackByName(QString("%1 (in)").arg(track->name()), Track::WAVE_INPUT_HELPER, -1, false))
-        {
-            wt->setInputTrack((AudioInputHelper*)input);
-
-            input->setMasterFlag(false);
-            input->setChainMaster(track->id());
-            track->addManagedTrack(input->id());
-
-            //Route the input to the wave track
-            Route srcRoute(input->name(), true, -1);
-            Route dstRoute(track, 0, track->channels());
-            audio->msgAddRoute(srcRoute, dstRoute);
-            updateFlags |= SC_ROUTE;
-        }
-        //Create the Audio output side of the track
-        if (Track* output = addTrackByName(QString("%1 (out)").arg(track->name()), Track::WAVE_OUTPUT_HELPER, -1, false))
-        {
-            wt->setOutputTrack((AudioOutputHelper*)output);
-
-            output->setMasterFlag(false);
-            output->setChainMaster(track->id());
-            track->addManagedTrack(output->id());
-
-            //Route the wave track to the output one
-            audio->msgAddRoute(Route(track, -1), Route(output, -1));
-
-            //Route the output track to master
-            if (AudioOutputHelper* ao = (AudioOutputHelper*)findTrackByIdAndType(m_masterId, Track::WAVE_OUTPUT_HELPER))
-                audio->msgAddRoute(Route(track, -1), Route(ao, -1));
-
-            updateFlags |= SC_ROUTE;
-        }
-    }
 
     audio->msgUpdateSoloStates();
     //updateTrackViews();
@@ -512,7 +372,7 @@ Track* Song::addTrackByName(QString name, int t, int pos, bool doUndo)/*{{{*/
 //   cmdRemoveTrack
 //---------------------------------------------------------
 
-void Song::cmdRemoveTrack(Track* track)
+void Song::cmdRemoveTrack(MidiTrack* track)
 {
     int idx = _tracks.index(track);
     undoOp(UndoOp::DeleteTrack, idx, track);
@@ -530,7 +390,7 @@ void Song::removeMarkedTracks()
     do
     {
         loop = false;
-        for (iTrack t = _tracks.begin(); t != _tracks.end(); ++t)
+        for (iMidiTrack t = _tracks.begin(); t != _tracks.end(); ++t)
         {
             if ((*t)->selected())
             {
@@ -548,13 +408,13 @@ void Song::removeMarkedTracks()
 
 void Song::deselectTracks()
 {
-    for (iTrack t = _tracks.begin(); t != _tracks.end(); ++t)
+    for (iMidiTrack t = _tracks.begin(); t != _tracks.end(); ++t)
         (*t)->setSelected(false);
 }
 
 void Song::deselectAllParts()
 {
-    for(iTrack t = _tracks.begin(); t != _tracks.end(); ++t)
+    for(iMidiTrack t = _tracks.begin(); t != _tracks.end(); ++t)
         (*t)->deselectParts();
     hasSelectedParts = false;
     update(SC_SELECTION);
@@ -566,7 +426,7 @@ void Song::disarmAllTracks()
     if(viewselected)
     {
         unsigned int noop = -1;
-        for(iTrack t = _tracks.begin(); t != _tracks.end(); ++t)
+        for(iMidiTrack t = _tracks.begin(); t != _tracks.end(); ++t)
         {
             if(_viewtracks.index((*t)) == noop)
             {
@@ -584,7 +444,7 @@ void Song::disarmAllTracks()
 //    newTrack - modified original track
 //---------------------------------------------------------
 
-void Song::changeTrack(Track* oldTrack, Track* newTrack)
+void Song::changeTrack(MidiTrack* oldTrack, MidiTrack* newTrack)
 {
     oldTrack->setSelected(false); //??
     int idx = _tracks.index(newTrack);
@@ -881,9 +741,9 @@ void Song::cmdAddRecordedEvents(MidiTrack* mt, EventList* events, unsigned start
 
 MidiTrack* Song::findTrack(const Part* part) const
 {
-    for (ciTrack t = _tracks.begin(); t != _tracks.end(); ++t)
+    for (ciMidiTrack it = _tracks.begin(); it != _tracks.end(); ++it)
     {
-        MidiTrack* track = dynamic_cast<MidiTrack*> (*t);
+        MidiTrack* track = dynamic_cast<MidiTrack*> (*it);
         if (track == 0)
             continue;
         PartList* pl = track->parts();
@@ -901,9 +761,9 @@ MidiTrack* Song::findTrack(const Part* part) const
 //    find track by name
 //---------------------------------------------------------
 
-Track* Song::findTrack(const QString& name) const
+MidiTrack* Song::findTrack(const QString& name) const
 {
-    for (ciTrack i = _tracks.begin(); i != _tracks.end(); ++i)
+    for (ciMidiTrack i = _tracks.begin(); i != _tracks.end(); ++i)
     {
         if ((*i)->name() == name)
             return *i;
@@ -916,62 +776,14 @@ Track* Song::findTrack(const QString& name) const
 //    find track by id
 //---------------------------------------------------------
 
-Track* Song::findTrackById(qint64 id) const
+MidiTrack* Song::findTrackById(qint64 id) const
 {
-    for (ciTrack i = _tracks.begin(); i != _tracks.end(); ++i)
+    for (ciMidiTrack i = _tracks.begin(); i != _tracks.end(); ++i)
     {
         if ((*i)->id() == id)
             return *i;
     }
     return 0;
-}
-
-//---------------------------------------------------------
-//   findTrackByIdAndType
-//    find track by id and type
-//---------------------------------------------------------
-
-Track* Song::findTrackByIdAndType(qint64 id, int type) const
-{
-    if (id == 0)
-        return nullptr;
-
-    switch (static_cast<Track::TrackType>(type))
-    {
-    case Track::MIDI:
-        for (ciTrack i = _midis.begin(); i != _midis.end(); ++i)
-        {
-            if ((*i)->id() == id)
-                return *i;
-        }
-        break;
-
-    case Track::WAVE:
-        for (ciTrack i = _waves.begin(); i != _waves.end(); ++i)
-        {
-            if ((*i)->id() == id)
-                return *i;
-        }
-        break;
-
-    case Track::WAVE_INPUT_HELPER:
-        for (ciTrack i = _inputs.begin(); i != _inputs.end(); ++i)
-        {
-            if ((*i)->id() == id)
-                return *i;
-        }
-        break;
-
-    case Track::WAVE_OUTPUT_HELPER:
-        for (ciTrack i = _outputs.begin(); i != _outputs.end(); ++i)
-        {
-            if ((*i)->id() == id)
-                return *i;
-        }
-        break;
-    }
-
-    return nullptr;
 }
 
 //---------------------------------------------------------
@@ -1017,7 +829,7 @@ void Song::setLoop(bool f)
 void Song::clearTrackRec()
 {
     //printf("Song::clearTrackRec()\n");
-    for (iTrack it = tracks()->begin(); it != tracks()->end(); ++it)
+    for (iMidiTrack it = tracks()->begin(); it != tracks()->end(); ++it)
         setRecordFlag(*it, false);
 }
 
@@ -1040,20 +852,10 @@ void Song::setRecord(bool f, bool autoRecEnable)
         if (f && autoRecEnable)
         {
             bool alreadyRecEnabled = false;
-            Track *selectedTrack = 0;
+            MidiTrack *selectedTrack = 0;
             // loop through list and check if any track is rec enabled
             // if not then rec enable the selected track
-            WaveTrackList* wtl = waves();
-            for (iWaveTrack i = wtl->begin(); i != wtl->end(); ++i)
-            {
-                if ((*i)->recordFlag())
-                {
-                    alreadyRecEnabled = true;
-                    break;
-                }
-                if ((*i)->selected())
-                    selectedTrack = (*i);
-            }
+
             if (!alreadyRecEnabled)
             {
                 MidiTrackList* mtl = midis();
@@ -1079,19 +881,10 @@ void Song::setRecord(bool f, bool autoRecEnable)
             else
             {
                 // if there are no tracks, do not enable record
-                if (!waves()->size() && !midis()->size())
+                if (!midis()->size())
                 {
                     printf("No track to select, won't enable record\n");
                     f = false;
-                }
-            }
-            // prepare recording of wave files for all record enabled wave tracks
-            for (iWaveTrack i = wtl->begin(); i != wtl->end(); ++i)
-            {
-                if ((*i)->recordFlag() || (selectedTrack == (*i) && autoRecEnable)) // prepare if record flag or if it is set to recenable
-                {	// setRecordFlag may take too long time to complete
-                    // so we try this case specifically
-                    (*i)->prepareRecording();
                 }
             }
 
@@ -1114,7 +907,6 @@ void Song::setRecord(bool f, bool autoRecEnable)
         }
         else
         {
-            bounceTrack = 0;
         }
         if (audio->isPlaying() && f)
             f = false;
@@ -1240,19 +1032,19 @@ void Song::swapTracks(int i1, int i2)
 {
     undoOp(UndoOp::SwapTrack, i1, i2);
     //printf("Song::swapTracks(int %d, int %d)\n", i1, i2);
-    Track* track = _viewtracks[i1];
+    MidiTrack* track = _viewtracks[i1];
     _viewtracks[i1] = _viewtracks[i2];
     _viewtracks[i2] = track;
 
     if(!viewselected)
     {
-        Track *t = _artracks[i1];
+        MidiTrack *t = _artracks[i1];
         _artracks[i1] = _artracks[i2];
         _artracks[i2] = t;
     }
     else
     {
-        Track *t = _tracks[i1];
+        MidiTrack *t = _tracks[i1];
         _tracks[i1] = _tracks[i2];
         _tracks[i2] = t;
     }
@@ -1432,7 +1224,7 @@ void Song::updatePos()
 
 void Song::setChannelMute(int channel, bool val)
 {
-    for (iTrack i = _tracks.begin(); i != _tracks.end(); ++i)
+    for (iMidiTrack i = _tracks.begin(); i != _tracks.end(); ++i)
     {
         MidiTrack* track = dynamic_cast<MidiTrack*> (*i);
         if (track == 0)
@@ -1451,11 +1243,9 @@ void Song::setChannelMute(int channel, bool val)
 void Song::initLen()
 {
     _len = AL::sigmap.bar2tick(264, 0, 0); // default song len
-    for (iTrack t = _tracks.begin(); t != _tracks.end(); ++t)
+    for (iMidiTrack t = _tracks.begin(); t != _tracks.end(); ++t)
     {
-        if (!(*t)->isMidiTrack())
-            continue;
-        MidiTrack* track = dynamic_cast<MidiTrack*> (*t);
+        MidiTrack* track = (*t);
         PartList* parts = track->parts();
         for (iPart p = parts->begin(); p != parts->end(); ++p)
         {
@@ -1572,61 +1362,11 @@ PartList* Song::getSelectedMidiParts() const
 
     if (parts->empty())
     {
-        for (ciTrack t = _tracks.begin(); t != _tracks.end(); ++t)
+        for (ciMidiTrack t = _tracks.begin(); t != _tracks.end(); ++t)
         {
             if ((*t)->selected())
             {
                 MidiTrack* track = dynamic_cast<MidiTrack*> (*t);
-                if (track == 0)
-                    continue;
-                PartList* pl = track->parts();
-                for (iPart p = pl->begin(); p != pl->end(); ++p)
-                    parts->add(p->second);
-                break;
-            }
-        }
-    }
-    return parts;
-}
-
-PartList* Song::getSelectedWaveParts() const
-{
-    PartList* parts = new PartList();
-
-    //------------------------------------------------------
-    //    wenn ein Part selektiert ist, diesen editieren
-    //    wenn ein Track selektiert ist, den Ersten
-    //       Part des Tracks editieren, die restlichen sind
-    //       'ghostparts'
-    //    wenn mehrere Parts selektiert sind, dann Ersten
-    //       editieren, die restlichen sind 'ghostparts'
-    //
-
-    // markierte Parts sammeln
-    for (ciTrack t = _tracks.begin(); t != _tracks.end(); ++t)
-    {
-        WaveTrack* track = dynamic_cast<WaveTrack*> (*t);
-        if (track == 0)
-            continue;
-        PartList* pl = track->parts();
-        for (iPart p = pl->begin(); p != pl->end(); ++p)
-        {
-            if (p->second->selected())
-            {
-                parts->add(p->second);
-            }
-        }
-    }
-    // wenn keine Parts selektiert, dann markierten Track suchen
-    // und alle Parts dieses Tracks zusammensuchen
-
-    if (parts->empty())
-    {
-        for (ciTrack t = _tracks.begin(); t != _tracks.end(); ++t)
-        {
-            if ((*t)->selected())
-            {
-                WaveTrack* track = dynamic_cast<WaveTrack*> (*t);
                 if (track == 0)
                     continue;
                 PartList* pl = track->parts();
@@ -1655,25 +1395,6 @@ void Song::beat()
     int tick = audio->tickPos();
     if (audio->isPlaying())
         setPos(0, tick, true, false, true);
-
-    // p3.3.40 Update synth native guis at the heartbeat rate.
-    //for (ciSynthI is = _synthIs.begin(); is != _synthIs.end(); ++is)
-    //	(*is)->guiHeartBeat();
-
-    //Update native guis
-    for(ciTrack i = _tracks.begin(); i != _tracks.end(); ++i)
-    {
-        AudioTrack* t = 0;
-        if((*i)->isMidiTrack())
-        {
-            if ((*i)->wantsAutomation())
-                t = ((MidiTrack*)(*i))->getAutomationTrack();
-            else
-                continue;
-        }
-        else
-            t = (AudioTrack*)*i;
-    }
 
     while (noteFifoSize)
     {
@@ -1781,24 +1502,13 @@ Marker* Song::setMarkerLock(Marker* m, bool f)
 //   setRecordFlag
 //---------------------------------------------------------
 
-void Song::setRecordFlag(Track* track, bool val, bool monitor)
+void Song::setRecordFlag(MidiTrack* track, bool val, bool monitor)
 {
     if(!monitor)
     {
         //Call the monitor here if it was not called from the monitor
         //midimonitor->msgSendMidiOutputEvent(track, CTRL_RECORD, val ? 127 : 0);
     }
-    if (track->type() == Track::WAVE)
-    {
-        WaveTrack* audioTrack = (WaveTrack*) track;
-        if (!audioTrack->setRecordFlag1(val, monitor))
-        {
-            printf("AudioTrack returns false on set record flag");
-            return;
-        }
-        audio->msgSetRecord(audioTrack, val);
-    }
-    else
     {
         track->setRecordFlag1(val, monitor);
         track->setRecordFlag2(val, monitor);
@@ -2154,9 +1864,6 @@ void Song::clear(bool signal)
     if (debugMsg)
         printf("Song::clear\n");
 
-    bounceTrack = 0;
-    m_masterId = 0;
-
     m_tracks.clear();
     m_trackIndex.clear();
     m_composerTracks.clear();
@@ -2167,9 +1874,6 @@ void Song::clear(bool signal)
     _artracks.clear();
     _viewtracks.clear();
     _midis.clearDelete();
-    _waves.clearDelete();
-    _inputs.clearDelete(); // audio input ports
-    _outputs.clearDelete(); // audio output ports
 
     //Clear all midi port devices.
     for (int i = 0; i < MIDI_PORTS; ++i)
@@ -2292,7 +1996,6 @@ void Song::clear(bool signal)
 
 void Song::cleanupForQuit()
 {
-    bounceTrack = 0;
     invalid = true;
 
     if (debugMsg)
@@ -2310,18 +2013,6 @@ void Song::cleanupForQuit()
     if (debugMsg)
         printf("deleting _midis\n");
     _midis.clearDelete();
-
-    if (debugMsg)
-        printf("deleting _waves\n");
-    _waves.clearDelete();
-
-    if (debugMsg)
-        printf("deleting _inputs\n");
-    _inputs.clearDelete(); // audio input ports
-
-    if (debugMsg)
-        printf("deleting _outputs\n");
-    _outputs.clearDelete(); // audio output ports
 
     tempomap.clear();
     AL::sigmap.clear();
@@ -2375,38 +2066,6 @@ void Song::cleanupForQuit()
     invalid = true;
     if (debugMsg)
         printf("...finished cleaning up.\n");
-}
-
-void Song::addMasterTrack()
-{
-    if(!m_masterId)
-    {//Create the default los verb aux track if it dont exist, no undo
-        if (Track* t = addTrackByName("Master", Track::WAVE_OUTPUT_HELPER, -1, false))
-        {
-            m_masterId = t->id();
-            //Route master to system playback
-            if(audioDevice && audioDevice->deviceType() == MidiDevice::JACK_MIDI)
-            {//TODO: Fix this when we support more than Jack and ALSA
-                void* p = audioDevice->findPort("system:playback_1");
-                if(p)
-                {
-                    Route src((AudioTrack*)t, 0);
-                    Route dst(p, 0);
-                    audio->msgAddRoute(src, dst);
-                }
-                void* p2 = audioDevice->findPort("system:playback_2");
-                if(p2)
-                {
-                    Route src((AudioTrack*)t, 1);
-                    Route dst(p2, 1);
-                    audio->msgAddRoute(src, dst);
-                }
-            }
-            else
-            {//Do the ALSA stuff
-            }
-        }
-    }
 }
 
 void Song::playMonitorEvent(int fd)
@@ -2495,7 +2154,6 @@ void Song::seqSignal(int fd)/*{{{*/
                 rescanAlsaPorts();
                 break;
             case 'G':
-                clearRecAutomation(true);
                 setPos(0, audio->tickPos(), true, false, true);
                 break;
             case 'S': // shutdown audio
@@ -2707,294 +2365,6 @@ void Song::recordEvent(MidiPart* part, Event& event)/*{{{*/
 }/*}}}*/
 
 //---------------------------------------------------------
-//   execAutomationCtlPopup
-//---------------------------------------------------------
-
-int Song::execAutomationCtlPopup(AudioTrack* track, const QPoint& menupos, int acid)
-{
-    enum
-    {
-        HEADER, PREV_EVENT, NEXT_EVENT, SEP2, ADD_EVENT, CLEAR_EVENT, CLEAR_RANGE, CLEAR_ALL_EVENTS
-    };
-    QMenu* menu = new QMenu;
-
-    int count = 0;
-    bool isEvent = false, canSeekPrev = false, canSeekNext = false, canEraseRange = false;
-    bool canAdd = false;
-    double ctlval = 0.0;
-    if (track)
-    {
-        ciCtrlList icl = track->controller()->find(acid);
-        if (icl != track->controller()->end())
-        {
-            CtrlList *cl = icl->second;
-            canAdd = true;
-            ctlval = cl->curVal();
-            count = cl->size();
-            if (count)
-            {
-                int frame = pos[0].frame();
-
-                iCtrl s = cl->lower_bound(frame);
-                iCtrl e = cl->upper_bound(frame);
-
-                isEvent = (s != cl->end() && s->second.getFrame() == frame);
-
-                canSeekPrev = s != cl->begin();
-                canSeekNext = e != cl->end();
-
-                s = cl->lower_bound(pos[1].frame());
-
-                canEraseRange = s != cl->end()
-                        && (int) pos[2].frame() > s->second.getFrame();
-            }
-        }
-    }
-
-    menu->addAction(new MenuTitleItem(tr("Automation:"), menu));
-
-    QAction* prevEvent = menu->addAction(tr("previous event"));
-    prevEvent->setData(PREV_EVENT);
-    prevEvent->setEnabled(canSeekPrev);
-
-    QAction* nextEvent = menu->addAction(tr("next event"));
-    nextEvent->setData(NEXT_EVENT);
-    nextEvent->setEnabled(canSeekNext);
-
-    menu->addSeparator();
-
-    QAction* addEvent = new QAction(menu);
-    menu->addAction(addEvent);
-    if (isEvent)
-        addEvent->setText(tr("set event"));
-    else
-        addEvent->setText(tr("add event"));
-    addEvent->setData(ADD_EVENT);
-    addEvent->setEnabled(canAdd);
-
-    QAction* eraseEventAction = menu->addAction(tr("erase event"));
-    eraseEventAction->setData(CLEAR_EVENT);
-    eraseEventAction->setEnabled(isEvent);
-
-    QAction* eraseRangeAction = menu->addAction(tr("erase range"));
-    eraseRangeAction->setData(CLEAR_RANGE);
-    eraseRangeAction->setEnabled(canEraseRange);
-
-    QAction* clearAction = menu->addAction(tr("clear automation"));
-    clearAction->setData(CLEAR_ALL_EVENTS);
-    clearAction->setEnabled((bool)count);
-
-    QAction* act = menu->exec(menupos);
-    if (!act || !track)
-    {
-        delete menu;
-        return -1;
-    }
-
-    int sel = act->data().toInt();
-    delete menu;
-
-    switch (sel)
-    {
-        case ADD_EVENT:
-            audio->msgAddACEvent(track, acid, pos[0].frame(), ctlval);
-            break;
-        case CLEAR_EVENT:
-            audio->msgEraseACEvent(track, acid, pos[0].frame());
-            break;
-
-        case CLEAR_RANGE:
-            audio->msgEraseRangeACEvents(track, acid, pos[1].frame(), pos[2].frame());
-            break;
-
-        case CLEAR_ALL_EVENTS:
-            if (QMessageBox::question(los, QString("LOS"),
-                    tr("Clear all controller events?"), tr("&Ok"), tr("&Cancel"),
-                    QString::null, 0, 1) == 0)
-                audio->msgClearControllerEvents(track, acid);
-            break;
-
-        case PREV_EVENT:
-            audio->msgSeekPrevACEvent(track, acid);
-            break;
-
-        case NEXT_EVENT:
-            audio->msgSeekNextACEvent(track, acid);
-            break;
-
-        default:
-            return -1;
-            break;
-    }
-
-    return sel;
-}
-
-//---------------------------------------------------------
-//   execMidiAutomationCtlPopup
-//---------------------------------------------------------
-
-int Song::execMidiAutomationCtlPopup(MidiTrack* track, MidiPart* part, const QPoint& menupos, int ctlnum)
-{
-    if (!track && !part)
-        return -1;
-
-    enum
-    {
-        HEADER, ADD_EVENT, CLEAR_EVENT
-    };
-    QMenu* menu = new QMenu;
-
-    bool isEvent = false;
-
-    MidiTrack* mt;
-    if (track)
-        mt = track;
-    else
-        mt = (MidiTrack*) part->track();
-    int portno = mt->outPort();
-    int channel = mt->outChannel();
-    MidiPort* mp = &midiPorts[portno];
-
-    //printf("Song::execMidiAutomationCtlPopup ctlnum:%d dctl:%d anote:%d\n", ctlnum, dctl, drumMap[ctlnum & 0x7f].anote);
-
-    unsigned tick = cpos();
-
-    if (!part)
-    {
-        PartList* pl = mt->parts();
-        iPart ip;
-        for (ip = pl->begin(); ip != pl->end(); ++ip)
-        {
-            MidiPart* tpart = (MidiPart*) (ip->second);
-            unsigned partStart = tpart->tick();
-            unsigned partEnd = partStart + tpart->lenTick();
-            if (tick >= partStart && tick < partEnd)
-            {
-                // Prefer a selected part, otherwise keep looking...
-                if (tpart->selected())
-                {
-                    part = tpart;
-                    break;
-                }
-                else
-                    // Remember the first part found...
-                    if (!part)
-                    part = tpart;
-            }
-        }
-    }
-
-    Event ev;
-    if (part)
-    {
-        unsigned partStart = part->tick();
-        unsigned partEnd = partStart + part->lenTick();
-        if (tick >= partStart && tick < partEnd)
-        {
-            EventRange range = part->events()->equal_range(tick - partStart);
-            for (iEvent i = range.first; i != range.second; ++i)
-            {
-                ev = i->second;
-                if (ev.type() == Controller)
-                {
-                    //printf("Song::execMidiAutomationCtlPopup ev.dataA:%d\n", ev.dataA());
-                    if (ev.dataA() == ctlnum)
-                    {
-                        isEvent = true;
-                        break;
-                    }
-                }
-            }
-        }
-    }
-
-    QAction* addEvent = new QAction(menu);
-    menu->addAction(addEvent);
-    if (isEvent)
-        addEvent->setText(tr("set event"));
-    else
-        addEvent->setText(tr("add event"));
-    addEvent->setData(ADD_EVENT);
-    addEvent->setEnabled(true);
-
-    QAction* eraseEventAction = menu->addAction(tr("erase event"));
-    eraseEventAction->setData(CLEAR_EVENT);
-    eraseEventAction->setEnabled(isEvent);
-
-    QAction* act = menu->exec(menupos);
-    if (!act)
-    {
-        delete menu;
-        return -1;
-    }
-
-    int sel = act->data().toInt();
-    delete menu;
-
-    switch (sel)
-    {
-        case ADD_EVENT:
-        {
-            int val = mp->hwCtrlState(channel, ctlnum);
-            //int val = mp->hwCtrlState(channel, dctl); // XXX FIXME?
-            if (val == CTRL_VAL_UNKNOWN)
-                return -1;
-            Event e(Controller);
-            //e.setA(dctl);
-            e.setA(ctlnum);
-            e.setB(val);
-            // Do we replace an old event?
-            if (isEvent)
-            {
-                // Don't bother if already set.
-                if (ev.dataB() == val)
-                    return -1;
-
-                e.setTick(tick - part->tick());
-                // Indicate do undo, and do port controller values and clone parts.
-                audio->msgChangeEvent(ev, e, part, true, true, true);
-            }
-            else
-            {
-                // Store a new event...
-                if (part)
-                {
-                    e.setTick(tick - part->tick());
-                    // Indicate do undo, and do port controller values and clone parts.
-                    audio->msgAddEvent(e, part, true, true, true);
-                }
-                else
-                {
-                    // Create a new part...
-                    part = new MidiPart(mt);
-                    int startTick = roundDownBar(tick);
-                    int endTick = roundUpBar(tick + 1);
-                    part->setTick(startTick);
-                    part->setLenTick(endTick - startTick);
-                    part->setName(mt->name());
-                    e.setTick(tick - startTick);
-                    part->events()->add(e);
-                    // Allow undo.
-                    audio->msgAddPart(part);
-                }
-            }
-        }
-            break;
-        case CLEAR_EVENT:
-            // Indicate do undo, and do port controller values and clone parts.
-            audio->msgDeleteEvent(ev, part, true, true, true);
-            break;
-
-        default:
-            return -1;
-            break;
-    }
-
-    return sel;
-}
-
-//---------------------------------------------------------
 //   updateSoloStates
 //    This will properly set all soloing variables (including other tracks) based entirely
 //     on the current values of all the tracks' _solo members.
@@ -3003,39 +2373,10 @@ int Song::execMidiAutomationCtlPopup(MidiTrack* track, MidiPart* part, const QPo
 void Song::updateSoloStates()
 {
     Track::clearSoloRefCounts();
-    for (ciTrack i = _tracks.begin(); i != _tracks.end(); ++i)
+    for (ciMidiTrack i = _tracks.begin(); i != _tracks.end(); ++i)
         (*i)->setInternalSolo(0);
-    for (ciTrack i = _tracks.begin(); i != _tracks.end(); ++i)
+    for (ciMidiTrack i = _tracks.begin(); i != _tracks.end(); ++i)
         (*i)->updateSoloStates(true);
-}
-
-//---------------------------------------------------------
-//   clearRecAutomation
-//---------------------------------------------------------
-
-void Song::clearRecAutomation(bool clearList)
-{
-    // Clear all pan/vol pressed and touched flags, and all rec event lists, if needed.
-    for (iTrack it = tracks()->begin(); it != tracks()->end(); ++it)
-        ((Track*) (*it))->clearRecAutomation(clearList);
-}
-
-//---------------------------------------------------------
-//   processAutomationEvents
-//---------------------------------------------------------
-
-void Song::processAutomationEvents()
-{
-    // Just clear all pressed and touched flags, not rec event lists.
-    clearRecAutomation(false);
-    if (!automation)
-        return;
-    for (iTrack i = _tracks.begin(); i != _tracks.end(); ++i)
-    {
-        if (!(*i)->isMidiTrack())
-            // Process (and clear) rec events.
-            ((AudioTrack*) (*i))->processAutomationEvents();
-    }
 }
 
 //---------------------------------------------------------
@@ -3056,86 +2397,6 @@ void Song::abortRolling()
 void Song::stopRolling()
 {
     abortRolling();
-    processAutomationEvents();
-}
-
-//---------------------------------------------------------
-//   connectJackRoutes
-//---------------------------------------------------------
-
-void Song::connectJackRoutes(AudioTrack* track, bool disconnect)
-{
-    switch (track->type())
-    {
-        case Track::WAVE_OUTPUT_HELPER:
-        {
-            AudioOutputHelper* ao = (AudioOutputHelper*) track;
-            // This will re-register the track's jack ports.
-            if (!disconnect)
-                ao->setName(ao->name());
-            // Now reconnect the output routes.
-            if (checkAudioDevice() && audio->isRunning())
-            {
-                for (int ch = 0; ch < ao->channels(); ++ch)
-                {
-                    RouteList* ir = ao->outRoutes();
-                    for (iRoute ii = ir->begin(); ii != ir->end(); ++ii)
-                    {
-                        Route r = *ii;
-                        if ((r.type == Route::JACK_ROUTE) && (r.channel == ch))
-                        {
-                            if (disconnect)
-                                audioDevice->disconnect(ao->jackPort(ch), r.jackPort);
-                            else
-                                audioDevice->connect(ao->jackPort(ch), r.jackPort);
-                            break;
-                        }
-                    }
-                    if (disconnect)
-                    {
-                        audioDevice->unregisterPort(ao->jackPort(ch));
-                        ao->setJackPort(ch, 0);
-                    }
-                }
-            }
-        }
-            break;
-        case Track::WAVE_INPUT_HELPER:
-        {
-            AudioInputHelper* ai = (AudioInputHelper*) track;
-            // This will re-register the track's jack ports.
-            if (!disconnect)
-                ai->setName(ai->name());
-            // Now reconnect the input routes.
-            if (checkAudioDevice() && audio->isRunning())
-            {
-                for (int ch = 0; ch < ai->channels(); ++ch)
-                {
-                    RouteList* ir = ai->inRoutes();
-                    for (iRoute ii = ir->begin(); ii != ir->end(); ++ii)
-                    {
-                        Route r = *ii;
-                        if ((r.type == Route::JACK_ROUTE) && (r.channel == ch))
-                        {
-                            if (disconnect)
-                                audioDevice->disconnect(r.jackPort, ai->jackPort(ch));
-                            else
-                                audioDevice->connect(r.jackPort, ai->jackPort(ch));
-                            break;
-                        }
-                    }
-                    if (disconnect)
-                    {
-                        audioDevice->unregisterPort(ai->jackPort(ch));
-                        ai->setJackPort(ch, 0);
-                    }
-                }
-            }
-        }
-            break;
-        default:
-            break;
-    }
 }
 
 //---------------------------------------------------------
@@ -3272,7 +2533,7 @@ void Song::updateTrackViews()
     m_composerTracks.clear();
     m_viewTracks.clear();
     //Create omnipresent Master track at top of all list.
-    Track* master = findTrack("Master");
+    MidiTrack* master = findTrack("Master");
     if(master)
     {
         _viewtracks.push_back(master);
@@ -3309,8 +2570,7 @@ void Song::updateTrackViews()
             for(int c = 0; c < tlist->size(); ++c)
             {
                 qint64 tid = tlist->at(c);
-                if(tid == m_masterId)
-                    continue;
+
                 TrackView::TrackViewTrack *tvt = tvlist->value(tid);
                 if(tvt)
                 {
@@ -3322,7 +2582,7 @@ void Song::updateTrackViews()
                     }
                     else
                     {
-                        Track *t = findTrackById(tid);
+                        MidiTrack *t = findTrackById(tid);
                         if(t)
                         {
                             //qDebug("Song::updateTrackViews found track in song ~~~~~~~~~~~ %s", t->name().toUtf8().constData());
@@ -3376,7 +2636,7 @@ void Song::updateTrackViews()
                 TrackView::TrackViewTrack *tvt = tvlist->value(i);
                 if(tvt)
                 {//There will never be virtual tracks in these views
-                    Track* t = m_tracks.value(tvt->id);
+                    MidiTrack* t = m_tracks.value(tvt->id);
                     if(t)
                     {
                         t->setSelected(false);
@@ -3384,7 +2644,7 @@ void Song::updateTrackViews()
                             continue;
                         if(!m_viewTracks.contains(t->id()))
                         {
-                            if((t->type() == Track::MIDI || t->type() == Track::WAVE) && workview && t->parts()->empty())
+                            if(workview && t->parts()->empty())
                                 continue;
                             if(t->comment().isEmpty() && commentview)
                                 continue;
@@ -3401,7 +2661,7 @@ void Song::updateTrackViews()
     if(!viewselected)
     {
         //Make the viewtracks the artracks
-        for(ciTrack it = _artracks.begin(); it != _artracks.end(); ++it)
+        for(ciMidiTrack it = _artracks.begin(); it != _artracks.end(); ++it)
         {
             _viewtracks.push_back((*it));
             m_viewTracks[(*it)->id()] = (*it);
@@ -3418,7 +2678,7 @@ void Song::updateTrackViews()
 //   insertTrack
 //---------------------------------------------------------
 
-void Song::insertTrack(Track* track, int idx)
+void Song::insertTrack(MidiTrack* track, int idx)
 {
     insertTrack1(track, idx);
     insertTrackRealtime(track, idx); // audio->msgInsertTrack(track, idx, false);
@@ -3429,7 +2689,7 @@ void Song::insertTrack(Track* track, int idx)
 //    non realtime part of insertTrack
 //---------------------------------------------------------
 
-void Song::insertTrack1(Track* track, int /*idx*/)
+void Song::insertTrack1(MidiTrack* track, int /*idx*/)
 {
     //printf("Song::insertTrack1 track:%lx\n", track);
 
@@ -3442,15 +2702,13 @@ void Song::insertTrack1(Track* track, int /*idx*/)
 //    realtime part
 //---------------------------------------------------------
 
-void Song::insertTrackRealtime(Track* track, int idx)
+void Song::insertTrackRealtime(MidiTrack* track, int idx)
 {
     //printf("Song::insertTrackRealtime track:%lx\n", track);
 
     int n;
-    iTrack ia;
-    switch (track->type())
+    iMidiTrack ia;
     {
-        case Track::MIDI:
             _midis.push_back((MidiTrack*) track);
             ia = _artracks.index2iterator(idx);
             _artracks.insert(ia, track);
@@ -3458,39 +2716,12 @@ void Song::insertTrackRealtime(Track* track, int idx)
             m_composerTracks[track->id()] = track;
             m_composerTrackIndex.insert(idx, track->id());
             _autotviews.value(m_workingViewId)->addTrack(track->id());
-
-            break;
-        case Track::WAVE:
-            _waves.push_back((WaveTrack*) track);
-            ia = _artracks.index2iterator(idx);
-            _artracks.insert(ia, track);
-            m_composerTracks[track->id()] = track;
-            m_composerTrackIndex.insert(idx, track->id());
-            _autotviews.value(m_workingViewId)->addTrack(track->id());
-            break;
-        case Track::WAVE_OUTPUT_HELPER:
-            _outputs.push_back((AudioOutputHelper*) track);
-            // set default master & monitor if not defined
-            if (audio->audioMaster() == 0)
-                audio->setMaster((AudioOutputHelper*) track);
-            if (audio->audioMonitor() == 0)
-                audio->setMonitor((AudioOutputHelper*) track);
-            _autotviews.value(m_outputViewId)->addTrack(track->id());
-            break;
-        case Track::WAVE_INPUT_HELPER:
-            _inputs.push_back((AudioInputHelper*) track);
-            _autotviews.value(m_inputViewId)->addTrack(track->id());
-            break;
-        default:
-            fprintf(stderr, "unknown track type %d\n", track->type());
-            // abort();
-            return;
     }
 
     //
     // initialize missing aux send
     //
-    iTrack i = _tracks.index2iterator(idx);
+    iMidiTrack i = _tracks.index2iterator(idx);
     //printf("Song::insertTrackRealtime inserting into _tracks...\n");
 
     _tracks.insert(i, track);
@@ -3503,27 +2734,6 @@ void Song::insertTrackRealtime(Track* track, int idx)
     //  add routes
     //
 
-    if (track->type() == Track::WAVE_OUTPUT_HELPER)
-    {
-        const RouteList* rl = track->inRoutes();
-        for (ciRoute r = rl->begin(); r != rl->end(); ++r)
-        {
-            Route src(track, r->channel, r->channels);
-            src.remoteChannel = r->remoteChannel;
-            r->track->outRoutes()->push_back(src);
-        }
-    }
-    else if (track->type() == Track::WAVE_INPUT_HELPER)
-    {
-        const RouteList* rl = track->outRoutes();
-        for (ciRoute r = rl->begin(); r != rl->end(); ++r)
-        {
-            Route src(track, r->channel, r->channels);
-            src.remoteChannel = r->remoteChannel;
-            r->track->inRoutes()->push_back(src);
-        }
-    }
-    else if (track->isMidiTrack())
     {
         const RouteList* rl = track->inRoutes();
         for (ciRoute r = rl->begin(); r != rl->end(); ++r)
@@ -3540,23 +2750,6 @@ void Song::insertTrackRealtime(Track* track, int idx)
             midiPorts[r->midiPort].inRoutes()->push_back(src);
         }
     }
-    else
-    {
-        const RouteList* rl = track->inRoutes();
-        for (ciRoute r = rl->begin(); r != rl->end(); ++r)
-        {
-            Route src(track, r->channel, r->channels);
-            src.remoteChannel = r->remoteChannel;
-            r->track->outRoutes()->push_back(src);
-        }
-        rl = track->outRoutes();
-        for (ciRoute r = rl->begin(); r != rl->end(); ++r)
-        {
-            Route src(track, r->channel, r->channels);
-            src.remoteChannel = r->remoteChannel;
-            r->track->inRoutes()->push_back(src);
-        }
-    }
 
     //printf("Song::insertTrackRealtime end of function\n");
 
@@ -3566,7 +2759,7 @@ void Song::insertTrackRealtime(Track* track, int idx)
 //   removeTrack
 //---------------------------------------------------------
 
-void Song::removeTrack(Track* track)
+void Song::removeTrack(MidiTrack* track)
 {
     removeTrack1(track);
     audio->msgRemoveTrack(track);
@@ -3579,17 +2772,8 @@ void Song::removeTrack(Track* track)
 //    non realtime part of removeTrack
 //---------------------------------------------------------
 
-void Song::removeTrack1(Track* track)
+void Song::removeTrack1(MidiTrack*)
 {
-    switch (track->type())
-    {
-        case Track::WAVE_INPUT_HELPER:
-        case Track::WAVE_OUTPUT_HELPER:
-            connectJackRoutes((AudioTrack*) track, true);
-            break;
-        default:
-            break;
-    }
 }
 
 //---------------------------------------------------------
@@ -3597,14 +2781,12 @@ void Song::removeTrack1(Track* track)
 //    called from RT context
 //---------------------------------------------------------
 
-void Song::removeTrackRealtime(Track* track)
+void Song::removeTrackRealtime(MidiTrack* track)
 {
     //printf("Song::removeTrackRealtime track:%s\n", track->name().toLatin1().constData());
     midiMonitor->msgDeleteMonitoredTrack(track);
 
-    switch (track->type())
     {
-        case Track::MIDI:
             removePortCtrlEvents(((MidiTrack*) track));
             unchainTrackParts(track, true);
 
@@ -3612,26 +2794,6 @@ void Song::removeTrackRealtime(Track* track)
             _artracks.erase(track);
             m_composerTracks.erase(m_composerTracks.find(track->id()));
             _autotviews.value(m_workingViewId)->removeTrack(track->id());
-            break;
-
-        case Track::WAVE:
-            unchainTrackParts(track, true);
-
-            _waves.erase(track);
-            _artracks.erase(track);
-            m_composerTracks.erase(m_composerTracks.find(track->id()));
-            _autotviews.value(m_workingViewId)->removeTrack(track->id());
-            break;
-
-        case Track::WAVE_OUTPUT_HELPER:
-            _outputs.erase(track);
-            _autotviews.value(m_outputViewId)->removeTrack(track->id());
-            break;
-
-        case Track::WAVE_INPUT_HELPER:
-            _inputs.erase(track);
-            _autotviews.value(m_inputViewId)->removeTrack(track->id());
-            break;
     }
     _tracks.erase(track);
     m_tracks.erase(m_tracks.find(track->id()));
@@ -3652,29 +2814,6 @@ void Song::removeTrackRealtime(Track* track)
     //  remove routes
     //
 
-    if (track->type() == Track::WAVE_OUTPUT_HELPER)
-    {
-        //qDebug("Song::removeTrackRealtime: ~~~~~~~~~~~~~~~~~~~~Removing route for output track");
-        const RouteList* rl = track->inRoutes();
-        for (ciRoute r = rl->begin(); r != rl->end(); ++r)
-        {
-            Route src(track, r->channel, r->channels);
-            src.remoteChannel = r->remoteChannel;
-            r->track->outRoutes()->removeRoute(src);
-        }
-    }
-    else if (track->type() == Track::WAVE_INPUT_HELPER)
-    {
-        //qDebug("Song::removeTrackRealtime: ~~~~~~~~~~~~~~~~~~~~Removing route for input track");
-        const RouteList* rl = track->outRoutes();
-        for (ciRoute r = rl->begin(); r != rl->end(); ++r)
-        {
-            Route src(track, r->channel, r->channels);
-            src.remoteChannel = r->remoteChannel;
-            r->track->inRoutes()->removeRoute(src);
-        }
-    }
-    else if (track->isMidiTrack())
     {
         //qDebug("Song::removeTrackRealtime: ~~~~~~~~~~~~~~~~~~~~Removing input routes for midi track");
         const RouteList* rl = track->inRoutes();
@@ -3691,27 +2830,6 @@ void Song::removeTrackRealtime(Track* track)
             //printf("Song::removeTrackRealtime %s out route port:%d\n", track->name().toLatin1().constData(), r->midiPort);
             Route src(track, r->channel);
             midiPorts[r->midiPort].inRoutes()->removeRoute(src);
-        }
-    }
-    else
-    {
-        //qDebug("Song::removeTrackRealtime: ~~~~~~~~~~~~~~~~~~~~Removing input route for %d track", track->type());
-        const RouteList* rl = track->inRoutes();
-        for (ciRoute r = rl->begin(); r != rl->end(); ++r)
-        {
-            //printf("Song::removeTrackRealtime %s in route track:%s\n", track->name().toLatin1().constData(), r->track->name().toLatin1().constData());
-            Route src(track, r->channel, r->channels);
-            src.remoteChannel = r->remoteChannel;
-            r->track->outRoutes()->removeRoute(src);
-        }
-        //qDebug("Song::removeTrackRealtime: ~~~~~~~~~~~~~~~~~~~~Removing output route for %d track", track->type());
-        rl = track->outRoutes();
-        for (ciRoute r = rl->begin(); r != rl->end(); ++r)
-        {
-            //printf("Song::removeTrackRealtime %s out route track:%s\n", track->name().toLatin1().constData(), r->track->name().toLatin1().constData());
-            Route src(track, r->channel, r->channels);
-            src.remoteChannel = r->remoteChannel;
-            r->track->inRoutes()->removeRoute(src);
         }
     }
 }
@@ -3938,13 +3056,13 @@ QString Song::getScriptPath(int id, bool isdelivered)
 }
 
 
-TrackList Song::getSelectedTracks()
+MidiTrackList Song::getSelectedTracks()
 {
-    TrackList list;
+    MidiTrackList list;
 
-    for (iTrack t = _viewtracks.begin(); t != _viewtracks.end(); ++t)
+    for (iMidiTrack t = _viewtracks.begin(); t != _viewtracks.end(); ++t)
     {
-        Track* tr = *t;
+        MidiTrack* tr = *t;
         if (tr->selected())
         {
             list.push_back(tr);
@@ -3954,9 +3072,9 @@ TrackList Song::getSelectedTracks()
     return list;
 }
 
-void Song::setTrackHeights(TrackList &list, int height)
+void Song::setTrackHeights(MidiTrackList &list, int height)
 {
-        for (iTrack t = list.begin(); t != list.end(); ++t)
+        for (iMidiTrack t = list.begin(); t != list.end(); ++t)
         {
                 Track* tr = *t;
                 tr->setHeight(height);
@@ -4003,7 +3121,7 @@ void Song::movePlaybackToPart(Part* part)/*{{{*/
 QList<Part*> Song::selectedParts()
 {
     QList<Part*> selected;
-    for (iTrack it = _viewtracks.begin(); it != _viewtracks.end(); ++it)
+    for (iMidiTrack it = _viewtracks.begin(); it != _viewtracks.end(); ++it)
     {
         PartList* pl = (*it)->parts();
         for (iPart ip = pl->begin(); ip != pl->end(); ++ip)

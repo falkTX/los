@@ -348,7 +348,6 @@ bool CtrlCanvas::setCurTrackAndPart()
         Part* pt = editor->curCanvasPart();
         if (pt && pt->track())
         {
-            if (pt->track()->isMidiTrack())
             {
                 part = (MidiPart*) pt;
                 track = part->track();

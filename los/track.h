@@ -29,7 +29,6 @@ class MPEventList;
 class MidiAssignData;
 class MidiPort;
 class CCInfo;
-class Track;
 
 struct MonitorLog {
     unsigned pos;
@@ -37,13 +36,13 @@ struct MonitorLog {
 };
 
 struct MidiAssignData {/*{{{*/
-    Track* track;
+    MidiTrack* track;
     QHash<int, CCInfo*> midimap;
     int port;
     int preset;
     int channel;
     bool enabled;
-    void read(Xml&, Track*);
+    void read(Xml&, MidiTrack*);
     //void write(int, Xml&);
     inline bool operator==(MidiAssignData mad)
     {
@@ -67,16 +66,7 @@ static const int MIN_TRACKHEIGHT_TOOLS = 150;
 
 class Track
 {
-public:
-    enum TrackType {
-        MIDI = 0,
-        WAVE,
-        WAVE_OUTPUT_HELPER,
-        WAVE_INPUT_HELPER
-    };
-
 private:
-    TrackType _type;
     QString _comment;
 
     PartList _parts;
@@ -126,8 +116,6 @@ protected:
     qint64 m_chainMaster;
     bool m_masterFlag;
 
-    bool _wantsAutomation;
-
     MidiAssignData m_midiassign;
     QList<qint64> m_audioChain;
 
@@ -135,15 +123,13 @@ protected:
     void writeProperties(int level, Xml& xml) const;
 
 public:
-    Track(TrackType);
+    Track();
     Track(const Track&, bool cloneParts);
 
     virtual ~Track()
     {
     };
     virtual Track & operator=(const Track& t);
-
-    static const char* _cname[];
 
     bool getReminder1()
     {
@@ -208,8 +194,6 @@ public:
     {
         return !m_audioChain.isEmpty();
     }
-    Track* inputTrack();
-    Track* outputTrack();
 
     MidiAssignData* midiAssign() { return &m_midiassign; }
 
@@ -303,22 +287,6 @@ public:
     virtual void setName(const QString& s)
     {
         _name = s;
-    }
-
-    TrackType type() const
-    {
-        return _type;
-    }
-
-    void setType(TrackType t)
-    {
-        _type = t;
-    }
-
-    QString cname() const
-    {
-        int t = type();
-        return QString(_cname[t]);
     }
 
     // routing
@@ -465,34 +433,17 @@ public:
     }
     virtual void setChannels(int n);
 
-    bool isMidiTrack() const
-    {
-        return type() == MIDI;
-    }
-
     virtual bool canRecord() const
     {
         return false;
     }
     virtual AutomationType automationType() const = 0;
     virtual void setAutomationType(AutomationType t) = 0;
-
-    bool wantsAutomation()
-    {
-        return _wantsAutomation;
-    }
-
-    void setWantsAutomation(bool yesno)
-    {
-        _wantsAutomation = yesno;
-    }
 };
 
 //---------------------------------------------------------
 //   MidiTrack
 //---------------------------------------------------------
-
-class AudioTrack;
 
 class MidiTrack : public Track
 {
@@ -612,405 +563,15 @@ public:
     {
         return true;
     }
-
-    AudioTrack* getAutomationTrack();
-};
-
-//---------------------------------------------------------
-//   AudioTrack
-//    this track can hold audio automation data and can
-//    hold tracktypes AUDIO, AUDIO_MASTER, AUDIO_BUSS,
-//    AUDIO_INPUT, AUDIO_SOFTSYNTH, AUDIO_AUX
-//---------------------------------------------------------
-
-class AudioTrack : public Track
-{
-    bool _haveData;
-
-    CtrlListList _controller;
-    CtrlRecList _recEvents; // recorded automation events
-
-    bool _prefader; // prefader metering
-
-    AutomationType _automationType;
-
-protected:
-    float** outBuffers;
-    int _totalOutChannels;
-    int _totalInChannels;
-
-    unsigned bufferPos;
-    virtual bool getData(unsigned, int, unsigned, float**);
-    SndFile* _recFile;
-    Fifo fifo; // fifo -> _recFile
-    bool _processed;
-
-public:
-    AudioTrack(TrackType t);
-
-    AudioTrack(const AudioTrack&, bool cloneParts);
-    virtual ~AudioTrack();
-
-    virtual bool setRecordFlag1(bool f, bool monitor = false);
-    virtual void setRecordFlag2(bool f, bool monitor = false);
-    bool prepareRecording();
-
-    bool processed()
-    {
-        return _processed;
-    }
-
-    //void setProcessed(bool v) { _processed = v; }
-
-    void addController(CtrlList*);
-    void removeController(int id);
-    void swapControllerIDX(int idx1, int idx2);
-
-    bool readProperties(Xml&, const QString&);
-    void writeProperties(int, Xml&) const;
-
-    virtual AudioTrack* clone(bool cloneParts) const = 0;
-    virtual Part* newPart(Part*p = 0, bool clone = false);
-
-    SndFile* recFile() const
-    {
-        return _recFile;
-    }
-
-    void setRecFile(SndFile* sf)
-    {
-        _recFile = sf;
-    }
-
-    CtrlListList* controller()
-    {
-        return &_controller;
-    }
-
-    virtual void setChannels(int n);
-    virtual void setTotalOutChannels(int num);
-
-    virtual int totalOutChannels()
-    {
-        return _totalOutChannels;
-    }
-    virtual void setTotalInChannels(int num);
-
-    virtual int totalInChannels()
-    {
-        return _totalInChannels;
-    }
-
-    virtual bool isMute() const;
-    virtual void setSolo(bool val, bool monitor = false);
-    virtual void updateSoloStates(bool noDec);
-    virtual void updateInternalSoloStates();
-
-    void putFifo(int channels, unsigned long n, float** bp);
-
-    void record();
-
-    virtual void setMute(bool val, bool monitor = false);
-    virtual void setOff(bool val);
-
-    bool volFromAutomation();
-    double volume() const;
-    double volume(unsigned) const;
-    void setVolume(double val, bool monitor = false);
-    bool panFromAutomation();
-    double pan() const;
-    void setPan(double val, bool monitor = false);
-
-    bool prefader() const
-    {
-        return _prefader;
-    }
-
-    void setPrefader(bool val);
-
-    void readVolume(Xml& xml);
-
-    virtual void preProcessAlways()
-    {
-        _processed = false;
-    }
-    virtual void addData(unsigned /*samplePos*/, int /*channels*/, int /*srcStartChan*/, int /*srcChannels*/, unsigned /*frames*/, float** /*buffer*/);
-    virtual void copyData(unsigned /*samplePos*/, int /*channels*/, int /*srcStartChan*/, int /*srcChannels*/, unsigned /*frames*/, float** /*buffer*/);
-
-    // automation
-
-    virtual AutomationType automationType() const
-    {
-        return _automationType;
-    }
-    virtual void setAutomationType(AutomationType t);
-    void processAutomationEvents();
-
-    CtrlRecList* recEvents()
-    {
-        return &_recEvents;
-    }
-    void recordAutomation(int n, double v);
-    void startAutoRecord(int, double);
-    void stopAutoRecord(int, double);
-    void setControllerMode(int, CtrlList::Mode m);
-    void clearControllerEvents(int);
-    void seekPrevACEvent(int);
-    void seekNextACEvent(int);
-    void eraseACEvent(int, int);
-    void eraseRangeACEvents(int, int, int);
-    void addACEvent(int, int, double);
-};
-
-//---------------------------------------------------------
-//   AudioInputHelper
-//---------------------------------------------------------
-
-class AudioInputHelper : public AudioTrack
-{
-    bool _slave;
-    Track* _master;
-    void* jackPorts[MAX_CHANNELS];
-    virtual bool getData(unsigned, int, unsigned, float**);
-
-public:
-    AudioInputHelper();
-    AudioInputHelper(const AudioInputHelper&, bool cloneParts);
-    virtual ~AudioInputHelper();
-
-    AudioInputHelper* clone(bool cloneParts) const
-    {
-        return new AudioInputHelper(*this, cloneParts);
-    }
-
-    virtual AudioInputHelper* newTrack() const
-    {
-        return new AudioInputHelper();
-    }
-
-    virtual void read(Xml&);
-    virtual void write(int, Xml&) const;
-    virtual void setName(const QString& s);
-
-    void setSlave(bool s)
-    {
-        _slave = s;
-    }
-    bool isSlave()
-    {
-        return _slave;
-    }
-    void setMaster(Track* trk)
-    {
-        _master = trk;
-    }
-    Track* getMaster()
-    {
-        return _master;
-    }
-    void* jackPort(int channel)
-    {
-        return jackPorts[channel];
-    }
-
-    void setJackPort(int channel, void*p)
-    {
-        jackPorts[channel] = p;
-    }
-    virtual void setChannels(int n);
-
-    virtual bool hasAuxSend() const
-    {
-        return true;
-    }
-
-    virtual bool isMute() const
-    {
-        return false;
-    }
-
-};
-
-//---------------------------------------------------------
-//   AudioOutputHelper
-//---------------------------------------------------------
-
-class AudioOutputHelper : public AudioTrack
-{
-    bool _slave;
-    Track* _master;
-    void* jackPorts[MAX_CHANNELS];
-    float* buffer[MAX_CHANNELS];
-    float* buffer1[MAX_CHANNELS];
-    unsigned long _nframes;
-
-    float* _monitorBuffer[MAX_CHANNELS];
-
-public:
-    AudioOutputHelper();
-    AudioOutputHelper(const AudioOutputHelper&, bool cloneParts);
-    virtual ~AudioOutputHelper();
-
-    AudioOutputHelper* clone(bool cloneParts) const
-    {
-        return new AudioOutputHelper(*this, cloneParts);
-    }
-
-    virtual AudioOutputHelper* newTrack() const
-    {
-        return new AudioOutputHelper();
-    }
-
-    virtual void read(Xml&);
-    virtual void write(int, Xml&) const;
-    virtual void setName(const QString& s);
-
-    void setSlave(bool s)
-    {
-        _slave = s;
-    }
-    bool isSlave()
-    {
-        return _slave;
-    }
-    void setMaster(Track* trk)
-    {
-        _master = trk;
-    }
-    Track* getMaster()
-    {
-        return _master;
-    }
-    void* jackPort(int channel)
-    {
-        return jackPorts[channel];
-    }
-
-    void setJackPort(int channel, void*p)
-    {
-        jackPorts[channel] = p;
-    }
-    virtual void setChannels(int n);
-
-    void processInit(unsigned);
-    void process(unsigned pos, unsigned offset, unsigned);
-    void processWrite();
-    void silence(unsigned);
-
-    virtual bool canRecord() const
-    {
-        return true;
-    }
-
-    float** monitorBuffer()
-    {
-        return _monitorBuffer;
-    }
-
-    virtual bool isMute() const
-    {
-            return _mute;
-    }
-
-};
-
-//---------------------------------------------------------
-//   WaveTrack
-//---------------------------------------------------------
-
-class WaveTrack : public AudioTrack
-{
-    Fifo _prefetchFifo; // prefetch Fifo
-    AudioInputHelper* _input;
-    AudioOutputHelper* _output;
-
-public:
-    static bool firstWaveTrack;
-
-    WaveTrack()
-        : AudioTrack(Track::WAVE),
-          _input(0),
-          _output(0)
-    {
-    }
-
-    WaveTrack(const WaveTrack& wt, bool cloneParts)
-        : AudioTrack(wt, cloneParts),
-          _input(0),
-          _output(0)
-    {
-    }
-
-    virtual WaveTrack* clone(bool cloneParts) const
-    {
-        return new WaveTrack(*this, cloneParts);
-    }
-
-    virtual WaveTrack* newTrack() const
-    {
-        return new WaveTrack();
-    }
-    virtual Part* newPart(Part*p = 0, bool clone = false);
-
-    virtual void read(Xml&);
-    virtual void write(int, Xml&) const;
-
-    virtual void fetchData(unsigned pos, unsigned frames, float** bp, bool doSeek);
-
-    virtual bool getData(unsigned, int ch, unsigned, float** bp);
-
-    void clearPrefetchFifo()
-    {
-        _prefetchFifo.clear();
-    }
-
-    Fifo* prefetchFifo()
-    {
-        return &_prefetchFifo;
-    }
-    virtual void setChannels(int n);
-
-    bool canEnableRecord() const;
-
-    virtual bool canRecord() const
-    {
-        return true;
-    }
-
-    void setOutputTrack(AudioOutputHelper* out)
-    {
-        _output = out;
-    }
-    AudioOutputHelper* output()
-    {
-        return _output;
-    }
-
-    void setInputTrack(AudioInputHelper* in)
-    {
-        _input = in;
-    }
-    AudioInputHelper* input()
-    {
-        return _input;
-    }
-
-    void calculateCrossFades();
-
-    bool leftEdgeOnTopOfPartBelow(WavePart* topPart, WavePart* bottomPart);
-    bool rightEdgeOnTopOfPartBelow(WavePart* topPart, WavePart* bottomPart);
-    bool leftAndRightEdgeOnTopOfPartBelow(WavePart* topPart, WavePart* bottomPart);
-    QList<WavePart*> partsBelowLeftEdge(WavePart* part);
-    QList<WavePart*> partsBelowRightEdge(WavePart* part);
 };
 
 //---------------------------------------------------------
 //   TrackList
 //---------------------------------------------------------
 
-template<class T> class tracklist : public std::vector<Track*>
+template<class T> class tracklist : public std::vector<MidiTrack*>
 {
-    typedef std::vector<Track*> vlist;
+    typedef std::vector<MidiTrack*> vlist;
 
 public:
 
@@ -1135,17 +696,17 @@ public:
         return (T&) (vlist::front());
     }
 
-    iterator find(const Track* t)
+    iterator find(const MidiTrack* t)
     {
         return std::find(begin(), end(), t);
     }
 
-    const_iterator find(const Track* t) const
+    const_iterator find(const MidiTrack* t) const
     {
         return std::find(begin(), end(), t);
     }
 
-    unsigned index(const Track* t) const
+    unsigned index(const MidiTrack* t) const
     {
         unsigned n = 0;
         for (vlist::const_iterator i = begin(); i != end(); ++i, ++n) {
@@ -1167,7 +728,7 @@ public:
         return begin() + k;
     }
 
-    void erase(Track* t)
+    void erase(MidiTrack* t)
     {
         vlist::erase(find(t));
     }
@@ -1184,7 +745,7 @@ public:
         vlist::erase(i);
     }
 
-    void replace(Track* ot, Track* nt)
+    void replace(MidiTrack* ot, MidiTrack* nt)
     {
         for (vlist::iterator i = begin(); i != end(); ++i) {
             if (*i == ot) {
@@ -1195,25 +756,15 @@ public:
     }
 };
 
-typedef tracklist<Track*> TrackList;
-typedef TrackList::iterator iTrack;
-typedef TrackList::const_iterator ciTrack;
+//typedef tracklist<Track*> TrackList;
+//typedef TrackList::iterator iTrack;
+//typedef TrackList::const_iterator ciTrack;
+
+typedef tracklist<MidiTrack*> MidiTrackList;
 
 typedef tracklist<MidiTrack*>::iterator iMidiTrack;
 typedef tracklist<MidiTrack*>::const_iterator ciMidiTrack;
 typedef tracklist<MidiTrack*> MidiTrackList;
-
-typedef tracklist<WaveTrack*>::iterator iWaveTrack;
-typedef tracklist<WaveTrack*>::const_iterator ciWaveTrack;
-typedef tracklist<WaveTrack*> WaveTrackList;
-
-typedef tracklist<AudioInputHelper*>::iterator iAudioInputHelper;
-typedef tracklist<AudioInputHelper*>::const_iterator ciAudioInputHelper;
-typedef tracklist<AudioInputHelper*> InputHelperList;
-
-typedef tracklist<AudioOutputHelper*>::iterator iAudioOutputHelper;
-typedef tracklist<AudioOutputHelper*>::const_iterator ciAudioOutputHelper;
-typedef tracklist<AudioOutputHelper*> OutputHelperList;
 
 extern void addPortCtrlEvents(MidiTrack* t);
 extern void removePortCtrlEvents(MidiTrack* t);

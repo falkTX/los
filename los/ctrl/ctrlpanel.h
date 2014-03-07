@@ -40,32 +40,31 @@ class CtrlPanel : public QWidget
     Knob* _knob;
     DoubleLabel* _dl;
     int _val;
-	bool m_collapsed;
+    bool m_collapsed;
 
 signals:
     void destroyPanel();
     void controllerChanged(int);
-	void collapsed(bool);
+    void collapsed(bool);
 
 protected:
-	//virtual QSize minimumSizeHint(){return QSize(35, 50);}
+    //virtual QSize minimumSizeHint(){return QSize(35, 50);}
 
 private slots:
     void ctrlChanged(double val);
     void labelDoubleClicked();
-    void ctrlRightClicked(const QPoint& p, int id);
 
 protected slots:
     virtual void heartBeat();
 
 public slots:
     void setHeight(int);
-	void toggleCollapsed(bool);
+    void toggleCollapsed(bool);
     void feedbackModeChanged(int value);
 
 public:
     CtrlPanel(QWidget*, AbstractMidiEditor*, const char* name = 0);
-	virtual ~CtrlPanel(){}
+    virtual ~CtrlPanel(){}
     void setHWController(MidiTrack* t, MidiController* ctrl);
     bool ctrlSetTypeByName(QString);
 };

@@ -601,22 +601,3 @@ int getFreeMidiPort()/*{{{*/
     }
     return rv;
 }/*}}}*/
-
-QString trackTypeString(int id)
-{
-    Track::TrackType type = (Track::TrackType)id;
-    switch(type)
-    {
-        case Track::MIDI:
-            return QString("MIDI");
-        case Track::WAVE:
-            return QString("Wave");
-        case Track::WAVE_OUTPUT_HELPER:
-            QString("Wave Output Helper");
-        case Track::WAVE_INPUT_HELPER:
-            return QString("Wave Input Helper");
-        default:
-        break;
-    }
-    return QString("<Unknown Type>");
-}

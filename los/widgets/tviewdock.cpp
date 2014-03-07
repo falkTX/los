@@ -104,8 +104,8 @@ void TrackViewDock::populateTable(int flag, bool)/*{{{*/
         }
         _autoTableModel->clear();
         int icon_index = 0;
-        QList<int> list;
-        list << Track::MIDI << Track::WAVE << Track::WAVE_INPUT_HELPER << Track::WAVE_OUTPUT_HELPER;
+        //QList<int> list;
+        //list << Track::MIDI << Track::WAVE << Track::WAVE_INPUT_HELPER << Track::WAVE_OUTPUT_HELPER;
         idlist = song->autoTrackViewIndexList();
         tvlist = song->autoviews();
         for(int i = 0; i < idlist->size(); ++i)
@@ -203,7 +203,7 @@ void TrackViewDock::trackviewChanged(QStandardItem *item)/*{{{*/
                                 if(tvt)
                                     ntvl->setSettingsCopy(tvt->settings);
                                 tv->addTrack(ntvl);
-                                Track* track = song->findTrackByIdAndType(id, vt->type);
+                                Track* track = song->findTrackById(id);
                                 if(track)
                                 {
                                     if(tvt)
@@ -314,13 +314,10 @@ void TrackViewDock::contextPopupMenu(QPoint pos)/*{{{*/
             {
                 qint64 tid = act->data().toLongLong();
                 TrackView::TrackViewTrack *tvt = tv->tracks()->value(tid);
-                Track* track = song->findTrackById(tid);
+                MidiTrack* track = song->findTrackById(tid);
                 if(track)
                 {
-                    if(track->type() == Track::WAVE)
-                        los->importWave(track);
-                    else
-                        los->composer->addCanvasPart(track);
+                    los->composer->addCanvasPart(track);
                     song->updateTrackViews();
                 }
                 else
@@ -334,13 +331,10 @@ void TrackViewDock::contextPopupMenu(QPoint pos)/*{{{*/
                             TrackView::TrackViewTrack *ntvl = new TrackView::TrackViewTrack(id);
                             ntvl->setSettingsCopy(tvt->settings);
                             tv->addTrack(ntvl);
-                            Track* track = song->findTrackByIdAndType(id, vt->type);
+                            MidiTrack* track = song->findTrackById(id);
                             if(track)
                             {
-                                if(track->type() == Track::WAVE)
-                                    los->importWave(track);
-                                else
-                                    los->composer->addCanvasPart(track);
+                                los->composer->addCanvasPart(track);
                                 song->updateTrackViews();
                             }
                             tv->removeTrack(tvt);
@@ -452,7 +446,7 @@ void TrackViewDock::templateContextPopupMenu(QPoint pos)/*{{{*/
                                         TrackView::TrackViewTrack *ntvl = new TrackView::TrackViewTrack(id);
                                         ntvl->setSettingsCopy(tvt->settings);
                                         tv->addTrack(ntvl);
-                                        Track* track = song->findTrackByIdAndType(id, vt->type);
+                                        MidiTrack* track = song->findTrackById(id);
                                         if(track)
                                         {
                                             tv->removeTrack(tvt);
@@ -642,25 +636,4 @@ void TrackViewDock::updateTableHeader()/*{{{*/
     _templateModel->setHorizontalHeaderItem(0, new QStandardItem(tr("Templates")));
     templateView->verticalHeader()->hide();
     templateView->horizontalHeader()->setStretchLastSection(true);
-}/*}}}*/
-
-void TrackViewDock::selectStaticView(int n)/*{{{*/
-{
-    Track::TrackType type = (Track::TrackType)n;
-    QStandardItem *item = 0;
-    switch(type)
-    {
-        case Track::WAVE_INPUT_HELPER:
-            item = _autoTableModel->item(1, 0);
-            break;
-        case Track::WAVE_OUTPUT_HELPER:
-            item = _autoTableModel->item(2, 0);
-            break;
-        default:
-        break;
-    }
-    if(item && item->checkState() == Qt::Unchecked)
-    {
-        item->setCheckState(Qt::Checked);
-    }
 }/*}}}*/

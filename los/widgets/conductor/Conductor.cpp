@@ -46,7 +46,7 @@
 //   setTrack
 //---------------------------------------------------------
 
-void Conductor::setTrack(Track* t)
+void Conductor::setTrack(MidiTrack* t)
 {
     if (!t)
     {
@@ -54,8 +54,6 @@ void Conductor::setTrack(Track* t)
         return;
     }
 
-    if (!t->isMidiTrack())
-        return;
     selected = t;
 
     populatePatches();
@@ -101,7 +99,7 @@ void Conductor::setTrack(Track* t)
 //   midiConductor
 //---------------------------------------------------------
 
-Conductor::Conductor(QWidget* parent, Track* sel_track) : QFrame(parent)//QWidget(parent)
+Conductor::Conductor(QWidget* parent, MidiTrack* sel_track) : QFrame(parent)//QWidget(parent)
 {
     setupUi(this);
     _midiDetect = false;
@@ -181,9 +179,7 @@ Conductor::Conductor(QWidget* parent, Track* sel_track) : QFrame(parent)//QWidge
     btnDown->setIcon(*down_arrowIconSet3);
     btnDelete->setIcon(*garbageIconSet3);
     btnCopy->setIcon(*duplicateIconSet3);
-    btnShowGui->setIcon(*pluginGUIIconSet3);
     //btnCopy->setIconSize(duplicatePCIcon->size());
-
 
     connect(tableView, SIGNAL(rowOrderChanged()), SLOT(rebuildMatrix()));
     connect(tableView, SIGNAL(clicked(const QModelIndex&)), this, SLOT(patchSequenceClicked(const QModelIndex&)));
@@ -265,11 +261,9 @@ void Conductor::heartBeat()/*{{{*/
 {
     if (!isVisible() || !isEnabled() || !selected)
         return;
-    switch (selected->type())
-    {
-        case Track::MIDI:
+
         {
-            MidiTrack* track = (MidiTrack*) selected;
+            MidiTrack* track = selected;
 
             int outChannel = track->outChannel();
             int outPort = track->outPort();
@@ -466,7 +460,6 @@ void Conductor::heartBeat()/*{{{*/
                 rebuildMatrix();
             }
 
-            if(selected->isMidiTrack())/*{{{*/
             {
                 int oPort = ((MidiTrack*) selected)->outPort();
                 MidiPort* port = &midiPorts[oPort];
@@ -475,17 +468,8 @@ void Conductor::heartBeat()/*{{{*/
                     btnInstrument->setToolTip(QString(tr("Change Instrument: ")).append(port->instrument()->iname()));
                 else
                     btnInstrument->setToolTip(tr("Change Instrument"));
-
-                {
-                    btnShowGui->setEnabled(false);
-                }
             }/*}}}*/
         }
-            break;
-
-        default:
-            break;
-    }
 }/*}}}*/
 
 //---------------------------------------------------------
@@ -603,7 +587,7 @@ void Conductor::updateCommentState(bool state, bool block)
 void Conductor::routingPopupMenuActivated(QAction* act)
 {
     ///if(!midiConductor || gRoutingPopupMenuMaster != midiConductor || !selected || !selected->isMidiTrack())
-    if ((gRoutingPopupMenuMaster != this) || !selected || !selected->isMidiTrack())
+    if ((gRoutingPopupMenuMaster != this) || !selected)
         return;
     los->routingPopupMenuActivated(selected, act->data().toInt());
 }
@@ -629,8 +613,6 @@ void Conductor::routingPopupViewActivated(const QModelIndex& mdi)
 void Conductor::inRoutesPressed()/*{{{*/
 {
     if (!selected)
-        return;
-    if (!selected->isMidiTrack())
         return;
 
     PopupMenu* pup = los->prepareRoutingPopupMenu(selected, false);
@@ -670,8 +652,6 @@ void Conductor::inRoutesPressed()/*{{{*/
 void Conductor::outRoutesPressed()/*{{{*/
 {
     if (!selected)
-        return;
-    if (!selected->isMidiTrack())
         return;
 
     PopupMenu* pup = los->prepareRoutingPopupMenu(selected, true);
@@ -1286,7 +1266,7 @@ void Conductor::iPanDoubleClicked()/*{{{*/
 
 void Conductor::generateInstrumentMenu()/*{{{*/
 {
-    if(!selected || !selected->isMidiTrack())
+    if(!selected)
         return;
 
     QMenu* p = new QMenu(this);
@@ -1482,10 +1462,6 @@ void Conductor::updateConductor(int flags)
     iPan->setRange(mn - 1, mc->maxVal());
     iPan->setValue(v);
     iPan->blockSignals(false);
-    if(selected->isMidiTrack())/*{{{*/
-    {
-        btnShowGui->setEnabled(false);
-    }/*}}}*/
 }
 
 void Conductor::editorPartChanged(Part* p)
@@ -1507,11 +1483,11 @@ void Conductor::progRecClicked()
     progRecClicked(selected);
 }
 
-void Conductor::progRecClicked(Track* t)
+void Conductor::progRecClicked(MidiTrack* t)
 {
     if (!t)
         return;
-    MidiTrack* track = (MidiTrack*) t;
+    MidiTrack* track = t;
     int portno = track->outPort();
     int channel = track->outChannel();
     MidiPort* port = &midiPorts[portno];
@@ -1774,7 +1750,7 @@ void Conductor::insertMatrixEvent(Part* curPart, unsigned tick)
         {
             song->setLen(tick);
         }
-        MidiPlayEvent ev(0, port, channel, ME_CONTROLLER, CTRL_PROGRAM, id, (Track*)track);
+        MidiPlayEvent ev(0, port, channel, ME_CONTROLLER, CTRL_PROGRAM, id, track);
         audio->msgPlayMidiEvent(&ev);
         _selectedIndex = item->row();
         updateConductor(-1);
@@ -1803,7 +1779,7 @@ void Conductor::insertMatrixEvent(Part* curPart, unsigned tick)
             {
                 song->setLen(tick);
             }
-            MidiPlayEvent ev(0, port, channel, ME_CONTROLLER, CTRL_PROGRAM, id, (Track*)track);
+            MidiPlayEvent ev(0, port, channel, ME_CONTROLLER, CTRL_PROGRAM, id, track);
             audio->msgPlayMidiEvent(&ev);
             updateConductor(-1);
             progRecClicked(track);

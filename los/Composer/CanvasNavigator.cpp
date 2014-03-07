@@ -225,12 +225,7 @@ void CanvasNavigator::advancePlayhead()/*{{{*/
     }
     if(m_start)
     {
-        Track* master = song->findTrackByIdAndType(song->masterId(), Track::WAVE_OUTPUT_HELPER);
         int mh = MIN_TRACKHEIGHT;
-        if(master)
-        {
-            mh = master->height();
-        }
         double partHeight = (mh * 8)/100;
         QRectF rect(0.0, 0.0, calcSize(song->len()), partHeight);
         //QLineF line(0.0, 0.0, calcSize(song->len()), 0.0);
@@ -262,8 +257,8 @@ void CanvasNavigator::updateParts()/*{{{*/
     m_scene->setSceneRect(QRectF());
     int index = 1;
     //QList<QGraphicsItem*> group;
-    TrackList* tl = song->visibletracks();
-    ciTrack ci = tl->begin();
+    MidiTrackList* tl = song->visibletracks();
+    ciMidiTrack ci = tl->begin();
     for(; ci != tl->end(); ci++)
     {
         m_heightList.append((*ci)->height());
@@ -281,7 +276,7 @@ void CanvasNavigator::updateParts()/*{{{*/
     }
     for(; ci != tl->end(); ci++)
     {
-        Track* track = *ci;
+        MidiTrack* track = *ci;
         if(track)
         {
             QList<int> list = m_heightList.mid(0, index);
@@ -301,15 +296,10 @@ void CanvasNavigator::updateParts()/*{{{*/
                     Part *part =  p->second;
 
                     int tick, len;
-                    if(part && track->isMidiTrack())
+                    if(part)
                     {
                         tick = part->tick();
                         len = part->lenTick();
-                    }
-                    else
-                    {
-                        tick = tempomap.frame2tick(part->frame());
-                        len = tempomap.frame2tick(part->lenFrame());
                     }
                     double w = calcSize(len);
                     double pos = calcSize(tick);

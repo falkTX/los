@@ -23,18 +23,16 @@
 
 static const int s_allChannelBit = (1 << MIDI_CHANNELS) - 1;
 
-CreateTrackDialog::CreateTrackDialog(int type, int pos, QWidget* parent)
+CreateTrackDialog::CreateTrackDialog(int pos, QWidget* parent)
     : QDialog(parent),
-      m_insertType(type),
       m_insertPosition(pos)
 {
     initDefaults();
     m_vtrack = new VirtualTrack;
 }
 
-CreateTrackDialog::CreateTrackDialog(VirtualTrack** vt, int type, int pos, QWidget* parent)
+CreateTrackDialog::CreateTrackDialog(VirtualTrack** vt, int pos, QWidget* parent)
     : QDialog(parent),
-      m_insertType(type),
       m_insertPosition(pos)
 {
     initDefaults();
@@ -54,9 +52,6 @@ void CreateTrackDialog::initDefaults()
 
     txtName->setValidator(new NameValidator(this));
 
-    cmbType->addItem(*addAudioIcon, tr("Audio"), Track::WAVE);
-    cmbType->addItem(*addMidiIcon, tr("Midi"), Track::MIDI);
-
     cmbInChannel->addItem(tr("All"), s_allChannelBit);
     for(int i = 0; i < 16; ++i)
     {
@@ -71,12 +66,8 @@ void CreateTrackDialog::initDefaults()
     }
     cmbOutChannel->setCurrentIndex(0);
 
-    int row = cmbType->findData(m_insertType);
-    cmbType->setCurrentIndex(row);
-
     connect(chkInput, SIGNAL(toggled(bool)), this, SLOT(updateInputSelected(bool)));
     connect(chkOutput, SIGNAL(toggled(bool)), this, SLOT(updateOutputSelected(bool)));
-    connect(cmbType, SIGNAL(currentIndexChanged(int)), this, SLOT(trackTypeChanged(int)));
     //connect(cmbInstrument, SIGNAL(currentIndexChanged(int)), this, SLOT(updateInstrument(int)));
     connect(cmbInstrument, SIGNAL(activated(int)), this, SLOT(updateInstrument(int)));
     connect(btnAdd, SIGNAL(clicked()), this, SLOT(addTrack()));
@@ -100,11 +91,7 @@ void CreateTrackDialog::addTrack()/*{{{*/
     bool valid = true;
 
     m_vtrack->name = txtName->text();
-    m_vtrack->type = m_insertType;
-    Track::TrackType type = (Track::TrackType)m_insertType;
-    switch(type)
-    {
-    case Track::MIDI:
+
     {
         int outChan = cmbOutChannel->itemData(outChanIndex).toInt();
         QString instrumentName = cmbInstrument->itemData(instrumentIndex, CTDInstrumentNameRole).toString();
@@ -163,64 +150,6 @@ void CreateTrackDialog::addTrack()/*{{{*/
             }
         }
     }
-        break;
-    case Track::WAVE:
-    {
-        if(inputIndex >= 0 && chkInput->isChecked())
-        {
-            QString selectedInput = cmbInput->itemText(inputIndex);
-            int addNewRoute = cmbInput->itemData(inputIndex).toInt();
-            m_vtrack->useInput = true;
-            m_vtrack->inputConfig = qMakePair(addNewRoute, selectedInput);
-        }
-        if(outputIndex >= 0 && chkOutput->isChecked())
-        {
-            //Route to the Output or Buss
-            QString selectedOutput = cmbOutput->itemText(outputIndex);
-            m_vtrack->useOutput = true;
-            m_vtrack->outputConfig = qMakePair(0, selectedOutput);
-        }
-    }
-        break;
-#if 0
-    case Track::AUDIO_OUTPUT:
-    {
-        if(inputIndex >= 0 && chkInput->isChecked())
-        {
-            QString selectedInput = cmbInput->itemText(inputIndex);
-            m_vtrack->useInput = true;
-            m_vtrack->inputConfig = qMakePair(0, selectedInput);
-        }
-
-        if(outputIndex >= 0 && chkOutput->isChecked())
-        {
-            QString jackPlayback("system:playback");
-            QString selectedOutput = cmbOutput->itemText(outputIndex);
-            m_vtrack->useOutput = true;
-            m_vtrack->outputConfig = qMakePair(0, selectedOutput);
-        }
-    }
-        break;
-    case Track::AUDIO_INPUT:
-    {
-        if(inputIndex >= 0 && chkInput->isChecked())
-        {
-            QString selectedInput = cmbInput->itemText(inputIndex);
-            m_vtrack->useInput = true;
-            m_vtrack->inputConfig = qMakePair(0, selectedInput);
-        }
-        if(outputIndex >= 0 && chkOutput->isChecked())
-        {
-            QString selectedOutput = cmbOutput->itemText(outputIndex);
-            m_vtrack->useOutput = true;
-            m_vtrack->outputConfig = qMakePair(0, selectedOutput);
-        }
-    }
-        break;
-#endif
-    default:
-        valid = false;
-    }
     if(valid)
     {
         connect(trackManager, SIGNAL(trackAdded(qint64)), this, SIGNAL(trackAdded(qint64)));
@@ -237,11 +166,6 @@ void CreateTrackDialog::addTrack()/*{{{*/
         }
     }
 }/*}}}*/
-
-void CreateTrackDialog::lockType(bool lock)
-{
-    cmbType->setEnabled(!lock);
-}
 
 void CreateTrackDialog::cancelSelected()
 {
@@ -291,16 +215,6 @@ void CreateTrackDialog::updateOutputSelected(bool raw)/*{{{*/
     cmbOutChannel->setEnabled(raw);
 }/*}}}*/
 
-//Track type combo slot
-void CreateTrackDialog::trackTypeChanged(int type)/*{{{*/
-{
-    m_insertType = cmbType->itemData(type).toInt();
-    updateVisibleElements();
-    populateInputList();
-    populateOutputList();
-    populateInstrumentList();
-}/*}}}*/
-
 void CreateTrackDialog::trackNameEdited()
 {
     bool enabled = !txtName->text().isEmpty();
@@ -313,11 +227,7 @@ void CreateTrackDialog::populateInputList()/*{{{*/
     while(cmbInput->count())
         cmbInput->removeItem(cmbInput->count()-1);
 
-    Track::TrackType type = (Track::TrackType)m_insertType;
-
-    switch (type)
     {
-    case Track::MIDI:
         m_currentMidiInputList.clear();
         m_currentInput.clear();
 
@@ -352,20 +262,6 @@ void CreateTrackDialog::populateInputList()/*{{{*/
             chkInput->setChecked(false);
             chkInput->setEnabled(false);
         }
-        break;
-
-    case Track::WAVE:
-        populateJackAudioOutputs();
-
-        if (!cmbInput->count())
-        {
-            chkInput->setChecked(false);
-            chkInput->setEnabled(false);
-        }
-        break;
-
-    default:
-        break;
     }
 }/*}}}*/
 
@@ -374,11 +270,7 @@ void CreateTrackDialog::populateOutputList()/*{{{*/
     while(cmbOutput->count())
         cmbOutput->removeItem(cmbOutput->count()-1);
 
-    Track::TrackType type = (Track::TrackType)m_insertType;
-
-    switch(type)
     {
-    case Track::MIDI:
         m_currentMidiOutputList.clear();
         m_currentOutput.clear();
 
@@ -409,42 +301,6 @@ void CreateTrackDialog::populateOutputList()/*{{{*/
         {
             chkOutput->setChecked(false);
             chkOutput->setEnabled(false);
-        }
-        break;
-
-    case Track::WAVE:
-        populateJackAudioInputs();
-
-        if (!cmbOutput->count())
-        {
-            chkOutput->setChecked(false);
-            chkOutput->setEnabled(false);
-        }
-        break;
-
-    default:
-        break;
-    }
-}/*}}}*/
-
-void CreateTrackDialog::populateJackAudioInputs()/*{{{*/
-{
-    if (checkAudioDevice())
-    {
-        std::list<QString> sl = audioDevice->inputPorts();
-        for (std::list<QString>::iterator i = sl.begin(); i != sl.end(); ++i) {
-            cmbOutput->addItem(*i, 1);
-        }
-    }
-}/*}}}*/
-
-void CreateTrackDialog::populateJackAudioOutputs()/*{{{*/
-{
-    if (checkAudioDevice())
-    {
-        std::list<QString> sl = audioDevice->outputPorts();
-        for (std::list<QString>::iterator i = sl.begin(); i != sl.end(); ++i) {
-            cmbInput->addItem(*i, 1);
         }
     }
 }/*}}}*/
@@ -503,7 +359,6 @@ void CreateTrackDialog::populateInstrumentList()/*{{{*/
 {
     cmbInstrument->clear();
 
-    if (m_insertType == Track::MIDI)
     {
         // add GM first, then LS, then SYNTH
         for (iMidiInstrument i = midiInstruments.begin(); i != midiInstruments.end(); ++i)
@@ -532,22 +387,11 @@ void CreateTrackDialog::updateVisibleElements()/*{{{*/
 
     trackNameEdited();
 
-    Track::TrackType type = (Track::TrackType)m_insertType;
-
-    if (type == Track::MIDI)
     {
         chkInput->setText("MIDI Input");
         chkOutput->setText("MIDI Output");
     }
-    else
-    {
-        chkInput->setText("Audio Input");
-        chkOutput->setText("Audio Output");
-    }
 
-    switch (type)
-    {
-    case Track::MIDI:
     {
         cmbInChannel->setVisible(true);
         cmbOutChannel->setVisible(true);
@@ -563,28 +407,6 @@ void CreateTrackDialog::updateVisibleElements()/*{{{*/
 
         m_height = 300;
         m_width = width();
-    }
-        break;
-    case Track::WAVE:
-    {
-        cmbInChannel->setVisible(false);
-        cmbOutChannel->setVisible(false);
-        lblInstrument->setVisible(false);
-        cmbInstrument->setVisible(false);
-
-        cmbInput->setVisible(true);
-        chkInput->setVisible(true);
-        chkInput->setChecked(false);
-        cmbOutput->setVisible(true);
-        chkOutput->setVisible(true);
-        chkOutput->setChecked(false);
-
-        m_height = 260;
-        m_width = width();
-    }
-        break;
-    default:
-        break;
     }
     setFixedHeight(m_height);
     updateGeometry();

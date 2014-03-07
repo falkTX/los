@@ -26,10 +26,8 @@ class CreateTrackDialog : public QDialog,
     Q_OBJECT
 
 public:
-    CreateTrackDialog(int type = 0, int pos = -1, QWidget* parent = 0);
-    CreateTrackDialog(VirtualTrack** vt, int type = 0, int pos = -1, QWidget* parent = 0);
-
-    void lockType(bool);
+    CreateTrackDialog(int pos = -1, QWidget* parent = 0);
+    CreateTrackDialog(VirtualTrack** vt, int pos = -1, QWidget* parent = 0);
 
 signals:
     void trackAdded(qint64);
@@ -43,13 +41,11 @@ private slots:
     void updateInputSelected(bool);
     void updateOutputSelected(bool);
     void updateInstrument(int);
-    void trackTypeChanged(int);
     void trackNameEdited();
 
     void showInputSettings();
 
 private:
-    int m_insertType;
     const int m_insertPosition;
 
     VirtualTrack* m_vtrack;
@@ -68,8 +64,6 @@ private:
     void populateInputList();
     void populateOutputList();
 
-    void populateJackAudioInputs();
-    void populateJackAudioOutputs();
     void populateMidiInputList();
     void populateMidiOutputList();
     void populateInstrumentList();

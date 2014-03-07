@@ -154,7 +154,7 @@ static const char *mk1_xpmC8[] = {
       ".......................................#",
       ".......................................#",
       };
-//}}}	  
+//}}}
 //{{{
 static const char *mk1_xpm[] = {
       "40 13 2 1",
@@ -236,7 +236,7 @@ static const char *mk4_xpm[] = {
       "........................................",
       "........................................",
       };
-//}}}	  
+//}}}
 //{{{
 static const char *mk1_xpm_lowlight[] = {
       "40 13 3 1",
@@ -320,7 +320,7 @@ static const char *mk4_xpm_lowlight[] = {
       "........................................",
       "........................................",
       };
-//}}}	  
+//}}}
 //{{{
 static const char *mk1_xpm_normal[] = {/*{{{*/
       "40 13 2 1",
@@ -386,7 +386,7 @@ static const char *mk3_xpm_normal[] = {
 static const char *mk4_xpm_normal[] = {
       "40 13 2 1",
       //". c #dedede",
-	  ". c none",
+      ". c none",
       //"# c #292929",
       //"# c #08455c",
       //"# c #06384b",
@@ -481,7 +481,7 @@ static const char *mk6_xpm_lswitch_normal[] = {/*{{{*/
       "$$$$$$$$$$$$$$$$$$$$$$$#...............#",
       "$$$$$$$$$$$$$$$$$$$$$$$################ ",
       };/*}}}*/
-//}}}	  
+//}}}
 //{{{
 static const char *mk1_xpm_switch[] = {
       "40 13 3 1",
@@ -604,7 +604,7 @@ static const char *mk6_xpm_switch[] = {/*{{{*/
       "$$$$$$$$$$$$$$$$$$$$$$$$...............d",     // 7
       "$$$$$$$$$$$$$$$$$$$$$$$$ddddddddddddddd ",
       };/*}}}*/
-//}}}	  
+//}}}
 //{{{
 //Internal IDF based key switches
 static const char *mk1_xpm_lswitch[] = {
@@ -690,7 +690,7 @@ static const char *mk4_xpm_lswitch[] = {
       "........................................",
       "........................................",
       };
-//}}}	  
+//}}}
 /*
       0   1   2  3  4  5  6  7  8  9  10
       c-2 c-1 C0 C1 C2 C3 C4 C5 C6 C7 C8 - G8
@@ -735,57 +735,57 @@ static const char *mk4_xpm_lswitch[] = {
 Piano::Piano(QWidget* parent, int ymag, AbstractMidiEditor *e)
    : View(parent, 1, ymag)
 {
-	m_editor = e;
-	m_menu = false;
+    m_editor = e;
+    m_menu = false;
 
-	setMouseTracking(true);
-	curPitch = -1;
-	c_keys[0] = new QPixmap(mk1_xpmC8);
-	c_keys[1] = new QPixmap(mk1_xpmC7);
-	c_keys[2] = new QPixmap(mk1_xpmC6);
-	c_keys[3] = new QPixmap(mk1_xpmC5);
-	c_keys[4] = new QPixmap(mk1_xpmC4);
-	c_keys[5] = new QPixmap(mk1_xpmC3);
-	c_keys[6] = new QPixmap(mk1_xpmC2);
-	c_keys[7] = new QPixmap(mk1_xpmC1);
-	
-	//setup all the highlight colors 	
-	mk1 = new QPixmap(mk1_xpm);
-	mk2 = new QPixmap(mk2_xpm);
-	mk3 = new QPixmap(mk3_xpm);
-	mk4 = new QPixmap(mk4_xpm);
-	
-	//setup all the highlight colors 	
-	mk1_l = new QPixmap(mk1_xpm_lowlight);
-	mk2_l = new QPixmap(mk2_xpm_lowlight);
-	mk3_l = new QPixmap(mk3_xpm_lowlight);
-	mk4_l = new QPixmap(mk4_xpm_lowlight);
-	
-	//setup all the black and white colors 	
-	mk1_n = new QPixmap(mk1_xpm_normal);
-	mk2_n = new QPixmap(mk2_xpm_normal);
-	mk3_n = new QPixmap(mk3_xpm_normal);
-	mk4_n = new QPixmap(mk4_xpm_normal);
-	mk5_n = new QPixmap(mk5_xpm_normal);
-	mk6_n = new QPixmap(mk6_xpm_normal);
-	mk5_sn = new QPixmap(mk5_xpm_lswitch_normal);
-	mk6_sn = new QPixmap(mk6_xpm_lswitch_normal);
-	
-	//setup all the keyswitch colors 	
-	mk1_s = new QPixmap(mk1_xpm_switch);
-	mk2_s = new QPixmap(mk2_xpm_switch);
-	mk3_s = new QPixmap(mk3_xpm_switch);
-	mk4_s = new QPixmap(mk4_xpm_switch);
-	mk5_s = new QPixmap(mk5_xpm_switch);
-	mk6_s = new QPixmap(mk6_xpm_switch);
-	
-	mk1_lswitch = new QPixmap(mk1_xpm_lswitch);
-	mk2_lswitch = new QPixmap(mk2_xpm_lswitch);
-	mk3_lswitch = new QPixmap(mk3_xpm_lswitch);
-	mk4_lswitch = new QPixmap(mk4_xpm_lswitch);
+    setMouseTracking(true);
+    curPitch = -1;
+    c_keys[0] = new QPixmap(mk1_xpmC8);
+    c_keys[1] = new QPixmap(mk1_xpmC7);
+    c_keys[2] = new QPixmap(mk1_xpmC6);
+    c_keys[3] = new QPixmap(mk1_xpmC5);
+    c_keys[4] = new QPixmap(mk1_xpmC4);
+    c_keys[5] = new QPixmap(mk1_xpmC3);
+    c_keys[6] = new QPixmap(mk1_xpmC2);
+    c_keys[7] = new QPixmap(mk1_xpmC1);
 
-	keyDown = -1;
-	button = Qt::NoButton;
+    //setup all the highlight colors
+    mk1 = new QPixmap(mk1_xpm);
+    mk2 = new QPixmap(mk2_xpm);
+    mk3 = new QPixmap(mk3_xpm);
+    mk4 = new QPixmap(mk4_xpm);
+
+    //setup all the highlight colors
+    mk1_l = new QPixmap(mk1_xpm_lowlight);
+    mk2_l = new QPixmap(mk2_xpm_lowlight);
+    mk3_l = new QPixmap(mk3_xpm_lowlight);
+    mk4_l = new QPixmap(mk4_xpm_lowlight);
+
+    //setup all the black and white colors
+    mk1_n = new QPixmap(mk1_xpm_normal);
+    mk2_n = new QPixmap(mk2_xpm_normal);
+    mk3_n = new QPixmap(mk3_xpm_normal);
+    mk4_n = new QPixmap(mk4_xpm_normal);
+    mk5_n = new QPixmap(mk5_xpm_normal);
+    mk6_n = new QPixmap(mk6_xpm_normal);
+    mk5_sn = new QPixmap(mk5_xpm_lswitch_normal);
+    mk6_sn = new QPixmap(mk6_xpm_lswitch_normal);
+
+    //setup all the keyswitch colors
+    mk1_s = new QPixmap(mk1_xpm_switch);
+    mk2_s = new QPixmap(mk2_xpm_switch);
+    mk3_s = new QPixmap(mk3_xpm_switch);
+    mk4_s = new QPixmap(mk4_xpm_switch);
+    mk5_s = new QPixmap(mk5_xpm_switch);
+    mk6_s = new QPixmap(mk6_xpm_switch);
+
+    mk1_lswitch = new QPixmap(mk1_xpm_lswitch);
+    mk2_lswitch = new QPixmap(mk2_xpm_lswitch);
+    mk3_lswitch = new QPixmap(mk3_xpm_lswitch);
+    mk4_lswitch = new QPixmap(mk4_xpm_lswitch);
+
+    keyDown = -1;
+    button = Qt::NoButton;
 }
 
 //---------------------------------------------------------
@@ -795,208 +795,208 @@ Piano::Piano(QWidget* parent, int ymag, AbstractMidiEditor *e)
 void Piano::draw(QPainter& p, const QRect& r)
 {
       QPoint offset(0, KH*2);
-	Part *curPart = m_editor->curCanvasPart();
+    Part *curPart = m_editor->curCanvasPart();
       //p.drawTiledPixmap(r, *octave, r.topLeft()+offset);
 
       // draw C notes
-      /*for (int drawKey = 0; drawKey < 8;drawKey++) 
-	  {
-      		p.drawTiledPixmap(r, *octave, r.topLeft()+offset);
-      		int octaveSize=91;
+      /*for (int drawKey = 0; drawKey < 8;drawKey++)
+      {
+            p.drawTiledPixmap(r, *octave, r.topLeft()+offset);
+            int octaveSize=91;
 
-        	int drawY = octaveSize * drawKey + 81 - KH*2;
-        	if (drawY > r.y() && drawY < r.y() + r.height()) 
-			{
-          		//printf("drawing c %d at %d r.y %d r.x %d\n",drawKey, drawY, r.y(), r.x());
-          		p.drawPixmap(0,drawY,*c_keys[drawKey]);
-        	}
+            int drawY = octaveSize * drawKey + 81 - KH*2;
+            if (drawY > r.y() && drawY < r.y() + r.height())
+            {
+                //printf("drawing c %d at %d r.y %d r.x %d\n",drawKey, drawY, r.y(), r.x());
+                p.drawPixmap(0,drawY,*c_keys[drawKey]);
+            }
       }*/
 
-	  bool preOn = false;
-	  bool lastint = false;
-	  for(int i = 0; i <= 127; ++i)
-	  {
-		MidiTrack* track = (MidiTrack*)curPart->track();
-		int port = track->outPort();
-		//int channel = track->outChannel();
-		MidiInstrument* instr = midiPorts[port].instrument();
-		KeyMap* km = instr->keymap(i);
-		bool lswitch = (km->hasProgram && !keyswitch.contains(i));
-     	 switch(i % 12) /*{{{*/
-	 	 {
-     	       case 0:
-     	       case 5:
-					if (lswitch)
-					{
-      					p.drawPixmap(0, pitch2y(i), *mk3_lswitch);
-					}
-			   		else if(enabled.isEmpty())
-      						p.drawPixmap(0, pitch2y(i), *mk3_n);
-					else
-					{
-     	            	 //pm2 = mk3_l;
-						if(keyswitch.contains(i))
-      						p.drawPixmap(0, pitch2y(i), *mk3_s);
-						else if(enabled.isEmpty() || !enabled.contains(i))
-      						p.drawPixmap(0, pitch2y(i), *mk3_l);
-						else
-      						p.drawPixmap(0, pitch2y(i), *mk3_n);
-						preOn = false;
-						lastint = false;
-					}	
-     	            break;
-     	       case 2:
-     	       case 7:
-     	       case 9:
-					if (lswitch)
-					{
-      					p.drawPixmap(0, pitch2y(i), *mk2_lswitch);
-					}
-			   		else if(enabled.isEmpty())
-					{
-						if(lastint)
-      						p.drawPixmap(0, pitch2y(i), *mk5_sn);
-						else
-      						p.drawPixmap(0, pitch2y(i), *mk2_n);
-						lastint = false;
-					}
-					else
-					{
-						if(keyswitch.contains(i))
-						{
-							if(preOn)
-							{
-								if(!enabled.isEmpty() && enabled.contains(i))
-      								p.drawPixmap(0, pitch2y(i), *mk5_s);
-								else
-      								p.drawPixmap(0, pitch2y(i), *mk6_s);
-							}
-							else
-      							p.drawPixmap(0, pitch2y(i), *mk2_s);
-						}
-						else if(enabled.isEmpty() || !enabled.contains(i))
-						{
-      						p.drawPixmap(0, pitch2y(i), *mk2_l);
-						}
-						else
-						{
-							//printf("preOn: %d, lastint: %d, key: %d\n", preOn, lastint, i);
-							if(preOn && !lastint)
-      							p.drawPixmap(0, pitch2y(i), *mk5_n);
-							else if(lastint)
-      							p.drawPixmap(0, pitch2y(i), *mk5_sn);
-							else
-      							p.drawPixmap(0, pitch2y(i), *mk2_n);
-							lastint = false;
-						}
-					}		
-     	            break;
-     	       case 4:
-     	       case 11:
-     	             //pm2 = mk1_l;
-					if (lswitch)
-					{
-      					p.drawPixmap(0, pitch2y(i), *mk1_lswitch);
-						preOn = false;
-					}
-			   		else if(enabled.isEmpty())
-					{
-						if(lastint)
-						{
-      						p.drawPixmap(0, pitch2y(i), *mk6_sn);
-						}
-						else
-      						p.drawPixmap(0, pitch2y(i), *mk1_n);
-					}
-					else
-					{
-						if(keyswitch.contains(i))
-      						p.drawPixmap(0, pitch2y(i), *mk1_s);
-						else if(enabled.isEmpty() || !enabled.contains(i))
-						{
-      						p.drawPixmap(0, pitch2y(i), *mk1_l);
-						}
-						else
-						{
-							//printf("preOn: %d, lastint: %d, key: %d\n", preOn, lastint, i);
-							if(preOn && !lastint)
-							{
-      							p.drawPixmap(0, pitch2y(i), *mk6_n);
-							}
-							else if(lastint)
-							{
-      							p.drawPixmap(0, pitch2y(i), *mk6_sn);
-							}
-							else
-							{
-      							p.drawPixmap(0, pitch2y(i), *mk1_n);
-							}
-						}
-						preOn = false;
-						lastint = false;
-					}	
-     	            break;
-            default:
-					if (lswitch)
-					{
-      					p.drawPixmap(0, pitch2y(i), *mk4_lswitch);
-						lastint = true;
-					}
-			   		else if(enabled.isEmpty())
-					{
-      					p.drawPixmap(0, pitch2y(i), *mk4_n);
-						lastint = false;
-					}
-					else
-					{
-						if(keyswitch.contains(i))
-						{
-      						p.drawPixmap(0, pitch2y(i), *mk4_s);
-							preOn = false;
-							lastint = false;
-						}
-						else if(enabled.isEmpty() || !enabled.contains(i))
-						{
-      						p.drawPixmap(0, pitch2y(i), *mk4_l);
-							preOn = true;
-							lastint = false;
-						}
-						else
-						{
-      						p.drawPixmap(0, pitch2y(i), *mk4_n);
-							preOn = false;
-							lastint = false;
-						}
-					}
+      bool preOn = false;
+      bool lastint = false;
+      for(int i = 0; i <= 127; ++i)
+      {
+        MidiTrack* track = (MidiTrack*)curPart->track();
+        int port = track->outPort();
+        //int channel = track->outChannel();
+        MidiInstrument* instr = midiPorts[port].instrument();
+        KeyMap* km = instr->keymap(i);
+        bool lswitch = (km->hasProgram && !keyswitch.contains(i));
+         switch(i % 12) /*{{{*/
+         {
+               case 0:
+               case 5:
+                    if (lswitch)
+                    {
+                        p.drawPixmap(0, pitch2y(i), *mk3_lswitch);
+                    }
+                    else if(enabled.isEmpty())
+                            p.drawPixmap(0, pitch2y(i), *mk3_n);
+                    else
+                    {
+                         //pm2 = mk3_l;
+                        if(keyswitch.contains(i))
+                            p.drawPixmap(0, pitch2y(i), *mk3_s);
+                        else if(enabled.isEmpty() || !enabled.contains(i))
+                            p.drawPixmap(0, pitch2y(i), *mk3_l);
+                        else
+                            p.drawPixmap(0, pitch2y(i), *mk3_n);
+                        preOn = false;
+                        lastint = false;
+                    }
                     break;
-     	 }/*}}}*/
-	  }
+               case 2:
+               case 7:
+               case 9:
+                    if (lswitch)
+                    {
+                        p.drawPixmap(0, pitch2y(i), *mk2_lswitch);
+                    }
+                    else if(enabled.isEmpty())
+                    {
+                        if(lastint)
+                            p.drawPixmap(0, pitch2y(i), *mk5_sn);
+                        else
+                            p.drawPixmap(0, pitch2y(i), *mk2_n);
+                        lastint = false;
+                    }
+                    else
+                    {
+                        if(keyswitch.contains(i))
+                        {
+                            if(preOn)
+                            {
+                                if(!enabled.isEmpty() && enabled.contains(i))
+                                    p.drawPixmap(0, pitch2y(i), *mk5_s);
+                                else
+                                    p.drawPixmap(0, pitch2y(i), *mk6_s);
+                            }
+                            else
+                                p.drawPixmap(0, pitch2y(i), *mk2_s);
+                        }
+                        else if(enabled.isEmpty() || !enabled.contains(i))
+                        {
+                            p.drawPixmap(0, pitch2y(i), *mk2_l);
+                        }
+                        else
+                        {
+                            //printf("preOn: %d, lastint: %d, key: %d\n", preOn, lastint, i);
+                            if(preOn && !lastint)
+                                p.drawPixmap(0, pitch2y(i), *mk5_n);
+                            else if(lastint)
+                                p.drawPixmap(0, pitch2y(i), *mk5_sn);
+                            else
+                                p.drawPixmap(0, pitch2y(i), *mk2_n);
+                            lastint = false;
+                        }
+                    }
+                    break;
+               case 4:
+               case 11:
+                     //pm2 = mk1_l;
+                    if (lswitch)
+                    {
+                        p.drawPixmap(0, pitch2y(i), *mk1_lswitch);
+                        preOn = false;
+                    }
+                    else if(enabled.isEmpty())
+                    {
+                        if(lastint)
+                        {
+                            p.drawPixmap(0, pitch2y(i), *mk6_sn);
+                        }
+                        else
+                            p.drawPixmap(0, pitch2y(i), *mk1_n);
+                    }
+                    else
+                    {
+                        if(keyswitch.contains(i))
+                            p.drawPixmap(0, pitch2y(i), *mk1_s);
+                        else if(enabled.isEmpty() || !enabled.contains(i))
+                        {
+                            p.drawPixmap(0, pitch2y(i), *mk1_l);
+                        }
+                        else
+                        {
+                            //printf("preOn: %d, lastint: %d, key: %d\n", preOn, lastint, i);
+                            if(preOn && !lastint)
+                            {
+                                p.drawPixmap(0, pitch2y(i), *mk6_n);
+                            }
+                            else if(lastint)
+                            {
+                                p.drawPixmap(0, pitch2y(i), *mk6_sn);
+                            }
+                            else
+                            {
+                                p.drawPixmap(0, pitch2y(i), *mk1_n);
+                            }
+                        }
+                        preOn = false;
+                        lastint = false;
+                    }
+                    break;
+            default:
+                    if (lswitch)
+                    {
+                        p.drawPixmap(0, pitch2y(i), *mk4_lswitch);
+                        lastint = true;
+                    }
+                    else if(enabled.isEmpty())
+                    {
+                        p.drawPixmap(0, pitch2y(i), *mk4_n);
+                        lastint = false;
+                    }
+                    else
+                    {
+                        if(keyswitch.contains(i))
+                        {
+                            p.drawPixmap(0, pitch2y(i), *mk4_s);
+                            preOn = false;
+                            lastint = false;
+                        }
+                        else if(enabled.isEmpty() || !enabled.contains(i))
+                        {
+                            p.drawPixmap(0, pitch2y(i), *mk4_l);
+                            preOn = true;
+                            lastint = false;
+                        }
+                        else
+                        {
+                            p.drawPixmap(0, pitch2y(i), *mk4_n);
+                            preOn = false;
+                            lastint = false;
+                        }
+                    }
+                    break;
+         }/*}}}*/
+      }
 
       if (curPitch != -1)
-	  {
-	 	 int y = pitch2y(curPitch);
-     	 QPixmap* pm = 0;
-     	 switch(curPitch % 12) /*{{{*/
-	 	 {
-     	       case 0:
-     	       case 5:
-     	             pm = mk3;
-     	             break;
-     	       case 2:
-     	       case 7:
-     	       case 9:
-     	             pm = mk2;
-     	             break;
-     	       case 4:
-     	       case 11:
-     	             pm = mk1;
-     	             break;
-     	       default:
-     	             pm = mk4;
-     	             break;
-     	 }/*}}}*/
-     	 p.drawPixmap(0, y, *pm);
-	  }
+      {
+         int y = pitch2y(curPitch);
+         QPixmap* pm = 0;
+         switch(curPitch % 12) /*{{{*/
+         {
+               case 0:
+               case 5:
+                     pm = mk3;
+                     break;
+               case 2:
+               case 7:
+               case 9:
+                     pm = mk2;
+                     break;
+               case 4:
+               case 11:
+                     pm = mk1;
+                     break;
+               default:
+                     pm = mk4;
+                     break;
+         }/*}}}*/
+         p.drawPixmap(0, y, *pm);
+      }
       //QFont font;
       //font.setPixelSize(10);
       //p.setFontFamily("fixed-font");
@@ -1004,23 +1004,23 @@ void Piano::draw(QPainter& p, const QRect& r)
       p.setFont(QFont("fixed-font", 7));
       p.setPen(Qt::black);
       // draw C notes
-      for (int drawKey = 0; drawKey < 8;drawKey++) 
-	  {	
-	      int octaveSize=91;
+      for (int drawKey = 0; drawKey < 8;drawKey++)
+      {
+          int octaveSize=91;
           int drawY = octaveSize * drawKey + 81 - KH*2;
-          if (drawY > r.y() && drawY < r.y() + r.height()) 
-		  {
-          		p.drawText(23, drawY + 8, "C" + QString::number(8 - drawKey));
+          if (drawY > r.y() && drawY < r.y() + r.height())
+          {
+                p.drawText(23, drawY + 8, "C" + QString::number(8 - drawKey));
           }
       }
-      
+
 }
 
 void Piano::setMIDIKeyBindings(QList<int> e, QList<int> s)
 {
-	enabled = e;//info->key_bindings;
-	keyswitch = s;//info->keyswitch_bindings;
-	redraw();
+    enabled = e;//info->key_bindings;
+    keyswitch = s;//info->keyswitch_bindings;
+    redraw();
 }
 
 //---------------------------------------------------------
@@ -1029,13 +1029,13 @@ void Piano::setMIDIKeyBindings(QList<int> e, QList<int> s)
 
 int Piano::pitch2y(int pitch) const
 {
-      int tt[] = 
-	  {
+      int tt[] =
+      {
             12, 19, 25, 32, 38, 51, 58, 64, 71, 77, 84, 90
       };
       int y = (75 * KH) - (tt[pitch%12] + (7 * KH) * (pitch/12));
       if (y < 0)
-      	y = 0;
+        y = 0;
       return y;
 }
 
@@ -1102,20 +1102,20 @@ void Piano::viewMouseMoveEvent(QMouseEvent* event)
       emit pitchChanged(pitch);
       setPitch(pitch);
 
-      if (button != Qt::NoButton) 
-	  {
+      if (button != Qt::NoButton)
+      {
             int nk = y2pitch(event->y());
             if (nk < 0 || nk > 127)
                   nk = -1;
             if (nk != keyDown)
-			{
-                  if (keyDown != -1) 
-				  {
+            {
+                  if (keyDown != -1)
+                  {
                         emit keyReleased(keyDown, shift);
                   }
                   keyDown = nk;
                   if (keyDown != -1)
-				  {
+                  {
                         int velocity = event->x()*127/40;
                         //emit keyPressed(keyDown, shift);
                         emit keyPressed(keyDown, velocity>127 ? 127 : velocity, shift);
@@ -1130,95 +1130,94 @@ void Piano::viewMouseMoveEvent(QMouseEvent* event)
 
 void Piano::viewMousePressEvent(QMouseEvent* event)
 {
-	//if(m_menu)
-	//	return;
-	button = event->button();
-	shift  = event->modifiers() & Qt::ShiftModifier;
-	int c_pitch = y2pitch(event->y());
-	switch(button)/*{{{*/
-	{
-		case Qt::LeftButton:
-		case Qt::MidButton:
-		{
-			if (keyDown != -1) {
-				emit keyReleased(keyDown, shift);
-				keyDown = -1;
-			}
-			keyDown = c_pitch; //y2pitch(event->y());
-			if (keyDown < 0 || keyDown > 127) {
-				keyDown = -1;
-			}
-			else {
-				int velocity = event->x()*127/40;
-				emit keyPressed(keyDown, velocity>127 ? 127 : velocity, shift); //emit keyPressed(keyDown, shift);
-			}
-			break;
-		}
-		case Qt::RightButton:
-		{//this is where we launch the menu to add program and notes
-			//printf("Right button click on key %d\n", c_pitch);
-    		button = Qt::NoButton;
-			//emit keyReleased(c_pitch, shift);
-			if(c_pitch < 0)
-				c_pitch = 0;
-			if( c_pitch > 127)
-				c_pitch = 127;
-			if(m_editor)
-			{
-				Part *curPart = m_editor->curCanvasPart();
-				if(curPart)
-				{
-					Track* trk = curPart->track();
-					if(trk && trk->isMidiTrack())
-					{
-						MidiTrack *track = (MidiTrack*)trk;
-						int port = track->outPort();
-						int channel = track->outChannel();
-						MidiInstrument* instr = midiPorts[port].instrument();
-						if(instr)
-						{
-							MidiPort* mport = &midiPorts[port];
-							int program = mport->hwCtrlState(channel, CTRL_PROGRAM);
-							bool hasProgram = false;
-							Patch* patch = 0;
-							if (program != CTRL_VAL_UNKNOWN && program != 0xffffff)
-							{
-								hasProgram = true;
+    //if(m_menu)
+    //	return;
+    button = event->button();
+    shift  = event->modifiers() & Qt::ShiftModifier;
+    int c_pitch = y2pitch(event->y());
+    switch(button)/*{{{*/
+    {
+        case Qt::LeftButton:
+        case Qt::MidButton:
+        {
+            if (keyDown != -1) {
+                emit keyReleased(keyDown, shift);
+                keyDown = -1;
+            }
+            keyDown = c_pitch; //y2pitch(event->y());
+            if (keyDown < 0 || keyDown > 127) {
+                keyDown = -1;
+            }
+            else {
+                int velocity = event->x()*127/40;
+                emit keyPressed(keyDown, velocity>127 ? 127 : velocity, shift); //emit keyPressed(keyDown, shift);
+            }
+            break;
+        }
+        case Qt::RightButton:
+        {//this is where we launch the menu to add program and notes
+            //printf("Right button click on key %d\n", c_pitch);
+            button = Qt::NoButton;
+            //emit keyReleased(c_pitch, shift);
+            if(c_pitch < 0)
+                c_pitch = 0;
+            if( c_pitch > 127)
+                c_pitch = 127;
+            if(m_editor)
+            {
+                Part *curPart = m_editor->curCanvasPart();
+                if(curPart)
+                {
+                    MidiTrack* track = curPart->track();
+                    if(track)
+                    {
+                        int port = track->outPort();
+                        int channel = track->outChannel();
+                        MidiInstrument* instr = midiPorts[port].instrument();
+                        if(instr)
+                        {
+                            MidiPort* mport = &midiPorts[port];
+                            int program = mport->hwCtrlState(channel, CTRL_PROGRAM);
+                            bool hasProgram = false;
+                            Patch* patch = 0;
+                            if (program != CTRL_VAL_UNKNOWN && program != 0xffffff)
+                            {
+                                hasProgram = true;
                                 patch = instr->getPatch(channel, program, song->mtype());
-							}
-							KeyMap *km = instr->keymap(c_pitch);
-							//int prog = km->program;
-							QString comment = km->comment;
-							QMenu* p = new QMenu(this);
-							KeyMapMenu *item = new KeyMapMenu(p, track, km, patch);
-							p->addAction(item);
-							m_menu = true;
-			
-							p->exec(QCursor::pos());
-							//if(act)
-							//{
-							//	int save = act->data().toInt();
-							//	if(save)
-							//	{//Changes were made, try to save out the file
-									if(!instr->fileSave())
-									{
-									/*	printf("Sucessfully saved instrument file\n");
-									}
-									else
-									{*/
-										printf("Failed to save instrument file");
-									}
-							//	}
-							//}
-							delete p;
-							m_menu = false;
-						}
-					}
-				}
-			}
-			break;
-		}
-	}/*}}}*/
+                            }
+                            KeyMap *km = instr->keymap(c_pitch);
+                            //int prog = km->program;
+                            QString comment = km->comment;
+                            QMenu* p = new QMenu(this);
+                            KeyMapMenu *item = new KeyMapMenu(p, track, km, patch);
+                            p->addAction(item);
+                            m_menu = true;
+
+                            p->exec(QCursor::pos());
+                            //if(act)
+                            //{
+                            //	int save = act->data().toInt();
+                            //	if(save)
+                            //	{//Changes were made, try to save out the file
+                                    if(!instr->fileSave())
+                                    {
+                                    /*	printf("Sucessfully saved instrument file\n");
+                                    }
+                                    else
+                                    {*/
+                                        printf("Failed to save instrument file");
+                                    }
+                            //	}
+                            //}
+                            delete p;
+                            m_menu = false;
+                        }
+                    }
+                }
+            }
+            break;
+        }
+    }/*}}}*/
 }
 
 //---------------------------------------------------------
@@ -1227,17 +1226,17 @@ void Piano::viewMousePressEvent(QMouseEvent* event)
 
 void Piano::viewMouseReleaseEvent(QMouseEvent* event)
 {
-	//if(m_menu)
-	//	return;
+    //if(m_menu)
+    //	return;
     shift = event->modifiers() & Qt::ShiftModifier;
-	emit keyReleased(keyDown, shift);
-	keyDown = -1;
+    emit keyReleased(keyDown, shift);
+    keyDown = -1;
     button = Qt::NoButton;
 }
 
 void Piano::wheelEvent(QWheelEvent* ev)
 {
-	emit redirectWheelEvent(ev);
-	return;
+    emit redirectWheelEvent(ev);
+    return;
 }
 

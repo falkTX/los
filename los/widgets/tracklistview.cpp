@@ -134,10 +134,8 @@ void TrackListView::populateTable()/*{{{*/
         barPos = bar->sliderPosition();
 
     m_model->clear();
-    for(iTrack i = song->artracks()->begin(); i != song->artracks()->end(); ++i)
+    for(iMidiTrack i = song->artracks()->begin(); i != song->artracks()->end(); ++i)
     {
-        if(!(*i)->isMidiTrack())
-            continue;
         MidiTrack* track = (MidiTrack*)(*i);
         PartList* pl = track->parts();
         if(m_displayRole == PartRole && pl->empty())
@@ -222,7 +220,7 @@ void TrackListView::contextPopupMenu(QPoint pos)/*{{{*/
         //Make it works even if you rightclick on the checkbox
         QString trackName = item->data(TrackNameRole).toString();
         int type = item->data(TrackRole).toInt();
-        Track* track = song->findTrack(trackName);
+        MidiTrack* track = song->findTrack(trackName);
         if(!track || !m_editor)
             return;
         QMenu* p = new QMenu(this);
@@ -390,7 +388,7 @@ void TrackListView::selectionChanged(const QModelIndex current, const QModelInde
         qint64 tid = item->data(TrackIdRole).toLongLong();
         bool checked = (item->checkState() == Qt::Checked);
         //QString trackName = item->data(TrackNameRole).toString();
-        Track* track = song->findTrackByIdAndType(tid, Track::MIDI);
+        MidiTrack* track = song->findTrackById(tid);
         if(!track || !m_editor || type == 1 || !checked)
             return;
 
@@ -406,7 +404,7 @@ void TrackListView::updatePartSelection(Part* part)/*{{{*/
 {
     if(part)
     {
-        Track* track = part->track();
+        MidiTrack* track = part->track();
         Part* curPart = m_editor->curCanvasPart();
         if (curPart)
         {
@@ -554,7 +552,7 @@ void TrackListView::toggleTrackPart(QStandardItem* item)/*{{{*/
             column = 1;
     }
 
-    Track* track = song->findTrackByIdAndType(tid, Track::MIDI);
+    MidiTrack* track = song->findTrackById(tid);
     if(!track || !m_editor)
     {
         m_editing = false;
@@ -603,7 +601,7 @@ void TrackListView::toggleTrackPart(QStandardItem* item)/*{{{*/
                 }
                 if(valid)
                 {
-                    for (iTrack i = song->tracks()->begin(); i != song->tracks()->end(); ++i)
+                    for (iMidiTrack i = song->tracks()->begin(); i != song->tracks()->end(); ++i)
                     {
                         if ((*i)->name() == newName)
                         {
@@ -631,7 +629,7 @@ void TrackListView::toggleTrackPart(QStandardItem* item)/*{{{*/
                 Track* newTrack = track->clone(false);
                 newTrack->setName(newName);
                 track->setName(newName);
-                audio->msgChangeTrack(newTrack, track);
+                audio->msgChangeTrack((MidiTrack*)newTrack, track);
             }
         }
         break;

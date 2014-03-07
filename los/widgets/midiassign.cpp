@@ -9,7 +9,6 @@
 #include <QtGui>
 #include <QStringList>
 #include <QList>
-#include "apconfig.h"
 #include "song.h"
 #include "globals.h"
 #include "config.h"
@@ -41,12 +40,8 @@ MidiAssignDialog::MidiAssignDialog(QWidget* parent):QDialog(parent)
     m_selectport = 0;
 
     midiPortConfig = new MPConfig(this);
-    //midiSyncConfig = new MidiSyncConfig(this);
-    audioPortConfig = new AudioPortConfig(this);
-    m_tabpanel->insertTab(0, audioPortConfig, tr("Audio Routing Manager"));
-    m_tabpanel->insertTab(1, midiPortConfig, tr("Midi Port Manager"));
-    //m_tabpanel->insertTab(4, midiSyncConfig, tr("Midi Sync"));
-    //m_tabpanel->setCurrentIndex(0);
+    //m_tabpanel->insertTab(0, audioPortConfig, tr("Audio Routing Manager"));
+    m_tabpanel->insertTab(0, midiPortConfig, tr("Midi Port Manager"));
     m_btnReset = m_buttonBox->button(QDialogButtonBox::Reset);
 
     m_btnDelete->setIcon(*garbageIconSet3);
@@ -125,7 +120,7 @@ void MidiAssignDialog::itemChanged(QStandardItem* item)/*{{{*/
         int row = item->row();
         int col = item->column();
         QStandardItem* trk = m_model->item(row, 1);
-        Track* track = song->findTrack(trk->text());
+        MidiTrack* track = song->findTrack(trk->text());
         if(track)
         {
             MidiAssignData* data = track->midiAssign();
@@ -174,7 +169,7 @@ void MidiAssignDialog::itemSelected(const QItemSelection& isel, const QItemSelec
         QStandardItem* item = m_model->item(row, 1);
         if(item)
         {
-            Track* track = song->findTrack(item->text());
+            MidiTrack* track = song->findTrack(item->text());
             if(track)
             {
                 m_trackname->setText(track->name());
@@ -225,6 +220,7 @@ void MidiAssignDialog::btnAddController()/*{{{*/
     if(data)
     {
         bool allowed = true;
+#if 0
         if(!m_selected->isMidiTrack())
         {
             allowed = false;
@@ -244,6 +240,7 @@ void MidiAssignDialog::btnAddController()/*{{{*/
                 break;
             }//}}}
         }
+#endif
         if(!allowed)
             return;
         if(data->midimap.isEmpty() || !data->midimap.contains(ctrl))
@@ -318,7 +315,7 @@ void MidiAssignDialog::btnUpdateDefault()/*{{{*/
     for(int i = 0; i < m_model->rowCount(); ++i)
     {
         QStandardItem* trk = m_model->item(i, 1);
-        Track* track = song->findTrack(trk->text());
+        MidiTrack* track = song->findTrack(trk->text());
         if(track)
         {
             MidiAssignData* data = track->midiAssign();
@@ -367,15 +364,8 @@ void MidiAssignDialog::cmbTypeSelected(int type)/*{{{*/
     m_model->clear();
     m_ccmodel->clear();
 
-    for (ciTrack t = song->tracks()->begin(); t != song->tracks()->end(); ++t)
+    for (ciMidiTrack t = song->tracks()->begin(); t != song->tracks()->end(); ++t)
     {
-        if (type == 1 && (*t)->type() != Track::WAVE)
-            continue;
-        if (type == 2 && (*t)->type() != Track::WAVE_INPUT_HELPER)
-            continue;
-        if (type == 3 && (*t)->type() != Track::WAVE_OUTPUT_HELPER)
-            continue;
-
         MidiAssignData* data = (*t)->midiAssign();
         QList<QStandardItem*> rowData;
         QStandardItem* enable = new QStandardItem(data->enabled);

@@ -10,12 +10,12 @@
 FadeCurve::FadeCurve(CurveType type, CurveMode mode, WavePart* p, QObject* parent)
 : QObject(parent)
 {
-	m_type = type;
-	m_mode = mode;
-	m_part = p;
-	m_active = false;
-	m_width = 0;
-	m_frame = 0;
+    m_type = type;
+    m_mode = mode;
+    m_part = p;
+    m_active = false;
+    m_width = 0;
+    m_frame = 0;
 }
 
 FadeCurve::~FadeCurve()
@@ -24,39 +24,23 @@ FadeCurve::~FadeCurve()
 
 bool FadeCurve::active()
 {
-	return m_active;
+    return m_active;
 }
 
 void FadeCurve::setActive(bool act)
 {
-	if(m_active != act)
-	{
-		m_active = act;
-		emit stateChanged();
-	}
+    if(m_active != act)
+    {
+        m_active = act;
+        emit stateChanged();
+    }
 }
 
-void FadeCurve::setWidth(long width)
+void FadeCurve::setWidth(long)
 {
-	if(m_part && width > m_part->lenFrame())
-	{
-		m_width = m_part->lenFrame();
-		return;
-	}
-	else if(width < 0)
-	{
-		m_width = 0;
-		return;
-	}
-	m_width = width;
-
-	if (m_part && m_type == FadeOut)
-	{
-		setFrame(m_part->lenFrame() - m_width);
-	}
 }
 
 long FadeCurve::width()
 {
-	return m_width;
+    return m_width;
 }

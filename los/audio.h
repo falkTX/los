@@ -19,8 +19,6 @@
 class SndFile;
 class MidiDevice;
 class AudioDevice;
-class Track;
-class AudioTrack;
 class Part;
 class Event;
 class MidiPlayEvent;
@@ -29,6 +27,34 @@ class MidiPort;
 class EventList;
 class MidiInstrument;
 class MidiTrack;
+
+//---------------------------------------------------------
+//   Msg
+//---------------------------------------------------------
+
+struct AudioMsg : public ThreadMsg
+{ // this should be an union
+    int serialNo;
+    qint64 sid;
+    SndFile* downmix;
+    Route sroute, droute;
+    AudioDevice* device;
+    int ival;
+    int iival;
+    double dval;
+    Part* spart;
+    Part* dpart;
+    MidiTrack* track;
+
+    const void *p1, *p2, *p3;
+    Event ev1, ev2;
+    char port, channel, ctrl;
+    int a, b, c;
+    Pos pos;
+    QList<qint64> list;
+    QList<Part*> plist;
+    QList<void*> objectList;
+};
 
 //---------------------------------------------------------
 //   AudioMsgId
@@ -74,36 +100,6 @@ enum
 extern const char* seqMsgList[]; // for debug
 
 //---------------------------------------------------------
-//   Msg
-//---------------------------------------------------------
-
-struct AudioMsg : public ThreadMsg
-{ // this should be an union
-    int serialNo;
-    qint64 sid;
-    SndFile* downmix;
-    AudioTrack* snode;
-    AudioTrack* dnode;
-    Route sroute, droute;
-    AudioDevice* device;
-    int ival;
-    int iival;
-    double dval;
-    Part* spart;
-    Part* dpart;
-    Track* track;
-
-    const void *p1, *p2, *p3;
-    Event ev1, ev2;
-    char port, channel, ctrl;
-    int a, b, c;
-    Pos pos;
-    QList<qint64> list;
-    QList<Part*> plist;
-    QList<void*> objectList;
-};
-
-//---------------------------------------------------------
 //  Struct for controll preload processing
 //---------------------------------------------------------
 struct ProcessList {
@@ -111,8 +107,6 @@ struct ProcessList {
     int channel;
     int dataB;
 };
-
-class AudioOutputHelper;
 
 //---------------------------------------------------------
 //   Audio
@@ -147,8 +141,8 @@ private:
     int frameOffset; // offset to free running hw frame counter
 
     State state;
-
     AudioMsg* msg;
+
     int fromThreadFdw, fromThreadFdr; // message pipe
 
     int sigFd; // pipe fd for messages to gui
@@ -156,10 +150,6 @@ private:
     // record values:
     Pos startRecordPos;
     Pos endRecordPos;
-
-    //
-    AudioOutputHelper* _audioMaster;
-    AudioOutputHelper* _audioMonitor;
 
     void sendLocalOff();
     bool filterEvent(const MidiPlayEvent* event, int type, bool thru);
@@ -183,7 +173,6 @@ public:
     void process(unsigned frames);
     bool sync(int state, unsigned frame);
     void shutdown();
-    void writeTick();
 
     // transport:
     bool start();
@@ -217,10 +206,10 @@ public:
     void msgSeek(const Pos&);
     void msgPlay(bool val);
 
-    void msgRemoveTrack(Track*, bool u = true);
+    void msgRemoveTrack(MidiTrack*, bool u = true);
     void msgRemoveTracks();
     void msgRemoveTrackGroup(QList<qint64>, bool undo = true);
-    void msgChangeTrack(Track* oldTrack, Track* newTrack, bool u = true);
+    void msgChangeTrack(MidiTrack* oldTrack, MidiTrack* newTrack, bool u = true);
     void msgMoveTrack(int idx1, int dx2, bool u = true);
     void msgAddPart(Part*, bool u = true);
     void msgRemovePart(Part*, bool u = true);
@@ -228,7 +217,7 @@ public:
     void msgChangePart(Part* oldPart, Part* newPart, bool u = true, bool doCtrls = true, bool doClones = false);
     //void msgAddEvent(Event&, Part*, bool u = true);
     void msgAddEvent(Event&, Part*, bool u = true, bool doCtrls = true, bool doClones = false, bool waitRead = true);
-    void msgAddEventCheck(Track*, Event&, bool u = true, bool doCtrls = true, bool doClones = false, bool waitRead = true);
+    void msgAddEventCheck(MidiTrack*, Event&, bool u = true, bool doCtrls = true, bool doClones = false, bool waitRead = true);
     //void msgDeleteEvent(Event&, Part*, bool u = true);
     void msgDeleteEvent(Event&, Part*, bool u = true, bool doCtrls = true, bool doClones = false, bool waitRead = true);
     //void msgChangeEvent(Event&, Event&, Part*, bool u = true);
@@ -251,14 +240,7 @@ public:
     void msgRemoveRoutes1(Route, Route); // p3.3.55
     void msgAddRoute(Route, Route);
     void msgAddRoute1(Route, Route);
-    void msgSetMute(AudioTrack*, bool val);
-    void msgSetVolume(AudioTrack*, double val);
-    void msgSetPan(AudioTrack*, double val);
     void msgSetSegSize(int, int);
-    void msgSetPrefader(AudioTrack*, int);
-    void msgSetChannels(AudioTrack*, int);
-    void msgSetOff(AudioTrack*, bool);
-    void msgSetRecord(AudioTrack*, bool);
     void msgUndo();
     void msgRedo();
     void msgLocalOff();
@@ -266,14 +248,7 @@ public:
     void msgResetMidiDevices();
     void msgIdle(bool);
     void msgBounce();
-    void msgSwapControllerIDX(AudioTrack*, int, int);
-    void msgClearControllerEvents(AudioTrack*, int);
-    void msgSeekPrevACEvent(AudioTrack*, int);
-    void msgSeekNextACEvent(AudioTrack*, int);
-    void msgEraseACEvent(AudioTrack*, int, int);
-    void msgEraseRangeACEvents(AudioTrack*, int, int, int);
-    void msgAddACEvent(AudioTrack*, int, int, double);
-    void msgSetSolo(Track*, bool);
+    void msgSetSolo(MidiTrack*, bool);
     void msgSetHwCtrlState(MidiPort*, int, int, int);
     void msgSetHwCtrlStates(MidiPort*, int, int, int, int);
     void msgSetTrackOutChannel(MidiTrack*, int);
@@ -332,25 +307,6 @@ public:
     }
     void initDevices();
 
-    AudioOutputHelper* audioMaster() const
-    {
-        return _audioMaster;
-    }
-
-    AudioOutputHelper* audioMonitor() const
-    {
-        return _audioMonitor;
-    }
-
-    void setMaster(AudioOutputHelper* track)
-    {
-        _audioMaster = track;
-    }
-
-    void setMonitor(AudioOutputHelper* track)
-    {
-        _audioMonitor = track;
-    }
     void sendMsgToGui(char c);
 
     bool bounce() const

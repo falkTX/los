@@ -896,18 +896,18 @@ void Audio::collectEvents(MidiTrack* track, unsigned int cts, unsigned int nts)
                         // p3.3.25
                         // If syncing to external midi sync, we cannot use the tempo map.
                         // Therefore we cannot get sub-tick resolution. Just use ticks instead of frames.
-                        playEvents->add(MidiPlayEvent(frame, port, channel, 0x90, pitch, velo, (Track*)track));
+                        playEvents->add(MidiPlayEvent(frame, port, channel, 0x90, pitch, velo, track));
 
-                        stuckNotes->add(MidiPlayEvent(tick + len, port, channel, veloOff ? 0x80 : 0x90, pitch, veloOff, (Track*)track));
+                        stuckNotes->add(MidiPlayEvent(tick + len, port, channel, veloOff ? 0x80 : 0x90, pitch, veloOff, track));
                     }
                     else
                     { //Handle events to different port than standard.
                         MidiDevice* mdAlt = midiPorts[port].device();
                         if (mdAlt)
                         {
-                            mdAlt->playEvents()->add(MidiPlayEvent(frame, port, channel, 0x90, pitch, velo, (Track*)track));
+                            mdAlt->playEvents()->add(MidiPlayEvent(frame, port, channel, 0x90, pitch, velo, track));
 
-                            mdAlt->stuckNotes()->add(MidiPlayEvent(tick + len, port, channel, veloOff ? 0x80 : 0x90, pitch, veloOff, (Track*)track));
+                            mdAlt->stuckNotes()->add(MidiPlayEvent(tick + len, port, channel, veloOff ? 0x80 : 0x90, pitch, veloOff, track));
                         }
                     }
 
@@ -923,13 +923,13 @@ void Audio::collectEvents(MidiTrack* track, unsigned int cts, unsigned int nts)
                     //int pitch = ev.pitch();
 
                     // p3.3.25
-                    playEvents->add(MidiPlayEvent(frame, port, channel, ev, (Track*)track));
+                    playEvents->add(MidiPlayEvent(frame, port, channel, ev, track));
                 }
                     break;
 
 
                 default:
-                    playEvents->add(MidiPlayEvent(frame, port, channel, ev, (Track*)track));
+                    playEvents->add(MidiPlayEvent(frame, port, channel, ev, track));
 
                     break;
             }

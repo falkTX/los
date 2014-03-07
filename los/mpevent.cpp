@@ -18,7 +18,7 @@
 //   MEvent
 //---------------------------------------------------------
 
-MEvent::MEvent(unsigned t, int port, int tpe, const unsigned char* data, int len, Track* trk)
+MEvent::MEvent(unsigned t, int port, int tpe, const unsigned char* data, int len, MidiTrack* trk)
 {
     _time = t;
     _port = port;
@@ -29,7 +29,7 @@ MEvent::MEvent(unsigned t, int port, int tpe, const unsigned char* data, int len
     m_source = SystemSource;
 }
 
-MEvent::MEvent(unsigned tick, int port, int channel, const Event& e, Track* trk)
+MEvent::MEvent(unsigned tick, int port, int channel, const Event& e, MidiTrack* trk)
 {
     m_track = trk;
     m_source = SystemSource;

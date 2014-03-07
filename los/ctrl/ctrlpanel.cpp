@@ -116,7 +116,7 @@ CtrlPanel::CtrlPanel(QWidget* parent, AbstractMidiEditor* e, const char* name)
     _dl->hide();
 
     connect(_knob, SIGNAL(sliderMoved(double, int)), SLOT(ctrlChanged(double)));
-    connect(_knob, SIGNAL(sliderRightClicked(const QPoint&, int)), SLOT(ctrlRightClicked(const QPoint&, int)));
+    //connect(_knob, SIGNAL(sliderRightClicked(const QPoint&, int)), SLOT(ctrlRightClicked(const QPoint&, int)));
     //connect(_knob, SIGNAL(sliderReleased(int)), SLOT(ctrlReleased(int)));
     connect(_dl, SIGNAL(valueChanged(double, int)), SLOT(ctrlChanged(double)));
     connect(_dl, SIGNAL(doubleClicked(int)), SLOT(labelDoubleClicked()));
@@ -274,13 +274,13 @@ void CtrlPanel::labelDoubleClicked()/*{{{*/
                 kiv &= 0x7f;
                 kiv |= 0xffff00;
                 //MidiPlayEvent ev(song->cpos(), outport, chan, ME_CONTROLLER, _dnum, kiv);
-                MidiPlayEvent ev(0, outport, chan, ME_CONTROLLER, _dnum, kiv, (Track*)_track);
+                MidiPlayEvent ev(0, outport, chan, ME_CONTROLLER, _dnum, kiv, _track);
                 audio->msgPlayMidiEvent(&ev);
             }
             else
             {
                 //MidiPlayEvent ev(song->cpos(), outport, chan, ME_CONTROLLER, _dnum, lastv);
-                MidiPlayEvent ev(0, outport, chan, ME_CONTROLLER, _dnum, lastv, (Track*)_track);
+                MidiPlayEvent ev(0, outport, chan, ME_CONTROLLER, _dnum, lastv, _track);
                 audio->msgPlayMidiEvent(&ev);
             }
         }
@@ -312,15 +312,15 @@ void CtrlPanel::labelDoubleClicked()/*{{{*/
                 if (kiv > _ctrl->maxVal())
                     kiv = _ctrl->maxVal();
                 kiv += _ctrl->bias();
-                MidiPlayEvent ev(0, outport, chan, ME_CONTROLLER, _dnum, kiv, (Track*)_track);
+                MidiPlayEvent ev(0, outport, chan, ME_CONTROLLER, _dnum, kiv, _track);
                 audio->msgPlayMidiEvent(&ev);
-                midiMonitor->msgSendMidiOutputEvent((Track*)_track, _dnum, kiv);
+                midiMonitor->msgSendMidiOutputEvent(_track, _dnum, kiv);
             }
             else
             {
-                MidiPlayEvent ev(0, outport, chan, ME_CONTROLLER, _dnum, lastv, (Track*)_track);
+                MidiPlayEvent ev(0, outport, chan, ME_CONTROLLER, _dnum, lastv, _track);
                 audio->msgPlayMidiEvent(&ev);
-                midiMonitor->msgSendMidiOutputEvent((Track*)_track, _dnum, lastv);
+                midiMonitor->msgSendMidiOutputEvent(_track, _dnum, lastv);
             }
         }
         else
@@ -362,7 +362,7 @@ void CtrlPanel::ctrlChanged(double val)/*{{{*/
             ival |= 0xffff00;
         else
             ival |= (curval & 0xffff00);
-        MidiPlayEvent ev(0, outport, chan, ME_CONTROLLER, _dnum, ival, (Track*)_track);
+        MidiPlayEvent ev(0, outport, chan, ME_CONTROLLER, _dnum, ival, _track);
         audio->msgPlayMidiEvent(&ev);
     }
     else
@@ -378,9 +378,9 @@ void CtrlPanel::ctrlChanged(double val)/*{{{*/
         ival += _ctrl->bias();
 
         //MidiPlayEvent ev(song->cpos(), outport, chan, ME_CONTROLLER, _dnum, ival);
-        MidiPlayEvent ev(0, outport, chan, ME_CONTROLLER, _dnum, ival, (Track*)_track);
+        MidiPlayEvent ev(0, outport, chan, ME_CONTROLLER, _dnum, ival, _track);
         audio->msgPlayMidiEvent(&ev);
-        midiMonitor->msgSendMidiOutputEvent((Track*)_track, _dnum, ival);
+        midiMonitor->msgSendMidiOutputEvent(_track, _dnum, ival);
     }
     song->update(SC_MIDI_CONTROLLER);
 }/*}}}*/
@@ -565,21 +565,6 @@ bool CtrlPanel::ctrlSetTypeByName(QString s)/*{{{*/
     }
     return rv;
 }/*}}}*/
-
-//---------------------------------------------------------
-//   ctrlRightClicked
-//---------------------------------------------------------
-
-void CtrlPanel::ctrlRightClicked(const QPoint& p, int /*id*/)
-{
-    if (!editor->curCanvasPart())
-        return;
-
-    int ctlnum = _ctrl->num();
-
-    MidiPart* part = dynamic_cast<MidiPart*> (editor->curCanvasPart());
-    song->execMidiAutomationCtlPopup(0, part, p, ctlnum);
-}
 
 //---------------------------------------------------------
 //   feedbackModeChanged

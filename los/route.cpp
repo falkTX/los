@@ -42,7 +42,7 @@ Route::Route(void* t, int ch)
 }
 
 //Track to Track Route
-Route::Route(Track* t, int ch, int chans)
+Route::Route(MidiTrack* t, int ch, int chans)
 {
     track = t;
     if(t)
@@ -186,7 +186,7 @@ void addRoute(Route src, Route dst)/*{{{*/
     {
         if (dst.type == Route::TRACK_ROUTE)
         {
-            if (dst.track->type() != Track::WAVE_INPUT_HELPER)
+            //if (dst.track->type() != Track::WAVE_INPUT_HELPER)
             {
                 fprintf(stderr, "addRoute: source is jack, dest:%s is track but not audio input\n", dst.track->name().toLatin1().constData());
                 return;
@@ -248,7 +248,7 @@ void addRoute(Route src, Route dst)/*{{{*/
     {
         if (src.type == Route::TRACK_ROUTE)
         {
-            if (src.track->type() != Track::WAVE_OUTPUT_HELPER)
+            //if (src.track->type() != Track::WAVE_OUTPUT_HELPER)
             {
                 fprintf(stderr, "addRoute: destination is jack, source is track but not audio output\n");
                 return;
@@ -463,7 +463,7 @@ void removeRoute(Route src, Route dst)/*{{{*/
 
         if (dst.type == Route::TRACK_ROUTE)
         {
-            if (dst.track->type() != Track::WAVE_INPUT_HELPER)
+            //if (dst.track->type() != Track::WAVE_INPUT_HELPER)
             {
                 fprintf(stderr, "removeRoute: source is jack, destination is track but not audio input\n");
                 // exit(-1);
@@ -509,7 +509,7 @@ void removeRoute(Route src, Route dst)/*{{{*/
 
         if (src.type == Route::TRACK_ROUTE)
         {
-            if (src.track->type() != Track::WAVE_OUTPUT_HELPER)
+            //if (src.track->type() != Track::WAVE_OUTPUT_HELPER)
             {
                 fprintf(stderr, "removeRoute: destination is jack, source is track but not audio output\n");
                 return;
@@ -774,18 +774,11 @@ Route name2route(const QString& rn, bool /*dst*/, int rtype)/*{{{*/
                 return Route(p, channel);
         }
 
-        TrackList* tl = song->tracks();
-        for (iTrack i = tl->begin(); i != tl->end(); ++i)
+        MidiTrackList* tl = song->tracks();
+        for (iMidiTrack i = tl->begin(); i != tl->end(); ++i)
         {
-            if ((*i)->isMidiTrack())
             {
                 MidiTrack* track = (MidiTrack*) * i;
-                if (track->name() == s)
-                    return Route(track, channel);
-            }
-            else
-            {
-                AudioTrack* track = (AudioTrack*) * i;
                 if (track->name() == s)
                     return Route(track, channel);
             }
@@ -810,18 +803,11 @@ Route name2route(const QString& rn, bool /*dst*/, int rtype)/*{{{*/
     {
         if (rtype == Route::TRACK_ROUTE)
         {
-            TrackList* tl = song->tracks();
-            for (iTrack i = tl->begin(); i != tl->end(); ++i)
+            MidiTrackList* tl = song->tracks();
+            for (iMidiTrack i = tl->begin(); i != tl->end(); ++i)
             {
-                if ((*i)->isMidiTrack())
                 {
                     MidiTrack* track = (MidiTrack*) * i;
-                    if (track->name() == s)
-                        return Route(track, channel);
-                }
-                else
-                {
-                    AudioTrack* track = (AudioTrack*) * i;
                     if (track->name() == s)
                         return Route(track, channel);
                 }
@@ -876,7 +862,7 @@ bool checkRoute(const QString& s, const QString& d)/*{{{*/
     {
         if (dst.type == Route::TRACK_ROUTE)
         {
-            if (dst.track->type() != Track::WAVE_INPUT_HELPER)
+            //if (dst.track->type() != Track::WAVE_INPUT_HELPER)
             {
                 return false;
             }
@@ -909,7 +895,7 @@ bool checkRoute(const QString& s, const QString& d)/*{{{*/
     {
         if (src.type == Route::TRACK_ROUTE)
         {
-            if (src.track->type() != Track::WAVE_OUTPUT_HELPER)
+            //if (src.track->type() != Track::WAVE_OUTPUT_HELPER)
             {
                 return false;
             }
@@ -1053,11 +1039,11 @@ void Route::read(Xml& xml)/*{{{*/
                         }
                         else
                         {
-                            TrackList* tl = song->tracks();
-                            iTrack i = tl->begin();
+                            MidiTrackList* tl = song->tracks();
+                            iMidiTrack i = tl->begin();
                             for (; i != tl->end(); ++i)
                             {
-                                Track* t = *i;
+                                MidiTrack* t = *i;
                                 if (t->name() == s)
                                 {
                                     track = t;

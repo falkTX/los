@@ -49,231 +49,12 @@
 #include "filedialog.h"
 #include "marker/marker.h"
 #include "Composer.h"
-//#include "tlist.h"
 #include "utils.h"
 #include "midimonitor.h"
 #include "ctrl.h"
-#include "FadeCurve.h"
 #include "traverso_shared/AddRemoveCtrlValues.h"
 #include "traverso_shared/CommandGroup.h"
 #include "CreateTrackDialog.h"
-
-
-class CurveNodeSelection
-{
-private:
-    QList<CtrlVal*> m_nodes;
-
-public:
-    void addNodeToSelection(CtrlVal* node)
-    {
-        m_nodes.append(node);
-    }
-
-    void removeNodeFromSelection(CtrlVal* node)
-    {
-        m_nodes.removeAll(node);
-    }
-
-    void clearSelection()
-    {
-        m_nodes.clear();
-    }
-
-    QList<CtrlVal*> getNodes() const
-    {
-        return m_nodes;
-    }
-
-    int size() const {return m_nodes.size();}
-
-    double getMaxValue() const
-    {
-        double maxValue = MINDOUBLE;
-
-        foreach(const CtrlVal* ctrlVal, m_nodes)
-        {
-            if (ctrlVal->val > maxValue)
-            {
-                maxValue = ctrlVal->val;
-            }
-        }
-        return maxValue;
-    }
-
-    double getMinValue() const
-    {
-        double minValue = MAXDOUBLE;
-
-        foreach(const CtrlVal* ctrlVal, m_nodes)
-        {
-            if (ctrlVal->val < minValue)
-            {
-                minValue = ctrlVal->val;
-            }
-        }
-        return minValue;
-    }
-
-    int getEndFrame() const
-    {
-        int maxFrame = INT_MIN;
-        foreach(const CtrlVal* ctrlVal, m_nodes)
-        {
-            if (ctrlVal->getFrame() > maxFrame)
-            {
-                maxFrame = ctrlVal->getFrame();
-            }
-        }
-
-        return maxFrame;
-    }
-
-    int getStartFrame() const
-    {
-        int minFrame = INT_MAX;
-        foreach(const CtrlVal* ctrlVal, m_nodes)
-        {
-            if (ctrlVal->getFrame() != 0 && ctrlVal->getFrame() < minFrame)
-            {
-                minFrame = ctrlVal->getFrame();
-            }
-        }
-
-        return minFrame;
-    }
-
-    bool isSelected (CtrlVal* node)
-    {
-        return m_nodes.contains(node);
-    }
-
-    void move(int frameDiff, double valDiff, double min, double max, CtrlList* list, CtrlVal* lazySelectedCtrlVal, bool dBCalculation)
-    {//We need to make a copy of all the nodes in our internal list so we can operate on them without updating the CtrlList
-    //This way we can do the actions at once and provide undo.
-        if (lazySelectedCtrlVal)
-        {
-            addNodeToSelection(lazySelectedCtrlVal);
-        }
-
-        double range = max - min;
-
-        double maxNodeValue, minNodeValue;
-
-        if (dBCalculation)
-        {
-            maxNodeValue = dbToVal(getMaxValue()) * range;
-            minNodeValue = dbToVal(getMinValue()) * range;
-        }
-        else
-        {
-            maxNodeValue = getMaxValue();
-            minNodeValue = getMinValue();
-        }
-
-        // should use the dbToVal() I guess, doesn't work as expected atm.
-        if ((maxNodeValue + valDiff) > max)
-        {
-            valDiff = 0;
-        }
-
-        if ((minNodeValue + valDiff) < min)
-        {
-            valDiff = 0;
-        }
-
-        if (dBCalculation)
-        {
-            foreach(CtrlVal* ctrlVal, m_nodes)
-            {
-                double newCtrlVal = dbToVal(ctrlVal->val) + valDiff;
-                double cvval = valToDb(newCtrlVal);
-                if (cvval < valToDb(min)) cvval = min;
-                if (cvval > max) cvval = max;
-                //Add undo
-                ctrlVal->val = cvval;
-            }
-        }
-        else
-        {
-            foreach(CtrlVal* ctrlVal, m_nodes)
-            {
-                double cvval = ctrlVal->val + (valDiff * range);
-
-                if (cvval< min) cvval=min;
-                if (cvval>max) cvval=max;
-                //Add undo
-                ctrlVal->val = cvval;
-            }
-
-        }
-
-        int endFrame = getEndFrame();
-        int startFrame = getStartFrame();
-        int prevFrame = 0;
-        int nextFrame = INT_MAX;
-
-        // get previous and next frame position to give x bounds for this event.
-        iCtrl ic= list->begin();
-        for (; ic != list->end(); ic++)
-        {
-            CtrlVal &cv = ic->second;
-            if (cv.getFrame() == startFrame)
-            {
-                break;
-            }
-            prevFrame = cv.getFrame();
-        }
-
-        ic= list->begin();
-        for (; ic != list->end(); ic++)
-        {
-            CtrlVal &cv = ic->second;
-            nextFrame = cv.getFrame();
-            if (cv.getFrame() > endFrame)
-            {
-                break;
-            }
-        }
-
-        if (nextFrame == endFrame)
-        {
-            nextFrame = INT_MAX;
-        }
-
-        if ((endFrame + frameDiff) >= nextFrame)
-        {
-            frameDiff = 0;
-        }
-
-        if ((startFrame + frameDiff) <= prevFrame)
-        {
-            frameDiff = 0;
-        }
-
-        if (frameDiff != 0)
-        {
-            foreach(CtrlVal* ctrlVal, m_nodes)
-            {
-                if (ctrlVal->getFrame() != 0)
-                {
-                    int newFrame = ctrlVal->getFrame() + frameDiff;
-                    removeNodeFromSelection(ctrlVal);
-                    addNodeToSelection(&list->setCtrlFrameValue(ctrlVal, newFrame));
-                }
-            }
-        }
-
-        if (lazySelectedCtrlVal)
-        {
-            removeNodeFromSelection(lazySelectedCtrlVal);
-        }
-
-        song->dirty = true;
-    }
-};
-
-
 
 //---------------------------------------------------------
 //   NPart
@@ -314,15 +95,9 @@ ComposerCanvas::ComposerCanvas(int* r, QWidget* parent, int sx, int sy)
     show_tip = false;
 
     tracks = song->visibletracks();
-    m_selectedCurve = 0;
     setMouseTracking(true);
     _drag = DRAG_OFF;
     curColorIndex = 0;
-    automation.currentCtrlList = 0;
-    automation.currentCtrlVal = 0;
-    automation.controllerState = doNothing;
-    automation.moveController = false;
-    _curveNodeSelection = new CurveNodeSelection;
     partsChanged();
 }
 
@@ -332,10 +107,10 @@ ComposerCanvas::ComposerCanvas(int* r, QWidget* parent, int sx, int sy)
 
 int ComposerCanvas::y2pitch(int y) const
 {
-    TrackList* tl = song->visibletracks();
+    MidiTrackList* tl = song->visibletracks();
     int yy = 0;
     int idx = 0;
-    for (iTrack it = tl->begin(); it != tl->end(); ++it, ++idx)
+    for (iMidiTrack it = tl->begin(); it != tl->end(); ++it, ++idx)
     {
         int h = (*it)->height();
         if (y < yy + h)
@@ -351,10 +126,10 @@ int ComposerCanvas::y2pitch(int y) const
 
 int ComposerCanvas::pitch2y(int p) const
 {
-    TrackList* tl = song->visibletracks();
+    MidiTrackList* tl = song->visibletracks();
     int yy = 0;
     int idx = 0;
-    for (iTrack it = tl->begin(); it != tl->end(); ++it, ++idx)
+    for (iMidiTrack it = tl->begin(); it != tl->end(); ++it, ++idx)
     {
         if (idx == p)
             break;
@@ -425,8 +200,8 @@ void ComposerCanvas::viewMouseDoubleClickEvent(QMouseEvent* event)
     else
     {
     //This changes to song->visibletracks()
-        TrackList* tl = song->visibletracks();
-        iTrack it;
+        MidiTrackList* tl = song->visibletracks();
+        iMidiTrack it;
         int yy = 0;
         int y = event->y();
         for (it = tl->begin(); it != tl->end(); ++it)
@@ -438,10 +213,8 @@ void ComposerCanvas::viewMouseDoubleClickEvent(QMouseEvent* event)
         }
         if (_pos[2] - _pos[1] > 0 && it != tl->end())
         {
-            Track* track = *it;
-            switch (track->type())
-            {
-                case Track::MIDI:
+            MidiTrack* track = *it;
+
                 {
                     MidiPart* part = new MidiPart((MidiTrack*) track);
                     part->setTick(_pos[1]);
@@ -453,10 +226,7 @@ void ComposerCanvas::viewMouseDoubleClickEvent(QMouseEvent* event)
                     part->setSelected(true);
                     audio->msgAddPart(part);
                 }
-                    break;
-                default:
-                    break;
-            }
+
         }
     }
 }
@@ -518,43 +288,32 @@ bool ComposerCanvas::moveItem(CItem* item, const QPoint& newpos, DragType t)
     tracks = song->visibletracks();
     NPart* npart = (NPart*) item;
     Part* spart = npart->part();
-    Track* track = npart->track();
+    MidiTrack* track = npart->track();
     unsigned dtick = newpos.x();
     unsigned ntrack = y2pitch(item->mp().y());
-    Track::TrackType type = track->type();
+
     if (tracks->index(track) == ntrack && (dtick == spart->tick()))
     {
         return false;
     }
     //printf("ComposerCanvas::moveItem ntrack: %d  tracks->size(): %d\n",ntrack,(int)tracks->size());
-    Track* dtrack = 0;
+    MidiTrack* dtrack = 0;
     bool newdest = false;
     if (ntrack >= tracks->size())
     {
         ntrack = tracks->size();
-        Track* newTrack = 0;// = song->addTrack(int(type));
-        if(type == Track::WAVE)
-        {
-            newTrack = song->addTrackByName(spart->name(), Track::WAVE, -1, true);
-            song->updateTrackViews();
-        }
-        else
+        MidiTrack* newTrack = 0;// = song->addTrack(int(type));
+
         {
             VirtualTrack* vt;
-            CreateTrackDialog *ctdialog = new CreateTrackDialog(&vt, type, -1, this);
-            ctdialog->lockType(true);
+            CreateTrackDialog *ctdialog = new CreateTrackDialog(&vt, -1, this);
             if(ctdialog->exec() && vt)
             {
                 qint64 nid = trackManager->addTrack(vt, -1);
                 newTrack = song->findTrackById(nid);
             }
         }
-        if (type == Track::WAVE && newTrack)
-        {
-            WaveTrack* st = (WaveTrack*) track;
-            WaveTrack* dt = (WaveTrack*) newTrack;
-            dt->setChannels(st->channels());
-        }
+
         if(newTrack)
         {
             newdest = true;
@@ -580,12 +339,6 @@ bool ComposerCanvas::moveItem(CItem* item, const QPoint& newpos, DragType t)
 
     //printf("ComposerCanvas::moveItem track type is: %d\n",dtrack->type());
 
-    if (dtrack->type() != type)
-    {
-        QMessageBox::critical(this, QString("LOS"),
-                tr("Cannot copy/move/clone to different Track-Type"));
-        return false;
-    }
     //printf("ComposerCanvas::moveItem did not crash\n");
 
     Part* dpart;
@@ -610,8 +363,6 @@ bool ComposerCanvas::moveItem(CItem* item, const QPoint& newpos, DragType t)
         dpart->setName(name.replace(track->name(), dtrack->name()));
     }
     dpart->setTick(dtick);
-    dpart->setLeftClip(spart->leftClip());
-    dpart->setRightClip(spart->rightClip());
 
     //printf("ComposerCanvas::moveItem before add/changePart clone:%d spart:%p events:%p refs:%d Arefs:%d sn:%d dpart:%p events:%p refs:%d Arefs:%d sn:%d\n", clone, spart, spart->events(), spart->events()->refCount(), spart->events()->arefCount(), spart->sn(), dpart, dpart->events(), dpart->events()->refCount(), dpart->events()->arefCount(), dpart->sn());
 
@@ -635,19 +386,12 @@ bool ComposerCanvas::moveItem(CItem* item, const QPoint& newpos, DragType t)
     if (t == MOVE_COPY || t == MOVE_CLONE)
     {
         // These will not increment ref count, and will not chain clones...
-        if (dtrack->type() == Track::WAVE)
-            audio->msgAddPart((WavePart*) dpart, false);
-        else
-            audio->msgAddPart(dpart, false);
+        audio->msgAddPart(dpart, false);
     }
     else if (t == MOVE_MOVE)
     {
         dpart->setSelected(spart->selected());
         // These will increment ref count if not a clone, and will chain clones...
-        if (dtrack->type() == Track::WAVE)
-            // Indicate no undo, and do not do port controller values and clone parts.
-            audio->msgChangePart((WavePart*) spart, (WavePart*) dpart, false, false, false);
-        else
             // Indicate no undo, and do port controller values but not clone parts.
             audio->msgChangePart(spart, dpart, false, true, false);
 
@@ -689,7 +433,7 @@ void ComposerCanvas::partsChanged()
     tracks = song->visibletracks();
     _items.clear();
     int idx = 0;
-    for (iTrack t = tracks->begin(); t != tracks->end(); ++t)
+    for (iMidiTrack t = tracks->begin(); t != tracks->end(); ++t)
     {
         PartList* pl = (*t)->parts();
         for (iPart i = pl->begin(); i != pl->end(); ++i)
@@ -755,11 +499,11 @@ void ComposerCanvas::resizeItemLeft(CItem* i, QPoint pos, bool noSnap)/*{{{*/
     {
         snappedpos = i->x();
     }
-    song->cmdResizePartLeft(t, p, snappedpos, endtick, pos);
+    //song->cmdResizePartLeft(t, p, snappedpos, endtick, pos);
     //redraw();
 }/*}}}*/
 
-CItem* ComposerCanvas::addPartAtCursor(Track* track)
+CItem* ComposerCanvas::addPartAtCursor(MidiTrack* track)
 {
     if (!track)
         return 0;
@@ -767,20 +511,10 @@ CItem* ComposerCanvas::addPartAtCursor(Track* track)
     unsigned pos = song->cpos();
     Part* pa = 0;
     NPart* np = 0;
-    switch (track->type())
     {
-        case Track::MIDI:
-            pa = new MidiPart((MidiTrack*) track);
+            pa = new MidiPart(track);
             pa->setTick(pos);
             pa->setLenTick(8000);
-            break;
-        case Track::WAVE:
-            //pa = new WavePart((WaveTrack*) track);
-            //pa->setTick(pos);
-            //pa->setLenTick(0);
-            //break;
-        default:
-            return 0;
     }
     pa->setName(track->name());
     pa->setColorIndex(track->getDefaultPartColor());
@@ -809,20 +543,11 @@ CItem* ComposerCanvas::newItem(const QPoint& pos, int)
 
     Part* pa = 0;
     NPart* np = 0;
-    switch (track->type())
+
     {
-        case Track::MIDI:
             pa = new MidiPart((MidiTrack*) track);
             pa->setTick(x);
             pa->setLenTick(0);
-            break;
-        case Track::WAVE:
-            //pa = new WavePart((WaveTrack*) track);
-            //pa->setTick(x);
-            //pa->setLenTick(0);
-            //break;
-        default:
-            return 0;
     }
     pa->setName(track->name());
     pa->setColorIndex(track->getDefaultPartColor());
@@ -893,8 +618,6 @@ void ComposerCanvas::glueItem(CItem* item)
 QMenu* ComposerCanvas::genItemPopup(CItem* item)/*{{{*/
 {
     NPart* npart = (NPart*) item;
-    Track::TrackType trackType = npart->track()->type();
-
     QMenu* partPopup = new QMenu(this);
     QMenu* colorPopup = partPopup->addMenu(tr("Part Color"));
 
@@ -971,9 +694,8 @@ QMenu* ComposerCanvas::genItemPopup(CItem* item)/*{{{*/
     act_declone->setData(15);
 
     partPopup->addSeparator();
-    switch (trackType)
+
     {
-        case Track::MIDI:
         {
             QAction *act_performer = partPopup->addAction(QIcon(*pianoIconSet), tr("Performer"));
             act_performer->setData(10);
@@ -982,20 +704,6 @@ QMenu* ComposerCanvas::genItemPopup(CItem* item)/*{{{*/
             QAction *act_mexport = partPopup->addAction(tr("Export"));
             act_mexport->setData(16);
         }
-            break;
-        case Track::WAVE:
-        {
-// the wave editor is destructive, don't us it anymore!
-//			QAction *act_wedit = partPopup->addAction(QIcon(*edit_waveIcon), tr("wave edit"));
-//			act_wedit->setData(14);
-            QAction *act_wexport = partPopup->addAction(tr("Export"));
-            act_wexport->setData(16);
-            QAction *act_wfinfo = partPopup->addAction(tr("File info"));
-            act_wfinfo->setData(17);
-        }
-            break;
-        default:
-            break;
     }
 
     act_select->setEnabled(rc > 1);
@@ -1055,14 +763,6 @@ void ComposerCanvas::itemPopup(CItem* item, int n, const QPoint& pt)/*{{{*/
             return;
         case 12: // list edit
             emit startEditor(pl, 1);
-            return;
-        case 13: // drum edit
-            emit startEditor(pl, 3);
-            return;
-        case 14: // wave edit
-        {
-            emit startEditor(pl, 4);
-        }
             return;
         case 15: // declone
         {
@@ -1251,53 +951,6 @@ void ComposerCanvas::mousePress(QMouseEvent* event)/*{{{*/
             emit trackChanged(item->part()->track());
             if(_drag == DRAG_MOVE_START)
             {
-                int boxSize = 14;
-                int currX =  mapx(pt.x());
-                int currY =  mapy(pt.y());
-                NPart* np = (NPart*) item;
-                Part* p = np->part();
-                Track* track = p->track();
-                if(track && track->type() == Track::WAVE)
-                {
-                    //int x = pt.x();
-                    //int y = pt.y();
-                    int tracktop = track2Y(track)-ypos;
-                    WavePart* part = (WavePart*)p;
-                    long pstart = part->frame();
-                    long pend = pstart+part->lenFrame();
-                    //long currFrame = tempomap.tick2frame(pt.x());
-                    QPoint click(currX, currY);
-                    FadeCurve* fadeIn = part->fadeIn();
-                    FadeCurve* fadeOut = part->fadeOut();
-                    if(fadeIn)
-                    {
-                        long fwidth = fadeIn->width();
-                        long fiPos = pstart+fwidth;
-                        fiPos = mapx(tempomap.frame2tick(fiPos));
-                        QRect fiRect(fiPos-(boxSize/2), tracktop, boxSize, boxSize);
-                        if(fiRect.contains(click))
-                        {
-                            m_selectedCurve = fadeIn;
-                            _drag = DRAG_OFF;
-                            return; //dont process fadeOut
-                        }
-                    }
-                    if(fadeOut)
-                    {
-                        long fwidth = fadeOut->width();
-                        long foPos = pend-fwidth;
-                        foPos = mapx(tempomap.frame2tick(foPos));
-                        QRect foRect(foPos-(boxSize/2), tracktop, boxSize, boxSize);
-                        //qDebug() << "Rect: " << foRect;
-                        //qDebug() << "click pos:" << click;
-                        if(foRect.contains(click))
-                        {
-                            m_selectedCurve = fadeOut;
-                            _drag = DRAG_OFF;
-                            return; //dont process fadeOut
-                        }
-                    }
-                }
             }
         }
         break;
@@ -1318,84 +971,6 @@ void ComposerCanvas::mousePress(QMouseEvent* event)/*{{{*/
         }
         case AutomationTool:
         {
-            automation.mousePressPos = event->pos();
-
-            if (event->modifiers() & Qt::ShiftModifier && event->button() & Qt::LeftButton && !automation.currentCtrlVal)
-            {
-                automation.moveController = true;
-                return;
-            }
-            if (event->modifiers() & Qt::ControlModifier && event->button() & Qt::LeftButton)
-            {
-                addNewAutomation(event);
-                return;
-            }
-
-            if (automation.controllerState != doNothing)
-            {
-                automation.moveController=true;
-                if (automation.currentCtrlVal)
-                {
-                    QWidget::setCursor(Qt::BlankCursor);
-                    //printf("Current After foundIt Controller: %s\n", automation.currentCtrlList->name().toLatin1().constData());
-                    if(automation.currentCtrlList)
-                    {
-                        automation.currentCtrlList->setSelected(true);
-                    }
-                    Track * t = y2Track(event->pos().y());
-                    if (t && t->isMidiTrack())
-                        t = ((MidiTrack*)t)->getAutomationTrack();
-                    if (t) {
-                        CtrlListList* cll = ((AudioTrack*) t)->controller();
-                        for(CtrlListList::iterator icll = cll->begin(); icll != cll->end(); ++icll)
-                        {
-                            //iCtrlList *icl = icll->second;
-                            CtrlList *cl = icll->second;
-                            if(cl != automation.currentCtrlList)
-                            {
-                                cl->setSelected(false);
-                            }
-                        }
-                    }
-                }
-            }
-            else
-            {
-                Track * t = y2Track(event->pos().y());
-                if (t && t->isMidiTrack())
-                    t = ((MidiTrack*)t)->getAutomationTrack();
-                if(t)
-                    selectAutomation(t, event->pos());
-                if(automation.currentCtrlList && automation.controllerState == doNothing)
-                {
-                    //qDebug("Automation curve selected enable LASSO mode");
-                    _drag = DRAG_LASSO_START;
-                }
-            }
-
-            if (automation.currentCtrlVal && event->modifiers() & Qt::ShiftModifier)
-            {
-                CtrlVal* cv = automation.currentCtrlVal;
-                if (_curveNodeSelection->isSelected(cv))
-                {
-                    _curveNodeSelection->removeNodeFromSelection(cv);
-                    automation.currentCtrlVal = 0;
-                    redraw();
-                }
-                else
-                {
-                    _curveNodeSelection->addNodeToSelection(cv);
-                }
-            }
-            else
-            {
-                if (! (event->modifiers() & Qt::ShiftModifier))
-                {
-                    _curveNodeSelection->clearSelection();
-                    redraw();
-                }
-            }
-
             break;
         }
     }
@@ -1407,171 +982,7 @@ void ComposerCanvas::mousePress(QMouseEvent* event)/*{{{*/
 
 void ComposerCanvas::mouseRelease(const QPoint& pos)/*{{{*/
 {
-    if(_drag == DRAG_LASSO && _tool == AutomationTool)
-    {
-        //qDebug("ComposerCanvas::mouseRelease lasso mode");
-        _drag = DRAG_OFF;
-        if(automation.currentCtrlList)
-        {
-            //qDebug("ComposerCanvas::mouseRelease found selected curve");
-            double top, bottom, min, max;
-            automation.currentCtrlList->range(&min,&max);
-            double range = max - min;
-            //int left = tempomap.tick2frame(_lasso.left());
-            //int right = tempomap.tick2frame(_lasso.right());
-            int left = tempomap.tick2frame(_start.x());
-            int right = tempomap.tick2frame(pos.x());
-            int startY = _start.y();
-            int endY = pos.y();
-            int tempX, tempY;
-
-            if(left > right)
-            {
-                tempX = left;
-                left = right;
-                right = tempX;
-            }
-            if(endY < startY)
-            {
-                tempY = startY;
-                startY = endY;
-                endY = tempY;
-            }
-
-            if(startY > automation.currentTrack->y())
-                startY = automation.currentTrack->y();
-            if(endY > (automation.currentTrack->y() + automation.currentTrack->height()))
-                endY = (automation.currentTrack->y() + automation.currentTrack->height());
-
-            top = double(startY - track2Y(automation.currentTrack)) / automation.currentTrack->height();
-            bottom = double(endY - track2Y(automation.currentTrack)) / automation.currentTrack->height();
-
-            if(top > max)
-                top = max;
-            if(bottom < min)
-                bottom = min;
-            //qDebug("ComposerCanvas::mouseRelease top: %f, bottom: %f, start: %d, end: %d\n", top, bottom, left, right);
-            //double relativeY = double(event->pos().y() - track2Y(automation.currentTrack)) / automation.currentTrack->height();
-
-            if (automation.currentCtrlList->id() == AC_VOLUME )
-            {
-                top = dbToVal(max) - top;
-                top = valToDb(top);
-                bottom = dbToVal(max) - bottom;
-                bottom = valToDb(bottom);
-            }
-            else
-            {
-                top = max - (top * range);
-                bottom = max - (bottom * range);
-            }
-            //qDebug("ComposerCanvas::mouseRelease top: %f, bottom: %f, start: %d, end: %d\n", top, bottom, left, right);
-            _curveNodeSelection->clearSelection();
-            iCtrl ic = automation.currentCtrlList->begin();
-            for (; ic !=automation.currentCtrlList->end(); ic++)
-            {
-                int frame = ic->second.getFrame();
-                double val = ic->second.val;
-                if(frame >= left && frame <= right && val >= bottom && val <= top)
-                {
-                    CtrlVal &cv = ic->second;
-                    automation.currentCtrlVal = &cv;
-                    automation.controllerState = movingController;
-                    //qDebug("ComposerCanvas::mouseRelease: Adding node at frame: %d, value: %f\n", cv.getFrame(),  cv.val);
-                    _curveNodeSelection->addNodeToSelection(automation.currentCtrlVal);
-                }
-            }
-        }
-        _lasso.setRect(-1, -1, -1, -1);
-        redraw();
-    }
-    else
-    {//process the lasso and select at node in range
-        if(automation.movingStarted)
-        {//m_automationMoveList
-            if (automation.currentCtrlList)
-            {
-                QList<CtrlVal> valuesToAdd;
-
-                QList<CtrlVal*> selectedNodes = _curveNodeSelection->getNodes();
-                foreach(CtrlVal* val, selectedNodes)
-                {
-                    valuesToAdd.append(CtrlVal(val->getFrame(), val->val));
-                }
-                bool singleSelect = false;
-                if(valuesToAdd.isEmpty() && automation.currentCtrlVal)
-                {//its a single node move
-                    singleSelect = true;
-                    valuesToAdd.append(CtrlVal(automation.currentCtrlVal->getFrame(), automation.currentCtrlVal->val));
-                }
-                //Delete nodes from controller
-                QList<int> delList;
-                iCtrl ictl = automation.currentCtrlList->begin();
-                for (; ictl != automation.currentCtrlList->end(); ictl++)
-                {
-                    int frame = ictl->second.getFrame();
-                    foreach(CtrlVal val, valuesToAdd)
-                    {
-                        if(frame == val.getFrame())
-                        {
-                            delList.append(val.getFrame());
-                            break;
-                        }
-                    }
-                }
-                //Clear the node selection list since it will contain invalid pointers after below
-                _curveNodeSelection->clearSelection();
-                //Delete the new moved nodes
-                foreach(int frame, delList)
-                {
-                    automation.currentCtrlList->del(frame);
-                }
-                //Readd the old node positions
-                foreach(CtrlVal v, m_automationMoveList)
-                {
-                    automation.currentCtrlList->add(v.getFrame(), v.val);
-                }
-                //Let undo/redo do the job
-                AddRemoveCtrlValues* modifyCommand = new AddRemoveCtrlValues(automation.currentCtrlList, m_automationMoveList, valuesToAdd, LOSCommand::MODIFY);
-
-                CommandGroup* group = new CommandGroup(tr("Move Automation Nodes"));
-                group->addCommand(modifyCommand);
-
-                song->pushToHistoryStack(group);
-
-                //Repopulate selection list
-                if(!singleSelect)
-                {
-                    iCtrl ic = automation.currentCtrlList->begin();
-                    for (; ic != automation.currentCtrlList->end(); ic++)
-                    {
-                        int frame = ic->second.getFrame();
-                        double value = ic->second.val;
-                        foreach(CtrlVal val, valuesToAdd)
-                        {
-                            if(frame == val.getFrame() && value == val.val)
-                            {
-                                CtrlVal &cv = ic->second;
-                                automation.currentCtrlVal = &cv;
-                                automation.controllerState = movingController;
-                                //qDebug("ComposerCanvas::mouseRelease: Adding node at frame: %d, value: %f\n", cv.getFrame(),  cv.val);
-                                _curveNodeSelection->addNodeToSelection(automation.currentCtrlVal);
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        // clear all the automation parameters
-        automation.moveController = false;
-        automation.controllerState = doNothing;
-        automation.currentCtrlVal = 0;
-        automation.movingStarted = false;
-        m_automationMoveList.clear();
-        m_selectedCurve = 0;
-        _drag = DRAG_OFF;
-    }
+    _drag = DRAG_OFF;
 }/*}}}*/
 
 //---------------------------------------------------------
@@ -1586,137 +997,18 @@ void ComposerCanvas::mouseMove(QMouseEvent* event)/*{{{*/
         x = 0;
 
     emit timeChanged(AL::sigmap.raster(x, *_raster));
-
-    if(_tool == PointerTool && m_selectedCurve)
-    {
-        long currFrame = tempomap.tick2frame(event->pos().x());
-        WavePart *part = m_selectedCurve->part();
-        if(part)
-        {
-            long pstart = part->frame();
-            long pend = pstart+part->lenFrame();
-            switch(m_selectedCurve->type())
-            {
-                case FadeCurve::FadeIn:
-                {
-                    if(currFrame <= pstart)
-                    {
-                        m_selectedCurve->setWidth(0);
-                    }
-                    else if(currFrame >= pend)
-                    {
-                        m_selectedCurve->setWidth(part->lenFrame());
-                    }
-                    else
-                    {
-                        m_selectedCurve->setWidth(currFrame-pstart);
-                    }
-                    //printf("FadeIn Width: %ld\n", long(m_selectedCurve->width()));
-                }
-                break;
-                case FadeCurve::FadeOut:
-                {
-                    if(currFrame <= pstart)
-                    {
-                        m_selectedCurve->setWidth(part->lenFrame());
-                    }
-                    else if(currFrame >= pend)
-                    {
-                        m_selectedCurve->setWidth(0);
-                    }
-                    else
-                    {
-                        m_selectedCurve->setWidth(pend-currFrame);
-                    }
-                }
-                break;
-            }
-            redraw();
-            return;
-        }
-    }
-    if(_drag != DRAG_LASSO)
-    {
-        processAutomationMovements(event);
-
-        if (show_tip && _tool == AutomationTool && automation.currentCtrlList && !automation.moveController)
-        {
-            Track* t = y2Track(y);
-            if(t)
-            {
-                CtrlListList *cll;
-                CtrlListList *inputCll;
-                if (t->isMidiTrack())
-                {
-                    AudioTrack* atrack = t->wantsAutomation() ? ((MidiTrack*)t)->getAutomationTrack() : 0;
-                    if (!atrack)
-                        return;
-                    cll = atrack->controller();
-                    Track *input = t->inputTrack();
-                    if(input)
-                    {
-                        inputCll = ((AudioTrack*)input)->controller();
-                    }
-                }
-                else
-                    cll = ((AudioTrack*)t)->controller();
-                //TODO: process input controllers for midi tracks
-                for(CtrlListList::iterator ic = cll->begin(); ic != cll->end(); ++ic)
-                {
-                    CtrlList* cl = ic->second;
-                    if(cl->selected())
-                    {
-                        QString dbString;
-                        double min, max;
-                        cl->range(&min,&max);
-                        double range = max - min;
-                        double relativeY = double(y - track2Y(t)) / t->height();
-                        double newValue;
-
-                        if(cl && cl->id() == AC_VOLUME)
-                        {
-                            newValue = dbToVal(max) - relativeY;
-                            newValue = valToDb(newValue);
-                            if (newValue < 0.0001f)
-                            {
-                                newValue = 0.0001f;
-                            }
-                            newValue = 20.0f * log10 (newValue);
-                            if(newValue < -60.0f)
-                                newValue = -60.0f;
-                             dbString += QString::number (newValue, 'f', 2) + " dB";
-                        }
-                        else
-                        {
-                            newValue = max - (relativeY * range);
-                            dbString += QString::number(newValue, 'f', 2);
-                        }
-                        if(cl->unit().isEmpty() == false)
-                            dbString.append(" "+cl->unit());
-                        if(cl->pluginName().isEmpty())
-                            dbString.append("  "+cl->name());
-                        else
-                            dbString.append("  "+cl->name()).append(" : ").append(cl->pluginName());
-                        QPoint cursorPos = QCursor::pos();
-                        QToolTip::showText(cursorPos, dbString, this, QRect(cursorPos.x(), cursorPos.y(), 2, 2));
-                        break;
-                    }
-                }
-            }
-        }//
-    }
 }/*}}}*/
 
 //---------------------------------------------------------
 //   y2Track
 //---------------------------------------------------------
 
-Track* ComposerCanvas::y2Track(int y) const
+MidiTrack* ComposerCanvas::y2Track(int y) const
 {
     //This changes to song->visibletracks()
-    TrackList* l = song->visibletracks();
+    MidiTrackList* l = song->visibletracks();
     int ty = 0;
-    for (iTrack it = l->begin(); it != l->end(); ++it)
+    for (iMidiTrack it = l->begin(); it != l->end(); ++it)
     {
         int h = (*it)->height();
         if (y >= ty && y < ty + h)
@@ -1728,13 +1020,13 @@ Track* ComposerCanvas::y2Track(int y) const
 
 
 // Return the track Y position, if track was not found, return -1
-int ComposerCanvas::track2Y(Track * track) const
+int ComposerCanvas::track2Y(MidiTrack * track) const
 {
     //This changes to song->visibletracks()
-    TrackList* l = song->visibletracks();
+    MidiTrackList* l = song->visibletracks();
     int trackYPos = -1;
 
-    for (iTrack it = l->begin(); it != l->end(); ++it)
+    for (iMidiTrack it = l->begin(); it != l->end(); ++it)
     {
         if ((*it) == track)
         {
@@ -1885,14 +1177,14 @@ void ComposerCanvas::keyPress(QKeyEvent* event)/*{{{*/
     }
     else if (key == shortcuts[SHRT_SEL_TRACK_ABOVE_ADD].key)
     {
-        TrackList* tl = song->visibletracks();
-        TrackList selectedTracks = song->getSelectedTracks();
+        MidiTrackList* tl = song->visibletracks();
+        MidiTrackList selectedTracks = song->getSelectedTracks();
         if (!selectedTracks.size())
         {
             return;
         }
 
-        iTrack t = tl->end();
+        iMidiTrack t = tl->end();
         while (t != tl->begin())
         {
             --t;
@@ -1914,14 +1206,14 @@ void ComposerCanvas::keyPress(QKeyEvent* event)/*{{{*/
     }
     else if (key == shortcuts[SHRT_SEL_TRACK_BELOW_ADD].key)
     {
-        TrackList* tl = song->visibletracks();
-        TrackList selectedTracks = song->getSelectedTracks();
+        MidiTrackList* tl = song->visibletracks();
+        MidiTrackList selectedTracks = song->getSelectedTracks();
         if (!selectedTracks.size())
         {
             return;
         }
 
-        for (iTrack t = tl->begin(); t != tl->end(); ++t)
+        for (iMidiTrack t = tl->begin(); t != tl->end(); ++t)
         {
             if (*t == *(--selectedTracks.end()))
             {
@@ -1940,15 +1232,15 @@ void ComposerCanvas::keyPress(QKeyEvent* event)/*{{{*/
     else if (key == shortcuts[SHRT_SEL_ALL_TRACK].key)
     {
         //printf("Select all tracks called\n");
-        TrackList* tl = song->visibletracks();
-        TrackList selectedTracks = song->getSelectedTracks();
+        MidiTrackList* tl = song->visibletracks();
+        MidiTrackList selectedTracks = song->getSelectedTracks();
         bool select = true;
         if (selectedTracks.size() == tl->size())
         {
             select = false;
         }
 
-        for (iTrack t = tl->begin(); t != tl->end(); ++t)
+        for (iMidiTrack t = tl->begin(); t != tl->end(); ++t)
         {
             (*t)->setSelected(select);
         }
@@ -1957,7 +1249,7 @@ void ComposerCanvas::keyPress(QKeyEvent* event)/*{{{*/
     }
     else if (key == shortcuts[SHRT_TRACK_TOGGLE_SOLO].key)
     {
-        Track* t =los->composer->curTrack();
+        MidiTrack* t =los->composer->curTrack();
         if (t)
         {
             audio->msgSetSolo(t, !t->solo());
@@ -1967,7 +1259,7 @@ void ComposerCanvas::keyPress(QKeyEvent* event)/*{{{*/
     }
     else if (key == shortcuts[SHRT_TRACK_TOGGLE_MUTE].key)
     {
-        Track* t =los->composer->curTrack();
+        MidiTrack* t =los->composer->curTrack();
         if (t)
         {
             t->setMute(!t->mute());
@@ -2018,10 +1310,10 @@ void ComposerCanvas::keyPress(QKeyEvent* event)/*{{{*/
     }
     else if (key == shortcuts[SHRT_TRACK_HEIGHT_DEFAULT].key)
     {
-        TrackList* tl = song->visibletracks();
-        for (iTrack t = tl->begin(); t != tl->end(); ++t)
+        MidiTrackList* tl = song->visibletracks();
+        for (iMidiTrack t = tl->begin(); t != tl->end(); ++t)
         {
-            Track* tr = *t;
+            MidiTrack* tr = *t;
             if (tr->selected())
             {
                 tr->setHeight(DEFAULT_TRACKHEIGHT);
@@ -2033,15 +1325,15 @@ void ComposerCanvas::keyPress(QKeyEvent* event)/*{{{*/
     }
     else if (key == shortcuts[SHRT_TRACK_HEIGHT_FULL_SCREEN].key)
     {
-        TrackList tl = song->getSelectedTracks();
-        for (iTrack t = tl.begin(); t != tl.end(); ++t)
+        MidiTrackList tl = song->getSelectedTracks();
+        for (iMidiTrack t = tl.begin(); t != tl.end(); ++t)
         {
-            Track* tr = *t;
+            MidiTrack* tr = *t;
             tr->setHeight(height());
         }
         if (tl.size())
         {
-            Track* tr = *tl.begin();
+            MidiTrack* tr = *tl.begin();
             los->composer->verticalScrollSetYpos(track2Y(tr));
         }
         emit trackHeightChanged();
@@ -2050,15 +1342,15 @@ void ComposerCanvas::keyPress(QKeyEvent* event)/*{{{*/
     }
     else if (key == shortcuts[SHRT_TRACK_HEIGHT_SELECTION_FITS_IN_VIEW].key)
     {
-        TrackList tl = song->getSelectedTracks();
-        for (iTrack t = tl.begin(); t != tl.end(); ++t)
+        MidiTrackList tl = song->getSelectedTracks();
+        for (iMidiTrack t = tl.begin(); t != tl.end(); ++t)
         {
-            Track* tr = *t;
+            MidiTrack* tr = *t;
             tr->setHeight(height() / tl.size());
         }
         if (tl.size())
         {
-            Track* tr = *tl.begin();
+            MidiTrack* tr = *tl.begin();
             los->composer->verticalScrollSetYpos(track2Y(tr));
         }
         emit trackHeightChanged();
@@ -2068,10 +1360,10 @@ void ComposerCanvas::keyPress(QKeyEvent* event)/*{{{*/
 
     else if (key == shortcuts[SHRT_TRACK_HEIGHT_2].key)
     {
-        TrackList* tl = song->visibletracks();
-        for (iTrack t = tl->begin(); t != tl->end(); ++t)
+        MidiTrackList* tl = song->visibletracks();
+        for (iMidiTrack t = tl->begin(); t != tl->end(); ++t)
         {
-            Track* tr = *t;
+            MidiTrack* tr = *t;
             if (tr->selected())
             {
                 tr->setHeight(MIN_TRACKHEIGHT);
@@ -2083,10 +1375,10 @@ void ComposerCanvas::keyPress(QKeyEvent* event)/*{{{*/
     }
     else if (key == shortcuts[SHRT_TRACK_HEIGHT_3].key)
     {
-        TrackList* tl = song->visibletracks();
-        for (iTrack t = tl->begin(); t != tl->end(); ++t)
+        MidiTrackList* tl = song->visibletracks();
+        for (iMidiTrack t = tl->begin(); t != tl->end(); ++t)
         {
-            Track* tr = *t;
+            MidiTrack* tr = *t;
             if (tr->selected())
             {
                 tr->setHeight(100);
@@ -2098,10 +1390,10 @@ void ComposerCanvas::keyPress(QKeyEvent* event)/*{{{*/
     }
     else if (key == shortcuts[SHRT_TRACK_HEIGHT_4].key)
     {
-        TrackList* tl = song->visibletracks();
-        for (iTrack t = tl->begin(); t != tl->end(); ++t)
+        MidiTrackList* tl = song->visibletracks();
+        for (iMidiTrack t = tl->begin(); t != tl->end(); ++t)
         {
-            Track* tr = *t;
+            MidiTrack* tr = *t;
             if (tr->selected())
             {
                 tr->setHeight(180);
@@ -2113,10 +1405,10 @@ void ComposerCanvas::keyPress(QKeyEvent* event)/*{{{*/
     }
     else if (key == shortcuts[SHRT_TRACK_HEIGHT_5].key)
     {
-        TrackList* tl = song->visibletracks();
-        for (iTrack t = tl->begin(); t != tl->end(); ++t)
+        MidiTrackList* tl = song->visibletracks();
+        for (iMidiTrack t = tl->begin(); t != tl->end(); ++t)
         {
-            Track* tr = *t;
+            MidiTrack* tr = *t;
             if (tr->selected())
             {
                 tr->setHeight(320);
@@ -2128,10 +1420,10 @@ void ComposerCanvas::keyPress(QKeyEvent* event)/*{{{*/
     }
     else if (key == shortcuts[SHRT_TRACK_HEIGHT_6].key)
     {
-        TrackList* tl = song->visibletracks();
-        for (iTrack t = tl->begin(); t != tl->end(); ++t)
+        MidiTrackList* tl = song->visibletracks();
+        for (iMidiTrack t = tl->begin(); t != tl->end(); ++t)
         {
-            Track* tr = *t;
+            MidiTrack* tr = *t;
             if (tr->selected())
             {
                 tr->setHeight(640);
@@ -2143,10 +1435,10 @@ void ComposerCanvas::keyPress(QKeyEvent* event)/*{{{*/
     }
     else if(key == shortcuts[SHRT_INSERT_PART].key)
     {
-        TrackList sel = song->getSelectedTracks();
+        MidiTrackList sel = song->getSelectedTracks();
         if(sel.size() == 1)
         {
-            Track* trk = sel.front();
+            MidiTrack* trk = sel.front();
             if(trk)
             {
                 //printf("Found one track selected: %s\n", trk->name().toUtf8().constData());
@@ -2161,10 +1453,10 @@ void ComposerCanvas::keyPress(QKeyEvent* event)/*{{{*/
     }
     else if(key == shortcuts[SHRT_RENAME_TRACK].key)
     {
-        TrackList sel = song->getSelectedTracks();
+        MidiTrackList sel = song->getSelectedTracks();
         if(sel.size() == 1)
         {
-            Track* trk = sel.front();
+            MidiTrack* trk = sel.front();
             if(trk)
             {
                 //printf("Found one track selected: %s\n", trk->name().toUtf8().constData());
@@ -2305,7 +1597,7 @@ void ComposerCanvas::keyPress(QKeyEvent* event)/*{{{*/
             add = true;
         //To get an idea of which track is above us:
         int stepsize = rmapxDev(1);
-                Track* track = _curItem->part()->track(); //top->part()->track();
+        MidiTrack* track = _curItem->part()->track(); //top->part()->track();
         track = y2Track(track->y() - 1);
 
         //If we're at topmost, leave
@@ -2360,7 +1652,7 @@ void ComposerCanvas::keyPress(QKeyEvent* event)/*{{{*/
 
         //To get an idea of which track is below us:
         int stepsize = rmapxDev(1);
-                Track* track = _curItem->part()->track(); //bottom->part()->track();
+        MidiTrack* track = _curItem->part()->track(); //bottom->part()->track();
         track = y2Track(track->y() + track->height() + 1);
                 int middle = _curItem->x() + _curItem->part()->lenTick() / 2;
         //If we're at bottommost, leave
@@ -2412,24 +1704,10 @@ void ComposerCanvas::keyPress(QKeyEvent* event)/*{{{*/
             return;
         }
         PartList* pl = new PartList;
-                NPart* npart = (NPart*) (_curItem);
-        Track* track = npart->part()->track();
+        NPart* npart = (NPart*) (_curItem);
         pl->add(npart->part());
-        int type = 0;
 
-        //  Check if track is wave or drum,
-        //  else track is midi
-
-        switch (track->type())
-        {
-            case Track::WAVE:
-                type = 4;
-                break;
-
-            default:
-                break;
-        }
-        emit startEditor(pl, type);
+        emit startEditor(pl, 0);
     }
     else if (key == shortcuts[SHRT_INC_POS].key)
     {
@@ -2448,23 +1726,6 @@ void ComposerCanvas::keyPress(QKeyEvent* event)/*{{{*/
         //printf("Should be select all here\n");
         if (_tool == AutomationTool)
         {
-            if (automation.currentCtrlList)
-            {
-                if (_curveNodeSelection->size())
-                {
-                    _curveNodeSelection->clearSelection();
-                }
-                else
-                {
-                    iCtrl ic=automation.currentCtrlList->begin();
-                    for (; ic !=automation.currentCtrlList->end(); ic++)
-                    {
-                        CtrlVal &cv = ic->second;
-                        _curveNodeSelection->addNodeToSelection(&cv);
-                    }
-                }
-                redraw();
-            }
         }
         return;
     }
@@ -2519,13 +1780,7 @@ void ComposerCanvas::drawItem(QPainter& p, const CItem* item, const QRect& rect)
     Part* part = ((NPart*) item)->part();
 
     MidiPart* mp = 0;
-    WavePart* wp = 0;
-    Track::TrackType type = part->track()->type();
-    if (type == Track::WAVE)
-    {
-        wp = (WavePart*) part;
-    }
-    else
+
     {
         mp = (MidiPart*) part;
     }
@@ -2574,16 +1829,7 @@ void ComposerCanvas::drawItem(QPainter& p, const CItem* item, const QRect& rect)
         partWaveColorAutomation.setAlpha(150);
 
         p.setBrush(partWaveColor);
-        if (wp)
-        {
-            if(m_myLeftFlag || m_myRightFlag)
-                p.setPen(partColor);
-            else
-                p.setPen(Qt::NoPen);
-            if (_tool == AutomationTool)
-                p.setBrush(partWaveColorAutomation);
-        }
-        else if(mp)
+        if (mp)
             p.setPen(partColor);
     }
     else
@@ -2592,16 +1838,8 @@ void ComposerCanvas::drawItem(QPainter& p, const CItem* item, const QRect& rect)
         partColorAutomation.setAlpha(150);
 
         p.setBrush(partColor);
-        if (wp)
-        {
-            p.setPen(Qt::NoPen);
-            if (_tool == AutomationTool)
-                p.setBrush(partColorAutomation);
-        }
-        else if(mp)
+        if (mp)
             p.setPen(partWaveColor);
-
-
     }
     p.drawRect(QRect(r.x(), r.y(), r.width(), mp ? r.height()-2 : r.height()-1));
     if (part->mute() || part->track()->mute())
@@ -2628,14 +1866,12 @@ void ComposerCanvas::drawItem(QPainter& p, const CItem* item, const QRect& rect)
     partColor.setAlpha(255);
     partWaveColor.setAlpha(255);
 
-    if (wp)
-        drawWavePart(p, rect, wp, r);
-    else if (mp)
+    if (mp)
     {
         if(part->selected())
-            drawMidiPart(p, rect, mp->events(),(MidiTrack*)part->track(), r, mp->tick(), from, to, partColor);
+            drawMidiPart(p, rect, mp->events(), part->track(), r, mp->tick(), from, to, partColor);
         else
-            drawMidiPart(p, rect, mp->events(),(MidiTrack*)part->track(), r, mp->tick(), from, to, partWaveColor);
+            drawMidiPart(p, rect, mp->events(), part->track(), r, mp->tick(), from, to, partWaveColor);
     }
 
     if (config.canvasShowPartType & 1)
@@ -2747,469 +1983,6 @@ void ComposerCanvas::drawMidiPart(QPainter& p, const QRect&, EventList* events, 
 }/*}}}*/
 
 //---------------------------------------------------------
-//   drawWavePart
-//    bb - bounding box of paint area
-//    pr - part rectangle
-//---------------------------------------------------------
-
-void ComposerCanvas::drawWavePart(QPainter& p, const QRect& bb, WavePart* wp, const QRect& _pr)/*{{{*/
-{
-    int i = wp->colorIndex();
-    QColor waveFill(config.partWaveColors[i]);
-    QColor waveEdge = QColor(211,193,224);
-
-    //printf("ComposerCanvas::drawWavePart bb.x:%d bb.y:%d bb.w:%d bb.h:%d  pr.x:%d pr.y:%d pr.w:%d pr.h:%d\n",
-    //  bb.x(), bb.y(), bb.width(), bb.height(), _pr.x(), _pr.y(), _pr.width(), _pr.height());
-    QPolygonF m_monoPolygonTop;
-    QPolygonF m_monoPolygonBottom;
-
-    QPolygonF m_stereoOnePolygonTop;
-    QPolygonF m_stereoOnePolygonBottom;
-
-    QPolygonF m_stereoTwoPolygonTop;
-    QPolygonF m_stereoTwoPolygonBottom;
-
-    int firstIn = 1;
-    int stereoOneFirstIn = 1;
-    int stereoTwoFirstIn = 1;
-
-    p.setPen(QColor(255,0,0));
-
-    QColor green = QColor(49, 175, 197);
-    QColor yellow = QColor(127,12,128);
-    QColor red = QColor(197, 49, 87);
-    QColor rms_color = QColor(0,19,23);
-
-    if(wp->selected())
-        waveFill = QColor(config.partColors[i]);
-
-    if (_tool == AutomationTool)
-    {
-        if(wp->selected())
-            waveFill = QColor(config.partColorsAutomation[i]);
-        else
-            waveFill = QColor(config.partWaveColorsAutomation[i]);
-    }
-
-
-    QRect rr = p.worldMatrix().mapRect(bb);
-    QRect pr = p.worldMatrix().mapRect(_pr);
-
-    p.save();
-    p.resetTransform();
-
-    int x2 = 1;
-    int x1 = rr.x() > pr.x() ? rr.x() : pr.x();
-    x2 += rr.right() < pr.right() ? rr.right() : pr.right();
-    //printf("x1 = %d, x2 = %d\n", x1, x2);
-    if (x1 < 0)
-        x1 = 0;
-    if (x2 > width())
-        x2 = width();
-    int hh = pr.height();
-    int h = hh / 2;
-    int y = pr.y() + h;
-    int drawLines = 1;
-    EventList* el = wp->events();
-    for (iEvent e = el->begin(); e != el->end(); ++e)/*{{{*/
-    {
-
-        int cc = hh % 2 ? 0 : 1;
-        Event event = e->second;
-        SndFileR f = event.sndFile();
-        if (f.isNull())
-            continue;
-        unsigned channels = f.channels();
-        if (channels == 0)
-        {
-            printf("drawWavePart: channels==0! %s\n", f.name().toLatin1().constData());
-            continue;
-        }
-
-        //printf("SndFileR samples=%d channels=%d event samplepos=%d clipframes=%d event lenframe=%d, event.frame=%d part_start=%d part_length=%d\n",
-        //		f.samples(), f.channels(), event.spos(), clipframes, event.lenFrame(), event.frame(), wp->frame(), wp->lenFrame());
-
-        int xScale;
-        int pos;
-        int tickstep = rmapxDev(1);
-        int postick = tempomap.frame2tick(wp->frame() + event.frame());
-        int eventx = mapx(postick);
-        int drawoffset;
-        if ((x1 - eventx) < 0)
-            drawoffset = 0;
-        else
-            drawoffset = rmapxDev(x1 - eventx);
-        postick += drawoffset;
-        pos = event.spos() + tempomap.tick2frame(postick) - wp->frame() - event.frame();
-
-        int i;
-        if (x1 < eventx)
-            i = eventx;
-        else
-            i = x1;
-        int ex = mapx(tempomap.frame2tick(wp->frame() + event.frame() + event.lenFrame()));
-        if (ex > x2)
-            ex = x2;
-        if (h < 41)
-        {
-            //
-            //    combine multi channels into one waveform
-            //
-            //printf("ComposerCanvas::drawWavePart i:%d ex:%d\n", i, ex);  // REMOVE Tim.
-            if(drawLines == 0)
-            {
-                for (; i < ex; i++)//{{{
-                {
-                    int hm = hh / 2;
-                    SampleV sa[channels];
-                    xScale = tempomap.deltaTick2frame(postick, postick + tickstep);
-                    f.read(sa, xScale, pos);
-                    postick += tickstep;
-                    pos += xScale;
-                    int peak = 0;
-                    int rms = 0;
-                    for (unsigned k = 0; k < channels; ++k)
-                    {
-                        if (sa[k].peak > peak)
-                            peak = sa[k].peak;
-                        rms += sa[k].rms;
-                    }
-                    rms /= channels;
-                    peak = (peak * (hh - 2)) >> 9;
-                    rms = (rms * (hh - 2)) >> 9;
-
-                    p.setPen(green);
-
-                    p.drawLine(i, y - peak - cc, i, y + peak);
-                    p.setPen(rms_color);
-                    p.drawLine(i, y - rms - cc, i, y + rms);
-
-                    if(peak >= (hm - 2))
-                    {
-                        p.setPen(QColor(255,0,0));
-                        p.drawLine(i, y - peak - cc, i, y - peak - cc + 1);
-                        p.drawLine(i, y + peak - 1, i, y + peak);
-                    }
-                }//}}}
-            }
-            else
-            {
-                int hm = 0;
-                for (; i < ex; i++)//{{{//drawMonoWave
-                {
-                    if(firstIn == 1)
-                    {
-                        m_monoPolygonTop.append(QPointF(i, y));
-                        m_monoPolygonBottom.append(QPointF(i, y));
-                        firstIn = 0;
-                    }
-                    hm = hh / 2;
-                    SampleV sa[channels];
-                    xScale = tempomap.deltaTick2frame(postick, postick + tickstep);
-
-                    if(xmag <= -301)/*{{{*/
-                    {
-                        if( i % 10==1 || i % 10==2 || i % 10==3 || i % 10==4 || i % 10==5 || i % 10 == 7 || i % 10==8 || i % 10==9)
-                        {
-                            postick += tickstep;
-                            pos += xScale;
-                            continue;
-                        }
-                    }
-                    else if(xmag <= -41)
-                    {
-                        if( i % 10==1 || i % 10==2 || i % 10==4 || i % 10==5 || i % 10 == 7 || i % 10==8)
-                        {
-                            postick += tickstep;
-                            pos += xScale;
-                            continue;
-                        }
-                    }
-                    else if(xmag <= -15)
-                    {
-                        if( i % 2==0)
-                        {
-                            postick += tickstep;
-                            pos += xScale;
-                            continue;
-                        }
-                    }/*}}}*/
-                    f.read(sa, xScale, pos); //this read is slow
-                    postick += tickstep;
-                    pos += xScale;
-                    int peak = 0;
-                    int rms = 0;
-                    for (unsigned k = 0; k < channels; ++k)
-                    {
-                        if (sa[k].peak > peak)
-                            peak = sa[k].peak;
-                        rms += sa[k].rms;
-                    }
-                    rms /= channels;
-                    peak = (peak * (hh - 2)) >> 9;
-                    rms = (rms * (hh - 2)) >> 9;
-
-                    m_monoPolygonTop.append(QPointF(i, y-peak));
-                    m_monoPolygonBottom.append(QPointF(i, y+peak));
-
-                    if(peak >= (hm - 2))
-                    {
-                        p.drawLine(i, y - peak - cc, i, y - peak - cc + 1);
-                        p.drawLine(i, y + peak - 1, i, y + peak);
-                    }
-
-                }//}}}
-                m_monoPolygonTop.append(QPointF(i, y));
-                m_monoPolygonBottom.append(QPointF(i, y));
-
-                p.setPen(Qt::NoPen);//this is the outline of the wave
-                p.setBrush(waveFill);//waveFill);//this is the fill color of the wave
-
-                p.drawPolygon(m_monoPolygonTop);
-                p.drawPolygon(m_monoPolygonBottom);
-                firstIn = 1;
-
-            }
-        }
-        else
-        {
-            //
-            //  multi channel display
-            //
-            int hm = hh / (channels * 2);
-            int cliprange = 1;
-            //TODO: I need to base the calculation for clipping on the actual sample and db and not on the height of the track.
-            if(hm < 50)
-                cliprange = 2;
-            else if(hm >= 50 && hm <= 200)
-                cliprange = 3;
-            else if(hm < 300)
-                cliprange = 5;
-            else
-                cliprange = 6;
-
-            int cc = hh % (channels * 2) ? 0 : 1;
-            //printf("channels = %d, pr = %d, h = %d, hh = %d, hm = %d\n", channels, pr.height(), h, hh, hm);
-            //printf("canvas height: %d\n", height());
-            if(drawLines == 0)
-            {
-                for (; i < ex; i++)//{{{ //stereo line draw mode
-                {
-                    y = pr.y() + hm;
-                    SampleV sa[channels];
-                    xScale = tempomap.deltaTick2frame(postick, postick + tickstep);
-                    f.read(sa, xScale, pos);
-                    postick += tickstep;
-                    pos += xScale;
-                    for (unsigned k = 0; k < channels; ++k)
-                    {
-                        int peak = (sa[k].peak * (hm - 1)) >> 8;
-                        int rms = (sa[k].rms * (hm - 1)) >> 8;
-                        if(k == 0)
-                        {
-                            p.setPen(green);
-                            p.drawLine(i, y - peak - cc, i, y + peak);
-                        }
-                        else
-                        {
-                            p.setPen(green);
-                            p.drawLine(i, y - peak - cc, i, y + peak);
-
-                        }
-                        //printf("peak value: %d hm value: %d\n", peak, hm);
-                        if(peak >= (hm - cliprange))
-                        {
-                            p.setPen(QColor(255,0,0));
-                            p.drawLine(i, y - peak - cc, i, y - peak - cc + 1);
-                            p.drawLine(i, y + peak - 1, i, y + peak);
-                        }
-                        p.setPen(rms_color);
-                        p.drawLine(i, y - rms - cc, i, y + rms);
-
-                        if(k == 0)
-                        {
-                            p.setPen(QColor(102,177,205));
-                            p.drawLine(0, y, width(), y);
-                        }
-                        else
-                        {
-                            p.setPen(QColor(213,93,93));
-                            p.drawLine(0, y, width(), y);
-                        }
-
-                        y += 2 * hm;
-                    }
-                }//}}}
-            }
-            else
-            {
-                int stereoOneY = 0;
-                int stereoTwoY = 0;
-                for (; i < ex; i++)//{{{ //stereo curve draw mode
-                {
-                    y = pr.y() + hm;
-                    SampleV sa[channels];
-                    xScale = tempomap.deltaTick2frame(postick, postick + tickstep);
-                    if(xmag <= -301)/*{{{*/
-                    {
-                        if( i % 10==1 || i % 10==2 || i % 10==3 || i % 10==4 || i % 10==5 || i % 10 == 7 || i % 10==8 || i % 10==9)
-                        {
-                            postick += tickstep;
-                            pos += xScale;
-                            continue;
-                        }
-                    }
-                    else if(xmag <= -41)
-                    {
-                        if( i % 10==1 || i % 10==2 || i % 10==4 || i % 10==5 || i % 10 == 7 || i % 10==8)
-                        {
-                            postick += tickstep;
-                            pos += xScale;
-                            continue;
-                        }
-                    }
-                    else if(xmag <= -15)
-                    {
-                        if( i % 2==0)
-                        {
-                            postick += tickstep;
-                            pos += xScale;
-                            continue;
-                        }
-                    }/*}}}*/
-                    f.read(sa, xScale, pos);
-                    postick += tickstep;
-                    pos += xScale;
-                    for (unsigned k = 0; k < channels; ++k)
-                    {
-                        int peak = (sa[k].peak * (hm - 1)) >> 8;
-                        if(k == 0)
-                        {
-                            stereoOneY = y;
-                            if(stereoOneFirstIn == 1)
-                            {
-                                m_stereoOnePolygonTop.append(QPointF(i, stereoOneY));
-                                m_stereoOnePolygonBottom.append(QPointF(i, stereoOneY));
-                                stereoOneFirstIn = 0;
-                            }
-                            m_stereoOnePolygonTop.append(QPointF(i, y-peak));
-                            m_stereoOnePolygonBottom.append(QPointF(i, y+peak));
-                        }
-                        else
-                        {
-                            stereoTwoY = y;
-                            if(stereoTwoFirstIn == 1)
-                            {
-                                m_stereoTwoPolygonTop.append(QPointF(i, stereoTwoY));
-                                m_stereoTwoPolygonBottom.append(QPointF(i, stereoTwoY));
-                                stereoTwoFirstIn = 0;
-                            }
-                            m_stereoTwoPolygonTop.append(QPointF(i, y-peak));
-                            m_stereoTwoPolygonBottom.append(QPointF(i, y+peak));
-                        }
-                        //printf("peak value: %d hm value: %d\n", peak, hm);
-                        if(peak >= (hm - cliprange))
-                        {
-                            p.drawLine(i, y - peak - cc, i, y - peak - cc + 1);
-                            p.drawLine(i, y + peak - 1, i, y + peak);
-                        }
-
-                        y += 2 * hm;
-                    }
-                }//}}}
-                m_stereoOnePolygonTop.append(QPointF(i, stereoOneY));
-                m_stereoOnePolygonBottom.append(QPointF(i, stereoOneY));
-                m_stereoTwoPolygonTop.append(QPointF(i, stereoTwoY));
-                m_stereoTwoPolygonBottom.append(QPointF(i, stereoTwoY));
-
-                p.setPen(Qt::NoPen);//this is the outline of the wave
-                p.setBrush(waveFill);//this is the fill color of the wave
-
-                p.drawPolygon(m_stereoOnePolygonTop);
-                p.drawPolygon(m_stereoOnePolygonBottom);
-                p.drawPolygon(m_stereoTwoPolygonTop);
-                p.drawPolygon(m_stereoTwoPolygonBottom);
-                stereoOneFirstIn = 1;
-                stereoTwoFirstIn = 1;
-            }
-        }
-    }/*}}}*/
-    QColor fadeColor(config.partColors[i]);
-    fadeColor.setAlpha(120);
-    QPen greenPen(fadeColor);
-    greenPen.setCosmetic(true);
-    p.setPen(greenPen);
-    FadeCurve* fadeIn = wp->fadeIn();
-    FadeCurve* fadeOut = wp->fadeOut();
-    //printf("FadeIn width:%ld\n", long(fadeIn->width()));
-    //printf("FadeOut width:%ld\n", long(fadeOut->width()));
-    p.setRenderHint(QPainter::Antialiasing, true);
-    if(fadeIn)
-    {
-        long pstart = tempomap.frame2tick(wp->frame());
-        long partx = mapx(pstart);
-        long fpos = tempomap.frame2tick(wp->frame()+fadeIn->width());
-        long fadex = mapx(fpos);
-
-        if(fadeIn->width() > 0)
-        {
-            int fiy = pr.top();
-            int fix = partx;
-            int fiw = int(fadex);
-            int fih = pr.bottom();
-            QPolygon fadeInCurve(5);
-            fadeInCurve.setPoint(0, fix, fiy);
-            fadeInCurve.setPoint(1, fix, fih);
-            fadeInCurve.setPoint(2, fix, fih);
-            fadeInCurve.setPoint(3, fix, fih);
-            fadeInCurve.setPoint(4, fiw, fiy);
-            p.setBrush(fadeColor);
-            p.drawPolygon(fadeInCurve);
-        }
-
-        int lpos = fadex-3;
-        QRect picker((lpos < partx) ? partx : lpos, pr.top(), 6, 6);
-        p.setBrush(waveFill);
-        p.drawRect(picker);
-    }
-    if(fadeOut)
-    {
-        long pend = tempomap.frame2tick(wp->frame() + wp->lenFrame());
-        long fpos = (wp->frame() + wp->lenFrame())-fadeOut->width();
-        fpos = tempomap.frame2tick(fpos);
-        long fadex = mapx(fpos);
-        long endx = mapx(pend);
-
-        if(fadeOut->width() > 0)
-        {
-            int fiy = pr.top();
-            int fix = endx;
-            int fiw = int(fadex);
-            int fih = pr.bottom();
-            QPolygon fadeOutCurve(5);
-
-            fadeOutCurve.setPoint(0, fix, fiy);
-            fadeOutCurve.setPoint(1, fix, fih);
-            fadeOutCurve.setPoint(2, fix, fih);
-            fadeOutCurve.setPoint(3, fix, fih);
-            fadeOutCurve.setPoint(4, fiw, fiy);
-
-            p.setBrush(fadeColor);
-            p.drawPolygon(fadeOutCurve);
-        }
-
-        int rpos = fadex-3;
-        if((rpos + 6) > endx)
-            rpos = (endx - 6);
-        QRect picker(rpos, pr.top(), 6, 6);
-        p.setBrush(waveFill);
-        p.drawRect(picker);
-    }
-    p.setRenderHint(QPainter::Antialiasing, false);
-    p.restore();
-}/*}}}*/
-
-//---------------------------------------------------------
 //   cmd
 //---------------------------------------------------------
 
@@ -3275,300 +2048,11 @@ void ComposerCanvas::cmd(int cmd)/*{{{*/
             break;
         }
         case CMD_REMOVE_SELECTED_AUTOMATION_NODES:
-        {
-            if (_tool == AutomationTool)
-            {
-                if (automation.currentCtrlList && _curveNodeSelection->size())/*{{{*/
-                {
-                    QList<CtrlVal> valuesToRemove;
-
-                    QList<CtrlVal*> selectedNodes = _curveNodeSelection->getNodes();
-                    foreach(CtrlVal* val, selectedNodes)
-                    {
-                        if (val->getFrame() != 0)
-                        {
-                            valuesToRemove.append(CtrlVal(val->getFrame(), val->val));
-                            //automation.currentCtrlList->del(val->getFrame());
-                        }
-                    }
-                    AddRemoveCtrlValues* removeCommand = new AddRemoveCtrlValues(automation.currentCtrlList, valuesToRemove, LOSCommand::REMOVE);
-
-                    CommandGroup* group = new CommandGroup(tr("Delete Automation Nodes"));
-                    group->addCommand(removeCommand);
-
-                    song->pushToHistoryStack(group);
-                    _curveNodeSelection->clearSelection();
-                    redraw();
-                    return;
-                }/*}}}*/
-
-                if (automation.currentCtrlVal && automation.currentCtrlList)
-                {
-                    CtrlVal& firstCtrlVal = automation.currentCtrlList->begin()->second;
-                    if (automation.currentCtrlVal->getFrame() != firstCtrlVal.getFrame())
-                    {
-                        AddRemoveCtrlValues* removeCommand = new AddRemoveCtrlValues(automation.currentCtrlList, CtrlVal(automation.currentCtrlVal->getFrame(), automation.currentCtrlVal->val), LOSCommand::REMOVE);
-
-                        CommandGroup* group = new CommandGroup(tr("Delete Automation Node"));
-                        group->addCommand(removeCommand);
-
-                        song->pushToHistoryStack(group);
-                        _curveNodeSelection->clearSelection();
-                        //automation.currentCtrlList->del(automation.currentCtrlVal->getFrame());
-                        redraw();
-                    }
-                }
-            }
-            break;
-        }
         case CMD_COPY_AUTOMATION_NODES:
-        {
-            if (_tool == AutomationTool)
-            {
-                //printf("Copy automation called\n");
-                copyAutomation();
-            }
-        }
-        break;
         case CMD_PASTE_AUTOMATION_NODES:
-        {
-            if (_tool == AutomationTool)
-            {
-                //printf("Paste automation called\n");
-                pasteAutomation();
-            }
-        }
-        break;
         case CMD_SELECT_ALL_AUTOMATION:
-        {
-            if (_tool == AutomationTool)
-            {
-                if (automation.currentCtrlList)
-                {
-                    iCtrl ic = automation.currentCtrlList->begin();
-                    for (; ic !=automation.currentCtrlList->end(); ic++) {
-                        CtrlVal &cv = ic->second;
-                        automation.currentCtrlVal = &cv;
-                        automation.controllerState = movingController;
-                        _curveNodeSelection->addNodeToSelection(automation.currentCtrlVal);
-                    }
-                    redraw();
-                }
-
-            }
-            break;
-        }
+        break;
     }
-}/*}}}*/
-
-/**
- * Copy portion of the copy paste of automation curves
- * Copies the first selected autiomation curve from the selected track
- * to the Clipboard as a xml text. The text has been converted to a byte array.
- */
-void ComposerCanvas::copyAutomation()/*{{{*/
-{
-    if(automation.currentCtrlList)
-    {
-        const CtrlList* cl = automation.currentCtrlList;
-        QDomDocument doc("AutomationCurve");
-        QDomElement root = doc.createElement("AutomationCurve");
-        doc.appendChild(root);
-
-        QDomElement control = doc.createElement("controller");
-        root.appendChild(control);
-        control.setAttribute("id", cl->id());
-        control.setAttribute("cur", cl->curVal());
-        control.setAttribute("color", cl->color().name());
-        control.setAttribute("visible", cl->isVisible());
-
-        if(_curveNodeSelection->size())
-        {
-            control.setAttribute("partial", true);
-            QList<CtrlVal*> selectedNodes = _curveNodeSelection->getNodes();
-            foreach(CtrlVal* val, selectedNodes)
-            {
-                QDomElement node = doc.createElement("node");
-                control.appendChild(node);
-                node.setAttribute("frame", val->getFrame());
-                node.setAttribute("value", val->val);
-            }
-        }
-        else
-        {
-            control.setAttribute("partial", false);
-            for (ciCtrl ic = cl->begin(); ic != cl->end(); ++ic)
-            {
-                QDomElement node = doc.createElement("node");
-                control.appendChild(node);
-                node.setAttribute("frame", ic->second.getFrame());
-                node.setAttribute("value", ic->second.val);
-            }
-        }
-        QString xml = doc.toString();
-        //qDebug() << xml;
-        QByteArray data = xml.toUtf8();
-        QMimeData* md = new QMimeData();
-        md->setData("text/x-los-automationcurve", data);
-        QApplication::clipboard()->setMimeData(md, QClipboard::Clipboard);
-    }
-}/*}}}*/
-
-
-void ComposerCanvas::pasteAutomation()/*{{{*/
-{
-    TrackList selectedTracks = song->getSelectedTracks();
-    if (!selectedTracks.size())
-    {
-        if(debugMsg)
-            printf("No selected track for paste\n");
-        return;
-    }
-    if(selectedTracks.size() > 1)
-    {
-        QMessageBox::critical(this, tr("Copy Automation"), tr("You cannot copy automation with multiple tracks selected."));
-        return;
-    }
-    iTrack itrack = selectedTracks.begin();
-    if((*itrack)->isMidiTrack() && (*itrack)->wantsAutomation() == false)
-    {
-        if(debugMsg)
-            printf("Midi track cannot paste automation\n");
-        return;
-    }
-    AudioTrack *track = (AudioTrack*)*itrack;
-    QString subtype("x-los-automationcurve");
-    QString format("text/" + subtype);
-    QClipboard* cb = QApplication::clipboard();
-    const QMimeData* md = cb->mimeData(QClipboard::Clipboard);
-    if (!md->hasFormat(format))
-    {
-        if(debugMsg)
-            printf("No automation curves in clipboard");
-        return;
-    }
-    QString xml = cb->text(subtype, QClipboard::Clipboard);
-    //qDebug() << xml;
-    if(xml.isEmpty())
-    {
-        if(debugMsg)
-            printf("Empty xml string from clipboard\n");
-        return;
-    }
-    QDomDocument doc("AutomationCurve");
-    if(!doc.setContent(xml))
-    {//message dialog here???
-        if(debugMsg)
-            printf("failed to set content on dom document\n");
-        return;
-    }
-    if(track)
-    {
-        QDomElement root = doc.documentElement();
-        if(debugMsg)
-            printf("Root document name: %s\n", root.tagName().toUtf8().constData());
-        if(!root.isNull())
-        {
-            QDomNodeList cList = root.elementsByTagName("controller");
-            for(int i = 0; i < cList.count(); ++i)
-            {
-                QDomElement control = cList.at(i).toElement();
-                int id = control.attribute("id").toInt();
-                bool partial = control.attribute("partial").toInt();
-                bool visible = control.attribute("visible").toInt();
-                double curVal = control.attribute("cur").toDouble();
-                CtrlList *cl = 0;
-                for (ciCtrlList icl = track->controller()->begin(); icl != track->controller()->end(); ++icl)
-                {
-                    if(icl->second->id() == id)
-                    {
-                        cl = icl->second;
-                        break;
-                    }
-                }
-                if(cl)
-                {
-                    QList<CtrlVal> valuesToAdd;
-                    QList<CtrlVal> valuesToRemove;
-
-                    if(partial)
-                    {//Add nodes from PB forward
-                        QDomNodeList nodeList = control.elementsByTagName("node");
-                        if(!nodeList.count())
-                            return;
-                        cl->setVisible(visible);
-                        cl->setCurVal(curVal);
-                        int spos = tempomap.tick2frame(song->cpos());
-                        int lastframe = spos;
-                        int lastreal;
-                        if(nodeList.count() > 1)
-                        {
-                            QDomElement first = nodeList.at(0).toElement();
-                            QDomElement last = nodeList.at(nodeList.count()-1).toElement();
-                            int fframe = first.attribute("frame").toInt();
-                            int lframe = last.attribute("frame").toInt();
-                            int range = lframe-fframe;
-                            int endframe = spos+range;
-                            for (ciCtrl ic = cl->begin(); ic != cl->end(); ++ic)
-                            {
-                                if(ic->second.getFrame() > spos && ic->second.getFrame() < endframe)
-                                {
-                                    valuesToRemove.append(ic->second);
-                                }
-                            }
-                        }
-                        for(int n = 0; n < nodeList.count(); ++n)
-                        {
-                            QDomElement node = nodeList.at(n).toElement();
-                            int frame = node.attribute("frame").toInt();
-                            if(n == 0)
-                            {
-                                lastreal = frame;
-                                frame = spos;
-                            }
-                            else
-                            {
-                                int diff = frame - lastreal;
-                                lastreal = frame;
-                                frame = lastframe+diff;
-                                lastframe = frame;
-                            }
-                            double val = node.attribute("value").toDouble();
-                            valuesToAdd.append(CtrlVal(frame, val));
-                        }
-                    }
-                    else
-                    {//Just add the whole line
-                        QDomNodeList nodeList = control.elementsByTagName("node");
-                        if(!nodeList.count())
-                            return;
-                        cl->clear();
-                        cl->setVisible(visible);
-                        cl->setCurVal(curVal);
-                        for(int n = 0; n < nodeList.count(); ++n)
-                        {
-                            QDomElement node = nodeList.at(n).toElement();
-                            int frame = node.attribute("frame").toInt();
-                            double val = node.attribute("value").toDouble();
-                            valuesToAdd.append(CtrlVal(frame, val));
-                        }
-                    }
-
-                    AddRemoveCtrlValues* addCommand = new AddRemoveCtrlValues(cl, valuesToAdd, LOSCommand::ADD);
-                    AddRemoveCtrlValues* removeCommand = new AddRemoveCtrlValues(cl, valuesToRemove, LOSCommand::REMOVE);
-
-                    CommandGroup* group = new CommandGroup(tr("Copy Automation Nodes"));
-                    group->addCommand(addCommand);
-                    group->addCommand(removeCommand);
-
-                    song->pushToHistoryStack(group);
-                }
-                //in the future we can support copying multiple lanes at once
-                break;
-            }
-        }
-    }
-    update();
 }/*}}}*/
 
 //---------------------------------------------------------
@@ -3580,20 +2064,6 @@ void ComposerCanvas::copy(PartList* pl)/*{{{*/
 {
     //printf("void ComposerCanvas::copy(PartList* pl)\n");
     if (pl->empty())
-        return;
-    bool wave = false;
-    bool midi = false;
-    for (ciPart p = pl->begin(); p != pl->end(); ++p)
-    {
-        if (p->second->track()->isMidiTrack())
-            midi = true;
-        else
-            if (p->second->track()->type() == Track::WAVE)
-            wave = true;
-        if (midi && wave)
-            break;
-    }
-    if (!(midi || wave))
         return;
 
     //---------------------------------------------------
@@ -3647,15 +2117,7 @@ void ComposerCanvas::copy(PartList* pl)/*{{{*/
     QByteArray data(fbuf);
     QMimeData* md = new QMimeData();
 
-
-    if (midi && wave)
-        md->setData("text/x-los-mixedpartlist", data); // By T356. Support mixed .mpt files.
-    else
-        if (midi)
-        md->setData("text/x-los-midipartlist", data);
-    else
-        if (wave)
-        md->setData("text/x-los-wavepartlist", data);
+    md->setData("text/x-los-midipartlist", data);
 
     QApplication::clipboard()->setMimeData(md, QClipboard::Clipboard);
 
@@ -3667,7 +2129,7 @@ void ComposerCanvas::copy(PartList* pl)/*{{{*/
 //   pasteAt
 //---------------------------------------------------------
 
-int ComposerCanvas::pasteAt(const QString& pt, Track* track, unsigned int pos, bool clone, bool toTrack)/*{{{*/
+int ComposerCanvas::pasteAt(const QString& pt, MidiTrack* track, unsigned int pos, bool clone, bool toTrack)/*{{{*/
 {
     //printf("int ComposerCanvas::pasteAt(const QString& pt, Track* track, int pos)\n");
     QByteArray ba = pt.toLatin1();
@@ -3776,7 +2238,7 @@ int ComposerCanvas::pasteAt(const QString& pt, Track* track, unsigned int pos, b
 
 void ComposerCanvas::paste(bool clone, bool toTrack, bool doInsert)/*{{{*/
 {
-    Track* track = 0;
+    MidiTrack* track = 0;
 
     if (doInsert) // logic depends on keeping track of newly selected tracks
         deselectAll();
@@ -3786,8 +2248,8 @@ void ComposerCanvas::paste(bool clone, bool toTrack, bool doInsert)/*{{{*/
     if (toTrack)
     {
     //This changes to song->visibletracks()
-        TrackList* tl = song->visibletracks();
-        for (iTrack i = tl->begin(); i != tl->end(); ++i)
+        MidiTrackList* tl = song->visibletracks();
+        for (iMidiTrack i = tl->begin(); i != tl->end(); ++i)
         {
             if ((*i)->selected())
             {
@@ -3814,42 +2276,11 @@ void ComposerCanvas::paste(bool clone, bool toTrack, bool doInsert)/*{{{*/
 
     QString pfx("text/");
     QString mdpl("x-los-midipartlist");
-    QString wvpl("x-los-wavepartlist");
-    QString mxpl("x-los-mixedpartlist");
     QString txt;
 
     if (md->hasFormat(pfx + mdpl))
     {
-        // If we want to paste to a selected track...
-        if (toTrack && !track->isMidiTrack())
-        {
-            QMessageBox::critical(this, QString("LOS"),
-                    tr("Can only paste to midi track"));
-            return;
-        }
         txt = cb->text(mdpl, QClipboard::Clipboard);
-    }
-    else if (md->hasFormat(pfx + wvpl))
-    {
-        // If we want to paste to a selected track...
-        if (toTrack && track->type() != Track::WAVE)
-        {
-            QMessageBox::critical(this, QString("LOS"),
-                    tr("Can only paste to wave track"));
-            return;
-        }
-        txt = cb->text(wvpl, QClipboard::Clipboard);
-    }
-    else if (md->hasFormat(pfx + mxpl))
-    {
-        // If we want to paste to a selected track...
-        if (toTrack && !track->isMidiTrack() && track->type() != Track::WAVE)
-        {
-            QMessageBox::critical(this, QString("LOS"),
-                    tr("Can only paste to midi or wave track"));
-            return;
-        }
-        txt = cb->text(mxpl, QClipboard::Clipboard);
     }
     else
     {
@@ -3895,11 +2326,7 @@ void ComposerCanvas::movePartsTotheRight(unsigned int startTicks, int length)/*{
                 //void Audio::msgChangePart(Part* oldPart, Part* newPart, bool doUndoFlag, bool doCtrls, bool doClones)
                 Part *newPart = part->clone();
                 newPart->setTick(newPart->tick() + length);
-                if (part->track()->type() == Track::WAVE)
-                {
-                    audio->msgChangePart((WavePart*) part, (WavePart*) newPart, false, false, false);
-                }
-                else
+
                 {
                     audio->msgChangePart(part, newPart, false, false, false);
                 }
@@ -4097,7 +2524,7 @@ void ComposerCanvas::viewDropEvent(QDropEvent* event)
         if (x < 0)
             x = 0;
         unsigned trackNo = y2pitch(event->pos().y());
-        Track* track = 0;
+        MidiTrack* track = 0;
         if (trackNo < tracks->size())
             track = tracks->index(trackNo);
         if (track)
@@ -4112,9 +2539,7 @@ void ComposerCanvas::viewDropEvent(QDropEvent* event)
         // TODO:Multiple support. Grab the first one for now.
         text = event->mimeData()->urls()[0].path();
 
-        if (text.endsWith(".wav", Qt::CaseInsensitive) ||
-                text.endsWith(".ogg", Qt::CaseInsensitive) ||
-                text.endsWith(".mpt", Qt::CaseInsensitive))
+        if (text.endsWith(".mpt", Qt::CaseInsensitive))
         {
             int x = AL::sigmap.raster(event->pos().x(), *_raster);
             if (x < 0)
@@ -4127,40 +2552,15 @@ void ComposerCanvas::viewDropEvent(QDropEvent* event)
             else
             {//Create the track
                 event->acceptProposedAction();
-                Track::TrackType t = Track::MIDI;
-                if(text.endsWith(".wav", Qt::CaseInsensitive) || text.endsWith(".ogg", Qt::CaseInsensitive))
-                {
-                    QFileInfo f(text);
-                    track = song->addTrackByName(f.baseName(), Track::WAVE, -1, true);
-                    song->updateTrackViews();
-                }
-                else
                 {
                     VirtualTrack* vt;
-                    CreateTrackDialog *ctdialog = new CreateTrackDialog(&vt, t, -1, this);
-                    ctdialog->lockType(true);
+                    CreateTrackDialog *ctdialog = new CreateTrackDialog(&vt, -1, this);
                     if(ctdialog->exec() && vt)
                     {
                         TrackManager* tman = new TrackManager();
                         qint64 nid = tman->addTrack(vt);
                         track = song->findTrackById(nid);
                     }
-                }
-            }
-
-            if (track)
-            {
-                if (track->type() == Track::WAVE &&
-                        (text.endsWith(".wav", Qt::CaseInsensitive) ||
-                        (text.endsWith(".ogg", Qt::CaseInsensitive))))
-                {
-                    unsigned tick = x;
-                    los->importWaveToTrack(text, tick, track);
-                }
-                else if ((track->isMidiTrack() || track->type() == Track::WAVE) && text.endsWith(".mpt", Qt::CaseInsensitive))
-                {//Who saves a wave part as anything but a wave file?
-                    unsigned tick = x;
-                    los->importPartToTrack(text, tick, track);
                 }
             }
         }
@@ -4258,10 +2658,10 @@ void ComposerCanvas::drawCanvas(QPainter& p, const QRect& rect)
     //--------------------------------
 
     //This changes to song->visibletracks()
-    TrackList* tl = song->visibletracks();
+    MidiTrackList* tl = song->visibletracks();
     int yy = 0;
     int th;
-    for (iTrack it = tl->begin(); it != tl->end(); ++it)
+    for (iMidiTrack it = tl->begin(); it != tl->end(); ++it)
     {
         if (yy > y + h)
             break;
@@ -4302,45 +2702,17 @@ void ComposerCanvas::drawTopItem(QPainter& p, const QRect& rect)
     p.setPen(baseColor);
 
     //This changes to song->visibletracks()
-    TrackList* tl = song->visibletracks();
+    MidiTrackList* tl = song->visibletracks();
 
     show_tip = true;
     int yy = 0;
     int th;
-    for (iTrack it = tl->begin(); it != tl->end(); ++it)
+    for (iMidiTrack it = tl->begin(); it != tl->end(); ++it)
     {
         if (yy > y + h)
             break;
-        Track* track = *it;
+        MidiTrack* track = *it;
         th = track->height();
-
-        // draw automation
-        if (track->isMidiTrack())
-        {
-            Track *input = track->inputTrack();
-            if(input)
-            {
-                QRect r = rect & QRect(x, yy, w, track->height());
-                drawAutomation(p, r, (AudioTrack*)input, track);
-                p.setPen(baseColor);
-            }
-            if (track->wantsAutomation())
-            {
-                AudioTrack* atrack = ((MidiTrack*)track)->getAutomationTrack();
-                if (atrack)
-                {
-                    QRect r = rect & QRect(x, yy, w, track->height());
-                    drawAutomation(p, r, atrack, track);
-                    p.setPen(baseColor);
-                }
-            }
-        }
-        else
-        {
-            QRect r = rect & QRect(x, yy, w, track->height());
-            drawAutomation(p, r, (AudioTrack*)track);
-            p.setPen(baseColor);
-        }
         yy += track->height();
     }
 
@@ -4364,9 +2736,9 @@ void ComposerCanvas::drawTopItem(QPainter& p, const QRect& rect)
     //Draw part as recorded
     if (song->record() && audio->isPlaying())
     {
-        for (iTrack it = tl->begin(); it != tl->end(); ++it)
+        for (iMidiTrack it = tl->begin(); it != tl->end(); ++it)
         {
-            Track* track = *it;
+            MidiTrack* track = *it;
             if (track && track->recordFlag())
             {
                 int mypos = track2Y(track)-ypos;
@@ -4384,11 +2756,11 @@ void ComposerCanvas::drawTopItem(QPainter& p, const QRect& rect)
     //Draw notes they are recorded
     if (song->record() && audio->isPlaying())
     {
-        for (iTrack it = tl->begin(); it != tl->end(); ++it)
+        for (iMidiTrack it = tl->begin(); it != tl->end(); ++it)
         {
-            Track* track = *it;
+            MidiTrack* track = *it;
 
-            if (track->isMidiTrack() && track->recordFlag())
+            if (track->recordFlag())
             {
                 MidiTrack *mt = (MidiTrack*)track;
                 int mypos = track2Y(track);
@@ -4430,304 +2802,6 @@ void ComposerCanvas::drawTopItem(QPainter& p, const QRect& rect)
         }
     }
 }
-
-//---------------------------------------------------------
-//   drawAudioTrack
-//---------------------------------------------------------
-
-void ComposerCanvas::drawAudioTrack(QPainter& p, const QRect& r, AudioTrack* /* t */)
-{
-    // NOTE: For one-pixel border use first line and don't bother with setCosmetic.
-    //       For a two-pixel border use second line and MUST use setCosmetic! Tim.
-    QPen pen(Qt::black, 0, Qt::SolidLine);
-    //p.setPen(QPen(Qt::black, 2, Qt::SolidLine));
-    //pen.setCosmetic(true);
-    p.setPen(pen);
-    //p.setBrush(Qt::gray);
-    QColor c(Qt::gray);
-    c.setAlpha(config.globalAlphaBlend);
-    p.setBrush(c);
-
-    // Factor in pen stroking size:
-    //QRect rr(r);
-    //rr.setHeight(rr.height() -1);
-
-    p.drawRect(r);
-}
-
-double ComposerCanvas::getControlValue(CtrlList *cl, double val)
-{
-    double prevVal = val;
-    //FIXME: this check needs to be more robust to deal with plugin automation
-    //that have different type ie: sec, milisec, also db which is not covered by our controllers
-    if (cl->id() == AC_VOLUME)/*{{{*/
-    { // use db scale for volume
-        //printf("volume cvval=%f\n", cvFirst.val);
-        prevVal = dbToVal(val); // represent volume between 0 and 1
-        if (prevVal < 0) prevVal = 0.0;
-    }
-    else
-    {
-        double min, max;
-        cl->range(&min, &max);
-        prevVal = (prevVal - min) / (max - min);
-    }/*}}}*/
-    return prevVal;
-}
-
-//---------------------------------------------------------
-//   drawAutomation
-//---------------------------------------------------------
-
-void ComposerCanvas::drawAutomation(QPainter& p, const QRect& r, AudioTrack *t, Track *rt)/*{{{*/
-{
-    //printf("ComposerCanvas::drawAutomation\n");
-    QRect tempRect = r;
-    if (!rt) rt = t;
-    tempRect.setBottom(track2Y(rt) + rt->height());
-    QRect rr = p.worldMatrix().mapRect(tempRect);
-
-    p.save();
-    p.resetTransform();
-
-    int height = rt->height() - 4; // limit height
-    bool paintdBLines = false;
-    bool paintLines = false;
-    bool paintdBText = true;
-    bool paintTextAsDb = false;
-
-    CtrlListList* cll = t->controller();
-
-    // set those when there is a node 'lazy selected', then the
-    // dB indicator will be painted on top of the curve, not below it
-    int lazySelectedNodeFrame = -1;
-    double lazySelectedNodePrevVal;
-    double lazySelectedNodeVal;
-
-    bool firstRun = true;
-    for (CtrlListList::iterator icll = cll->begin(); icll != cll->end(); ++icll)
-    {
-        QPolygonF automationLine;
-        CtrlList *cl = icll->second;
-
-        if (cl->dontShow())
-        {
-            continue;
-        }
-
-        //printf("Controller - Name: %s ID: %d Visible: %d\n", cl->name().toLatin1().constData(), cl->id(), cl->isVisible());
-        if (!cl->isVisible())
-            continue; // skip this iteration if this controller isn't in the visible list
-
-        //printf("4444444444444444444444444444444444444444444444444444\n");
-        QColor curveColor = cl->color();
-        if (!cl->selected() || _tool != AutomationTool) {
-            curveColor.setAlpha(100);
-        }
-        /*if(_tool == AutomationTool && automation.currentCtrlList == cl)
-        {
-            curveColor = cl->color();
-        }*/
-        p.setPen(QPen(curveColor, 2, Qt::SolidLine));
-        p.setRenderHint(QPainter::Antialiasing, true);
-
-        double prevVal;
-        iCtrl ic = cl->begin();
-        // First check that there ARE automation, ic == cl->end means no automation
-        if (ic != cl->end())
-        {
-            CtrlVal cvFirst = ic->second;
-            int prevPosFrame = cvFirst.getFrame();
-            prevVal = cvFirst.val;
-            //TODO:Write out automation as its being recorded
-            /*CtrlRecList::iterator recIter;
-            if(audio->isPlaying())
-            {
-                CtrlRecList* recList = t->recEvents();
-                recIter = recList->find(precPosFrame);
-            }*/
-
-            // prepare prevVal
-            if (cl->id() == AC_VOLUME)/*{{{*/
-            { // use db scale for volume
-//				printf("volume cvval=%f\n", cvFirst.val);
-                prevVal = dbToVal(cvFirst.val); // represent volume between 0 and 1
-                if (prevVal < 0) prevVal = 0.0;
-                //paintdBText = true;
-                paintTextAsDb = true;
-                paintLines = true;
-                paintdBLines = true;
-            }
-            else
-            {
-                if(cl->id() == AC_PAN)
-                {
-                    //paintdBText = true;
-                    paintTextAsDb = false;
-                    paintLines = true;
-                }
-                paintTextAsDb = false;
-                // we need to set curVal between 0 and 1
-                double min, max;
-                cl->range(&min, &max);
-                prevVal = (prevVal - min) / (max - min);
-            }/*}}}*/
-
-            // draw a square around the point
-            p.drawRect(mapx(tempomap.frame2tick(prevPosFrame))-1, (rr.bottom()-2)-prevVal*height-1, 3, 3);
-
-
-            //printf("list size: %d\n", (int)cl->size());
-            for (; ic != cl->end(); ++ic)
-            {
-                CtrlVal &cv = ic->second;
-                double nextVal = cv.val; // was curVal
-                if (cl->id() == AC_VOLUME)
-                { // use db scale for volume
-                    nextVal = dbToVal(cv.val); // represent volume between 0 and 1
-                    if (nextVal < 0) nextVal = 0.0;
-                }
-                else
-                {
-                    // we need to set curVal between 0 and 1
-                    double min, max;
-                    cl->range(&min, &max);
-                    nextVal = (nextVal - min) / (max - min);
-                }
-                int leftX = mapx(tempomap.frame2tick(prevPosFrame));
-                if (firstRun && leftX>rr.x()) {
-                    leftX=rr.x();
-                }
-
-                int currentPixel = mapx(tempomap.frame2tick(cv.getFrame()));
-                p.setPen(QPen(curveColor, 2, Qt::SolidLine));
-
-                //This draws the connecting lines between nodes
-                //p.drawLine(leftX,(rr.bottom()-2)-prevVal*height,currentPixel,(rr.bottom()-2)-nextVal*height);
-
-                automationLine.append(QPointF(currentPixel,(rr.bottom()-2)-nextVal*height));
-
-                firstRun = false;
-                //printf("draw line: %d %f %d %f\n",tempomap.frame2tick(lastPos),rr.bottom()-lastVal*height,tempomap.frame2tick(cv.frame),rr.bottom()-curVal*height);
-                prevPosFrame = cv.getFrame();
-                prevVal = nextVal;
-                if (currentPixel < rr.x()+ rr.width())
-                {
-                    //printf("pppppppppuuuuuuuuuuuuuuuuuuuuuuuuuuuuuukkkkkkkkkkkkkkkkkkkeeeeeeeeeeeeeeeee\n");
-                    //goto quitDrawing;
-
-                    bool ctrListNodesMoving = false;
-                    if (automation.currentCtrlList == cl && automation.moveController) {
-                        ctrListNodesMoving = true;
-                    }
-
-                    bool paintNodeHighlighted = false;
-                    if (ctrListNodesMoving) {
-                        if ((automation.currentCtrlVal && *automation.currentCtrlVal == cv) || _curveNodeSelection->isSelected(&cv))
-                        {
-                            paintNodeHighlighted = true;
-                        }
-                    }
-                    else if ((automation.currentCtrlVal && *automation.currentCtrlVal == cv) || _curveNodeSelection->isSelected(&cv))
-                    {
-                        paintNodeHighlighted = true;
-                    }
-
-                    // draw a square around the point
-                    // If the point is selected, paint it with a different color to make the selected one more visible to the user
-                    if (paintNodeHighlighted)
-                    {
-                        lazySelectedNodePrevVal = prevVal;
-                        lazySelectedNodeFrame = prevPosFrame;
-                        lazySelectedNodeVal = cv.val;
-
-                        QPen pen2(QColor(131,254,255), 3);
-                        p.setPen(pen2);
-                        QBrush brush(QColor(1,41,59));
-                        p.setBrush(brush);
-
-                        p.drawEllipse(mapx(tempomap.frame2tick(lazySelectedNodeFrame)) - 5, (rr.bottom()-2)-lazySelectedNodePrevVal*height - 5, 8, 8);
-
-                        if ((lazySelectedNodeFrame >= 0) && paintdBText)
-                        {
-                            if (automation.currentCtrlVal && *automation.currentCtrlVal == cv)
-                            {
-                                drawTooltipText(p,
-                                                rr,
-                                                height,
-                                                lazySelectedNodeVal,
-                                                lazySelectedNodePrevVal,
-                                                lazySelectedNodeFrame,
-                                                false, //use painting to show tip
-                                                cl);
-                                show_tip = false;
-                            }
-                            else
-                                show_tip = true;
-                        }
-                    }
-                    else
-                    {
-                        p.setBrush(Qt::NoBrush);
-                        p.drawRect(mapx(tempomap.frame2tick(prevPosFrame))-2, (rr.bottom()-2)-prevVal*height-2, 4, 4);
-                    }
-                }
-
-                //paint the lines
-                /*if (paintdBLines)
-                {
-                    printf("222222222222222222222222222222222222\n");
-                    drawPositionLines(p, rr, height, paintTextAsDb);
-                }*/
-                //paint the text
-            }
-            //printf("outer draw %f\n", cvFirst.val );
-
-            //This next line draw is drawing the end line
-            //p.drawLine(mapx(tempomap.frame2tick(prevPosFrame)),(rr.bottom()-2)-prevVal*height,rr.x()+rr.width(),(rr.bottom()-2)-prevVal*height);
-            automationLine.append(QPointF(rr.x()+rr.width(),(rr.bottom()-2)-prevVal*height));
-            //printf("draw last line: %d %f %d %f\n",tempomap.frame2tick(prevPosFrame),(rr.bottom()-2)-prevVal*height,tempomap.frame2tick(prevPosFrame)+rr.width(),(rr.bottom()-2)-prevVal*height);
-        }//END if(ci = end())
-        p.setPen(QPen(curveColor, 2, Qt::SolidLine));
-        QPainterPath automationPath;
-        automationPath.addPolygon(automationLine);
-        p.setBrush(Qt::NoBrush);
-        //Set the CtrlList curvePath for use in selection
-        cl->setCurvePath(automationPath);
-        p.drawPath(automationPath);
-    } //END first for loop
-
-
-    if (paintLines)
-    {
-
-        double zerodBHeight = rr.bottom() - dbToVal(1.0) * height;
-        double minusTwelvedBHeight = rr.bottom() - dbToVal(0.25) * height;
-        double panZero = rr.bottom() - height/2;
-
-        // line color
-        p.setRenderHint(QPainter::Antialiasing, false);
-        p.setPen(QColor(255, 255, 255, 60));
-        p.setFont(QFont("fixed-width", 8, QFont::Bold));
-        //p.setPen(QColor(255, 0, 0, 255));
-        if(paintdBLines)
-        {
-            p.drawLine(0, zerodBHeight, width(), zerodBHeight);
-            p.drawLine(0, minusTwelvedBHeight, width(), minusTwelvedBHeight);
-            if(height >= 180)
-            {
-                //p.drawText(rr.left() + 5, zerodBHeight - 4, "  0 dB");
-                p.drawText(5, zerodBHeight - 4, "  0 dB");
-                p.drawText(5, minusTwelvedBHeight - 4, "-12 dB");
-            }
-        }
-        if(!paintTextAsDb)
-            p.drawLine(0, panZero, width(), panZero);
-
-    }
-
-    p.restore();
-}/*}}}*/
 
 void ComposerCanvas::drawTooltipText(QPainter& p, /*{{{*/
         const QRect& rr,
@@ -4781,684 +2855,6 @@ void ComposerCanvas::drawTooltipText(QPainter& p, /*{{{*/
     }
     //p.drawText(QRect(cursorPos.x() + 10, cursorPos.y(), 400, 60), Qt::TextWordWrap|Qt::AlignLeft, dbString);
 }/*}}}*/
-
-//---------------------------------------------------------
-//  checkAutomation
-//    compares the current mouse pointer with the automation
-//    lines on the track under it.
-//    if there is a controller to be moved it is marked
-//    in the automation object
-//    if addNewCtrl is set and a valid line is found the
-//    automation object will also be set but no
-//    controller added.
-//---------------------------------------------------------
-
-void ComposerCanvas::checkAutomation(Track * t, const QPoint &pointer, bool addNewCtrl)/*{{{*/
-{
-    //int circumference = 5;
-    Track* inputTrack = 0;
-    if (t->isMidiTrack())
-    {
-        bool found = false;
-        inputTrack = t->inputTrack();
-        if(inputTrack)
-        {
-            found = checkAutomationForTrack(inputTrack, pointer, addNewCtrl, t);
-        }
-        if (!found && t->wantsAutomation())
-        {
-            AudioTrack* atrack = ((MidiTrack*)t)->getAutomationTrack();
-            if (!atrack)
-                return;
-            checkAutomationForTrack(atrack, pointer, addNewCtrl, t);
-        }
-    }
-    else
-    {
-        checkAutomationForTrack(t, pointer, addNewCtrl);
-    }
-
-    //printf("checkAutomation p.x()=%d p.y()=%d\n", mapx(pointer.x()), mapx(pointer.y()));
-
-    //int currX =  mapx(pointer.x());
-    //int currY =  mapy(pointer.y());
-
-    //CtrlListList* cll;
-    //if (t->isMidiTrack() && t->wantsAutomation())
-   //{
-       // AudioTrack* atrack = ((MidiTrack*)t)->getAutomationTrack();
-       // if (!atrack)
-      //      return;
-
-        //cll = atrack->controller();
-    //}
-    //else
-        //cll = ((AudioTrack*) t)->controller();
-
-/*
-    for(CtrlListList::iterator icll =cll->begin();icll!=cll->end();++icll)
-    {
-        //iCtrlList *icl = icll->second;
-        CtrlList *cl = icll->second;
-        if (cl->dontShow() || !cl->isVisible()) {
-            continue;
-        }
-        iCtrl ic=cl->begin();
-
-        int oldX=-1;
-        int oldY=-1;
-        int ypixel;
-        int xpixel;
-
-        // First check that there ARE automation, ic == cl->end means no automation
-        if (ic != cl->end()) {
-            for (; ic !=cl->end(); ic++)
-            {
-                CtrlVal &cv = ic->second;
-                double y;
-                if (cl->id() == AC_VOLUME ) { // use db scale for volume
-                    y = dbToVal(cv.val); // represent volume between 0 and 1
-                    if (y < 0) y = 0;
-                }
-                else {
-                    // we need to set curVal between 0 and 1
-                    double min, max;
-                    cl->range(&min,&max);
-                    y = ( cv.val - min)/(max-min);
-                }
-
-
-                int yy = track2Y(t) + t->height();
-
-                ypixel = mapy(yy-2-y*t->height());
-                xpixel = mapx(tempomap.frame2tick(cv.getFrame()));
-
-                if (oldX==-1) oldX = xpixel;
-                if (oldY==-1) oldY = ypixel;
-
-                bool foundIt=false;
-                if (addNewCtrl) {
-                    foundIt=true;
-                }
-
-                //printf("point at x=%d xdiff=%d y=%d ydiff=%d\n", mapx(tempomap.frame2tick(cv.frame)), x1, mapx(ypixel), y1);
-                oldX = xpixel;
-                oldY = ypixel;
-
-                int x1 = abs(currX - xpixel) ;
-                int y1 = abs(currY - ypixel);
-                if (!addNewCtrl && x1 < circumference &&  y1 < circumference && pointer.x() > 0 && pointer.y() > 0) {
-                    foundIt=true;
-                }
-
-                if (foundIt) {
-                    automation.currentCtrlList = cl;
-                    automation.currentTrack = t;
-                    if (addNewCtrl) {
-                        automation.currentCtrlVal = 0;
-                        redraw();
-                        automation.controllerState = addNewController;
-                    }else {
-                        automation.currentCtrlVal=&cv;
-                        redraw();
-                        automation.controllerState = movingController;
-                    }
-                    return;
-                }
-
-            }
-        } // if
-
-        if (addNewCtrl)
-        {
-            //FIXME This is faulty logic as you can now select or add a node anywhere on the line
-            // check if we are reasonably close to a line, we only need to check Y
-            // as the line is straight after the last controller
-            bool foundIt=false;
-            if ( ypixel == oldY && abs(currY-ypixel) < circumference) {
-                foundIt=true;
-            }
-
-            if (foundIt)
-            {
-                automation.controllerState = addNewController;
-                automation.currentCtrlList = cl;
-                automation.currentTrack = t;
-                automation.currentCtrlVal = 0;
-                return;
-            }
-        }
-    }
-    // if there are no hits we default to clearing all the data
-    automation.controllerState = doNothing;
-    if (automation.currentCtrlVal)
-    {
-        automation.currentCtrlVal = 0;
-        redraw();
-    }
-
-    setCursor();
-*/
-}/*}}}*/
-
-bool ComposerCanvas::checkAutomationForTrack(Track * t, const QPoint &pointer, bool addNewCtrl, Track *rt)/*{{{*/
-{
-    bool rv = false;
-    int circumference = 5;
-
-    //printf("checkAutomation p.x()=%d p.y()=%d\n", mapx(pointer.x()), mapx(pointer.y()));
-
-    if(!rt)
-    {
-        rt = t;
-    }
-    int currX =  mapx(pointer.x());
-    int currY =  mapy(pointer.y());
-
-    CtrlListList* cll;
-    if (t->isMidiTrack() && t->wantsAutomation())
-    {
-        AudioTrack* atrack = ((MidiTrack*)t)->getAutomationTrack();
-        if (!atrack)
-            return false;
-        cll = atrack->controller();
-    }
-    else
-        cll = ((AudioTrack*) t)->controller();
-
-    for(CtrlListList::iterator icll =cll->begin();icll!=cll->end();++icll)
-    {
-        //iCtrlList *icl = icll->second;
-        CtrlList *cl = icll->second;
-        if (cl->dontShow() || !cl->isVisible()) {
-            continue;
-        }
-        iCtrl ic=cl->begin();
-
-        int oldX=-1;
-        int oldY=-1;
-        int ypixel;
-        int xpixel;
-
-        // First check that there ARE automation, ic == cl->end means no automation
-        if (ic != cl->end()) {
-            for (; ic !=cl->end(); ic++)/*{{{*/
-            {
-                CtrlVal &cv = ic->second;
-                double y;
-                if (cl->id() == AC_VOLUME ) { // use db scale for volume
-                    y = dbToVal(cv.val); // represent volume between 0 and 1
-                    if (y < 0) y = 0;
-                }
-                else {
-                    // we need to set curVal between 0 and 1
-                    double min, max;
-                    cl->range(&min,&max);
-                    y = ( cv.val - min)/(max-min);
-                }
-
-
-                int yy = track2Y(rt) + rt->height();
-
-                ypixel = mapy(yy-2-y*rt->height());
-                xpixel = mapx(tempomap.frame2tick(cv.getFrame()));
-
-                if (oldX==-1) oldX = xpixel;
-                if (oldY==-1) oldY = ypixel;
-
-                bool foundIt=false;
-                if (addNewCtrl) {
-                    foundIt=true;
-                }
-
-                //printf("point at x=%d xdiff=%d y=%d ydiff=%d\n", mapx(tempomap.frame2tick(cv.frame)), x1, mapx(ypixel), y1);
-                oldX = xpixel;
-                oldY = ypixel;
-
-                int x1 = abs(currX - xpixel) ;
-                int y1 = abs(currY - ypixel);
-                if (!addNewCtrl && x1 < circumference &&  y1 < circumference && pointer.x() > 0 && pointer.y() > 0) {
-                    foundIt=true;
-                }
-
-                if (foundIt) {
-                    automation.currentCtrlList = cl;
-                    automation.currentTrack = rt;
-                    if (addNewCtrl) {
-                        automation.currentCtrlVal = 0;
-                        redraw();
-                        automation.controllerState = addNewController;
-                    }else {
-                        automation.currentCtrlVal=&cv;
-                        redraw();
-                        automation.controllerState = movingController;
-                    }
-                    return true;
-                }
-
-            }/*}}}*/
-        } // if
-
-        if (addNewCtrl)
-        {
-            //FIXME This is faulty logic as you can now select or add a node anywhere on the line
-            // check if we are reasonably close to a line, we only need to check Y
-            // as the line is straight after the last controller
-            bool foundIt=false;
-            if ( ypixel == oldY && abs(currY-ypixel) < circumference) {
-                foundIt=true;
-            }
-
-            if (foundIt)
-            {
-                automation.controllerState = addNewController;
-                automation.currentCtrlList = cl;
-                automation.currentTrack = rt;
-                automation.currentCtrlVal = 0;
-                return true;
-            }
-        }
-    }
-    // if there are no hits we default to clearing all the data
-    automation.controllerState = doNothing;
-    if (automation.currentCtrlVal)
-    {
-        automation.currentCtrlVal = 0;
-        redraw();
-    }
-
-    setCursor();
-    return rv;
-}/*}}}*/
-
-void ComposerCanvas::selectAutomation(Track * t, const QPoint &pointer)/*{{{*/
-{
-    Track* inputTrack = 0;/*{{{*/
-    if (t->isMidiTrack())
-    {
-        bool found = false;
-        inputTrack = t->inputTrack();
-        if(inputTrack)
-        {
-            found = selectAutomationForTrack(inputTrack, pointer, t);
-        }
-        if (!found && t->wantsAutomation())
-        {
-            AudioTrack* atrack = ((MidiTrack*)t)->getAutomationTrack();
-            if (!atrack)
-                return;
-            selectAutomationForTrack(t, pointer);
-        }
-    }
-    else
-    {
-        selectAutomationForTrack(t, pointer);
-    }/*}}}*/
-    //printf("selectAutomation p.x()=%d p.y()=%d\n", mapx(pointer.x()), mapx(pointer.y()));
-
-    /*int currY = mapy(pointer.y());
-    int currX = mapx(pointer.x());
-    QRect clickPoint(currX-5, currY-5, 10, 10);
-
-    bool foundIt = false;
-    CtrlListList* cll;
-    if (t->isMidiTrack())
-    {
-        AudioTrack* atrack = ((MidiTrack*)t)->getAutomationTrack();
-        if (!atrack)
-            return;
-        cll = atrack->controller();
-    }
-    else
-        cll = ((AudioTrack*) t)->controller();
-
-    cll->deselectAll();
-    for(CtrlListList::iterator icll = cll->begin(); icll != cll->end(); ++icll)
-    {
-        CtrlList *cl = icll->second;
-        if (cl->dontShow() || !cl->isVisible()) {
-            continue;
-        }
-        QPainterPath cpath = cl->curvePath();
-        if(cpath.isEmpty())
-            continue;
-
-        // Check if the mouse click intersecs an automation line
-        // NOTE: QT uses a fill pattern to deturmin if the intersection is valid.
-        // this calculation starts to break down for us when automation lines start
-        // to cross each other. This is so far the easiest selection we have had but
-        // try not to crown your automation lanes with lots of overlapping lines.
-        // Maybe we can implement our own class to solve this issue one day. - Andrew
-        if (cpath.intersects(clickPoint))
-        {
-            foundIt=true;
-        }
-
-        if(foundIt && automation.currentCtrlList && automation.currentCtrlList == cl)
-        {//Do nothing
-            automation.currentCtrlList->setSelected(true);
-            break;
-        }
-        else if(foundIt)
-        {
-            if(automation.currentCtrlList && automation.currentCtrlList != cl)
-                automation.currentCtrlList->setSelected(false);
-            //printf("Selecting closest automation line\n");
-            automation.controllerState = doNothing;
-            automation.currentCtrlList = cl;
-            automation.currentCtrlList->setSelected(true);
-            automation.currentTrack = t;
-            automation.currentCtrlVal = 0;
-            redraw();
-            break;
-        }
-    }
-    // if there are no hits we default to clearing all the data
-    if(!foundIt)
-    {
-        automation.controllerState = doNothing;
-        if (automation.currentCtrlVal)
-        {
-            automation.currentCtrlVal = 0;
-            redraw();
-        }
-    }
-
-    setCursor();*/
-}/*}}}*/
-
-bool ComposerCanvas::selectAutomationForTrack(Track * t, const QPoint &pointer, Track* rt)/*{{{*/
-{
-    bool rv = false;
-    if(!rt)
-    {
-        rt = t;
-    }
-
-    //printf("selectAutomation p.x()=%d p.y()=%d\n", mapx(pointer.x()), mapx(pointer.y()));
-
-    int currY = mapy(pointer.y());
-    int currX = mapx(pointer.x());
-    QRect clickPoint(currX-5, currY-5, 10, 10);
-
-    bool foundIt = false;
-    CtrlListList* cll;
-    if (t->isMidiTrack())
-    {
-        AudioTrack* atrack = ((MidiTrack*)t)->getAutomationTrack();
-        if (!atrack)
-            return false;
-        cll = atrack->controller();
-    }
-    else
-        cll = ((AudioTrack*) t)->controller();
-
-    cll->deselectAll();
-    for(CtrlListList::iterator icll = cll->begin(); icll != cll->end(); ++icll)
-    {
-        CtrlList *cl = icll->second;
-        if (cl->dontShow() || !cl->isVisible()) {
-            continue;
-        }
-        QPainterPath cpath = cl->curvePath();
-        if(cpath.isEmpty())
-            continue;
-
-        // Check if the mouse click intersecs an automation line
-        // NOTE: QT uses a fill pattern to deturmin if the intersection is valid.
-        // this calculation starts to break down for us when automation lines start
-        // to cross each other. This is so far the easiest selection we have had but
-        // try not to crown your automation lanes with lots of overlapping lines.
-        // Maybe we can implement our own class to solve this issue one day. - Andrew
-        if (cpath.intersects(clickPoint))
-        {
-            foundIt=true;
-        }
-
-        if(foundIt && automation.currentCtrlList && automation.currentCtrlList == cl)
-        {//Do nothing
-            automation.currentCtrlList->setSelected(true);
-            break;
-        }
-        else if(foundIt)
-        {
-            rv = true;
-            if(automation.currentCtrlList && automation.currentCtrlList != cl)
-                automation.currentCtrlList->setSelected(false);
-            //printf("Selecting closest automation line\n");
-            automation.controllerState = doNothing;
-            automation.currentCtrlList = cl;
-            automation.currentCtrlList->setSelected(true);
-            automation.currentTrack = t;
-            automation.currentCtrlVal = 0;
-            redraw();
-            break;
-        }
-    }
-    // if there are no hits we default to clearing all the data
-    if(!foundIt)
-    {
-        rv = false;
-        automation.controllerState = doNothing;
-        if (automation.currentCtrlVal)
-        {
-            automation.currentCtrlVal = 0;
-            redraw();
-        }
-    }
-
-    setCursor();
-    return rv;
-}/*}}}*/
-
-
-void ComposerCanvas::controllerChanged(Track* /* t */)
-{
-    redraw();
-}
-
-void ComposerCanvas::addNewAutomation(QMouseEvent *event)
-{
-    //printf("ComposerCanvas::addNewAutomation(%p)\n", event);
-    Track * t = y2Track(event->pos().y());
-    if (t)
-    {
-        checkAutomation(t, event->pos(), true);
-
-        automation.moveController = true;
-        processAutomationMovements(event);
-    }
-}
-
-void ComposerCanvas::processAutomationMovements(QMouseEvent *event)
-{
-
-    if (_tool != AutomationTool)
-    {
-        return;
-    }
-
-    if (!automation.moveController)  // currently nothing going lets's check for some action.
-    {
-        Track * t = y2Track(event->pos().y());
-        if (t) {
-            bool addNewPoints = false;
-            if (event->modifiers() & Qt::ControlModifier)
-            {
-                addNewPoints = true;
-            }
-            checkAutomation(t, event->pos(), addNewPoints);
-        }
-        return;
-    }
-
-    if (!automation.currentCtrlList)
-    {
-        return;
-    }
-
-    // automation.moveController is set, lets rock.
-
-    int currFrame = tempomap.tick2frame(event->pos().x());
-    double min, max;
-
-    if (automation.controllerState == addNewController)
-    {
-        bool addNode = false;
-        if(automation.currentCtrlList->selected())
-        {
-            addNode = true;
-        }
-        else
-        { //go find the right item from the current track
-            Track * t = y2Track(event->pos().y());
-            if (t)
-            {
-                CtrlListList* cll;
-                if(t->isMidiTrack())
-                {
-                    bool found = false;
-                    Track* input = t->inputTrack();
-                    if(input)
-                    {
-                        cll = ((AudioTrack*) input)->controller();/*{{{*/
-                        for(CtrlListList::iterator icll = cll->begin(); icll != cll->end(); ++icll)
-                        {
-                            CtrlList *cl = icll->second;
-                            if(cl && cl->selected() && cl != automation.currentCtrlList)
-                            {
-                                found = true;
-                                automation.currentCtrlList = cl;
-                                break;
-                            }
-                        }
-                        if(found && automation.currentCtrlList->selected())
-                        {
-                            addNode = true;
-                        }/*}}}*/
-                    }
-                    if (!found && t->wantsAutomation())
-                    {
-                        cll = ((MidiTrack*)t)->getAutomationTrack()->controller();
-                        for(CtrlListList::iterator icll = cll->begin(); icll != cll->end(); ++icll)
-                        {
-                            CtrlList *cl = icll->second;
-                            if(cl && cl->selected() && cl != automation.currentCtrlList)
-                            {
-                                automation.currentCtrlList = cl;
-                                break;
-                            }
-                        }
-                        if(automation.currentCtrlList->selected())
-                        {
-                            addNode = true;
-                        }
-                    }
-                }
-                else
-                {
-                    cll = ((AudioTrack*) t)->controller();
-                    for(CtrlListList::iterator icll = cll->begin(); icll != cll->end(); ++icll)
-                    {
-                        CtrlList *cl = icll->second;
-                        if(cl && cl->selected() && cl != automation.currentCtrlList)
-                        {
-                            automation.currentCtrlList = cl;
-                            break;
-                        }
-                    }
-                    if(automation.currentCtrlList->selected())
-                    {
-                        addNode = true;
-                    }
-                }
-            }
-        }
-
-        if (addNode)
-        {
-            automation.currentCtrlList->range(&min,&max);
-            double range = max - min;
-            double newValue;
-            double relativeY = double(event->pos().y() - track2Y(automation.currentTrack)) / automation.currentTrack->height();
-
-            if (automation.currentCtrlList->id() == AC_VOLUME )
-            {
-                newValue = dbToVal(max) - relativeY;
-                newValue = valToDb(newValue);
-            }
-            else
-            {
-                newValue = max - (relativeY * range);
-            }
-
-            AddRemoveCtrlValues* cmd = new AddRemoveCtrlValues(automation.currentCtrlList, CtrlVal(currFrame, newValue), LOSCommand::ADD);
-            CommandGroup* group = new CommandGroup(tr("Add Automation Node"));
-            group->addCommand(cmd);
-            song->pushToHistoryStack(group);
-        }
-
-        QWidget::setCursor(Qt::BlankCursor);
-
-        iCtrl ic=automation.currentCtrlList->begin();
-        for (; ic !=automation.currentCtrlList->end(); ic++) {
-            CtrlVal &cv = ic->second;
-            if (cv.getFrame() == currFrame) {
-                automation.currentCtrlVal = &cv;
-                automation.controllerState = movingController;
-                //printf("Adding new node to selectio----------------n\n");
-                _curveNodeSelection->addNodeToSelection(automation.currentCtrlVal);
-                break;
-            }
-        }
-        controllerChanged(automation.currentTrack);
-        //Add the node and return instead of processing further
-        return;
-    }
-
-
-    int xDiff = (event->pos() - automation.mousePressPos).x();
-    int frameDiff = tempomap.tick2frame(abs(xDiff));
-    //qDebug("xDiff: %d, frameDiff: %d\n", xDiff, frameDiff);
-    if (xDiff < 0)
-    {
-        frameDiff *= -1;
-    }
-
-    double mouseYDiff = (automation.mousePressPos - event->pos()).y();
-    double valDiff = (mouseYDiff)/automation.currentTrack->height();
-    //qDebug("mouseYDiff: %f, valDiff: %f, xDiff: %d, frameDiff: %d\n", mouseYDiff, valDiff, xDiff, frameDiff);
-
-    automation.currentCtrlList->range(&min,&max);
-
-    //Duplicate the _curveNodeSelection list for undo purposes
-    if(!automation.movingStarted && automation.currentCtrlList)
-    {//Populate a list with the current values
-        m_automationMoveList.clear();
-        foreach(CtrlVal* v, _curveNodeSelection->getNodes()) {
-            //Add the new
-            m_automationMoveList.append(CtrlVal(v->getFrame(), v->val));
-        }
-        if(m_automationMoveList.isEmpty() && automation.currentCtrlVal)
-        {
-            m_automationMoveList.append(CtrlVal(automation.currentCtrlVal->getFrame(), automation.currentCtrlVal->val));
-        }
-        automation.movingStarted = !m_automationMoveList.isEmpty();
-    }
-    if (automation.currentCtrlList->id() == AC_VOLUME )
-    {
-        _curveNodeSelection->move(frameDiff, valDiff, min, max, automation.currentCtrlList, automation.currentCtrlVal, true);
-    }
-    else
-    {
-        _curveNodeSelection->move(frameDiff, valDiff, min, max, automation.currentCtrlList, automation.currentCtrlVal, false);
-    }
-
-    automation.mousePressPos = event->pos();
-
-    //printf("mouseY=%d\n", mouseY);
-    controllerChanged(automation.currentTrack);
-}
 
 void ComposerCanvas::trackViewChanged()
 {

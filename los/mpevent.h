@@ -20,7 +20,7 @@
 
 class Event;
 class EvData;
-class Track;
+class MidiTrack;
 
 //---------------------------------------------------------
 //   MEvent
@@ -31,15 +31,15 @@ class Track;
 //   MEvent
 //---------------------------------------------------------
 enum EventSource {
-	SystemSource = 0,
-	MonitorSource,
-	AudioSource
+    SystemSource = 0,
+    MonitorSource,
+    AudioSource
 };
 
 class MEvent
 {
-	EventSource m_source;
-	Track *m_track;
+    EventSource m_source;
+    MidiTrack* m_track;
     unsigned _time;
     EvData edata;
     unsigned char _port, _channel, _type;
@@ -51,24 +51,24 @@ public:
     MEvent()
     {
         _loopNum = 0;
-		m_track = 0;
-		m_source = SystemSource;
+        m_track = 0;
+        m_source = SystemSource;
     }
 
-    MEvent(unsigned tm, int p, int c, int t, int a, int b, Track* trk= 0)
+    MEvent(unsigned tm, int p, int c, int t, int a, int b, MidiTrack* trk= 0)
     : m_track(trk), _time(tm), _port(p), _channel(c & 0xf), _type(t), _a(a), _b(b)
     {
         _loopNum = 0;
-		m_source = SystemSource;
+        m_source = SystemSource;
     }
-    MEvent(unsigned t, int p, int type, const unsigned char* data, int len, Track* trk = 0);
+    MEvent(unsigned t, int p, int type, const unsigned char* data, int len, MidiTrack* trk = 0);
 
-    MEvent(unsigned t, int p, int tpe, EvData d, Track* trk = 0) : m_track(trk), _time(t), edata(d), _port(p), _type(tpe)
+    MEvent(unsigned t, int p, int tpe, EvData d, MidiTrack* trk = 0) : m_track(trk), _time(t), edata(d), _port(p), _type(tpe)
     {
         _loopNum = 0;
-		m_source = SystemSource;
+        m_source = SystemSource;
     }
-    MEvent(unsigned t, int port, int channel, const Event& e, Track* trk = 0);
+    MEvent(unsigned t, int port, int channel, const Event& e, MidiTrack* trk = 0);
 
     ~MEvent()
     {
@@ -84,8 +84,8 @@ public:
         _a = ed._a;
         _b = ed._b;
         _loopNum = ed._loopNum;
-		m_track = ed.m_track;
-		m_source = ed.m_source;
+        m_track = ed.m_track;
+        m_source = ed.m_source;
         return *this;
     }
 
@@ -196,22 +196,22 @@ public:
     }
     bool operator<(const MEvent&) const;
 
-	EventSource eventSource() const
-	{
-		return m_source;
-	}
-	void setEventSource(EventSource es)
-	{
-		m_source = es;
-	}
-	Track* track() const
-	{
-		return m_track;
-	}
-	void setTrack(Track* t)
-	{
-		m_track = t;
-	}
+    EventSource eventSource() const
+    {
+        return m_source;
+    }
+    void setEventSource(EventSource es)
+    {
+        m_source = es;
+    }
+    MidiTrack* track() const
+    {
+        return m_track;
+    }
+    void setTrack(MidiTrack* t)
+    {
+        m_track = t;
+    }
 };
 
 //---------------------------------------------------------
@@ -270,22 +270,22 @@ public:
     {
     }
 
-    MidiPlayEvent(unsigned tm, int p, int c, int t, int a, int b, Track* trk = 0)
+    MidiPlayEvent(unsigned tm, int p, int c, int t, int a, int b, MidiTrack* trk = 0)
     : MEvent(tm, p, c, t, a, b, trk)
     {
     }
 
-    MidiPlayEvent(unsigned t, int p, int type, const unsigned char* data, int len, Track* trk = 0)
+    MidiPlayEvent(unsigned t, int p, int type, const unsigned char* data, int len, MidiTrack* trk = 0)
     : MEvent(t, p, type, data, len, trk)
     {
     }
 
-    MidiPlayEvent(unsigned t, int p, int type, EvData data, Track* trk = 0)
+    MidiPlayEvent(unsigned t, int p, int type, EvData data, MidiTrack* trk = 0)
     : MEvent(t, p, type, data, trk)
     {
     }
 
-    MidiPlayEvent(unsigned t, int port, int channel, const Event& e, Track* trk = 0)
+    MidiPlayEvent(unsigned t, int port, int channel, const Event& e, MidiTrack* trk = 0)
     : MEvent(t, port, channel, e, trk)
     {
     }
@@ -354,20 +354,20 @@ public:
 
 class MidiRecFifo
 {
-	MidiPlayEvent fifo[MIDI_REC_FIFO_SIZE];
-	volatile int size;
-	int wIndex;
-	int rIndex;
+    MidiPlayEvent fifo[MIDI_REC_FIFO_SIZE];
+    volatile int size;
+    int wIndex;
+    int rIndex;
 
 public:
-	MidiRecFifo() { clear(); }
-	bool put(const MidiPlayEvent&);
-	MidiPlayEvent get();
-	const MidiPlayEvent& peek(int n = 0);
-	void remove();
-	bool isEmpty() const { return size == 0; }
-	void clear() { size = 0, wIndex = 0, rIndex = 0; }
-	int getSize() const { return size; }
+    MidiRecFifo() { clear(); }
+    bool put(const MidiPlayEvent&);
+    MidiPlayEvent get();
+    const MidiPlayEvent& peek(int n = 0);
+    void remove();
+    bool isEmpty() const { return size == 0; }
+    void clear() { size = 0, wIndex = 0, rIndex = 0; }
+    int getSize() const { return size; }
 };
 
 #endif

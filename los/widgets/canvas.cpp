@@ -726,15 +726,10 @@ void Canvas::viewMousePressEvent(QMouseEvent* event)/*{{{*/
             if (_curItem)
             {
                 Track* ctrack = _curItem->part()->track();
-                if(ctrack && ctrack->isMidiTrack())
+                if(ctrack)
                 {
                     los->composer->_setRaster(config.midiRaster, false);
                     //los->composer->raster->setCurrentIndex(config.midiRaster);
-                }
-                else
-                {
-                    los->composer->_setRaster(config.audioRaster, false);
-                    //los->composer->raster->setCurrentIndex(config.audioRaster);
                 }
                 if (_curItem->part() != _curPart)
                 {
@@ -790,16 +785,12 @@ void Canvas::viewMousePressEvent(QMouseEvent* event)/*{{{*/
             if (_curItem)
             {
                 Track* ctrack = _curItem->part()->track();
-                if(ctrack && ctrack->isMidiTrack())
+                if(ctrack)
                 {
                     los->composer->_setRaster(config.midiRaster, false);
                     los->composer->raster->setCurrentIndex(config.midiRaster);
                 }
-                else
-                {
-                    los->composer->_setRaster(config.audioRaster, false);
-                    los->composer->raster->setCurrentIndex(config.audioRaster);
-                }
+#if 0
                 if(shift && ctrack->type() == Track::WAVE)
                 {
                     _drag = DRAG_RESIZE_LEFT;
@@ -817,6 +808,7 @@ void Canvas::viewMousePressEvent(QMouseEvent* event)/*{{{*/
                     _curItem->move(np);
                 }
                 else
+#endif
                 {
                     _drag = DRAG_RESIZE;
                     //Christopher
@@ -855,6 +847,7 @@ void Canvas::viewMousePressEvent(QMouseEvent* event)/*{{{*/
             break;
 
             case StretchTool: // copied from pencil tool
+#if 0
             if (_curItem)
             {
                 Track* ctrack = _curItem->part()->track();
@@ -871,6 +864,7 @@ void Canvas::viewMousePressEvent(QMouseEvent* event)/*{{{*/
                     _start.setX(_curItem->x());
                 }
             }
+#endif
             break;
 
             default:

@@ -31,7 +31,6 @@
 VirtualTrack::VirtualTrack()
 {/*{{{*/
     id = create_id();
-    type = -1;
     useOutput = false;
     useInput = false;
     useGlobalInputs = false;
@@ -47,8 +46,8 @@ void VirtualTrack::write(int level, Xml& xml) const/*{{{*/
     std::string tag = "virtualTrack";
     xml.nput(level, "<%s id=\"%lld\" ", tag.c_str(), id);
     level++;
-    xml.nput("type=\"%d\" useGlobalInputs=\"%d\" name=\"%s\" useInput=\"%d\" useOutput=\"%d\" ", type, useGlobalInputs, name.toUtf8().constData(), useInput, useOutput);
-    if(!instrumentName.isEmpty() && type == Track::MIDI)
+    xml.nput("useGlobalInputs=\"%d\" name=\"%s\" useInput=\"%d\" useOutput=\"%d\" ", useGlobalInputs, name.toUtf8().constData(), useInput, useOutput);
+    if(!instrumentName.isEmpty())
     {
         xml.nput("createMidiInputDevice=\"%d\" createMidiOutputDevice=\"%d\" ",
                 createMidiInputDevice, createMidiOutputDevice);
@@ -97,7 +96,6 @@ void VirtualTrack::read(Xml &xml)/*{{{*/
                 }
                 else if(tag == "type")
                 {
-                    type = xml.s2().toInt();
                 }
                 else if(tag == "instrumentName")
                 {
@@ -176,14 +174,11 @@ qint64 TrackManager::addTrack(VirtualTrack* vtrack, int index)/*{{{*/
     if(!vtrack || vtrack->name.isEmpty())
         return rv;
 
-    Track::TrackType type = (Track::TrackType)vtrack->type;
-    switch(type)
     {
-        case Track::MIDI:
         {
             //Load up the instrument first
             song->startUndo();
-            m_track =  song->addTrackByName(vtrack->name, Track::MIDI, m_insertPosition, false);
+            m_track =  song->addTrackByName(vtrack->name, m_insertPosition, false);
             if(m_track)
             {
                 m_track->setMasterFlag(true);
@@ -400,254 +395,6 @@ qint64 TrackManager::addTrack(VirtualTrack* vtrack, int index)/*{{{*/
             song->endUndo(SC_TRACK_INSERTED | SC_TRACK_MODIFIED);
             song->updateTrackViews();
         }
-        break;
-        case Track::WAVE:
-        {
-            song->startUndo();
-            m_track =  song->addTrackByName(vtrack->name, Track::WAVE, m_insertPosition, false);
-            if(m_track)
-            {
-                m_track->setMasterFlag(true);
-                song->undoOp(UndoOp::AddTrack, m_insertPosition, m_track);
-
-                if(vtrack->useInput)
-                {
-                    if (Track* input = m_track->inputTrack())
-                    {
-                        QString inputName = input->name();
-                        QString selectedInput = vtrack->inputConfig.second;
-                        //bool addNewRoute = vtrack->inputConfig.first;
-
-                        song->undoOp(UndoOp::AddTrack, -1, input);
-
-                        //if(addNewRoute)
-                        {
-                            input->setMute(false);
-                            //Connect jack port to Input track
-                            Route srcRoute(selectedInput, false, -1, Route::JACK_ROUTE);
-                            Route dstRoute(input, 0);
-                            srcRoute.channel = 0;
-
-                            Route srcRoute2(selectedInput, false, -1, Route::JACK_ROUTE);
-                            Route dstRoute2(input, 1);
-                            srcRoute2.channel = 1;
-
-                            audio->msgAddRoute(srcRoute, dstRoute);
-                            audio->msgAddRoute(srcRoute2, dstRoute2);
-
-                            audio->msgUpdateSoloStates();
-                            song->update(SC_ROUTE);
-                        }
-                    }
-                }
-
-                if(vtrack->useOutput)
-                {
-                    if (Track* output = m_track->outputTrack())
-                    {
-                        QString jackPlayback("system:playback");
-                        QString selectedOutput = vtrack->outputConfig.second;
-                        //bool addNewRoute = vtrack->outputConfig.first;
-
-                        song->undoOp(UndoOp::AddTrack, -1, output);
-
-                        //if(addNewRoute)
-                        {
-                            if (selectedOutput.startsWith(jackPlayback))
-                            {
-                                //Route channel 1
-                                Route srcRoute(output, 0);
-                                Route dstRoute(QString(jackPlayback).append("_1"), true, -1, Route::JACK_ROUTE);
-                                dstRoute.channel = 0;
-
-                                //Route channel 2
-                                Route srcRoute2(output, 1);
-                                Route dstRoute2(QString(jackPlayback).append("_2"), true, -1, Route::JACK_ROUTE);
-                                dstRoute2.channel = 1;
-
-                                audio->msgAddRoute(srcRoute, dstRoute);
-                                audio->msgAddRoute(srcRoute2, dstRoute2);
-                            }
-                            else
-                            {
-                                //Route channel 1
-                                Route srcRoute(output, 0);
-                                Route dstRoute(selectedOutput, true, -1, Route::JACK_ROUTE);
-                                dstRoute.channel = 0;
-
-                                //Route channel 2
-                                Route srcRoute2(output, 1);
-                                Route dstRoute2(selectedOutput, true, -1, Route::JACK_ROUTE);
-                                dstRoute2.channel = 1;
-
-                                audio->msgAddRoute(srcRoute, dstRoute);
-                                audio->msgAddRoute(srcRoute2, dstRoute2);
-                            }
-                            audio->msgUpdateSoloStates();
-                            song->update(SC_ROUTE);
-                        }
-                    }
-                }
-
-                // always output wave tracks to master
-                Route srcRoute(m_track, 0, m_track->channels());
-                Route dstRoute(song->masterId(), true, -1);
-                audio->msgAddRoute(srcRoute, dstRoute);
-                audio->msgUpdateSoloStates();
-                song->update(SC_ROUTE);
-
-                song->deselectTracks();
-                m_track->setSelected(true);
-                emit trackAdded(m_track->id());
-                rv = m_track->id();
-
-            }
-            song->endUndo(SC_TRACK_INSERTED | SC_TRACK_MODIFIED);
-            song->updateTrackViews();
-        }
-        break;
-        case Track::WAVE_OUTPUT_HELPER:
-        {
-        qFatal("Trying to manually add OUT track, stop!");
-#if 0
-            song->startUndo();
-            m_track = song->addTrackByName(vtrack->name, Track::AUDIO_OUTPUT, -1, false);
-            if(m_track)
-            {
-                m_track->setMasterFlag(true);
-                song->undoOp(UndoOp::AddTrack, -1, m_track);
-                if(vtrack->useInput)
-                {
-                    QString selectedInput = vtrack->inputConfig.second;
-                    Route dstRoute(m_track, 0, m_track->channels());
-                    Route srcRoute(selectedInput, true, -1);
-
-                    audio->msgAddRoute(srcRoute, dstRoute);
-
-                    audio->msgUpdateSoloStates();
-                    song->update(SC_ROUTE);
-                }
-
-                if(vtrack->useOutput)
-                {
-                    QString jackPlayback("system:playback");
-                    QString selectedOutput = vtrack->outputConfig.second;
-                    bool systemOutput = false;
-                    if(selectedOutput.startsWith(jackPlayback))
-                    {//FIXME: Change this to support more than two system playback devices
-                        systemOutput = true;
-
-                        //Route channel 1
-                        Route srcRoute(m_track, 0);
-                        Route dstRoute(QString(jackPlayback).append("_1"), true, -1, Route::JACK_ROUTE);
-                        dstRoute.channel = 0;
-
-                        audio->msgAddRoute(srcRoute, dstRoute);
-
-                        //Route channel 2
-                        Route srcRoute2(m_track, 1);
-                        Route dstRoute2(QString(jackPlayback).append("_2"), true, -1, Route::JACK_ROUTE);
-                        dstRoute2.channel = 1;
-
-                        audio->msgAddRoute(srcRoute2, dstRoute2);
-                    }
-                    else
-                    {
-                        //Route channel 1
-                        Route srcRoute(m_track, 0);
-                        Route dstRoute(selectedOutput, true, -1, Route::JACK_ROUTE);
-                        dstRoute.channel = 0;
-
-                        audio->msgAddRoute(srcRoute, dstRoute);
-
-                        //Route channel 2
-                        Route srcRoute2(m_track, 1);
-                        Route dstRoute2(selectedOutput, true, -1, Route::JACK_ROUTE);
-                        dstRoute2.channel = 1;
-
-                        audio->msgAddRoute(srcRoute2, dstRoute2);
-                    }
-
-                    audio->msgUpdateSoloStates();
-                    song->update(SC_ROUTE);
-                }
-                song->deselectTracks();
-                m_track->setSelected(true);
-                emit trackAdded(m_track->id());
-                rv = m_track->id();
-            }
-            song->endUndo(SC_TRACK_INSERTED | SC_TRACK_MODIFIED);
-            song->updateTrackViews();
-#endif
-        }
-        break;
-        case Track::WAVE_INPUT_HELPER:
-        {
-        qFatal("Trying to manually add IN track, stop!");
-#if 0
-            song->startUndo();
-            m_track = song->addTrackByName(vtrack->name, Track::AUDIO_INPUT, -1, false);
-            if(m_track)
-            {
-                m_track->setMasterFlag(true);
-                song->undoOp(UndoOp::AddTrack, -1, m_track);
-                m_track->setMute(false);
-                if(vtrack->useInput)
-                {
-                    QString selectedInput = vtrack->inputConfig.second;
-
-                    QString jackCapture("system:capture");
-                    if(selectedInput.startsWith(jackCapture))
-                    {
-                        Route srcRoute(QString(jackCapture).append("_1"), false, -1, Route::JACK_ROUTE);
-                        Route dstRoute(m_track, 0);
-                        srcRoute.channel = 0;
-                        audio->msgAddRoute(srcRoute, dstRoute);
-
-                        Route srcRoute2(QString(jackCapture).append("_2"), false, -1, Route::JACK_ROUTE);
-                        Route dstRoute2(m_track, 1);
-                        srcRoute2.channel = 1;
-                        audio->msgAddRoute(srcRoute2, dstRoute2);
-                    }
-                    else
-                    {
-                        Route srcRoute(selectedInput, false, -1, Route::JACK_ROUTE);
-                        Route dstRoute(m_track, 0);
-                        srcRoute.channel = 0;
-                        audio->msgAddRoute(srcRoute, dstRoute);
-
-                        Route srcRoute2(selectedInput, false, -1, Route::JACK_ROUTE);
-                        Route dstRoute2(m_track, 1);
-                        srcRoute2.channel = 1;
-                        audio->msgAddRoute(srcRoute2, dstRoute2);
-                    }
-
-                    audio->msgUpdateSoloStates();
-                    song->update(SC_ROUTE);
-                }
-                if(vtrack->useOutput)
-                {
-                    QString selectedOutput = vtrack->outputConfig.second;
-
-                    Route srcRoute(m_track, 0, m_track->channels());
-                    Route dstRoute(selectedOutput, true, -1);
-
-                    audio->msgAddRoute(srcRoute, dstRoute);
-                    audio->msgUpdateSoloStates();
-                    song->update(SC_ROUTE);
-                }
-                song->deselectTracks();
-                m_track->setSelected(true);
-                emit trackAdded(m_track->id());
-                rv = m_track->id();
-            }
-            song->endUndo(SC_TRACK_INSERTED | SC_TRACK_MODIFIED);
-            song->updateTrackViews();
-#endif
-        }
-        break;
-        default:
-        break;
     }
     m_track = 0;
     return rv;
@@ -655,7 +402,7 @@ qint64 TrackManager::addTrack(VirtualTrack* vtrack, int index)/*{{{*/
 
 void TrackManager::setTrackInstrument(qint64 tid, const QString& instrument, int type)/*{{{*/
 {
-    Track *t = song->findTrackById(tid);
+    MidiTrack *t = song->findTrackById(tid);
 
     if(!t || instrument.isEmpty())
         return;
@@ -685,7 +432,6 @@ void TrackManager::setTrackInstrument(qint64 tid, const QString& instrument, int
             mp->setInstrument(ins);
 
             track->setSamplerData(0);
-            track->setWantsAutomation(false);
             midiSeq->msgSetMidiDevice(mp, 0);
             song->update(SC_MIDI_TRACK_PROP);
         }

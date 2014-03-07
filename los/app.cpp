@@ -32,7 +32,6 @@
 #include "audio.h"
 #include "driver/audiodev.h"
 #include "audioprefetch.h"
-#include "apconfig.h"
 #include "bigtime.h"
 #include "cliplist/cliplist.h"
 #include "conf.h"
@@ -404,14 +403,9 @@ QActionGroup* populateAddTrack(QMenu* addTrack)
 {
     QActionGroup* grp = new QActionGroup(addTrack);
 
-    QAction* wave = addTrack->addAction(QIcon(*addAudioIcon),
-            QT_TRANSLATE_NOOP("@default", "Add Audio Track"));
-    wave->setData(Track::WAVE);
-    grp->addAction(wave);
-
     QAction* midi = addTrack->addAction(QIcon(*addMidiIcon),
             QT_TRANSLATE_NOOP("@default", "Add Midi Track"));
-    midi->setData(Track::MIDI);
+    midi->setData(0);
     grp->addAction(midi);
 
     QObject::connect(addTrack, SIGNAL(triggered(QAction *)), song, SLOT(addNewTrack(QAction *)));
@@ -538,25 +532,10 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
     performer = 0;
     m_rasterVal = 0;
 
-    g_trackColorListLine.insert(Track::MIDI, QColor(1,230,238));
-    g_trackColorListLine.insert(Track::WAVE, QColor(129,244,118));
-    g_trackColorListLine.insert(Track::WAVE_INPUT_HELPER, QColor(189,122,214));
-    g_trackColorListLine.insert(Track::WAVE_OUTPUT_HELPER, QColor(252,118,118));
-
-    g_trackColorList.insert(Track::MIDI, QColor(105,105,105));
-    g_trackColorList.insert(Track::WAVE, QColor(105,105,105));
-    g_trackColorList.insert(Track::WAVE_INPUT_HELPER, QColor(105,105,105));
-    g_trackColorList.insert(Track::WAVE_OUTPUT_HELPER, QColor(105,105,105));
-
-    g_trackColorListSelected.insert(Track::MIDI, QColor(1,230,238));
-    g_trackColorListSelected.insert(Track::WAVE, QColor(129,244,118));
-    g_trackColorListSelected.insert(Track::WAVE_INPUT_HELPER, QColor(189,122,214));
-    g_trackColorListSelected.insert(Track::WAVE_OUTPUT_HELPER, QColor(252,118,118));
-
-    g_trackDragImageList.insert(Track::MIDI, *dragMidiIcon);
-    g_trackDragImageList.insert(Track::WAVE, *dragAudioIcon);
-    g_trackDragImageList.insert(Track::WAVE_INPUT_HELPER, *dragInputIcon);
-    g_trackDragImageList.insert(Track::WAVE_OUTPUT_HELPER, *dragOutputIcon);
+    g_trackColorListLine.insert(0, QColor(1,230,238));
+    g_trackColorList.insert(0, QColor(105,105,105));
+    g_trackColorListSelected.insert(0, QColor(1,230,238));
+    g_trackDragImageList.insert(0, *dragMidiIcon);
 
     appName = QString("The Composer - LOS-").append(VERSION).append("     ");
     setWindowTitle(appName);
@@ -812,16 +791,7 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
     midiLocalOffAction = new QAction(QIcon(*midi_local_offIcon), tr("Local Off"), this);
 
     //-------- Audio Actions
-    audioBounce2TrackAction = new QAction(QIcon(*audio_bounce_to_trackIcon), tr("Bounce to Track"), this);
-    audioBounce2FileAction = new QAction(QIcon(*audio_bounce_to_fileIcon), tr("Bounce to File"), this);
     audioRestartAction = new QAction(QIcon(*audio_restartaudioIcon), tr("Restart Audio"), this);
-
-    //-------- Automation Actions XXX
-    autoMixerAction = new QAction(/*QIcon(*automation_mixerIcon),*/ tr("Mixer Automation"), this);
-    autoMixerAction->setCheckable(true);
-    autoSnapshotAction = new QAction(QIcon(*automation_take_snapshotIcon), tr("Take Snapshot"), this);
-    autoClearAction = new QAction(QIcon(*automation_clear_dataIcon), tr("Clear Automation Data"), this);
-    autoClearAction->setEnabled(false);
 
     //-------- Settings Actions
     settingsGlobalAction = new QAction(QIcon(*settings_globalsettingsIcon), tr("Global Settings"), this);
@@ -953,14 +923,7 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
     connect(midiPluginSignalMapper, SIGNAL(mapped(int)), this, SLOT(startMidiInputPlugin(int)));
 
     //-------- Audio connections
-    connect(audioBounce2TrackAction, SIGNAL(triggered()), SLOT(bounceToTrack()));
-    connect(audioBounce2FileAction, SIGNAL(triggered()), SLOT(bounceToFile()));
     connect(audioRestartAction, SIGNAL(triggered()), SLOT(seqRestart()));
-
-    //-------- Automation connections
-    connect(autoMixerAction, SIGNAL(triggered()), SLOT(switchMixerAutomation()));
-    connect(autoSnapshotAction, SIGNAL(triggered()), SLOT(takeAutomationSnapshot()));
-    connect(autoClearAction, SIGNAL(triggered()), SLOT(clearAutomation()));
 
     //-------- Settings connections
     connect(settingsGlobalAction, SIGNAL(triggered()), SLOT(configGlobalSettings()));
@@ -1114,9 +1077,6 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
     //-------------------------------------------------------------
 
     menu_audio = menuBar()->addMenu(tr("&Audio"));
-    menu_audio->addAction(audioBounce2TrackAction);
-    menu_audio->addAction(audioBounce2FileAction);
-    menu_audio->addSeparator();
     menu_audio->addAction(audioRestartAction);
 
 
@@ -1155,7 +1115,7 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
     addTransportToolbar();
 
     connect(heartBeatTimer, SIGNAL(timeout()), composer, SLOT(heartBeat()));
-    connect(composer, SIGNAL(editPart(Track*)), SLOT(startEditor(Track*)));
+    connect(composer, SIGNAL(editPart(MidiTrack*)), SLOT(startEditor()));
     connect(composer, SIGNAL(dropSongFile(const QString&)), SLOT(loadProjectFile(const QString&)));
     connect(composer, SIGNAL(dropMidiFile(const QString&)), SLOT(importMidi(const QString&)));
     connect(composer, SIGNAL(startEditor(PartList*, int)), SLOT(startEditor(PartList*, int)));
@@ -1196,8 +1156,7 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
 
     QActionGroup *grp = populateAddTrack(addTrack);
 
-    trackWaveAction = grp->actions()[0];
-    trackMidiAction = grp->actions()[1];
+    trackMidiAction = grp->actions()[0];
 
     transport = new Transport(this, "transport");
     bigtime = 0;
@@ -1631,8 +1590,6 @@ void LOS::loadProjectFile1(const QString& name, bool songTemplate, bool loadAll)
     viewBigtimeAction->setChecked(config.bigTimeVisible);
     viewMarkerAction->setChecked(config.markerVisible);
 
-    autoMixerAction->setChecked(automation);
-
     if (loadAll)
     {
         showBigtime(config.bigTimeVisible);
@@ -1642,7 +1599,6 @@ void LOS::loadProjectFile1(const QString& name, bool songTemplate, bool loadAll)
         transport->move(config.geometryTransport.topLeft());
         showTransport(config.transportVisible);
     }
-    song->addMasterTrack();
     transport->setMasterFlag(song->masterFlag());
     punchinAction->setChecked(song->punchin());
     punchoutAction->setChecked(song->punchout());
@@ -1851,11 +1807,13 @@ bool LOS::saveRouteMapping(QString name, QString notes)
     int level = 0;
     xml.tag(level++, "orm version=\"2.0\"");
     xml.put(level++,"<notes text=\"%s\" />", notes.toLatin1().constData());
+#if 0
     //Write out the routing map to the xml here
-    for (ciTrack i = song->tracks()->begin(); i != song->tracks()->end(); ++i)
+    for (ciMidiTrack i = song->tracks()->begin(); i != song->tracks()->end(); ++i)
     {
         (*i)->writeRouting(level, xml);
     }
+#endif
     // Write midi device routing.
     for (iMidiDevice i = midiDevices.begin(); i != midiDevices.end(); ++i)
     {
@@ -2036,7 +1994,7 @@ bool LOS::loadRouteMapping(QString name)
             Xml xml(f);
 
             //Flush the routing list for all tracks
-            for (ciTrack i = song->tracks()->begin(); i != song->tracks()->end(); ++i)
+            for (ciMidiTrack i = song->tracks()->begin(); i != song->tracks()->end(); ++i)
             {
                 (*i)->inRoutes()->clear();
                 (*i)->outRoutes()->clear();
@@ -2182,16 +2140,6 @@ void LOS::closeEvent(QCloseEvent* event)
     }
     seqStop();
 
-    WaveTrackList* wt = song->waves();
-    for (iWaveTrack iwt = wt->begin(); iwt != wt->end(); ++iwt)
-    {
-        WaveTrack* t = *iwt;
-        if (t->recFile() && t->recFile()->samples() == 0)
-        {
-            t->recFile()->remove();
-        }
-    }
-
     // save "Open Recent" list
     QString prjPath(QString(configPath).append(QDir::separator()).append("projects"));
     FILE* f = fopen(prjPath.toLatin1().constData(), "w");
@@ -2320,7 +2268,7 @@ PopupMenu* LOS::getRoutingPopupMenu()
 //   updateRouteMenus
 //---------------------------------------------------------
 
-void LOS::updateRouteMenus(Track* track, QObject* master)
+void LOS::updateRouteMenus(MidiTrack* track, QObject* master)
 {
     // NOTE: The puropse of this routine is to make sure the items actually reflect
     //  the routing status. And with LOS-1 QT3, it was also required to actually
@@ -2390,12 +2338,11 @@ void LOS::updateRouteMenus(Track* track, QObject* master)
 //   routingPopupMenuActivated
 //---------------------------------------------------------
 
-void LOS::routingPopupMenuActivated(Track* track, int n)
+void LOS::routingPopupMenuActivated(MidiTrack* track, int n)
 {
     if (!track)
         return;
 
-    if (track->isMidiTrack())
     {
         PopupMenu* pup = getRoutingPopupMenu();
 
@@ -2484,12 +2431,11 @@ void LOS::routingPopupMenuAboutToHide()
 //   prepareRoutingPopupMenu
 //---------------------------------------------------------
 
-PopupMenu* LOS::prepareRoutingPopupMenu(Track* track, bool dst)
+PopupMenu* LOS::prepareRoutingPopupMenu(MidiTrack* track, bool dst)
 {
     if (!track)
         return 0;
 
-    if (track->isMidiTrack())
     {
 
         RouteList* rl = dst ? track->outRoutes() : track->inRoutes();
@@ -2677,16 +2623,9 @@ void LOS::startEditor(PartList* pl, int type)
 //   startEditor
 //---------------------------------------------------------
 
-void LOS::startEditor(Track* t)
+void LOS::startEditor()
 {
-    switch (t->type())
-    {
-        case Track::MIDI:
-            startPerformer();
-            break;
-        default:
-            break;
-    }
+    startPerformer();
 }
 
 //---------------------------------------------------------
@@ -3183,7 +3122,7 @@ void LOS::kbAccel(int key)
 
 void LOS::cmd(int cmd)
 {
-    TrackList* tracks = song->tracks();
+    MidiTrackList* tracks = song->tracks();
     int l = song->lpos();
     int r = song->rpos();
 
@@ -3279,15 +3218,15 @@ void LOS::cmd(int cmd)
 
         case CMD_SELECT_ALL_TRACK:
         {
-            TrackList* tl = song->visibletracks();
-            TrackList selectedTracks = song->getSelectedTracks();
+            MidiTrackList* tl = song->visibletracks();
+            MidiTrackList selectedTracks = song->getSelectedTracks();
             bool select = true;
             if (selectedTracks.size() == tl->size())
             {
                 select = false;
             }
 
-            for (iTrack t = tl->begin(); t != tl->end(); ++t)
+            for (iMidiTrack t = tl->begin(); t != tl->end(); ++t)
             {
                 (*t)->setSelected(select);
             }
@@ -3308,7 +3247,7 @@ void LOS::cmd(int cmd)
             }
             else
             {
-                for (iTrack i = tracks->begin(); i != tracks->end(); ++i)
+                for (iMidiTrack i = tracks->begin(); i != tracks->end(); ++i)
                 {
                     PartList* parts = (*i)->parts();
                     for (iPart p = parts->begin(); p != parts->end(); ++p)
@@ -3346,7 +3285,7 @@ void LOS::cmd(int cmd)
         }
         break;
         case CMD_SELECT_PARTS:
-            for (iTrack i = tracks->begin(); i != tracks->end(); ++i)
+            for (iMidiTrack i = tracks->begin(); i != tracks->end(); ++i)
             {
                 if (!(*i)->selected())
                     continue;
@@ -3566,8 +3505,8 @@ void LOS::globalCut()
         return;
 
     song->startUndo();
-    TrackList* tracks = song->tracks();
-    for (iTrack it = tracks->begin(); it != tracks->end(); ++it)
+    MidiTrackList* tracks = song->tracks();
+    for (iMidiTrack it = tracks->begin(); it != tracks->end(); ++it)
     {
         MidiTrack* track = dynamic_cast<MidiTrack*> (*it);
         if (track == 0 || track->mute())
@@ -3678,8 +3617,8 @@ void LOS::globalInsert()
         return;
 
     song->startUndo();
-    TrackList* tracks = song->tracks();
-    for (iTrack it = tracks->begin(); it != tracks->end(); ++it)
+    MidiTrackList* tracks = song->tracks();
+    for (iMidiTrack it = tracks->begin(); it != tracks->end(); ++it)
     {
         MidiTrack* track = dynamic_cast<MidiTrack*> (*it);
         //
@@ -3743,8 +3682,8 @@ void LOS::globalSplit()
 {
     int pos = song->cpos();
     song->startUndo();
-    TrackList* tracks = song->tracks();
-    for (iTrack it = tracks->begin(); it != tracks->end(); ++it)
+    MidiTrackList* tracks = song->tracks();
+    for (iMidiTrack it = tracks->begin(); it != tracks->end(); ++it)
     {
         Track* track = *it;
         PartList* pl = track->parts();
@@ -3819,190 +3758,6 @@ bool LOS::checkRegionNotNull()
         return true;
     }
     return false;
-}
-
-//---------------------------------------------------------
-//   bounceToTrack
-//---------------------------------------------------------
-
-void LOS::bounceToTrack()
-{
-    if (audio->bounce())
-        return;
-
-    song->bounceOutput = 0;
-
-    if (song->waves()->empty())
-    {
-        QMessageBox::critical(this,
-                tr("LOS: Bounce to Track"),
-                tr("No wave tracks found")
-                );
-        return;
-    }
-
-    OutputHelperList* ol = song->outputs();
-    if (ol->empty())
-    {
-        QMessageBox::critical(this,
-                tr("LOS: Bounce to Track"),
-                tr("No audio output tracks found")
-                );
-        return;
-    }
-
-    if (checkRegionNotNull())
-        return;
-
-    AudioOutputHelper* out = 0;
-    // If only one output, pick it, else pick the first selected.
-    if (ol->size() == 1)
-        out = ol->front();
-    else
-    {
-        for (iAudioOutputHelper iao = ol->begin(); iao != ol->end(); ++iao)
-        {
-            AudioOutputHelper* o = *iao;
-            if (o->selected())
-            {
-                if (out)
-                {
-                    out = 0;
-                    break;
-                }
-                out = o;
-            }
-        }
-        if (!out)
-        {
-            QMessageBox::critical(this,
-                    tr("LOS: Bounce to Track"),
-                    tr("Select one audio output track,\nand one target wave track")
-                    );
-            return;
-        }
-    }
-
-    // search target track
-    TrackList* tl = song->tracks();
-    WaveTrack* track = 0;
-
-    for (iTrack it = tl->begin(); it != tl->end(); ++it)
-    {
-        Track* t = *it;
-        if (t->selected())
-        {
-            if (t->type() != Track::WAVE && t->type() != Track::WAVE_OUTPUT_HELPER)
-            {
-                track = 0;
-                break;
-            }
-            if (t->type() == Track::WAVE)
-            {
-                if (track)
-                {
-                    track = 0;
-                    break;
-                }
-                track = (WaveTrack*) t;
-            }
-
-        }
-    }
-
-    if (track == 0)
-    {
-        if (ol->size() == 1)
-        {
-            QMessageBox::critical(this,
-                    tr("LOS: Bounce to Track"),
-                    tr("Select one target wave track")
-                    );
-            return;
-        }
-        else
-        {
-            QMessageBox::critical(this,
-                    tr("LOS: Bounce to Track"),
-                    tr("Select one target wave track,\nand one audio output track")
-                    );
-            return;
-        }
-    }
-    song->setPos(0,song->lPos(),0,true,true);
-    song->bounceOutput = out;
-    song->bounceTrack = track;
-    song->setRecord(true);
-    song->setRecordFlag(track, true);
-    track->prepareRecording();
-    audio->msgBounce();
-    song->setPlay(true);
-}
-
-//---------------------------------------------------------
-//   bounceToFile
-//---------------------------------------------------------
-
-void LOS::bounceToFile(AudioOutputHelper* ao)
-{
-    if (audio->bounce())
-        return;
-    song->bounceOutput = 0;
-    if (!ao)
-    {
-        OutputHelperList* ol = song->outputs();
-        if (ol->empty())
-        {
-            QMessageBox::critical(this,
-                    tr("LOS: Bounce to File"),
-                    tr("No audio output tracks found")
-                    );
-            return;
-        }
-        // If only one output, pick it, else pick the first selected.
-        if (ol->size() == 1)
-            ao = ol->front();
-        else
-        {
-            for (iAudioOutputHelper iao = ol->begin(); iao != ol->end(); ++iao)
-            {
-                AudioOutputHelper* o = *iao;
-                if (o->selected())
-                {
-                    if (ao)
-                    {
-                        ao = 0;
-                        break;
-                    }
-                    ao = o;
-                }
-            }
-            if (ao == 0)
-            {
-                QMessageBox::critical(this,
-                        tr("LOS: Bounce to File"),
-                        tr("Select one audio output track")
-                        );
-                return;
-            }
-        }
-    }
-
-    if (checkRegionNotNull())
-        return;
-
-    SndFile* sf = getSndFile(0, this);
-    if (sf == 0)
-        return;
-
-    song->setPos(0,song->lPos(),0,true,true);
-    song->bounceOutput = ao;
-    ao->setRecFile(sf);
-    song->setRecord(true, false);
-    song->setRecordFlag(ao, true);
-    ao->prepareRecording();
-    audio->msgBounce();
-    song->setPlay(true);
 }
 
 //---------------------------------------------------------
@@ -4101,51 +3856,6 @@ void LOS::startEditInstrument()
 }
 
 //---------------------------------------------------------
-//   switchMixerAutomation
-//---------------------------------------------------------
-
-void LOS::switchMixerAutomation()
-{
-    automation = !automation;
-    // Clear all pressed and touched and rec event lists.
-    song->clearRecAutomation(true);
-
-    // printf("automation = %d\n", automation);
-    autoMixerAction->setChecked(automation);
-}
-
-//---------------------------------------------------------
-//   clearAutomation
-//---------------------------------------------------------
-
-void LOS::clearAutomation()
-{
-    printf("not implemented\n");
-}
-
-//---------------------------------------------------------
-//   takeAutomationSnapshot
-//---------------------------------------------------------
-
-void LOS::takeAutomationSnapshot()
-{
-    int frame = song->cPos().frame();
-    TrackList* tracks = song->tracks();
-    for (iTrack i = tracks->begin(); i != tracks->end(); ++i)
-    {
-        if ((*i)->isMidiTrack())
-            continue;
-        AudioTrack* track = (AudioTrack*) * i;
-        CtrlListList* cll = track->controller();
-        for (iCtrlList icl = cll->begin(); icl != cll->end(); ++icl)
-        {
-            double val = icl->second->curVal();
-            icl->second->add(frame, val);
-        }
-    }
-}
-
-//---------------------------------------------------------
 //   updateConfiguration
 //    called whenever the configuration has changed
 //---------------------------------------------------------
@@ -4181,7 +3891,6 @@ void LOS::updateConfiguration()
     //editDeleteSelectedAction has no acceleration
 
     trackMidiAction->setShortcut(shortcuts[SHRT_ADD_MIDI_TRACK].key);
-    trackWaveAction->setShortcut(shortcuts[SHRT_ADD_WAVE_TRACK].key);
 
     editSelectAllAction->setShortcut(shortcuts[SHRT_SELECT_ALL].key);
     editSelectAllTracksAction->setShortcut(shortcuts[SHRT_SEL_ALL_TRACK].key);
@@ -4221,13 +3930,7 @@ void LOS::updateConfiguration()
     midiRhythmAction->setShortcut(shortcuts[SHRT_RANDOM_RHYTHM_GENERATOR].key);
 #endif
 
-    audioBounce2TrackAction->setShortcut(shortcuts[SHRT_AUDIO_BOUNCE_TO_TRACK].key);
-    audioBounce2FileAction->setShortcut(shortcuts[SHRT_AUDIO_BOUNCE_TO_FILE].key);
     audioRestartAction->setShortcut(shortcuts[SHRT_AUDIO_RESTART].key);
-
-    autoMixerAction->setShortcut(shortcuts[SHRT_MIXER_AUTOMATION].key);
-    autoSnapshotAction->setShortcut(shortcuts[SHRT_MIXER_SNAPSHOT].key);
-    autoClearAction->setShortcut(shortcuts[SHRT_MIXER_AUTOMATION_CLEAR].key);
 
     settingsGlobalAction->setShortcut(shortcuts[SHRT_GLOBAL_CONFIG].key);
     settingsShortcutsAction->setShortcut(shortcuts[SHRT_CONFIG_SHORTCUTS].key);
@@ -4289,12 +3992,6 @@ void LOS::toggleBigTime(bool checked)
 void LOS::bigtimeClosed()
 {
     viewBigtimeAction->setChecked(false);
-}
-
-AudioPortConfig* LOS::getRoutingDialog(bool)
-{
-    configMidiAssign(0);
-    return midiAssignDialog->getAudioPortConfig();
 }
 
 QWidget* LOS::transportWindow()

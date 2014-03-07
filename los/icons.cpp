@@ -128,7 +128,6 @@
 #include "xpm/addtrack_audiooutput.xpm"
 #include "xpm/addtrack_auxsend.xpm"
 #include "xpm/addtrack_drumtrack.xpm"
-#include "xpm/addtrack_wavetrack.xpm"
 #include "xpm/edit_drumms.xpm"
 #include "xpm/edit_list.xpm"
 #include "xpm/remove_ctrl.xpm"
@@ -658,7 +657,6 @@ QPixmap* addtrack_audioinputIcon;
 QPixmap* addtrack_audiooutputIcon;
 QPixmap* addtrack_auxsendIcon;
 QPixmap* addtrack_drumtrackIcon;
-QPixmap* addtrack_wavetrackIcon;
 QPixmap* edit_drummsIcon;
 QPixmap* edit_listIcon;
 QPixmap* remove_ctrlIcon;
@@ -1371,7 +1369,6 @@ void initIcons()
     addtrack_audiooutputIcon      = new LOSPixmap(addtrack_audiooutput_xpm, nullptr);
     addtrack_auxsendIcon          = new LOSPixmap(addtrack_auxsend_xpm, nullptr);
     addtrack_drumtrackIcon        = new LOSPixmap(addtrack_drumtrack_xpm, nullptr);
-    addtrack_wavetrackIcon        = new LOSPixmap(addtrack_wavetrack_xpm, nullptr);
     edit_drummsIcon               = new LOSPixmap(edit_drumms_xpm, nullptr);
     edit_listIcon                 = new LOSPixmap(edit_list_xpm, nullptr);
     remove_ctrlIcon               = new LOSPixmap(remove_ctrl_xpm, nullptr);

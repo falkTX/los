@@ -608,10 +608,10 @@ bool LOS::importMidi(const QString name, bool merge)/*{{{*/
 
     if (!merge)
     {
-        TrackList* tl = song->tracks();
+        MidiTrackList* tl = song->tracks();
         if (!tl->empty())
         {
-            Track* track = tl->front();
+            MidiTrack* track = tl->front();
             track->setSelected(true);
         }
         song->initLen();
@@ -834,26 +834,18 @@ void LOS::importController(int channel, MidiPort* mport, int n)
 void LOS::importPart()
 {
     unsigned curPos = song->cpos();
-    TrackList* tracks = song->tracks();
-    Track* track = 0;
+    MidiTrackList* tracks = song->tracks();
+    MidiTrack* track = 0;
     // Get first selected track:
-    for (iTrack i = tracks->begin(); i != tracks->end(); i++)
+    for (iMidiTrack i = tracks->begin(); i != tracks->end(); i++)
     {
-        Track* t = *i;
+        MidiTrack* t = *i;
         if (t->selected())
         {
             // Changed by T356. Support mixed .mpt files.
-            //if (t->isMidiTrack()) {
-            if (t->isMidiTrack() || t->type() == Track::WAVE)
             {
                 track = t;
                 break;
-            }
-            else
-            {
-                //QMessageBox::warning(this, QString("LOS"), tr("Import part is only valid for midi tracks!"));
-                QMessageBox::warning(this, QString("LOS"), tr("Import part is only valid for midi and wave tracks!"));
-                return;
             }
         }
     }
@@ -889,7 +881,7 @@ void LOS::importPart()
 //   importPartToTrack
 //---------------------------------------------------------
 
-void LOS::importPartToTrack(QString& filename, unsigned tick, Track* track)
+void LOS::importPartToTrack(QString& filename, unsigned tick, MidiTrack* track)
 {
     bool popenFlag = false;
     FILE* fp = fileOpen(this, filename, ".mpt", "r", popenFlag, false, false);

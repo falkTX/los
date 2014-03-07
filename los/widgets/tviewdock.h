@@ -17,43 +17,42 @@ class QPoint;
 class TrackViewDock : public QFrame, public Ui::TViewDockBase {
     Q_OBJECT
 
-	private:
+    private:
 
-	private slots:
-		void btnUpClicked(bool);
-		void btnDownClicked(bool);
-		void btnDeleteClicked(bool);
-		void btnTVClicked(bool);
-		void trackviewInserted(QModelIndex, int, int);
-		void trackviewRemoved(QModelIndex, int, int);
-		void updateTrackView(int, QStandardItem*);
-		void contextPopupMenu(QPoint);
-		void templateContextPopupMenu(QPoint);
-		void currentTabChanged(int);
-		void populateInstrumentTemplates();
-	
-	protected:
-		QStandardItemModel* _tableModel;
-		QStandardItemModel* _autoTableModel;
+    private slots:
+        void btnUpClicked(bool);
+        void btnDownClicked(bool);
+        void btnDeleteClicked(bool);
+        void btnTVClicked(bool);
+        void trackviewInserted(QModelIndex, int, int);
+        void trackviewRemoved(QModelIndex, int, int);
+        void updateTrackView(int, QStandardItem*);
+        void contextPopupMenu(QPoint);
+        void templateContextPopupMenu(QPoint);
+        void currentTabChanged(int);
+        void populateInstrumentTemplates();
 
-		QStandardItemModel* _templateModel;
-		
-		QList<QIcon> m_icons;
+    protected:
+        QStandardItemModel* _tableModel;
+        QStandardItemModel* _autoTableModel;
 
-		QList<int> getSelectedRows(int);
-		void updateTableHeader();
-	
-	public slots:
-		virtual void trackviewChanged(QStandardItem*);
-		virtual void autoTrackviewChanged(QStandardItem*);
-		virtual void populateTable(int, bool s = false);
-		void selectStaticView(int);
-		void toggleButtons(bool);
-	
-	public:
-		TrackViewDock(QWidget* parent = 0);
-		~TrackViewDock();
-	
+        QStandardItemModel* _templateModel;
+
+        QList<QIcon> m_icons;
+
+        QList<int> getSelectedRows(int);
+        void updateTableHeader();
+
+    public slots:
+        virtual void trackviewChanged(QStandardItem*);
+        virtual void autoTrackviewChanged(QStandardItem*);
+        virtual void populateTable(int, bool s = false);
+        void toggleButtons(bool);
+
+    public:
+        TrackViewDock(QWidget* parent = 0);
+        ~TrackViewDock();
+
 };
 #endif
 

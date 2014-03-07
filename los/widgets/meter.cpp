@@ -23,7 +23,7 @@
 //   Meter
 //---------------------------------------------------------
 
-Meter::Meter(QWidget* parent, Track::TrackType track, MeterType type, Qt::Orientation layout)
+Meter::Meter(QWidget* parent, MeterType type, Qt::Orientation layout)
 : QFrame(parent) //Qt::WNoAutoErase
 {
     setBackgroundRole(QPalette::NoRole);
@@ -34,7 +34,6 @@ Meter::Meter(QWidget* parent, Track::TrackType track, MeterType type, Qt::Orient
     setAttribute(Qt::WA_OpaquePaintEvent);
 
     mtype = type;
-    m_track = track;
     m_layout = layout;
     m_redrawVU = false;
     overflow = false;
@@ -56,23 +55,8 @@ Meter::Meter(QWidget* parent, Track::TrackType track, MeterType type, Qt::Orient
     m_width = 0;
     m_scaledPixmap_w = m_pixmap_w->scaled(0, 1, Qt::IgnoreAspectRatio);
     m_scaledPixmap_h = m_pixmap_h->scaled(1, 0, Qt::IgnoreAspectRatio);
-    m_trackColor = QColor(0,0,255);
 
-    switch (m_track)
-    {
-    case Track::MIDI:
-        m_trackColor = QColor(1,230,238);
-        break;
-    case Track::WAVE:
-        m_trackColor = QColor(129,244,118);
-        break;
-    case Track::WAVE_INPUT_HELPER:
-        m_trackColor = QColor(189,122,214);
-        break;
-    case Track::WAVE_OUTPUT_HELPER:
-        m_trackColor = QColor(252,118,118);
-        break;
-    }
+    m_trackColor = QColor(1,230,238);
 }
 
 //---------------------------------------------------------

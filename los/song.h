@@ -32,7 +32,6 @@ struct AudioMsg;
 class Event;
 class Xml;
 class Sequencer;
-class Track;
 class Part;
 class MidiPart;
 class PartList;
@@ -147,15 +146,14 @@ private:
 
     int updateFlags;
 
-    QHash<qint64, Track*> m_tracks; //New indexed list of tracks
-    QHash<qint64, Track*> m_composerTracks;
-    QHash<qint64, Track*> m_viewTracks;
+    QHash<qint64, MidiTrack*> m_tracks; //New indexed list of tracks
+    QHash<qint64, MidiTrack*> m_composerTracks;
+    QHash<qint64, MidiTrack*> m_viewTracks;
 
     qint64 m_workingViewId;
     qint64 m_inputViewId;
     qint64 m_outputViewId;
     qint64 m_commentViewId;
-    qint64 m_masterId;
 
     //For maintaining the track order and track view order
     QList<qint64> m_trackIndex;
@@ -168,17 +166,14 @@ private:
     //At that time track will be able to have the same name without a problem
     QStringList m_tracknames;
 
-    TrackList _tracks; // tracklist as seen by globally
-    TrackList _artracks; // tracklist as seen by Composer
+    MidiTrackList _tracks; // tracklist as seen by globally
+    MidiTrackList _artracks; // tracklist as seen by Composer
 
     TrackViewList _tviews; // trackviewlist as seen by Composer
     TrackViewList _autotviews;
 
     MidiTrackList _midis;
-    WaveTrackList _waves;
-    TrackList _viewtracks;
-    InputHelperList _inputs; // audio input ports
-    OutputHelperList _outputs; // audio output ports
+    MidiTrackList _viewtracks;
 
     UndoList* undoList;
     UndoList* redoList;
@@ -246,8 +241,6 @@ public:
     bool viewselected;
     bool hasSelectedParts;
     QString associatedRoute;
-    WaveTrack* bounceTrack;
-    AudioOutputHelper* bounceOutput;
     void updatePos();
 
     void read(Xml&);
@@ -397,20 +390,16 @@ public:
     //   event manipulations
     //-----------------------------------------
 
-    //void cmdAddRecordedWave(WaveTrack* track, const Pos&, const Pos&);
-    void cmdAddRecordedWave(WaveTrack* track, Pos, Pos);
     void cmdAddRecordedEvents(MidiTrack*, EventList*, unsigned);
     bool addEvent(Event&, Part*);
     void changeEvent(Event&, Event&, Part*);
     void deleteEvent(Event&, Part*);
-    void cmdChangeWave(QString original, QString tmpfile, unsigned sx, unsigned ex);
 
     //-----------------------------------------
     //   part manipulations
     //-----------------------------------------
 
     void cmdResizePart(Track* t, Part* p, unsigned int size);
-    void cmdResizePartLeft(Track* t, Part* p, unsigned int start, unsigned int end, QPoint clickpos);
     void cmdSplitPart(Track* t, Part* p, int tick);
     void cmdGluePart(Track* t, Part* p);
 
@@ -418,7 +407,6 @@ public:
     void removePart(Part* part);
     void changePart(Part*, Part*);
     PartList* getSelectedMidiParts() const;
-    PartList* getSelectedWaveParts() const;
     bool msgRemoveParts();
 
     //void cmdChangePart(Part* oldPart, Part* newPart);
@@ -442,15 +430,15 @@ public:
     {
         return &m_tracknames;
     }
-    TrackList* tracks() {
+    MidiTrackList* tracks() {
         return &_tracks;
     }
 
-    TrackList* artracks() {
+    MidiTrackList* artracks() {
         return &_artracks;
     }
 
-    TrackList* visibletracks() {
+    MidiTrackList* visibletracks() {
             return &_viewtracks;
     }
 
@@ -466,55 +454,36 @@ public:
     }
     QList<Part*> selectedParts();
 
-    TrackList getSelectedTracks();
-    void setTrackHeights(TrackList& list, int height);
+    MidiTrackList getSelectedTracks();
+    void setTrackHeights(MidiTrackList& list, int height);
 
     MidiTrackList* midis() {
         return &_midis;
     }
 
-    WaveTrackList* waves() {
-        return &_waves;
-    }
-
-    InputHelperList* inputs() {
-        return &_inputs;
-    }
-
-    OutputHelperList* outputs() {
-        return &_outputs;
-    }
-
-    void cmdRemoveTrack(Track* track);
-    void removeTrack(Track* track);
-    void removeTrack1(Track* track);
-    void removeTrackRealtime(Track* track);
+    void cmdRemoveTrack(MidiTrack* track);
+    void removeTrack(MidiTrack* track);
+    void removeTrack1(MidiTrack* track);
+    void removeTrackRealtime(MidiTrack* track);
     void removeMarkedTracks();
-    void changeTrack(Track* oldTrack, Track* newTrack);
+    void changeTrack(MidiTrack* oldTrack, MidiTrack* newTrack);
     MidiTrack* findTrack(const Part* part) const;
-    Track* findTrack(const QString& name) const;
-    Track* findTrackById(qint64 id) const;
-    Track* findTrackByIdAndType(qint64 id, int type) const;
+    MidiTrack* findTrack(const QString& name) const;
+    MidiTrack* findTrackById(qint64 id) const;
     void swapTracks(int i1, int i2);
     void setChannelMute(int channel, bool flag);
-    void setRecordFlag(Track*, bool, bool monitor = false);
-    void insertTrack(Track*, int idx);
-    void insertTrack1(Track*, int idx);
-    void insertTrackRealtime(Track*, int idx);
+    void setRecordFlag(MidiTrack*, bool, bool monitor = false);
+    void insertTrack(MidiTrack*, int idx);
+    void insertTrack1(MidiTrack*, int idx);
+    void insertTrackRealtime(MidiTrack*, int idx);
     void deselectTracks();
     void deselectAllParts();
     void disarmAllTracks();
     void readRoute(Xml& xml);
     void recordEvent(MidiTrack*, Event&);
     void recordEvent(MidiPart*, Event&);
-    void msgInsertTrack(Track* track, int idx, bool u = true);
-    void clearRecAutomation(bool clearList);
-    void processAutomationEvents();
-    int execAutomationCtlPopup(AudioTrack*, const QPoint&, int);
-    int execMidiAutomationCtlPopup(MidiTrack*, MidiPart*, const QPoint&, int);
-    void connectJackRoutes(AudioTrack* track, bool disconnect);
+    void msgInsertTrack(MidiTrack* track, int idx, bool u = true);
     void updateSoloStates();
-    //void chooseMidiRoutes(QButton* /*parent*/, MidiTrack* /*track*/, bool /*dst*/);
 
     // TrackView
 
@@ -564,12 +533,6 @@ public:
     {
         return m_commentViewId;
     }
-    qint64 masterId()
-    {
-        return m_masterId;
-    }
-
-    void addMasterTrack();
 
     TrackView* addNewTrackView();
     TrackView* addTrackView();
@@ -602,8 +565,8 @@ public:
     void startUndo();
     void endUndo(int);
     //void undoOp(UndoOp::UndoType, Track* oTrack, Track* nTrack);
-    void undoOp(UndoOp::UndoType, int n, Track* oTrack, Track* nTrack);
-    void undoOp(UndoOp::UndoType, int, Track*);
+    void undoOp(UndoOp::UndoType, int n, MidiTrack* oTrack, MidiTrack* nTrack);
+    void undoOp(UndoOp::UndoType, int, MidiTrack*);
     void undoOp(UndoOp::UndoType, int, int, int = 0);
     void undoOp(UndoOp::UndoType, Part*);
     void undoOp(UndoOp::UndoType, LOSCommand*);
@@ -689,9 +652,9 @@ public slots:
     void seqSignal(int fd);
     void playMonitorEvent(int fd);
     void processMonitorMessage(const void*);
-    Track* addTrack(int, bool doUndo = true);
-    Track* addTrackByName(QString name, int t, int pos, bool doUndo);
-    Track* addNewTrack(QAction* action);
+    MidiTrack* addTrack(bool doUndo = true);
+    MidiTrack* addTrackByName(QString name, int pos, bool doUndo);
+    MidiTrack* addNewTrack(QAction* action);
     QString getScriptPath(int id, bool delivered);
     void populateScriptMenu(QMenu* menuPlugins, QObject* receiver);
     void updateTrackViews();

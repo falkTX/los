@@ -33,12 +33,9 @@ QT4_WRAP_CPP(widget_mocs
     toolbars/tools.h
     aboutbox_impl.h
     action.h
-    apconfig.h
     bigtime.h
     canvas.h
-#     checkbox.h
     comboQuant.h
-#     combobox.h
     confmport.h
     comment.h
     commentdock.h
@@ -48,21 +45,17 @@ QT4_WRAP_CPP(widget_mocs
     filedialog.h
     gatetime.h
     genset.h
-#     hitscale.h
     intlabel.h
     knob.h
     lcombo.h
     gcombo.h
     mixdowndialog.h
-#     mlabel.h
     mtscale.h
     pcscale.h
     tvieweditor.h
     tviewdock.h
     tracklistview.h
     trackheader.h
-#     rmap.h
-#     rmapdialog.h
     conductor/pctablemodel.h
     conductor/pctable.h
     conductor/Conductor.h
@@ -83,15 +76,10 @@ QT4_WRAP_CPP(widget_mocs
     songinfo.h
     spinbox.h
     spinboxFP.h
-#     splitter.h
-#     swidget.h
-#     tb1.h
     tempolabel.h
-#     ttoolbutton.h
     velocity.h
     view.h
     vscale.h
-#     menulist.h
     tviewmenu.h
     tablespinner.h
     instrumenttree.h
@@ -102,14 +90,12 @@ QT4_WRAP_CPP(widget_mocs
     midiassign.h
     midiportdelegate.h
     midipresetdelegate.h
-#     mixerview.h
     ccdelegate.h
     ccedit.h
     CreateTrackDialog.h
     ClipList/BookmarkList.h
     ClipList/AudioClipList.h
     ClipList/AudioPlayer.h
-    AutomationMenu.h
     StretchDialog.h
     TimeHeader.h
     TrackInstrumentMenu.h
@@ -125,7 +111,6 @@ QT4_WRAP_CPP(widget_mocs
 
 file(GLOB widgets_ui_files
     aboutbox.ui
-    apconfigbase.ui
     cliplisteditorbase.ui
     commentbase.ui
     commentdockbase.ui
@@ -150,7 +135,6 @@ file(GLOB widgets_ui_files
     trackvieweditorbase.ui
     tviewdockbase.ui
     trackheaderbase.ui
-#     rmapdialogbase.ui
     routemapbase.ui
     midiassignbase.ui
     cceditbase.ui
@@ -174,13 +158,10 @@ file(GLOB widgets_source_files
     toolbars/misctools.cpp
     toolbars/feedbacktools.cpp
     aboutbox_impl.cpp
-    apconfig.cpp
     bigtime.cpp
     canvas.cpp
-#     checkbox.cpp
     citem.cpp
     comboQuant.cpp
-#     combobox.cpp
     confmport.cpp
     comment.cpp
     commentdock.cpp
@@ -192,21 +173,17 @@ file(GLOB widgets_source_files
     filedialog.cpp
     gatetime.cpp
     genset.cpp
-#     hitscale.cpp
     intlabel.cpp
     knob.cpp
     lcombo.cpp
     gcombo.cpp
     mixdowndialog.cpp
-#     mlabel.cpp
     mmath.cpp
     conductor/Conductor.cpp
     tvieweditor.cpp
     tviewdock.cpp
     tracklistview.cpp
     trackheader.cpp
-#     rmap.cpp
-#     rmapdialog.cpp
     mtscale.cpp
     pcscale.cpp
     conductor/pctablemodel.cpp
@@ -230,16 +207,10 @@ file(GLOB widgets_source_files
     sliderbase.cpp
     spinbox.cpp
     spinboxFP.cpp
-#     splitter.cpp
-#     swidget.cpp
-#     tb1.cpp
     tempolabel.cpp
-#     ttoolbar.cpp
-#     ttoolbutton.cpp
     velocity.cpp
     view.cpp
     vscale.cpp
-#     menulist.cpp
     tviewmenu.cpp
     tablespinner.cpp
     instrumenttree.cpp
@@ -250,14 +221,12 @@ file(GLOB widgets_source_files
     midiassign.cpp
     midiportdelegate.cpp
     midipresetdelegate.cpp
-#     mixerview.cpp
     ccdelegate.cpp
     ccedit.cpp
     CreateTrackDialog.cpp
     ClipList/BookmarkList.cpp
     ClipList/AudioClipList.cpp
     ClipList/AudioPlayer.cpp
-    AutomationMenu.cpp
     StretchDialog.cpp
     TimeHeader.cpp
     TrackInstrumentMenu.cpp

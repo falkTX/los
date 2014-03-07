@@ -54,14 +54,12 @@ QT4_WRAP_CPP(los_moc_headers
     thread.h
     transport.h
     transpose.h
-#     value.h
     traverso_shared/TConfig.h
     traverso_shared/AddRemoveCtrlValues.h
     traverso_shared/CommandGroup.h
     traverso_shared/OOMCommand.h
     midimonitor.h
     FadeCurve.h
-#     AddRemoveTrackCommand.h
     TrackManager.h
     NameValidator.h
 )
@@ -77,9 +75,7 @@ QT4_ADD_RESOURCES(los_qrc_files
 file(GLOB core_source_files
     app.cpp
     audio.cpp
-#     audioconvert.cpp
     audioprefetch.cpp
-    audiotrack.cpp
     cobject.cpp
     conf.cpp
     ctrl.cpp
@@ -91,7 +87,6 @@ file(GLOB core_source_files
     help.cpp
     helper.cpp
     importmidi.cpp
-#    key.cpp
     memory.cpp
     midi.cpp
     midictrl.cpp
@@ -112,7 +107,6 @@ file(GLOB core_source_files
     sig.cpp
     song.cpp
     songfile.cpp
-#     stringparam.cpp
     tempo.cpp
     thread.cpp
     track.cpp
@@ -121,10 +115,8 @@ file(GLOB core_source_files
     transpose.cpp
     utils.cpp
     undo.cpp
-#     value.cpp
     wave.cpp
     waveevent.cpp
-    wavetrack.cpp
     xml.cpp
     traverso_shared/TConfig.cpp
     traverso_shared/AddRemoveCtrlValues.cpp
@@ -133,7 +125,6 @@ file(GLOB core_source_files
     midimonitor.cpp
     ccinfo.cpp
     FadeCurve.cpp
-#     AddRemoveTrackCommand.cpp
     TrackManager.cpp
     NameValidator.cpp
 )

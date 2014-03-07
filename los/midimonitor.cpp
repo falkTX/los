@@ -313,7 +313,7 @@ void MidiMonitor::msgSendMidiInputEvent(MEvent& event)/*{{{*/
     sendMsg1(&msg, sizeof (msg));
 }/*}}}*/
 
-void MidiMonitor::msgSendMidiOutputEvent(Track* track,  int ctl, int val)/*{{{*/
+void MidiMonitor::msgSendMidiOutputEvent(MidiTrack* track,  int ctl, int val)/*{{{*/
 {
     if(!isRunning())
         return;
@@ -339,7 +339,7 @@ void MidiMonitor::msgSendMidiOutputEvent(MidiPlayEvent ev)/*{{{*/
     sendMsg1(&msg, sizeof (msg));
 }/*}}}*/
 
-void MidiMonitor::msgSendAudioOutputEvent(Track* track, int ctl, double val)/*{{{*/
+void MidiMonitor::msgSendAudioOutputEvent(MidiTrack* track, int ctl, double val)/*{{{*/
 {
     if(!isRunning())
         return;
@@ -353,7 +353,7 @@ void MidiMonitor::msgSendAudioOutputEvent(Track* track, int ctl, double val)/*{{
     sendMsg1(&msg, sizeof (msg));
 }/*}}}*/
 
-void MidiMonitor::msgModifyTrackController(Track* track, int ctl, CCInfo* cc)/*{{{*/
+void MidiMonitor::msgModifyTrackController(MidiTrack* track, int ctl, CCInfo* cc)/*{{{*/
 {
     if(!isRunning())
         return;
@@ -383,7 +383,7 @@ void MidiMonitor::msgDeleteTrackController(CCInfo* cc)/*{{{*/
     }
 }/*}}}*/
 
-void MidiMonitor::msgModifyTrackPort(Track* track,int port)/*{{{*/
+void MidiMonitor::msgModifyTrackPort(MidiTrack* track,int port)/*{{{*/
 {
     if(!isRunning())
         return;
@@ -395,7 +395,7 @@ void MidiMonitor::msgModifyTrackPort(Track* track,int port)/*{{{*/
     sendMsg1(&msg, sizeof (msg));
 }/*}}}*/
 
-void MidiMonitor::msgAddMonitoredTrack(Track* track)/*{{{*/
+void MidiMonitor::msgAddMonitoredTrack(MidiTrack* track)/*{{{*/
 {
     if(!isRunning())
         return;
@@ -406,7 +406,7 @@ void MidiMonitor::msgAddMonitoredTrack(Track* track)/*{{{*/
     sendMsg1(&msg, sizeof (msg));
 }/*}}}*/
 
-void MidiMonitor::msgDeleteMonitoredTrack(Track* track)/*{{{*/
+void MidiMonitor::msgDeleteMonitoredTrack(MidiTrack* track)/*{{{*/
 {
     if(!isRunning())
         return;
@@ -559,8 +559,6 @@ void MidiMonitor::processMsg1(const void* m)/*{{{*/
                                 case CTRL_VOLUME:
                                 {
                                     //FIXME: For NRPN Support this needs to take into account the Controller type
-                                    if(info->track()->isMidiTrack())/*{{{*/
-                                    //if(data->track->isMidiTrack())
                                     {
                                         MidiTrack* track = (MidiTrack*)info->track();
                                         //MidiTrack* track = (MidiTrack*)data->track;
@@ -615,17 +613,10 @@ void MidiMonitor::processMsg1(const void* m)/*{{{*/
                                         //printf("ByteArray size in MidiMonitor: %d\n", ba.size());
                                         write(sigFd, ba.constData(), 16);*/
                                     }
-                                    else
-                                    {
-                                        //printf("track volume\n");
-                                        audio->msgSetVolume((AudioTrack*) info->track(), dbToTrackVol(midiToDb(msg->mevent.dataB())));
-                                        ((AudioTrack*) info->track())->startAutoRecord(AC_VOLUME, dbToTrackVol(midiToDb(msg->mevent.dataB())));
-                                    }/*}}}*/
                                 }
                                 break;
                                 case CTRL_PANPOT:
                                 {
-                                    if(info->track()->isMidiTrack())/*{{{*/
                                     {
                                         MidiTrack* track = (MidiTrack*)info->track();
                                         MonitorData mdata;
@@ -677,12 +668,6 @@ void MidiMonitor::processMsg1(const void* m)/*{{{*/
                                         //printf("ByteArray size in MidiMonitor: %d\n", ba.size());
                                         write(sigFd, ba.constData(), 16);*/
                                     }
-                                    else
-                                    {
-                                        //printf("track pan\n");
-                                        audio->msgSetPan(((AudioTrack*) info->track()), midiToTrackPan(msg->mevent.dataB()));
-                                        ((AudioTrack*) info->track())->recordAutomation(AC_PAN, midiToTrackPan(msg->mevent.dataB()));
-                                    }/*}}}*/
                                 }
                                 break;
                                 case CTRL_RECORD:
@@ -716,7 +701,6 @@ void MidiMonitor::processMsg1(const void* m)/*{{{*/
                                 break;
                                 default:
                                 {
-                                    if(info->track()->isMidiTrack())
                                     {
                                         MidiTrack* track = (MidiTrack*)info->track();
                                         MonitorData mdata;
@@ -947,14 +931,14 @@ void MidiMonitor::populateList()/*{{{*/
     m_outputports.clear();
     m_assignments.clear();
     //m_portccmap.clear();
-    for(ciTrack t = song->tracks()->begin(); t != song->tracks()->end(); ++t)
+    for(ciMidiTrack t = song->tracks()->begin(); t != song->tracks()->end(); ++t)
     {
         addMonitoredTrack((*t));
     }
     m_editing = false;
 }/*}}}*/
 
-void MidiMonitor::addMonitoredTrack(Track* t)/*{{{*/
+void MidiMonitor::addMonitoredTrack(MidiTrack* t)/*{{{*/
 {
     MidiAssignData* data = t->midiAssign();
     m_assignments[t->name()] = data;
@@ -970,14 +954,13 @@ void MidiMonitor::addMonitoredTrack(Track* t)/*{{{*/
             m_midimap.insert(info->assignedControl(), info);
         }
     }
-    if(t->isMidiTrack())
     {
         MidiTrack* track = (MidiTrack*)t;
         m_outputports.insert(track->outPort(), track->name());
     }
 }/*}}}*/
 
-void MidiMonitor::deleteMonitoredTrack(Track* t)/*{{{*/
+void MidiMonitor::deleteMonitoredTrack(MidiTrack* t)/*{{{*/
 {
     MidiAssignData* data = t->midiAssign();
     if(isAssigned(t->name()))
@@ -996,7 +979,6 @@ void MidiMonitor::deleteMonitoredTrack(Track* t)/*{{{*/
             m_midimap.remove(info->assignedControl(), info);
         }
     }
-    if(t->isMidiTrack())
     {
         MidiTrack* track = (MidiTrack*)t;
         if(isManagedOutputPort(track->outPort(), track->name()))

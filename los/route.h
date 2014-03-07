@@ -17,8 +17,8 @@
 #include "globaldefs.h"
 
 class QString;
-class Track;
 class MidiDevice;
+class MidiTrack;
 class Xml;
 
 //---------------------------------------------------------
@@ -35,14 +35,14 @@ struct Route
 
     union
     {
-        Track* track;
+        MidiTrack* track;
         MidiDevice* device;
         void* jackPort;
     };
 
     int midiPort; // p3.3.49 Midi port number. Best not to put this in the union to avoid problems?
-	qint64 midiPortId;
-	qint64 trackId;
+    qint64 midiPortId;
+    qint64 trackId;
 
     // Starting source channel (of the owner of this route). Normally zero for mono or stereo tracks, higher for multi-channel tracks.
     // NOTICE: channel is now a bit-wise channel mask, for MidiPort <-> MidiTrack routes.
@@ -60,8 +60,8 @@ struct Route
     unsigned char type; // 0 - track, 1 - jackPort, 2 - midi device, 3 - midi port
 
     Route(void* t, int ch = -1);
-    Route(Track* t, int ch = -1, int chans = -1);
-	Route(qint64 tid, int ch = -1, int chans = -1);
+    Route(MidiTrack* t, int ch = -1, int chans = -1);
+    Route(qint64 tid, int ch = -1, int chans = -1);
     Route(MidiDevice* d, int ch);
     Route(int port, int ch);
     Route(qint64 port, int ch);

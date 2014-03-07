@@ -143,7 +143,7 @@ void TrackView::setSelected(bool f)/*{{{*/
             TrackViewTrack* tvt = m_tracks.value(id);
             if(it)
             {
-                if(it->isMidiTrack() && tvt->hasSettings() && !tvt->is_virtual)
+                if(tvt->hasSettings() && !tvt->is_virtual)
                 {
                     MidiTrack* track = (MidiTrack*)it;
                     TrackSettings* tset = tvt->settings;
@@ -159,7 +159,7 @@ void TrackView::setSelected(bool f)/*{{{*/
                             int channel = track->outChannel();
                             int port = track->outPort();
 
-                            MidiPlayEvent ev(0, port, channel, ME_CONTROLLER, CTRL_PROGRAM, tset->program, (Track*)track);
+                            MidiPlayEvent ev(0, port, channel, ME_CONTROLLER, CTRL_PROGRAM, tset->program, track);
                             audio->msgPlayMidiEvent(&ev);
                         }
                     }
@@ -178,7 +178,7 @@ void TrackView::setSelected(bool f)/*{{{*/
             TrackViewTrack* tvt = m_tracks.value(id);
             if(it)
             {
-                if(it->isMidiTrack() && tvt->hasSettings() && !tvt->is_virtual)
+                if(tvt->hasSettings() && !tvt->is_virtual)
                 {
                     MidiTrack* track = (MidiTrack*) it;
                     TrackSettings* tset = tvt->settings;

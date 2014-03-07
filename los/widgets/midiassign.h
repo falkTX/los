@@ -15,7 +15,6 @@
 #include <QList>
 
 class QDialog;
-class Track;
 class QStandardItem;
 class QStandardItemModel;
 class QItemSelectionModel;
@@ -26,8 +25,8 @@ class QShowEvent;
 class QCloseEvent;
 class QPushButton;
 class MPConfig;
-//class MidiSyncConfig;
 class AudioPortConfig;
+class MidiTrack;
 
 class MidiAssignDialog : public QDialog, public Ui::MidiAssignBase
 {
@@ -44,29 +43,19 @@ class MidiAssignDialog : public QDialog, public Ui::MidiAssignBase
 
     QStringList _trackTypes;
     QList<int> m_allowed;
-    Track* m_selected;
+    MidiTrack* m_selected;
     MidiPort* m_selectport;
     int m_lasttype;
     QPushButton* m_btnReset;
     MPConfig *midiPortConfig;
-    //MidiSyncConfig* midiSyncConfig;
-    AudioPortConfig* audioPortConfig;
 
 public:
     MidiAssignDialog(QWidget* parent = 0);
     ~MidiAssignDialog();
 
-    MPConfig *getMidiPortConfig()
+    MPConfig* getMidiPortConfig()
     {
         return midiPortConfig;
-    }
-    /*MidiSyncConfig* getMidiSyncConfig()
-    {
-        return midiSyncConfig;
-    }*/
-    AudioPortConfig* getAudioPortConfig()
-    {
-        return audioPortConfig;
     }
 
 private slots:

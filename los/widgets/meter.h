@@ -20,14 +20,13 @@ class Meter : public QFrame
 {
     Q_OBJECT
 public:
-	enum MeterType
-	{
-	    DBMeter, LinMeter
-	};
+    enum MeterType
+    {
+        DBMeter, LinMeter
+    };
 
 private:
     MeterType mtype;
-    Track::TrackType m_track;
     bool overflow;
     double val;
     double maxVal;
@@ -38,14 +37,14 @@ private:
     QColor yellow;
     QColor bgColor;
     QColor m_trackColor;
-	Qt::Orientation m_layout;
-	bool m_redrawVU;
-	QPixmap *m_pixmap_h;
-	QPixmap *m_pixmap_w;
-	int m_height;
-	int m_width;
-	QPixmap m_scaledPixmap_w;
-	QPixmap m_scaledPixmap_h;
+    Qt::Orientation m_layout;
+    bool m_redrawVU;
+    QPixmap *m_pixmap_h;
+    QPixmap *m_pixmap_w;
+    int m_height;
+    int m_width;
+    QPixmap m_scaledPixmap_w;
+    QPixmap m_scaledPixmap_h;
 
     void drawVU(QPainter& p, int, int, int, bool);
 
@@ -62,8 +61,8 @@ signals:
     void meterClipped();
 
 public:
-	Meter(QWidget* parent, Track::TrackType track = Track::MIDI, MeterType type = DBMeter, Qt::Orientation = Qt::Vertical);
-	virtual ~Meter(){}
+    Meter(QWidget* parent, MeterType type = DBMeter, Qt::Orientation = Qt::Vertical);
+    virtual ~Meter(){}
     void setRange(double min, double max);
 };
 #endif

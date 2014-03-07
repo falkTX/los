@@ -274,11 +274,11 @@ Composer::Composer(QMainWindow* parent, const char* name)
 
     if(_tvdock)
     {
-        connect(m_trackheader, SIGNAL(trackInserted(int)), _tvdock, SLOT(selectStaticView(int)));
+        //connect(m_trackheader, SIGNAL(trackInserted()), _tvdock, SLOT(selectStaticView()));
     }
 
-    connect(m_trackheader, SIGNAL(selectionChanged(Track*)), SLOT(trackSelectionChanged()));
-    connect(m_trackheader, SIGNAL(selectionChanged(Track*)), midiConductor, SLOT(setTrack(Track*)));
+    connect(m_trackheader, SIGNAL(selectionChanged(MidiTrack*)), SLOT(trackSelectionChanged()));
+    connect(m_trackheader, SIGNAL(selectionChanged(MidiTrack*)), midiConductor, SLOT(setTrack(MidiTrack*)));
 
     //---------------------------------------------------
     //    Editor
@@ -363,8 +363,8 @@ Composer::Composer(QMainWindow* parent, const char* name)
     box->addWidget(split);
 
     connect(canvas, SIGNAL(setUsedTool(int)), this, SIGNAL(setUsedTool(int)));
-    connect(canvas, SIGNAL(trackChanged(Track*)), m_trackheader, SLOT(selectTrack(Track*)));
-    connect(canvas, SIGNAL(renameTrack(Track*)), m_trackheader, SLOT(renameTrack(Track*)));
+    connect(canvas, SIGNAL(trackChanged(MidiTrack*)), m_trackheader, SLOT(selectTrack(MidiTrack*)));
+    connect(canvas, SIGNAL(renameTrack(MidiTrack*)), m_trackheader, SLOT(renameTrack(MidiTrack*)));
     connect(m_trackheader, SIGNAL(keyPressExt(QKeyEvent*)), canvas, SLOT(redirKeypress(QKeyEvent*)));
     connect(canvas, SIGNAL(selectTrackAbove()), m_trackheader, SLOT(selectTrackAbove()));
     connect(canvas, SIGNAL(selectTrackBelow()), m_trackheader, SLOT(selectTrackBelow()));
@@ -385,7 +385,7 @@ Composer::Composer(QMainWindow* parent, const char* name)
     connect(time, SIGNAL(timeChanged(unsigned)), SLOT(setTime(unsigned)));
 
     connect(canvas, SIGNAL(tracklistChanged()), m_trackheader, SLOT(tracklistChanged()));
-    connect(canvas, SIGNAL(dclickPart(Track*)), SIGNAL(editPart(Track*)));
+    connect(canvas, SIGNAL(dclickPart(MidiTrack*)), SIGNAL(editPart(MidiTrack*)));
     connect(canvas, SIGNAL(startEditor(PartList*, int)), SIGNAL(startEditor(PartList*, int)));
 
     connect(song, SIGNAL(markerChanged(int)), SLOT(markerChanged(int)));
@@ -544,7 +544,7 @@ void Composer::currentTabChanged(int tab)
             {
                 //printf("PatchSequencer Tab clicked\n");
                 midiConductor->update();
-                if(selected && selected->isMidiTrack())
+                if(selected)
                     midiConductor->setTrack(selected);
             }
             if(m_clipList)
@@ -620,7 +620,7 @@ void Composer::setTool(int t)
 //   dclickPart
 //---------------------------------------------------------
 
-void Composer::dclickPart(Track* t)
+void Composer::dclickPart(MidiTrack* t)
 {
     emit editPart(t);
 }
@@ -781,10 +781,10 @@ void Composer::splitterMoved(int pos, int)
 
 void Composer::trackSelectionChanged()
 {
-    TrackList* tracks = song->visibletracks();
-    Track* track = 0;
+    MidiTrackList* tracks = song->visibletracks();
+    MidiTrack* track = 0;
 
-    for (iTrack t = tracks->begin(); t != tracks->end(); ++t)
+    for (iMidiTrack t = tracks->begin(); t != tracks->end(); ++t)
     {
         track = *t;
         if (track && track->selected())
@@ -807,21 +807,15 @@ void Composer::trackSelectionChanged()
         {
             vscroll->setValue(trackYPos - (canvas->height() / 2));
         }
-        if(selected->isMidiTrack())
         {
             raster->setCurrentIndex(config.midiRaster);
             //printf("Setting midi raster in trackSelectionChanged(%d)\n", config.midiRaster);
-        }
-        else
-        {
-            raster->setCurrentIndex(config.audioRaster);
-            //printf("Setting audio raster in trackSelectionChanged(%d)\n", config.audioRaster);
         }
         emit trackSelectionChanged(selected->id());
     }
 }
 
-CItem* Composer::addCanvasPart(Track* t)
+CItem* Composer::addCanvasPart(MidiTrack* t)
 {
     CItem* item = canvas->addPartAtCursor(t);
     canvas->newItem(item, false);
@@ -946,10 +940,7 @@ void Composer::_setRaster(int index, bool setDefault)
     song->setComposerRaster(_raster);
     if(selected && setDefault)
     {
-        if(selected->isMidiTrack())
-            config.midiRaster = index;
-        else
-            config.audioRaster = index;
+        config.midiRaster = index;;
     }
     canvas->redraw();
 }
@@ -1111,11 +1102,6 @@ void Composer::wheelEvent(QWheelEvent* ev)
     emit redirectWheelEvent(ev);
 }
 
-void Composer::controllerChanged(Track *t)
-{
-    canvas->controllerChanged(t);
-}
-
 //---------------------------------------------------------
 //  createDockMembers
 //---------------------------------------------------------
@@ -1154,7 +1140,7 @@ void Composer::updateConductor(int flags)
         updateTabs();
         return;
     }
-    if (selected->isMidiTrack())
+
     {
         if ((flags & SC_SELECTION) || (flags & SC_TRACK_REMOVED))
             updateTabs();
@@ -1165,11 +1151,6 @@ void Composer::updateConductor(int flags)
         else
             // Otherwise just regular update with specific flags.
             midiConductor->updateConductor(flags);
-    }
-    else
-    {
-        if ((flags & SC_SELECTION) || (flags & SC_TRACK_REMOVED))
-            updateTabs();
     }
 }
 
@@ -1182,15 +1163,8 @@ void Composer::updateTabs()/*{{{*/
     midiConductor->update();
     if(selected)
     {
-        if(selected->isMidiTrack())
         {
             _rtabs->setTabEnabled(1, true);
-        }
-        else
-        {
-            if(_rtabs->currentIndex() == 1)
-                _rtabs->setCurrentIndex(0);
-            _rtabs->setTabEnabled(1, false);
         }
     }
     else

@@ -33,11 +33,9 @@ class QStackedWidget;
 class ScrollScale;
 class MTScale;
 class SigScale;
-class Track;
 class Xml;
 class Splitter;
 class LabelCombo;
-//class PosLabel;
 class Conductor;
 class SpinBox;
 class TrackViewDock;
@@ -73,47 +71,47 @@ class Composer : public QWidget
     ComposerCanvas* canvas;
     ScrollScale* hscroll;
     QScrollBar* vscroll;
-	HeaderList* m_trackheader;
+    HeaderList* m_trackheader;
     MTScale* time;
-	SigScale* m_sigRuler;
+    SigScale* m_sigRuler;
     SpinBox* lenEntry;
     Conductor* midiConductor;
-	QScrollArea *listScroll;
-	EditToolBar *edittools;
-	TimeHeader* m_timeHeader;
-	CanvasNavigator virtualScroll;
-	TempoHeader* m_tempoHeader;
-	QTabWidget* m_headerTabs;
+    QScrollArea *listScroll;
+    EditToolBar *edittools;
+    TimeHeader* m_timeHeader;
+    CanvasNavigator virtualScroll;
+    TempoHeader* m_tempoHeader;
+    QTabWidget* m_headerTabs;
 
-    Track* selected;
+    MidiTrack* selected;
 
     LabelCombo* typeBox;
     QToolButton* ib;
     QSplitter* split;
-	QSplitter* m_splitter;
+    QSplitter* m_splitter;
     int songType;
     //PosLabel* cursorPos;
     SpinBox* globalTempoSpinBox;
     SpinBox* globalPitchSpinBox;
-	QTabWidget* _rtabs;
-	TrackViewDock* _tvdock;
-	AudioClipList* m_clipList;
-	CommentDock* _commentdock;
-	QWidget *central;
-	QVBoxLayout *mlayout;
-	double m_tempoStart;
-	double m_tempoEnd;
-	TempoEdit *m_startTempo;
-	TempoEdit *m_endTempo;
-	SigEdit* m_sigEdit;
-	QStackedWidget* m_headerToolBox;
-	DoubleSlider* m_tempoRange;
+    QTabWidget* _rtabs;
+    TrackViewDock* _tvdock;
+    AudioClipList* m_clipList;
+    CommentDock* _commentdock;
+    QWidget *central;
+    QVBoxLayout *mlayout;
+    double m_tempoStart;
+    double m_tempoEnd;
+    TempoEdit *m_startTempo;
+    TempoEdit *m_endTempo;
+    SigEdit* m_sigEdit;
+    QStackedWidget* m_headerToolBox;
+    DoubleSlider* m_tempoRange;
 
     unsigned cursVal;
     void createDockMembers();
     void updateTabs();
     bool eventFilter(QObject *obj, QEvent *event);
-	QWidget* headerCornerWidget(int tab);
+    QWidget* headerCornerWidget(int tab);
 
 private slots:
     void songlenChanged(int);
@@ -127,20 +125,20 @@ private slots:
     void setTempo50();
     void setTempo100();
     void setTempo200();
-	void splitterMoved(int, int);
-	void resourceDockAreaChanged(Qt::DockWidgetArea);
-	void currentTabChanged(int);
-	void composerViewChanged();
-	void updateScroll(int, int);
-	void headerTabChanged(int);
-	void setStartTempo(double);
-	void setEndTempo(double);
-	void posChanged(int, unsigned, bool);
+    void splitterMoved(int, int);
+    void resourceDockAreaChanged(Qt::DockWidgetArea);
+    void currentTabChanged(int);
+    void composerViewChanged();
+    void updateScroll(int, int);
+    void headerTabChanged(int);
+    void setStartTempo(double);
+    void setEndTempo(double);
+    void posChanged(int, unsigned, bool);
     void setTimeFromSig(unsigned);
 
 signals:
     void redirectWheelEvent(QWheelEvent*);
-    void editPart(Track*);
+    void editPart(MidiTrack*);
     void selectionChanged();
     void dropSongFile(const QString&);
     void dropMidiFile(const QString&);
@@ -150,57 +148,56 @@ signals:
     void updateFooterTool(int);
     //void addMarker(int);
     void setUsedTool(int);
-	void trackSelectionChanged(qint64);
+    void trackSelectionChanged(qint64);
 
 
 protected:
     virtual void wheelEvent(QWheelEvent* e);
 
 public slots:
-    void dclickPart(Track*);
+    void dclickPart(MidiTrack*);
     void setTool(int);
     void updateConductor(int flags);
     void configChanged();
-    void controllerChanged(Track *t);
     void showTrackViews();
     void _setRaster(int, bool setDefault = true);
     void verticalScrollSetYpos(unsigned);
-	void preloadControllers();
-	void heartBeat();
-	void updateAll();
+    void preloadControllers();
+    void heartBeat();
+    void updateAll();
 
 public:
 
     enum
     {
-	CMD_CUT_PART, CMD_COPY_PART, CMD_PASTE_PART, CMD_PASTE_CLONE_PART, CMD_PASTE_PART_TO_TRACK, CMD_PASTE_CLONE_PART_TO_TRACK,
-	CMD_INSERT_PART, CMD_INSERT_EMPTYMEAS, CMD_REMOVE_SELECTED_AUTOMATION_NODES, CMD_COPY_AUTOMATION_NODES, CMD_PASTE_AUTOMATION_NODES,
-	CMD_SELECT_ALL_AUTOMATION
+    CMD_CUT_PART, CMD_COPY_PART, CMD_PASTE_PART, CMD_PASTE_CLONE_PART, CMD_PASTE_PART_TO_TRACK, CMD_PASTE_CLONE_PART_TO_TRACK,
+    CMD_INSERT_PART, CMD_INSERT_EMPTYMEAS, CMD_REMOVE_SELECTED_AUTOMATION_NODES, CMD_COPY_AUTOMATION_NODES, CMD_PASTE_AUTOMATION_NODES,
+    CMD_SELECT_ALL_AUTOMATION
     };
 
     Composer(QMainWindow* parent, const char* name = 0);
-	~Composer();
+    ~Composer();
 
     ComposerCanvas* getCanvas()
     {
-		return canvas;
+        return canvas;
     }
 
-	void updateCanvas()
-	{
-		if(canvas)
-			canvas->update();
-	}
+    void updateCanvas()
+    {
+        if(canvas)
+            canvas->update();
+    }
 
-	CItem*  addCanvasPart(Track*);
+    CItem*  addCanvasPart(MidiTrack*);
 
     /*TList* getTrackList() const
     {
-	    return list;
+        return list;
     }
-	*/
-	bool isEditing();
-	void endEditing();
+    */
+    bool isEditing();
+    void endEditing();
 
     void setMode(int);
     void reset();
@@ -208,27 +205,27 @@ public:
     void writeStatus(int level, Xml&);
     void readStatus(Xml&);
 
-    Track* curTrack() const
+    MidiTrack* curTrack() const
     {
-	return selected;
+    return selected;
     }
     void cmd(int);
 
     bool isSingleSelection()
     {
-	return canvas->isSingleSelection();
+    return canvas->isSingleSelection();
     }
 
     int selectionSize()
     {
-	return canvas->selectionSize();
+    return canvas->selectionSize();
     }
     void setGlobalTempo(int);
     void clear();
 
     unsigned cursorValue()
     {
-	return cursVal;
+    return cursVal;
     }
 
 

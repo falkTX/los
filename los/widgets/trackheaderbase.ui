@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>259</width>
-    <height>157</height>
+    <width>257</width>
+    <height>155</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -138,7 +138,7 @@
             <number>0</number>
            </property>
            <item>
-            <layout class="QHBoxLayout" name="m_buttonHBox" stretch="0,0,0,0,0,0,0,0,0">
+            <layout class="QHBoxLayout" name="m_buttonHBox" stretch="0,0,0,0,0,0,0,0">
              <property name="spacing">
               <number>0</number>
              </property>
@@ -293,43 +293,6 @@
                </property>
                <property name="popupMode">
                 <enum>QToolButton::DelayedPopup</enum>
-               </property>
-               <property name="autoRaise">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QToolButton" name="m_btnAutomation">
-               <property name="minimumSize">
-                <size>
-                 <width>21</width>
-                 <height>18</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>21</width>
-                 <height>18</height>
-                </size>
-               </property>
-               <property name="focusPolicy">
-                <enum>Qt::NoFocus</enum>
-               </property>
-               <property name="acceptDrops">
-                <bool>false</bool>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-               <property name="iconSize">
-                <size>
-                 <width>21</width>
-                 <height>18</height>
-                </size>
-               </property>
-               <property name="checkable">
-                <bool>false</bool>
                </property>
                <property name="autoRaise">
                 <bool>true</bool>

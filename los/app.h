@@ -44,7 +44,6 @@ class Composer;
 class Instrument;
 class PopupMenu;
 class PopupView;
-class Track;
 class PrinterConfig;
 class MidiSyncConfig;
 class MRConfig;
@@ -64,8 +63,6 @@ class MidiTrack;
 class MidiInstrument;
 class MidiPort;
 class ShortcutConfig;
-class WaveTrack;
-class AudioOutputHelper;
 class EditInstrument;
 class AudioPortConfig;
 class QDocWidget;
@@ -123,7 +120,7 @@ class LOS : public QMainWindow
     QAction *editCutAction, *editCopyAction, *editPasteAction, *editInsertAction, *editPasteCloneAction, *editPaste2TrackAction;
     QAction *editPasteC2TAction, *editInsertEMAction, *editDeleteSelectedAction, *editSelectAllAction, *editDeselectAllAction, *editSelectAllTracksAction;
     QAction *editInvertSelectionAction, *editInsideLoopAction, *editOutsideLoopAction, *editAllPartsAction;
-    QAction *trackMidiAction, *trackWaveAction;
+    QAction *trackMidiAction;
     QAction *startPianoEditAction, *startDrumEditAction, *startListEditAction;
     QAction *masterGraphicAction, *masterListAction;
     QAction *midiTransposeAction;
@@ -144,10 +141,7 @@ class LOS : public QMainWindow
 #endif
 
     // Audio Menu Actions
-    QAction *audioBounce2TrackAction, *audioBounce2FileAction, *audioRestartAction;
-
-    // Automation Menu Actions
-    QAction *autoMixerAction, *autoSnapshotAction, *autoClearAction;
+    QAction *audioRestartAction;
 
     // Settings Menu Actions
     QAction *settingsGlobalAction, *settingsShortcutsAction;
@@ -306,7 +300,7 @@ private slots:
     void startListEditor(PartList*);
     void startDrumEditor();
     void startDrumEditor(PartList* /*pl*/, bool /*showDefaultCtrls*/ = false);
-    void startEditor(Track*);
+    void startEditor();
     void startPerformer();
     void startPerformer(PartList* /*pl*/, bool /*showDefaultCtrls*/ = false);
     void startWaveEditor();
@@ -349,13 +343,10 @@ private slots:
     void globalSplit();
     void copyRange();
     void cutEvents();
-    void bounceToTrack();
     void resetMidiDevices();
     void initMidiDevices();
     void localOff();
-    void switchMixerAutomation();
-    void takeAutomationSnapshot();
-    void clearAutomation();
+
     void bigtimeClosed();
     void markerClosed();
 
@@ -372,7 +363,6 @@ public slots:
     bool save();
     bool saveAs();
     void configGlobalSettings(int tab = 0);
-    void bounceToFile(AudioOutputHelper* ao = 0);
     void closeEvent(QCloseEvent*e);
     void loadProjectFile(const QString&);
     void loadProjectFile(const QString&, bool songTemplate, bool loadAll);
@@ -383,7 +373,6 @@ public slots:
     void showMarker(bool);
     void importMidi(const QString &file);
     void setUsedTool(int);
-    void importWave(Track* track = NULL);
 
     void routingPopupMenuAboutToHide();
     void configMidiAssign(int tab = -1);
@@ -417,17 +406,15 @@ public:
     void importController(int, MidiPort*, int);
     QWidget* transportWindow();
     QWidget* bigtimeWindow();
-    AudioPortConfig* getRoutingDialog(bool);
-    bool importWaveToTrack(QString& name, unsigned tick = 0, Track* track = NULL);
-    void importPartToTrack(QString& filename, unsigned tick, Track* track);
+    void importPartToTrack(QString& filename, unsigned tick, MidiTrack* track);
 
     void showTransport(bool flag);
 
     // Special 'stay-open' menu for routes.
     PopupMenu* getRoutingPopupMenu();
-    PopupMenu* prepareRoutingPopupMenu(Track* /*track*/, bool /*dst*/);
-    void routingPopupMenuActivated(Track* /*track*/, int /*id*/);
-    void updateRouteMenus(Track* /*track*/, QObject* /*master*/);
+    PopupMenu* prepareRoutingPopupMenu(MidiTrack* /*track*/, bool /*dst*/);
+    void routingPopupMenuActivated(MidiTrack* /*track*/, int /*id*/);
+    void updateRouteMenus(MidiTrack* /*track*/, QObject* /*master*/);
 
     QDockWidget* resourceDock() { return _resourceDock; }
     void addTransportToolbar();

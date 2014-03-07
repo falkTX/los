@@ -110,9 +110,6 @@ Audio::Audio()
     startRecordPos.setType(Pos::FRAMES);
     endRecordPos.setType(Pos::FRAMES);
 
-    _audioMonitor = 0;
-    _audioMaster = 0;
-
     //---------------------------------------------------
     //  establish pipes/sockets
     //---------------------------------------------------
@@ -156,24 +153,6 @@ bool Audio::start()
     {
         if (!initJackAudio())
         {
-            InputHelperList* itl = song->inputs();
-            for (iAudioInputHelper i = itl->begin(); i != itl->end(); ++i)
-            {
-                //printf("reconnecting input %s\n", (*i)->name().ascii());
-                for (int x = 0; x < (*i)->channels(); x++)
-                    (*i)->setJackPort(x, 0);
-                (*i)->setName((*i)->name()); // restore jack connection
-            }
-
-            OutputHelperList* otl = song->outputs();
-            for (iAudioOutputHelper i = otl->begin(); i != otl->end(); ++i)
-            {
-                //printf("reconnecting output %s\n", (*i)->name().ascii());
-                for (int x = 0; x < (*i)->channels(); x++)
-                    (*i)->setJackPort(x, 0);
-                //printf("name=%s\n",(*i)->name().toLatin1());
-                (*i)->setName((*i)->name()); // restore jack connection
-            }
         }
         else
         {
@@ -316,12 +295,8 @@ void Audio::process(unsigned frames)
         }
     }
 
-    OutputHelperList* ol = song->outputs();
     if (idle)
     {
-        // deliver no audio
-        for (iAudioOutputHelper i = ol->begin(); i != ol->end(); ++i)
-            (*i)->silence(frames);
         return;
     }
 
@@ -385,8 +360,6 @@ void Audio::process(unsigned frames)
 
     // printf("p %s %s %d\n", audioStates[jackState], audioStates[state], _pos.frame());
 
-    for (iAudioOutputHelper i = ol->begin(); i != ol->end(); ++i)
-        (*i)->processInit(frames);
     int samplePos = _pos.frame();
     int offset = 0; // buffer offset in audio buffers
 
@@ -480,8 +453,7 @@ void Audio::process(unsigned frames)
     //printf("Audio::process calling process1:\n");
 
     process1(samplePos, offset, frames);
-    for (iAudioOutputHelper i = ol->begin(); i != ol->end(); ++i)
-        (*i)->processWrite();
+
     if (isPlaying())
     {
         _pos += frames;
@@ -500,66 +472,6 @@ void Audio::process1(unsigned samplePos, unsigned offset, unsigned frames)
         processMidi();
     }
     //midiSeq->msgProcess();
-
-    //
-    // process not connected tracks
-    // to animate meter display
-    //
-    TrackList* tl = song->tracks();
-    AudioTrack* track;
-    int channels;
-    for (ciTrack it = tl->begin(); it != tl->end(); ++it)
-    {
-        Track* t = *it;
-        if (!t || t->isMidiTrack())
-            continue;
-        track = (AudioTrack*) t;
-
-        // For audio track types, synths etc. which need some kind of non-audio
-        //  (but possibly audio-affecting) processing always, even if their output path
-        //  is ultimately unconnected.
-        // Example: A fluidsynth instance whose output path ultimately led to nowhere
-        //  would not allow us to load a font. Since process() was driven by audio output,
-        //  in this case there was nothing driving the process() function which responds to
-        //  such gui commands. So I separated the events processing from process(), into this.
-        // It should be used for things like midi events, gui events etc. - things which need to
-        //  be done BEFORE all the AudioOutput::process() are called below. That does NOT include
-        //  audio processing, because THAT is done at the very end of this routine.
-        // This will also reset the track's processed flag.
-        track->preProcessAlways();
-    }
-
-    OutputHelperList* ol = song->outputs();
-    for (ciAudioOutputHelper i = ol->begin(); i != ol->end(); ++i)
-        (*i)->process(samplePos, offset, frames);
-
-    // Were ANY tracks unprocessed as a result of processing all the AudioOutputs, above?
-    // Not just unconnected ones, as previously done, but ones whose output path ultimately leads nowhere.
-    // Those tracks were missed, until this fix.
-    // Do them now. This will animate meters, and 'quietly' process some audio which needs to be done -
-    //  for example synths really need to be processed, 'quietly' or not, otherwise the next time
-    //  processing is 'turned on', if there was a backlog of events while it was off, then they all happen at once.
-    for (ciTrack it = tl->begin(); it != tl->end(); ++it)
-    {
-        Track* t = *it;
-        if (!t || t->isMidiTrack())
-            continue;
-        track = (AudioTrack*) t;
-        // Ignore unprocessed tracks which have an output route, because they will be processed by
-        //  whatever track(s) they are routed to.
-        if (!track->processed() && track->noOutRoute() && (track->type() != Track::WAVE_OUTPUT_HELPER))
-        {
-            channels = track->channels();
-            // Just a dummy buffer.
-            float* buffer[channels];
-            float data[frames * channels];
-            for (int i = 0; i < channels; ++i)
-                buffer[i] = data + i * frames;
-            //printf("Audio::process1 calling track->copyData for track:%s\n", track->name().toLatin1());
-
-            track->copyData(samplePos, channels, -1, -1, frames, buffer);
-        }
-    }
 }
 
 //---------------------------------------------------------
@@ -571,7 +483,7 @@ void Audio::processMsg(AudioMsg* msg)
     switch (msg->id)
     {
         case AUDIO_RECORD:
-            msg->snode->setRecordFlag2(msg->ival);
+            //msg->snode->setRecordFlag2(msg->ival);
             //TODO: hook this and send midi cc to bcf2000
             break;
         case AUDIO_ROUTEADD:
@@ -584,39 +496,39 @@ void Audio::processMsg(AudioMsg* msg)
             removeAllRoutes(msg->sroute, msg->droute);
             break;
         case AUDIO_VOL:
-            msg->snode->setVolume(msg->dval);
+            //msg->snode->setVolume(msg->dval);
             //TODO: hook this and send midi cc to bcf2000
             break;
         case AUDIO_PAN:
-            msg->snode->setPan(msg->dval);
+            //msg->snode->setPan(msg->dval);
             //TODO: hook this and send midi cc to bcf2000
             break;
         case AUDIO_SET_PREFADER:
-            msg->snode->setPrefader(msg->ival);
+            //msg->snode->setPrefader(msg->ival);
             break;
         case AUDIO_SET_CHANNELS:
-            msg->snode->setChannels(msg->ival);
+            //msg->snode->setChannels(msg->ival);
             break;
         case AUDIO_SWAP_CONTROLLER_IDX:
-            msg->snode->swapControllerIDX(msg->a, msg->b);
+            //msg->snode->swapControllerIDX(msg->a, msg->b);
             break;
         case AUDIO_CLEAR_CONTROLLER_EVENTS:
-            msg->snode->clearControllerEvents(msg->ival);
+            //msg->snode->clearControllerEvents(msg->ival);
             break;
         case AUDIO_SEEK_PREV_AC_EVENT:
-            msg->snode->seekPrevACEvent(msg->ival);
+            //msg->snode->seekPrevACEvent(msg->ival);
             break;
         case AUDIO_SEEK_NEXT_AC_EVENT:
-            msg->snode->seekNextACEvent(msg->ival);
+            //msg->snode->seekNextACEvent(msg->ival);
             break;
         case AUDIO_ERASE_AC_EVENT:
-            msg->snode->eraseACEvent(msg->ival, msg->a);
+            //msg->snode->eraseACEvent(msg->ival, msg->a);
             break;
         case AUDIO_ERASE_RANGE_AC_EVENTS:
-            msg->snode->eraseRangeACEvents(msg->ival, msg->a, msg->b);
+            //msg->snode->eraseRangeACEvents(msg->ival, msg->a, msg->b);
             break;
         case AUDIO_ADD_AC_EVENT:
-            msg->snode->addACEvent(msg->ival, msg->a, msg->dval);
+            //msg->snode->addACEvent(msg->ival, msg->a, msg->dval);
             break;
         case AUDIO_SET_SOLO:
             msg->track->setSolo((bool)msg->ival);
@@ -751,29 +663,6 @@ void Audio::seek(const Pos& p)
 }
 
 //---------------------------------------------------------
-//   writeTick
-//    called from audio prefetch thread context
-//    write another buffer to soundfile
-//---------------------------------------------------------
-
-void Audio::writeTick()
-{
-    AudioOutputHelper* ao = song->bounceOutput;
-    if (ao && song->outputs()->find(ao) != song->outputs()->end())
-    {
-        if (ao->recordFlag())
-            ao->record();
-    }
-    WaveTrackList* tl = song->waves();
-    for (iWaveTrack t = tl->begin(); t != tl->end(); ++t)
-    {
-        WaveTrack* track = *t;
-        if (track->recordFlag())
-            track->record();
-    }
-}
-
-//---------------------------------------------------------
 //   startRolling
 //---------------------------------------------------------
 
@@ -790,14 +679,6 @@ void Audio::startRolling()
     if (song->record())
     {
         recording = true;
-        TrackList* tracks = song->tracks();
-        for (iTrack i = tracks->begin(); i != tracks->end(); ++i)
-        {
-            if ((*i)->isMidiTrack())
-                continue;
-            if ((*i)->type() == Track::WAVE)
-                ((WaveTrack*) (*i))->resetMeter();
-        }
     }
     state = PLAY;
     write(sigFd, "1", 1); // Play
@@ -861,12 +742,6 @@ void Audio::stopRolling()
 
 #endif
 
-    WaveTrackList* tracks = song->waves();
-    for (iWaveTrack i = tracks->begin(); i != tracks->end(); ++i)
-    {
-        WaveTrack* track = *i;
-        track->resetMeter();
-    }
     recording = false;
     endRecordPos = _pos;
     write(sigFd, "0", 1); // STOP
@@ -884,24 +759,7 @@ void Audio::recordStop()
     audio->msgIdle(true); // gain access to all data structures
 
     song->startUndo();
-    WaveTrackList* wl = song->waves();
 
-    for (iWaveTrack it = wl->begin(); it != wl->end(); ++it)
-    {
-        WaveTrack* track = *it;
-        if (track->recordFlag() || song->bounceTrack == track)
-        {
-            song->cmdAddRecordedWave(track, startRecordPos, endRecordPos);
-            // The track's _recFile pointer may have been kept and turned
-            //  into a SndFileR and added to a new part.
-            // Or _recFile may have been discarded (no new recorded part created).
-            // Regardless, we are done with the pointer itself. Set to zero so
-            //  song->setRecordFlag knows about it...
-
-            track->setRecFile(0); // flush out the old file
-            song->setRecordFlag(track, false); //
-        }
-    }
     MidiTrackList* ml = song->midis();
     for (iMidiTrack it = ml->begin(); it != ml->end(); ++it)
     {
@@ -921,25 +779,6 @@ void Audio::recordStop()
         mpel->clear();
     }
 
-    //
-    // bounce to file operates on the only
-    // selected output port
-    //
-
-    AudioOutputHelper* ao = song->bounceOutput;
-    if (ao && song->outputs()->find(ao) != song->outputs()->end())
-    {
-        if (ao->recordFlag())
-        {
-            song->bounceOutput = 0;
-            SndFile* sf = ao->recFile();
-            if (sf)
-                delete sf; // close
-            ao->setRecFile(0);
-            ao->setRecordFlag1(false);
-            msgSetRecord(ao, false);
-        }
-    }
     audio->msgIdle(false);
     song->endUndo(0);
     song->setRecord(false);

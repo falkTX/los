@@ -1372,7 +1372,7 @@ void Performer::keyPressEvent(QKeyEvent* event)/*{{{*/
     else if (key == shortcuts[SHRT_TRACK_TOGGLE_SOLO].key)
     {
         if (canvas->part()) {
-            Track* t = canvas->part()->track();
+            MidiTrack* t = canvas->part()->track();
             audio->msgSetSolo(t, !t->solo());
             song->update(SC_SOLO);
         }
@@ -1649,7 +1649,7 @@ void Performer::updateConductor()/*{{{*/
     if(selected != curCanvasPart()->track())
     {
         selected = curCanvasPart()->track();
-        if (selected->isMidiTrack())
+
         {
             midiConductor->setTrack(selected);
             ///midiConductor->updateConductor(-1);

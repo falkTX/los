@@ -77,7 +77,6 @@ void chainCloneInternal(Part* p)/*{{{*/
     // Look for a part with the same event list, that we can chain to.
     // It's faster if track type is known...
 
-    if (!t || (t && t->isMidiTrack()))
     {
         MidiTrack* mt = 0;
         MidiTrackList* mtl = song->midis();
@@ -100,26 +99,6 @@ void chainCloneInternal(Part* p)/*{{{*/
             // Otherwise keep looking for parts on another track. If no others found, then we
             //  chain to any suitable part which was found on the same given track t.
             if (p1 && mt != t)
-                break;
-        }
-    }
-    if ((!p1 && !t) || (t && t->type() == Track::WAVE))
-    {
-        WaveTrack* wt = 0;
-        WaveTrackList* wtl = song->waves();
-        for (ciWaveTrack iwt = wtl->begin(); iwt != wtl->end(); ++iwt)
-        {
-            wt = *iwt;
-            const PartList* pl = wt->cparts();
-            for (ciPart ip = pl->begin(); ip != pl->end(); ++ip)
-            {
-                if (ip->second != p && ip->second->cevents() == p->cevents())
-                {
-                    p1 = ip->second;
-                    break;
-                }
-            }
-            if (p1 && wt != t)
                 break;
         }
     }
@@ -233,7 +212,7 @@ void replaceClone(Part* p1, Part* p2)
 //   unchainTrackParts
 //---------------------------------------------------------
 
-void unchainTrackParts(Track* t, bool decRefCount)/*{{{*/
+void unchainTrackParts(MidiTrack* t, bool decRefCount)/*{{{*/
 {
     PartList* pl = t->parts();
     for (iPart ip = pl->begin(); ip != pl->end(); ++ip)
@@ -259,7 +238,7 @@ void unchainTrackParts(Track* t, bool decRefCount)/*{{{*/
 //   chainTrackParts
 //---------------------------------------------------------
 
-void chainTrackParts(Track* t, bool incRefCount)/*{{{*/
+void chainTrackParts(MidiTrack* t, bool incRefCount)/*{{{*/
 {
     PartList* pl = t->parts();
     for (iPart ip = pl->begin(); ip != pl->end(); ++ip)
@@ -279,7 +258,6 @@ void chainTrackParts(Track* t, bool incRefCount)/*{{{*/
         // Look for a part with the same event list, that we can chain to.
         // It's faster if track type is known...
 
-        if (!t || (t && t->isMidiTrack()))
         {
             MidiTrack* mt = 0;
             MidiTrackList* mtl = song->midis();
@@ -302,26 +280,6 @@ void chainTrackParts(Track* t, bool incRefCount)/*{{{*/
                 // Otherwise keep looking for parts on another track. If no others found, then we
                 //  chain to any suitable part which was found on the same given track t.
                 if (p1 && mt != t)
-                    break;
-            }
-        }
-        if ((!p1 && !t) || (t && t->type() == Track::WAVE))
-        {
-            WaveTrack* wt = 0;
-            WaveTrackList* wtl = song->waves();
-            for (ciWaveTrack iwt = wtl->begin(); iwt != wtl->end(); ++iwt)
-            {
-                wt = *iwt;
-                const PartList* pl = wt->cparts();
-                for (ciPart ip = pl->begin(); ip != pl->end(); ++ip)
-                {
-                    if (ip->second != p && ip->second->cevents() == p->cevents())
-                    {
-                        p1 = ip->second;
-                        break;
-                    }
-                }
-                if (p1 && wt != t)
                     break;
             }
         }
@@ -378,7 +336,7 @@ void addPortCtrlEvents(Event& event, Part* part, bool doClones)/*{{{*/
             //printf("addPortCtrlEvents i:%d %s %p events %p refs:%d arefs:%d\n", i, p->name().toLatin1().constData(), p, part->cevents(), part->cevents()->refCount(), j);
 
             Track* t = p->track();
-            if (t && t->isMidiTrack())
+            if (t)
             {
                 MidiTrack* mt = (MidiTrack*) t;
                 int port = mt->outPort();
@@ -438,8 +396,8 @@ void addPortCtrlEvents(Part* part, bool doClones)/*{{{*/
             // Added by Tim. p3.3.6
             //printf("addPortCtrlEvents i:%d %s %p events %p refs:%d arefs:%d\n", i, p->name().toLatin1().constData(), p, part->cevents(), part->cevents()->refCount(), j);
 
-            Track* t = p->track();
-            if (t && t->isMidiTrack())
+            MidiTrack* t = p->track();
+            if (t)
             {
                 MidiTrack* mt = (MidiTrack*) t;
                 int port = mt->outPort();
@@ -492,8 +450,8 @@ void removePortCtrlEvents(Event& event, Part* part, bool doClones)/*{{{*/
         //for(int i = 0; i < j; ++i)
         while (1)
         {
-            Track* t = p->track();
-            if (t && t->isMidiTrack())
+            MidiTrack* t = p->track();
+            if (t)
             {
                 MidiTrack* mt = (MidiTrack*) t;
                 int port = mt->outPort();
@@ -548,8 +506,8 @@ void removePortCtrlEvents(Part* part, bool doClones)/*{{{*/
         //for(int i = 0; i < j; ++i)
         while (1)
         {
-            Track* t = p->track();
-            if (t && t->isMidiTrack())
+            MidiTrack* t = p->track();
+            if (t)
             {
                 MidiTrack* mt = (MidiTrack*) t;
                 int port = mt->outPort();
@@ -631,7 +589,7 @@ Part* PartList::find(int idx)
 //   Part
 //---------------------------------------------------------
 
-Part::Part(Track* t)
+Part::Part(MidiTrack* t)
 {
     _prevClone = this;
     _nextClone = this;
@@ -640,8 +598,6 @@ Part::Part(Track* t)
     _selected = false;
     _mute = false;
     m_zIndex = 0;
-    m_leftClip = 0;
-    m_rightClip = 0;
     _colorIndex = 1;
     if(t)
         _colorIndex = t->getDefaultPartColor();
@@ -654,7 +610,7 @@ Part::Part(Track* t)
 //   Part
 //---------------------------------------------------------
 
-Part::Part(Track* t, EventList* ev)
+Part::Part(MidiTrack* t, EventList* ev)
 {
     _prevClone = this;
     _nextClone = this;
@@ -663,8 +619,6 @@ Part::Part(Track* t, EventList* ev)
     _selected = false;
     _mute = false;
     m_zIndex = 0;
-    m_leftClip = 0;
-    m_rightClip = 0;
     _colorIndex = 1;
     if(t)
         _colorIndex = t->getDefaultPartColor();
@@ -679,10 +633,6 @@ void Part::setZIndex(int i)
     if(_track)
     {
         _track->setMaxZIndex(i);
-        if (_track->type() == Track::WAVE)
-        {
-            ((WaveTrack*)_track)->calculateCrossFades();
-        }
     }
 }
 
@@ -701,124 +651,6 @@ MidiPart::MidiPart(const MidiPart& p) : Part(p)
     _prevClone = this;
     _nextClone = this;
     m_zIndex = p.m_zIndex;
-}
-
-//---------------------------------------------------------
-//   WavePart
-//---------------------------------------------------------
-
-WavePart::WavePart(WaveTrack* t)
-: Part(t)
-{
-    setType(FRAMES);
-    init();
-}
-
-WavePart::WavePart(WaveTrack* t, EventList* ev)
-: Part(t, ev)
-{
-    setType(FRAMES);
-    init();
-}
-
-//---------------------------------------------------------
-//   WavePart
-//   copy constructor
-//---------------------------------------------------------
-
-WavePart::WavePart(const WavePart& p) : Part(p)
-{
-    _prevClone = this;
-    _nextClone = this;
-    m_zIndex = p.m_zIndex;
-    m_leftClip = p.m_leftClip;
-    m_rightClip = p.m_rightClip;
-    m_fadeIn = p.m_fadeIn;
-    m_fadeIn->setPart(this);
-    m_fadeOut = p.m_fadeOut;
-    m_fadeOut->setPart(this);
-    m_crossFadeIn = p.m_crossFadeIn;
-    m_crossFadeIn->setPart(this);
-    m_crossFadeOut = p.m_crossFadeOut;
-    m_crossFadeOut->setPart(this);
-    m_hasCrossFadeForPartialOverlapLeft = p.m_hasCrossFadeForPartialOverlapLeft;
-    m_hasCrossFadeForPartialOverlapRight = p.m_hasCrossFadeForPartialOverlapRight;
-}
-
-void WavePart::init()
-{
-    m_fadeIn = new FadeCurve(FadeCurve::FadeIn, FadeCurve::Linear, this);
-    m_fadeOut = new FadeCurve(FadeCurve::FadeOut, FadeCurve::Linear, this);
-    m_crossFadeIn = new FadeCurve(FadeCurve::FadeIn, FadeCurve::Linear, this);
-    m_crossFadeOut = new FadeCurve(FadeCurve::FadeOut, FadeCurve::Linear, this);
-    m_hasCrossFadeForPartialOverlapLeft = false;
-    m_hasCrossFadeForPartialOverlapRight = false;
-}
-
-float WavePart::gain(unsigned pos)
-{
-    float gainValue;
-
-    QList<FadeCurve*> fadeIns;
-    fadeIns << m_fadeIn;
-    if (m_crossFadeIn && m_crossFadeIn->width())
-    {
-        fadeIns << m_crossFadeIn;
-    }
-
-    QList<FadeCurve*> fadeOuts;
-    fadeOuts << m_fadeOut;
-
-    if (m_crossFadeOut && m_crossFadeOut->width())
-    {
-        fadeOuts << m_crossFadeOut;
-    }
-
-    gainValue = getFadeInValue(pos, fadeIns);
-    gainValue *= getFadeOutValue(pos, fadeOuts);
-
-    return gainValue;
-}
-
-float WavePart::getFadeOutValue(unsigned pos, QList<FadeCurve *> fades)
-{
-    float gain = 1.0f;
-
-    foreach(FadeCurve* fadeOut, fades)
-    {
-        unsigned posToPart = pos - frame();
-        unsigned fadeStartPos = fadeOut->getFrame();
-        unsigned fadeEndPos = fadeStartPos + fadeOut->width();
-
-        if (posToPart >= fadeStartPos && posToPart <= fadeEndPos && fadeOut->width() > 0)
-        {
-            float factor = float(posToPart - fadeStartPos) / fadeOut->width();
-            gain *= (1.0f - factor);
-        }
-    }
-
-    return gain;
-}
-
-
-float WavePart::getFadeInValue(unsigned pos, QList<FadeCurve *> fades)
-{
-    float gain = 1.0f;
-
-    foreach(FadeCurve* fadeIn, fades)
-    {
-        unsigned posToPart = pos - frame();
-        unsigned fadeStartPos = fadeIn->getFrame();
-        unsigned fadeEndPos = fadeStartPos + fadeIn->width();
-
-        if (posToPart >= fadeStartPos && posToPart < fadeEndPos && fadeIn->width() > 0)
-        {
-            float factor = float(posToPart - fadeStartPos) / fadeIn->width();
-            gain *= factor;
-        }
-    }
-
-    return gain;
 }
 
 //---------------------------------------------------------
@@ -873,7 +705,7 @@ Part* PartList::findAtTick(unsigned tick)/*{{{*/
     return rv;
 }/*}}}*/
 
-PartMap PartList::partMap(Track* track)
+PartMap PartList::partMap(MidiTrack* track)
 {
     PartMap pmap;
     PartList* list = new PartList;
@@ -889,9 +721,9 @@ PartMap PartList::partMap(Track* track)
     return pmap;
 }
 
-QList<Track*> PartList::tracks()
+QList<MidiTrack*> PartList::tracks()
 {
-    QList<Track*> list;
+    QList<MidiTrack*> list;
     for (iPart i = begin(); i != end(); ++i)
     {
         if(list.isEmpty() || !list.contains(i->second->track()))
@@ -978,154 +810,6 @@ void Song::removePart(Part* part)
 
 void Song::cmdResizePart(Track* track, Part* oPart, unsigned int len)/*{{{*/
 {
-    switch (track->type())
-    {
-        case Track::WAVE:
-        {
-            WavePart* nPart = new WavePart(*(WavePart*) oPart);
-            EventList* el = nPart->events();
-            unsigned part_start = oPart->tick();
-            unsigned new_partlength = tempomap.deltaTick2frame(oPart->tick(), oPart->tick() + len);
-            //printf("new partlength in frames: %d\n", new_partlength);
-
-            // If new nr of frames is less than previous what can happen is:
-            // -   0 or more events are beginning after the new final position. Those are removed from the part
-            // -   The last event begins before new final position and ends after it.
-            //     If so, it will be resized to end at new part length
-            if (new_partlength < oPart->lenFrame())
-            {
-                startUndo();
-
-                // decide if we should change the current part or not. if not stretching, then always true
-                bool changePart = (los->getCurrentTool() != StretchTool);
-
-                //for (iEvent i = el->begin(); i != el->end(); i++)
-                if (!el->empty())
-                {
-                    iEvent i = el->end();
-                    i--;
-                    Event e = i->second;
-                    unsigned event_startframe = e.frame();
-                    unsigned event_endframe = event_startframe + e.lenFrame();
-                    unsigned rclip = oPart->rightClip();
-                    unsigned clipframes = -1;
-                    SndFileR file = e.sndFile();
-                    if (!file.isNull())
-                    {
-                        clipframes = (file.samples() - e.spos());
-                        //printf("SndFileR samples=%d channels=%d event samplepos=%d event frame=%d clipframes=%d \n", file.samples(), file.channels(), e.spos(), e.frame(), clipframes);
-                    }
-                    unsigned int samples = file.samples();
-                    unsigned int samplepos = e.spos();
-                    unsigned maxsamples = samples - samplepos;
-                    unsigned int maxpos = part_start + maxsamples;
-                    if(new_partlength > maxpos)
-                    {//Adjust part to be the max end of the event
-                        new_partlength = maxpos;
-                    }
-                    //printf("Event frame=%d, length=%d\n", event_startframe, event_length);
-                    /*if (event_endframe < new_partlength)
-                    {
-                        //printf("event_endframe < new_partlength\n");
-                        continue;
-                    }*/
-
-                    printf("Part start: %d, Event start: %d\n", part_start, event_startframe);
-                    if (event_endframe > new_partlength)
-                    { // If this event starts before new length and ends after, shrink it
-                        Event newEvent = e.clone();
-                        newEvent.setLenFrame(new_partlength - event_startframe);
-                        rclip = clipframes - newEvent.lenFrame();
-                        newEvent.setRightClip(rclip);
-                        nPart->setRightClip(rclip);
-                        //printf("newEvent.setLenFrame(new_partlength:%d - event_startframe:%d) = %d right clip=%d\n",new_partlength, event_startframe, (new_partlength - event_startframe), rclip);
-                        // Indicate no undo, and do not do port controller values and clone parts.
-                        if (los->getCurrentTool() == StretchTool)
-                        {
-                            StretchDialog sdialog;
-                            sdialog.setFile(file.path(), file.dirPath());
-                            if (sdialog.exec())
-                            {
-                                //nPart->addEvent()
-                                //WaveEvent newEvent = new WaveEvent(Wave);
-                                //newEvent.setLenFrame(new_partlength - event_startframe);
-                                nPart->setLenFrame(new_partlength);
-                                audio->msgChangePart(oPart, nPart, false, false, false);
-                            }
-                            else
-                                qWarning("Stretch cancelled");
-                        }
-                        else
-                            audio->msgChangeEvent(e, newEvent, nPart, false, false, false);
-                    }
-                }
-
-                if (changePart)
-                {
-                    nPart->setLenFrame(new_partlength);
-                    // Indicate no undo, and do not do port controller values and clone parts.
-                    audio->msgChangePart(oPart, nPart, false, false, false);
-                }
-
-                endUndo(SC_PART_MODIFIED);
-            }
-                // If the part is expanded there can be no additional events beginning after the previous final position
-                // since those are removed if the part has been shrunk at some time (see above)
-                // The only thing we need to check is the final event: If it has data after the previous final position,
-                // we'll expand that event
-            else
-            {
-                if (!el->empty())
-                {
-                    iEvent i = el->end();
-                    i--;
-                    Event last = i->second;
-                    unsigned last_start = last.frame();
-                    SndFileR file = last.sndFile();
-                    if (file.isNull())
-                        return;
-
-                    unsigned int samples = file.samples();
-                    unsigned int samplepos = last.spos();
-                    unsigned maxsamples = samples - samplepos;
-                    unsigned int maxpos = part_start + maxsamples;
-                    if(new_partlength > maxpos)
-                    {//Adjust part to be the max end of the event
-                        new_partlength = maxpos;
-                    }
-                    printf("Part start: %d, Event start: %d\n", part_start, last_start);
-                    unsigned clipframes = (file.samples() - last.spos());
-                    Event newEvent = last.clone();
-                    //printf("SndFileR samples=%d channels=%d event samplepos=%d clipframes=%d\n", file.samples(), file.channels(), last.spos(), clipframes);
-
-                    unsigned new_eventlength = new_partlength - last_start;
-                    if (new_eventlength > clipframes) // Shrink event length if new partlength exceeds last clip
-                    {
-                        new_eventlength = clipframes;
-                    }
-
-                    newEvent.setLenFrame(new_eventlength);
-                    unsigned int rclip = clipframes - new_eventlength;
-                    newEvent.setRightClip(rclip);
-                    nPart->setRightClip(rclip);
-                    startUndo();
-                    // Indicate no undo, and do not do port controller values and clone parts.
-                    audio->msgChangeEvent(last, newEvent, nPart, false, false, false);
-                }
-                else
-                {
-                    startUndo();
-                }
-
-                nPart->setLenFrame(new_partlength);
-                // Indicate no undo, and do not do port controller values and clone parts.
-                //audio->msgChangePart(oPart, nPart, false);
-                audio->msgChangePart(oPart, nPart, false, false, false);
-                endUndo(SC_PART_MODIFIED);
-            }
-        }
-            break;
-        case Track::MIDI:
         {
             startUndo();
 
@@ -1177,127 +861,8 @@ void Song::cmdResizePart(Track* track, Part* oPart, unsigned int len)/*{{{*/
              */
 
             endUndo(SC_PART_MODIFIED);
-            break;
         }
-        default:
-            break;
-    }
 }/*}}}*/
-
-//----------------------------------------------------------
-// cmbResizePartLeft
-// Attempt to resize the part from the left while leaving the events in place
-//----------------------------------------------------------
-void Song::cmdResizePartLeft(Track* track, Part* oPart, unsigned int len, unsigned int /*endtick*/, QPoint pos)//{{{
-{
-    switch (track->type())
-    {
-        case Track::WAVE:
-        {
-            WavePart* nPart = new WavePart(*(WavePart*) oPart);
-            EventList* el = nPart->events();
-            //unsigned pend = tempomap.tick2frame(endtick);
-            unsigned part_start = tempomap.tick2frame(len);
-            unsigned old_start = oPart->frame();
-            unsigned old_length = nPart->lenFrame();
-            unsigned old_end = old_length + old_start;
-            unsigned part_end = old_end - part_start;
-
-            nPart->setFrame(part_start);
-            nPart->setLenFrame(part_end);
-
-            startUndo();
-            if (old_start > (unsigned)pos.x())
-            {
-                //for (iEvent i = el->begin(); i != el->end(); i++)
-                if(!el->empty())
-                {
-                    //printf("Part grew to the left and has an event\n");
-                    //printf("Old start:%d pos.x: %d\n", old_start, pos.x());
-                    iEvent i = el->begin();
-                    Event e = i->second;
-                    unsigned event_startframe = e.frame();
-                    unsigned event_endframe = event_startframe + e.lenFrame();
-                    //unsigned estart = event_startframe + old_start;
-                    //unsigned eend = e.endFrame() + old_start;
-
-                    SndFileR file = e.sndFile();
-                    if (file.isNull())
-                    {
-                        song->update(SC_SELECTION);
-                        return;
-                    }
-                    unsigned totalFrames = file.samples();
-                    unsigned currentFrames = old_length;//totalFrames - (e.spos()+e.rightClip());
-                    unsigned remainingFrames = (totalFrames - currentFrames);
-                    int min = (old_start - remainingFrames)+oPart->rightClip();
-                    bool is_neg = min < 0;
-                    unsigned minframe = min;
-                    //printf("start: %d, minframe: %d, noop:%d\n", part_start, minframe, is_neg);
-                    if(is_neg)
-                    {
-                        //printf("Adjusting minframe\n");
-                        minframe = 0;
-                    }
-                    //printf("Part rightClip: %d\n", oPart->rightClip());
-
-                    //printf("SndFileR before samples=%d event samplepos=%d currentframes=%d event frame=%d rightclip=%d rem=%d remframes=%d diff=%d minframe=%d part_start=%d old_start=%d\n",
-                    //	file.samples(), e.spos(), currentFrames, event_startframe, e.rightClip(), rem, remainingFrames, diff, minframe, part_start, old_start);
-
-                    if(!remainingFrames && part_start > minframe)
-                    {
-                        //printf("Nothing more to resize()\n");
-                        Event newEvent = e.mid(part_start - old_start, event_endframe);
-                        audio->msgChangeEvent(e, newEvent, nPart, false, false, false);
-                    }
-                    else if(part_start < minframe)
-                    {
-                        //printf("Sample is shorter than part length, start: %d, minframe: %d\n", part_start, minframe);
-                        part_start = minframe;
-                        part_end = old_end - part_start;
-                        nPart->setFrame(part_start);
-                        nPart->setLenFrame(part_end);
-                        Event newEvent = e.clone();
-                        newEvent.setFrame(0);
-                        newEvent.setLenFrame(part_end);
-                        newEvent.setSpos(0);
-                        audio->msgChangeEvent(e, newEvent, nPart, false, false, false);
-                    }
-                    else
-                    {
-                        //printf("Sample is longer than part length\n");
-                        Event newEvent = e.mid(part_start - old_start, event_endframe);
-                        audio->msgChangeEvent(e, newEvent, nPart, false, false, false);
-                        //printf("Part start:%d, Part end:%d, Event old_start:%d, Event oldend:%d, Event start:%d, Event end:%d\n",
-                        //	part_start, part_end, event_startframe, event_endframe, newEvent.frame(), newEvent.endFrame());
-                    }
-                }
-            }
-            else
-            {
-                Part* p1 = 0; //this is disgarded
-                Part* p2 = 0; //the part we want
-                track->splitPart(oPart, pos.x(), p1, p2);
-                if(p2)
-                {
-                    nPart = (WavePart*)p2;
-                    nPart->setSelected(true);
-                    nPart->setColorIndex(oPart->colorIndex());
-                }
-                else
-                    return;
-                if(p1)
-                    delete p1;
-            }
-            // Indicate no undo, and do not do port controller values and clone parts.
-            audio->msgChangePart(oPart, nPart, false, false, false);
-            endUndo(SC_PART_MODIFIED);
-        }
-            break;
-        default:
-            break;
-    }
-}//}}}
 
 //---------------------------------------------------------
 //   splitPart
@@ -1312,18 +877,9 @@ void Track::splitPart(Part* part, int tickpos, Part*& p1, Part*& p2)
 
     int samplepos = tempomap.tick2frame(tickpos);
 
-    switch (type())
     {
-        case WAVE:
-            l1 = samplepos - part->frame();
-            l2 = part->lenFrame() - l1;
-            break;
-        case MIDI:
             l1 = tickpos - part->tick();
             l2 = part->lenTick() - l1;
-            break;
-        default:
-            return;
     }
 
     if (l1 <= 0 || l2 <= 0)
@@ -1335,20 +891,10 @@ void Track::splitPart(Part* part, int tickpos, Part*& p1, Part*& p2)
     // Added by Tim. p3.3.6
     //printf("Track::splitPart part ev %p sz:%d ref:%d p1 %p sz:%d ref:%d p2 %p sz:%d ref:%d\n", part->events(), part->events()->size(), part->events()->arefCount(), p1->events(), p1->events()->size(), p1->events()->arefCount(), p2->events(), p2->events()->size(), p2->events()->arefCount());
 
-    switch (type())
     {
-        case WAVE:
-            p1->setLenFrame(l1);
-            p2->setFrame(samplepos);
-            p2->setLenFrame(l2);
-            break;
-        case MIDI:
             p1->setLenTick(l1);
             p2->setTick(tickpos);
             p2->setLenTick(l2);
-            break;
-        default:
-            break;
     }
 
     p2->setSn(p2->newSn());
@@ -1359,51 +905,7 @@ void Track::splitPart(Part* part, int tickpos, Part*& p1, Part*& p2)
 
     p1->setColorIndex(part->colorIndex());
     p2->setColorIndex(part->colorIndex());
-    if (type() == WAVE)
-    {
-        int ps = part->frame();
-        int d1p1 = p1->frame();
-        int d2p1 = p1->endFrame();
-        int d1p2 = p2->frame();
-        int d2p2 = p2->endFrame();
-        for (iEvent ie = se->begin(); ie != se->end(); ++ie)
-        {
-            Event event = ie->second;
-            int s1 = event.frame() + ps;
-            int s2 = event.endFrame() + ps;
 
-            if ((s2 > d1p1) && (s1 < d2p1))
-            {
-                Event si = event.mid(d1p1 - ps, d2p1 - ps);
-                unsigned rclip = si.rightClip();
-                unsigned clipframes = 0;
-                SndFileR file = si.sndFile();
-                if (!file.isNull())
-                {
-                    clipframes = (file.samples() - si.spos());
-                    rclip = clipframes - si.lenFrame();
-                    si.setRightClip(rclip);
-                    p1->setRightClip(rclip);
-                }
-                de1->add(si);
-            }
-            if ((s2 > d1p2) && (s1 < d2p2))
-            {
-                Event si = event.mid(d1p2 - ps, d2p2 - ps);
-                unsigned rclip = si.rightClip();
-                unsigned clipframes = 0;
-                SndFileR file = si.sndFile();
-                if (!file.isNull())
-                {
-                    clipframes = (file.samples() - si.spos());
-                    rclip = clipframes - si.lenFrame();
-                    si.setRightClip(rclip);
-                }
-                de2->add(si);
-            }
-        }
-    }
-    else
     {
         for (iEvent ie = se->begin(); ie != se->end(); ++ie)
         {
@@ -1461,42 +963,6 @@ void Song::changePart(Part* oPart, Part* nPart)
     unsigned epos = nPart->tick() + nPart->lenTick();
     if (epos > len())
         _len = epos;
-
-
-    if (oTrack->type() == Track::WAVE && oTrack != nTrack)
-    {
-        ((WaveTrack*)oTrack)->calculateCrossFades();
-    }
-    if (nTrack->type() == Track::WAVE)
-    {
-        int highestZValueBelowNPart = -1;
-
-        for (iPart ip = nTrack->parts()->begin(); ip != nTrack->parts()->end(); ++ip)
-        {
-            WavePart* wp = (WavePart*)ip->second;
-            if (wp == nPart)
-            {
-                continue;
-            }
-            if ((nPart->frame() >= wp->frame() && nPart->frame() <= wp->endFrame()) ||
-                (nPart->endFrame() >= wp->frame() && nPart->endFrame() <= wp->endFrame()) )
-            {
-                if (wp->getZIndex() > highestZValueBelowNPart)
-                {
-                    highestZValueBelowNPart = wp->getZIndex();
-                }
-            }
-        }
-
-        if (highestZValueBelowNPart == -1)
-        {
-            nPart->setZIndex(0);
-        }
-        else
-        {
-            nPart->setZIndex(highestZValueBelowNPart + 1);
-        }
-    }
 }
 
 //---------------------------------------------------------
@@ -1505,10 +971,6 @@ void Song::changePart(Part* oPart, Part* nPart)
 
 void Song::cmdGluePart(Track* track, Part* oPart)
 {
-    //if (track->type() != Track::WAVE && !track->isMidiTrack())
-    if (!track->isMidiTrack())
-        return;
-
     PartList* pl = track->parts();
     Part* nextPart = 0;
 
@@ -1544,18 +1006,7 @@ void Song::cmdGluePart(Track* track, Part* oPart)
     //      dl->add(event);
     //      }
     // p3.3.54 Changed.
-    if (track->type() == Track::WAVE)
-    {
-        int frameOffset = nextPart->frame() - oPart->frame();
-        for (iEvent ie = sl2->begin(); ie != sl2->end(); ++ie)
-        {
-            Event event = ie->second.clone();
-            event.setFrame(event.frame() + frameOffset);
-            dl->add(event);
-        }
-    }
-    else
-        if (track->isMidiTrack())
+
     {
         int tickOffset = nextPart->tick() - oPart->tick();
         for (iEvent ie = sl2->begin(); ie != sl2->end(); ++ie)
@@ -1595,14 +1046,6 @@ void Part::setSelected(bool f)
         song->hasSelectedParts = f;
 }
 
-void WavePart::dump(int n) const
-{
-    Part::dump(n);
-    for (int i = 0; i < n; ++i)
-        putchar(' ');
-    printf("WavePart\n");
-}
-
 void MidiPart::dump(int n) const
 {
     Part::dump(n);
@@ -1619,9 +1062,3 @@ MidiPart* MidiPart::clone() const
 {
     return new MidiPart(*this);
 }
-
-WavePart* WavePart::clone() const
-{
-    return new WavePart(*this);
-}
-

@@ -53,22 +53,13 @@ public:
         part()->setName(s);
     }
 
-    Track* track() const
+    MidiTrack* track() const
     {
         return part()->track();
     }
 };
 
 enum ControllerVals { doNothing, movingController, addNewController };
-struct AutomationObject {
-	CtrlVal *currentCtrlVal;
-	CtrlList *currentCtrlList;
-	Track *currentTrack;
-	bool moveController;
-	bool movingStarted;
-	ControllerVals controllerState;
-	QPoint mousePressPos;
-};
 
 class QLineEdit;
 class MidiEditor;
@@ -85,8 +76,9 @@ class CurveNodeSelection;
 class ComposerCanvas : public Canvas
 {
     Q_OBJECT
+
     int* _raster;
-    TrackList* tracks;
+    MidiTrackList* tracks;
 
     Part* resizePart;
     QLineEdit* lineEditor;
@@ -95,15 +87,10 @@ class ComposerCanvas : public Canvas
     int trackOffset;
     bool editMode;
     bool unselectNodes;
-	bool show_tip;
-	bool build_icons;
+    bool show_tip;
+    bool build_icons;
 
-    AutomationObject automation;
-    CurveNodeSelection* _curveNodeSelection;
-	QList<CtrlVal> m_automationMoveList;
-	FadeCurve* m_selectedCurve;
-
-	CItemList getSelectedItems();
+    CItemList getSelectedItems();
     virtual void keyPress(QKeyEvent*);
     virtual void mousePress(QMouseEvent*);
     virtual void mouseMove(QMouseEvent* event);
@@ -140,28 +127,25 @@ class ComposerCanvas : public Canvas
     void glueItem(CItem* item);
     void splitItem(CItem* item, const QPoint&);
 
-	void copyAutomation();
-	void pasteAutomation();
     void copy(PartList*);
     void paste(bool clone = false, bool toTrack = true, bool doInsert = false);
-    int pasteAt(const QString&, Track*, unsigned int, bool clone = false, bool toTrack = true);
+    int pasteAt(const QString&, MidiTrack*, unsigned int, bool clone = false, bool toTrack = true);
     void movePartsTotheRight(unsigned int startTick, int length);
-    //Part* readClone(Xml&, Track*, bool toTrack = true);
-    void drawWavePart(QPainter&, const QRect&, WavePart*, const QRect&);
-	void drawMidiPart(QPainter&, const QRect& rect, EventList* events, MidiTrack *mt, const QRect& r, int pTick, int from, int to, QColor c);
-    Track* y2Track(int) const;
-    void drawAudioTrack(QPainter& p, const QRect& r, AudioTrack* track);
-    void drawAutomation(QPainter& p, const QRect& r, AudioTrack* track, Track* rt=0);
-    void drawTopItem(QPainter& p, const QRect& rect);
-	void drawTooltipText(QPainter& p, const QRect& rr, int height, double lazySelNodeVal, double lazySelNodePrevVal, int lazySelNodeFrame, bool paintAsDb, CtrlList*);
 
+    void drawMidiPart(QPainter&, const QRect& rect, EventList* events, MidiTrack *mt, const QRect& r, int pTick, int from, int to, QColor c);
+    MidiTrack* y2Track(int) const;
+    void drawTopItem(QPainter& p, const QRect& rect);
+    void drawTooltipText(QPainter& p, const QRect& rr, int height, double lazySelNodeVal, double lazySelNodePrevVal, int lazySelNodeFrame, bool paintAsDb, CtrlList*);
+
+#if 0
     void checkAutomation(Track * t, const QPoint& pointer, bool addNewCtrl);
-	bool checkAutomationForTrack(Track * t, const QPoint &pointer, bool addNewCtrl, Track *rt = 0);
+    bool checkAutomationForTrack(Track * t, const QPoint &pointer, bool addNewCtrl, Track *rt = 0);
     void selectAutomation(Track * t, const QPoint& pointer);
     bool selectAutomationForTrack(Track * t, const QPoint& pointer, Track* realTrack = 0);
-    void processAutomationMovements(QMouseEvent *event);    
-    void addNewAutomation(QMouseEvent *event);    
-	double getControlValue(CtrlList*, double);
+    void processAutomationMovements(QMouseEvent *event);
+    void addNewAutomation(QMouseEvent *event);
+    double getControlValue(CtrlList*, double);
+#endif
 
 protected:
     virtual void drawCanvas(QPainter&, const QRect&);
@@ -169,17 +153,17 @@ protected:
 signals:
     void timeChanged(unsigned);
     void tracklistChanged();
-    void dclickPart(Track*);
+    void dclickPart(MidiTrack*);
     void selectionChanged();
     void dropSongFile(const QString&);
     void dropMidiFile(const QString&);
     void setUsedTool(int);
-    void trackChanged(Track*);
+    void trackChanged(MidiTrack*);
     void selectTrackAbove();
     void selectTrackBelow();
-	void renameTrack(Track*);
-	void moveSelectedTracks(int);
-	void trackHeightChanged();
+    void renameTrack(MidiTrack*);
+    void moveSelectedTracks(int);
+    void trackHeightChanged();
 
     void startEditor(PartList*, int);
 
@@ -190,19 +174,18 @@ public:
     enum
     {
         CMD_CUT_PART, CMD_COPY_PART, CMD_PASTE_PART, CMD_PASTE_CLONE_PART, CMD_PASTE_PART_TO_TRACK, CMD_PASTE_CLONE_PART_TO_TRACK,
-	CMD_INSERT_PART, CMD_INSERT_EMPTYMEAS, CMD_REMOVE_SELECTED_AUTOMATION_NODES, CMD_COPY_AUTOMATION_NODES, CMD_PASTE_AUTOMATION_NODES,
-	CMD_SELECT_ALL_AUTOMATION
+    CMD_INSERT_PART, CMD_INSERT_EMPTYMEAS, CMD_REMOVE_SELECTED_AUTOMATION_NODES, CMD_COPY_AUTOMATION_NODES, CMD_PASTE_AUTOMATION_NODES,
+    CMD_SELECT_ALL_AUTOMATION
     };
 
     ComposerCanvas(int* raster, QWidget* parent, int, int);
     void partsChanged();
     void cmd(int);
-    void controllerChanged(Track *t);
-    int track2Y(Track*) const;
-	bool isEditing() { return editMode; }
-	CItem* addPartAtCursor(Track*);
+    int track2Y(MidiTrack*) const;
+    bool isEditing() { return editMode; }
+    CItem* addPartAtCursor(MidiTrack*);
     virtual void newItem(CItem*, bool);
-	Part* currentCanvasPart();
+    Part* currentCanvasPart();
 
 public slots:
 
@@ -211,6 +194,6 @@ public slots:
     {
         keyPress(e);
     }
-	void trackViewChanged();
+    void trackViewChanged();
 };
 #endif

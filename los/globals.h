@@ -164,7 +164,6 @@ extern unsigned char rcPlayNote;
 extern int lastTrackPartColorIndex;
 
 extern bool midiSeqRunning;
-extern bool automation;
 
 // Which audio strip, midi strip, or midi track info strip
 //  was responsible for popping up the routing menu.

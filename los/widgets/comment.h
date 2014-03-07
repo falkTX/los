@@ -10,8 +10,8 @@
 
 #include "ui_commentbase.h"
 
+class MidiTrack;
 class Xml;
-class Track;
 class QWidget;
 
 //---------------------------------------------------------
@@ -38,8 +38,9 @@ public:
 
 class TrackComment : public Comment
 {
-    Track* m_track;
     Q_OBJECT
+
+    MidiTrack* m_track;
 
 private:
     virtual void setText(const QString& s);
@@ -48,9 +49,9 @@ private slots:
     void songChanged(int);
 
 public:
-    TrackComment(Track*, QWidget*);
-	void setTrack(Track* t) { m_track = t; }
-	Track* track() { return m_track; }
+    TrackComment(MidiTrack*, QWidget*);
+    void setTrack(MidiTrack* t) { m_track = t; }
+    MidiTrack* track() { return m_track; }
 };
 
 #endif

@@ -28,7 +28,7 @@
 #include "TrackManager.h"
 #include "TrackInstrumentMenu.h"
 
-TrackInstrumentMenu::TrackInstrumentMenu(QMenu* parent, Track *t) : QWidgetAction(parent)
+TrackInstrumentMenu::TrackInstrumentMenu(QMenu* parent, MidiTrack *t) : QWidgetAction(parent)
 {
     m_track = t;
     m_edit = false;
@@ -36,7 +36,7 @@ TrackInstrumentMenu::TrackInstrumentMenu(QMenu* parent, Track *t) : QWidgetActio
 
 QWidget* TrackInstrumentMenu::createWidget(QWidget* parent)/*{{{*/
 {
-    if(!m_track || !m_track->isMidiTrack())
+    if(!m_track)
         return 0;
 
     int baseHeight = 109;

@@ -27,10 +27,6 @@ Track* Track::_tmpSoloChainTrack = 0;
 bool Track::_tmpSoloChainDoIns = false;
 bool Track::_tmpSoloChainNoDec = false;
 
-const char* Track::_cname[] = {
-    "Midi", "Wave", "AudioOut", "AudioIn"
-};
-
 //---------------------------------------------------------
 //   addPortCtrlEvents
 //---------------------------------------------------------
@@ -106,9 +102,9 @@ void removePortCtrlEvents(MidiTrack* t)
 
 int Track::y() const
 {
-    TrackList* tl = song->visibletracks();
+    MidiTrackList* tl = song->visibletracks();
     int yy = 0;
-    for (ciTrack it = tl->begin(); it != tl->end(); ++it)
+    for (ciMidiTrack it = tl->begin(); it != tl->end(); ++it)
     {
         if (this == *it)
             return yy;
@@ -146,7 +142,6 @@ void Track::init()
     _panEn2Ctrl = true;
     m_chainMaster = 0;
     m_masterFlag = false;
-    _wantsAutomation = false;
 
     _selected = false;
     _height = DEFAULT_TRACKHEIGHT;
@@ -160,14 +155,14 @@ void Track::init()
     m_midiassign.port = 0;
     m_midiassign.preset = 0;
     m_midiassign.channel = 0;
-    m_midiassign.track = this;
+    m_midiassign.track = (MidiTrack*)this;
     m_midiassign.midimap.clear();
 
-    m_midiassign.midimap.insert(CTRL_RECORD, new CCInfo(this, 0, 0, CTRL_RECORD, -1));
-    m_midiassign.midimap.insert(CTRL_MUTE, new CCInfo(this, 0, 0, CTRL_MUTE, -1));
-    m_midiassign.midimap.insert(CTRL_SOLO, new CCInfo(this, 0, 0, CTRL_SOLO, -1));
-    m_midiassign.midimap.insert(CTRL_VOLUME, new CCInfo(this, 0, 0, CTRL_VOLUME, -1));
-    m_midiassign.midimap.insert(CTRL_PANPOT, new CCInfo(this, 0, 0, CTRL_PANPOT, -1));
+    m_midiassign.midimap.insert(CTRL_RECORD, new CCInfo((MidiTrack*)this, 0, 0, CTRL_RECORD, -1));
+    m_midiassign.midimap.insert(CTRL_MUTE, new CCInfo((MidiTrack*)this, 0, 0, CTRL_MUTE, -1));
+    m_midiassign.midimap.insert(CTRL_SOLO, new CCInfo((MidiTrack*)this, 0, 0, CTRL_SOLO, -1));
+    m_midiassign.midimap.insert(CTRL_VOLUME, new CCInfo((MidiTrack*)this, 0, 0, CTRL_VOLUME, -1));
+    m_midiassign.midimap.insert(CTRL_PANPOT, new CCInfo((MidiTrack*)this, 0, 0, CTRL_PANPOT, -1));
     /*if(isMidiTrack())
     {
         m_midiassign.midimap.insert(CTRL_REVERB_SEND, new CCInfo(this, 0, 0, CTRL_REVERB_SEND, -1));
@@ -176,9 +171,8 @@ void Track::init()
     }*/
 }
 
-Track::Track(Track::TrackType t)
+Track::Track()
 {
-    _type = t;
     m_id = create_id();
     init();
 }
@@ -209,7 +203,6 @@ Track::Track(const Track& t, bool cloneParts)
     _height = t._height;
     _comment = t.comment();
     _name = t.name();
-    _type = t.type();
     _locked = t.locked();
     _mixerTab = t._mixerTab;
     m_midiassign = t.m_midiassign;
@@ -218,7 +211,6 @@ Track::Track(const Track& t, bool cloneParts)
     _reminder1 = t._reminder1;
     _reminder2 = t._reminder2;
     _reminder3 = t._reminder3;
-    _wantsAutomation = t._wantsAutomation;
 
     if (cloneParts)
     {
@@ -226,7 +218,7 @@ Track::Track(const Track& t, bool cloneParts)
         for (ciPart ip = pl->begin(); ip != pl->end(); ++ip)
         {
             Part* newPart = ip->second->clone();
-            newPart->setTrack(this);
+            newPart->setTrack((MidiTrack*)this);
             _parts.add(newPart);
         }
     }
@@ -284,11 +276,9 @@ Track& Track::operator=(const Track& t)
     _height = t._height;
     _comment = t.comment();
     _name = t.name();
-    _type = t.type();
     _locked = t.locked();
     _collapsed = t._collapsed;
     m_maxZIndex = t.m_maxZIndex;
-    _wantsAutomation = t._wantsAutomation;
 
     _parts = *(t.cparts());
 
@@ -307,22 +297,7 @@ Track& Track::operator=(const Track& t)
 
 void Track::setDefaultName()
 {
-    QString base;
-    switch (_type)/*{{{*/
-    {
-        case MIDI:
-            base = QString("Midi");
-            break;
-        case WAVE:
-            base = QString("Audio");
-            break;
-        case WAVE_OUTPUT_HELPER:
-            base = QString("Out");
-            break;
-        case WAVE_INPUT_HELPER:
-            base = QString("Input");
-            break;
-    };/*}}}*/
+    QString base = QString("Midi");
     setName(getValidName(base, true));
 }
 
@@ -331,7 +306,7 @@ QString Track::getValidName(QString base, bool dname)
     QString rv;
     if(!dname)
     {
-        Track* track = song->findTrack(base);
+        MidiTrack* track = song->findTrack(base);
         if(!track)
             rv = base;
     }
@@ -346,7 +321,7 @@ QString Track::getValidName(QString base, bool dname)
             QString n;
             n.setNum(i);
             QString s = base + n;
-            Track* track = song->findTrack(s);
+            MidiTrack* track = song->findTrack(s);
             if (track == 0)
             {
                 rv = s;
@@ -355,34 +330,6 @@ QString Track::getValidName(QString base, bool dname)
         }
     }
     return rv;
-}
-
-Track* Track::inputTrack()
-{
-    Track* in = 0;
-    foreach(qint64 i, m_audioChain)
-    {
-        in = song->findTrackByIdAndType(i, WAVE_INPUT_HELPER);
-        if(in)
-        {
-            break;
-        }
-    }
-    return in;
-}
-
-Track* Track::outputTrack()
-{
-    Track* in = 0;
-    foreach(qint64 i, m_audioChain)
-    {
-        in = song->findTrackByIdAndType(i, WAVE_INPUT_HELPER);
-        if(in)
-        {
-            break;
-        }
-    }
-    return in;
 }
 
 void Track::deselectParts()
@@ -411,7 +358,7 @@ void Track::setSelected(bool sel)
             if(sysex && !status)
             {
                 //Send the event from the sequencer thread
-                MidiPlayEvent ev(0, m_midiassign.port, ME_SYSEX, sysex, len, this);
+                MidiPlayEvent ev(0, m_midiassign.port, ME_SYSEX, sysex, len, (MidiTrack*)this);
                 audio->msgPlayMidiEvent(&ev);
 
                 //Send adjustments to all the mixer based dials assigned to this track
@@ -425,17 +372,16 @@ void Track::setSelected(bool sel)
                         switch(iter.key())
                         {
                             case CTRL_RECORD:
-                                midiMonitor->msgSendMidiOutputEvent((Track*)this, CTRL_RECORD, _recordFlag ? 127 : 0);
+                                midiMonitor->msgSendMidiOutputEvent((MidiTrack*)this, CTRL_RECORD, _recordFlag ? 127 : 0);
                             break;
                             case CTRL_MUTE:
-                                midiMonitor->msgSendMidiOutputEvent((Track*)this, CTRL_MUTE, mute() ? 127 : 0);
+                                midiMonitor->msgSendMidiOutputEvent((MidiTrack*)this, CTRL_MUTE, mute() ? 127 : 0);
                             break;
                             case CTRL_SOLO:
-                                midiMonitor->msgSendMidiOutputEvent((Track*)this, CTRL_SOLO, solo() ? 127 : 0);
+                                midiMonitor->msgSendMidiOutputEvent((MidiTrack*)this, CTRL_SOLO, solo() ? 127 : 0);
                             break;
                             case CTRL_VOLUME:
                             {
-                                if(isMidiTrack())
                                 {
                                     MidiPort* mp = &midiPorts[((MidiTrack*)this)->outPort()];
                                     if(mp)
@@ -460,19 +406,14 @@ void Track::setSelected(bool sel)
                                                 else
                                                     v = lastv;
                                             }
-                                            midiMonitor->msgSendMidiOutputEvent((Track*)this, iter.key(), v);
+                                            midiMonitor->msgSendMidiOutputEvent((MidiTrack*)this, iter.key(), v);
                                         }
                                     }
-                                }
-                                else
-                                {
-                                    midiMonitor->msgSendAudioOutputEvent((Track*)this, iter.key(), ((AudioTrack*)this)->volume());
                                 }
                             }
                             break;
                             case CTRL_PANPOT:
                             {
-                                if(isMidiTrack())
                                 {
                                     MidiPort* mp = &midiPorts[((MidiTrack*)this)->outPort()];
                                     if(mp)
@@ -493,13 +434,9 @@ void Track::setSelected(bool sel)
                                                     v = 64;
                                                 }
                                             }
-                                            midiMonitor->msgSendMidiOutputEvent((Track*)this, iter.key(), v);
+                                            midiMonitor->msgSendMidiOutputEvent((MidiTrack*)this, iter.key(), v);
                                         }
                                     }
-                                }
-                                else
-                                {
-                                    midiMonitor->msgSendAudioOutputEvent((Track*)this, iter.key(), ((AudioTrack*)this)->pan());
                                 }
                             }
                             break;
@@ -522,13 +459,7 @@ void Track::clearRecAutomation(bool clearList)
     _panEnCtrl = true;
     _panEn2Ctrl = true;
 
-    if (isMidiTrack())
-        return;
-
-    AudioTrack *t = (AudioTrack*)this;
-
-    if (clearList)
-        t->recEvents()->clear();
+    return;
 }
 
 //---------------------------------------------------------
@@ -537,8 +468,8 @@ void Track::clearRecAutomation(bool clearList)
 
 void Track::dump() const
 {
-    printf("Track <%s>: typ %d, parts %zd sel %d\n",
-            _name.toLatin1().constData(), _type, _parts.size(), _selected);
+    printf("Track <%s>: parts %zd sel %d\n",
+            _name.toLatin1().constData(), _parts.size(), _selected);
 }
 
 //---------------------------------------------------------
@@ -546,7 +477,7 @@ void Track::dump() const
 //---------------------------------------------------------
 
 MidiTrack::MidiTrack()
-: Track(MIDI)
+: Track()
 {
     init();
     _events = new EventList;
@@ -579,17 +510,6 @@ MidiTrack::~MidiTrack()
 {
     delete _events;
     delete _mpevents;
-    if(_wantsAutomation)
-    {
-        if (_outPort >= 0 && _outPort < MIDI_PORTS)
-        {
-            midiPorts[_outPort].inRoutes()->clear();
-            midiPorts[_outPort].outRoutes()->clear();
-            midiPorts[_outPort].patchSequences()->clear();
-            midiPorts[_outPort].setFoundInSongFile(false);
-            midiPorts[_outPort].setMidiDevice(0);
-        }
-    }
 }
 
 //---------------------------------------------------------
@@ -618,11 +538,11 @@ void MidiTrack::init()
     m_midiassign.track = this;
     m_midiassign.midimap.clear();
 
-    m_midiassign.midimap.insert(CTRL_RECORD, new CCInfo((Track*)this, 0, 0, CTRL_RECORD, -1));
-    m_midiassign.midimap.insert(CTRL_MUTE, new CCInfo((Track*)this, 0, 0, CTRL_MUTE, -1));
-    m_midiassign.midimap.insert(CTRL_SOLO, new CCInfo((Track*)this, 0, 0, CTRL_SOLO, -1));
-    m_midiassign.midimap.insert(CTRL_VOLUME, new CCInfo((Track*)this, 0, 0, CTRL_VOLUME, -1));
-    m_midiassign.midimap.insert(CTRL_PANPOT, new CCInfo((Track*)this, 0, 0, CTRL_PANPOT, -1));
+    m_midiassign.midimap.insert(CTRL_RECORD, new CCInfo(this, 0, 0, CTRL_RECORD, -1));
+    m_midiassign.midimap.insert(CTRL_MUTE, new CCInfo(this, 0, 0, CTRL_MUTE, -1));
+    m_midiassign.midimap.insert(CTRL_SOLO, new CCInfo(this, 0, 0, CTRL_SOLO, -1));
+    m_midiassign.midimap.insert(CTRL_VOLUME, new CCInfo(this, 0, 0, CTRL_VOLUME, -1));
+    m_midiassign.midimap.insert(CTRL_PANPOT, new CCInfo(this, 0, 0, CTRL_PANPOT, -1));
     //m_midiassign.midimap.insert(CTRL_REVERB_SEND, new CCInfo((Track*)this, 0, 0, CTRL_REVERB_SEND, -1));
     //m_midiassign.midimap.insert(CTRL_CHORUS_SEND, new CCInfo((Track*)this, 0, 0, CTRL_CHORUS_SEND, -1));
     //m_midiassign.midimap.insert(CTRL_VARIATION_SEND, new CCInfo((Track*)this, 0, 0, CTRL_VARIATION_SEND, -1));
@@ -751,21 +671,12 @@ void MidiTrack::setInPortAndChannelMask(unsigned int portmask, int chanmask)
 }
 
 //---------------------------------------------------------
-//   getAutomationTrack
-//---------------------------------------------------------
-
-AudioTrack* MidiTrack::getAutomationTrack()
-{
-    return 0;
-}
-
-//---------------------------------------------------------
 //   addPart
 //---------------------------------------------------------
 
 iPart Track::addPart(Part* p)
 {
-    p->setTrack(this);
+    p->setTrack((MidiTrack*)this);
     return _parts.add(p);
 }
 
@@ -827,13 +738,6 @@ AutomationType MidiTrack::automationType() const
 
 void MidiTrack::setAutomationType(AutomationType t)
 {
-    if (_wantsAutomation)
-    {
-        AudioTrack* atrack = getAutomationTrack();
-        if (atrack)
-            atrack->setAutomationType(t);
-    }
-    else
     {
         MidiPort* port = &midiPorts[outPort()];
         port->setAutomationType(outChannel(), t);
@@ -846,7 +750,7 @@ bool MidiTrack::setRecordFlag1(bool f, bool monitor)
     if(!monitor)
     {
         //Call the monitor here if it was not called from the monitor
-        midiMonitor->msgSendMidiOutputEvent((Track*)this, CTRL_RECORD, f ? 127 : 0);
+        midiMonitor->msgSendMidiOutputEvent((MidiTrack*)this, CTRL_RECORD, f ? 127 : 0);
     }
     return true;
 }
@@ -963,7 +867,7 @@ bool Track::readProperties(Xml& xml, const QString& tag)/*{{{*/
     else if(tag == "partcolor")
         _partDefaultColor = xml.parseInt();
     else if(tag == "MidiAssign")
-        m_midiassign.read(xml, (Track*)this);
+        m_midiassign.read(xml, (MidiTrack*)this);
     else if(tag == "chainMaster")
         m_chainMaster = xml.parseLongLong();
     else if(tag == "masterFlag")
@@ -992,36 +896,6 @@ bool Track::readProperties(Xml& xml, const QString& tag)/*{{{*/
 void Track::writeRouting(int level, Xml& xml) const/*{{{*/
 {
     QString s;
-
-    if (type() == Track::WAVE_INPUT_HELPER)
-    {
-        const RouteList* rl = &_inRoutes;
-        for (ciRoute r = rl->begin(); r != rl->end(); ++r)
-        {
-            if (!r->name().isEmpty())
-            {
-                s = QT_TRANSLATE_NOOP("@default", "Route");
-                if (r->channel != -1)
-                    s += QString(QT_TRANSLATE_NOOP("@default", " channel=\"%1\"")).arg(r->channel);
-
-                xml.tag(level++, s.toAscii().constData());
-
-                s = QT_TRANSLATE_NOOP("@default", "source");
-                if (r->type != Route::TRACK_ROUTE)
-                    s += QString(QT_TRANSLATE_NOOP("@default", " type=\"%1\"")).arg(r->type);
-                else
-                {
-                    s += QString(QT_TRANSLATE_NOOP("@default", " trackId=\"%1\"")).arg(r->track->id());
-                }
-                s += QString(QT_TRANSLATE_NOOP("@default", " name=\"%1\"/")).arg(Xml::xmlString(r->name()));
-                xml.tag(level, s.toAscii().constData());
-
-                xml.tag(level, "dest name=\"%s\" trackId=\"%lld\"/", Xml::xmlString(name()).toLatin1().constData(), m_id);
-
-                xml.etag(--level, "Route");
-            }
-        }
-    }
 
     const RouteList* rl = &_outRoutes;
     for (ciRoute r = rl->begin(); r != rl->end(); ++r)
@@ -1105,13 +979,7 @@ void MidiTrack::write(int level, Xml& xml) const/*{{{*/
     xml.intTag(level, "len", len);
     xml.intTag(level, "compression", compression);
 
-    if (_wantsAutomation)
-    {
-        int atype = 0;
-        xml.intTag(level, "automation", atype);
-    }
-    else
-        xml.intTag(level, "automation", int(automationType()));
+    xml.intTag(level, "automation", int(automationType()));
 
     const PartList* pl = cparts();
     for (ciPart p = pl->begin(); p != pl->end(); ++p)
@@ -1197,7 +1065,7 @@ void MidiTrack::read(Xml& xml)/*{{{*/
     }
 }/*}}}*/
 
-void MidiAssignData::read(Xml& xml, Track* t)/*{{{*/
+void MidiAssignData::read(Xml& xml, MidiTrack* t)/*{{{*/
 {
     enabled = false;
     port = 0;

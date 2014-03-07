@@ -30,7 +30,6 @@ class PerformerCanvas;
 class MTScale;
 class PCScale;
 class SigScale;
-class Track;
 class QToolButton;
 class QToolBar;
 class QPushButton;
@@ -73,7 +72,7 @@ class Performer : public AbstractMidiEditor
 
     QMenu *menuEdit, *menuFunctions, *menuSelect, *menuConfig, *eventColor, *menuPlugins;
     Conductor *midiConductor;
-    Track* selected;
+    MidiTrack* selected;
     PCScale* pcbar;
     SigScale* m_sigRuler;
     Piano* piano;

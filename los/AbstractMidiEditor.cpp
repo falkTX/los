@@ -55,8 +55,8 @@ void AbstractMidiEditor::genPartlist()/*{{{*/
     _pl->clear();
     for (std::list<int>::iterator i = _parts.begin(); i != _parts.end(); ++i)
     {
-        TrackList* tl = song->tracks();
-        for (iTrack it = tl->begin(); it != tl->end(); ++it)
+        MidiTrackList* tl = song->tracks();
+        for (iMidiTrack it = tl->begin(); it != tl->end(); ++it)
         {
             PartList* pl = (*it)->parts();
             iPart ip;
@@ -156,7 +156,7 @@ void AbstractMidiEditor::writePartList(int level, Xml& xml) const/*{{{*/
     for (ciPart p = _pl->begin(); p != _pl->end(); ++p)
     {
         Part* part = p->second;
-        Track* track = part->track();
+        MidiTrack* track = part->track();
         int trkIdx = song->artracks()->index(track);
         int partIdx = track->parts()->index(part);
 

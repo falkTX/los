@@ -94,11 +94,6 @@ void AudioPrefetch::processMsg1(const void* m)
     switch (msg->id)
     {
         case PREFETCH_TICK:
-            if (audio->isRecording())
-            {
-                //puts("writeTick");
-                audio->writeTick();
-            }
             // Indicate do not seek file before each read.
             // Changed by Tim. p3.3.17
             //prefetch();
@@ -190,30 +185,6 @@ void AudioPrefetch::prefetch(bool doSeek)
             writePos = lpos - n;
         }
     }
-    WaveTrackList* tl = song->waves();
-    for (iWaveTrack it = tl->begin(); it != tl->end(); ++it)
-    {
-        WaveTrack* track = *it;
-        // p3.3.29
-        // Save time. Don't bother if track is off. Track On/Off not designed for rapid repeated response (but mute is).
-        if (track->off())
-            continue;
-
-        int ch = track->channels();
-        float* bp[ch];
-        // printf("prefetch %d\n", writePos);
-        if (track->prefetchFifo()->getWriteBuffer(ch, segmentSize, bp, writePos))
-        {
-            // printf("AudioPrefetch::prefetch No write buffer!\n"); // p3.3.46 Was getting this...
-            continue;
-        }
-        //track->fetchData(writePos, segmentSize, bp);
-        track->fetchData(writePos, segmentSize, bp, doSeek);
-
-        // p3.3.41
-        //fprintf(stderr, "AudioPrefetch::prefetch data: segmentSize:%ld %e %e %e %e\n", segmentSize, bp[0][0], bp[0][1], bp[0][2], bp[0][3]);
-
-    }
     writePos += segmentSize;
 }
 
@@ -245,12 +216,6 @@ void AudioPrefetch::seek(unsigned seekTo)
     }
 
     writePos = seekTo;
-    WaveTrackList* tl = song->waves();
-    for (iWaveTrack it = tl->begin(); it != tl->end(); ++it)
-    {
-        WaveTrack* track = *it;
-        track->clearPrefetchFifo();
-    }
 
     bool isFirstPrefetch = true;
     for (unsigned int i = 0; i < (fifoLength) - 1; ++i)//prevent compiler warning: comparison of signed/unsigned

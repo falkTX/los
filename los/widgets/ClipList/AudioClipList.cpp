@@ -334,17 +334,11 @@ void AudioClipList::fileItemContextMenu(const QPoint& pos)/*{{{*/
                         QList<qint64> selectedTracks = song->selectedTracks();
                         if(selectedTracks.size() == 1)
                         {//FIXME:If its greater we could present the user with a list to choose from
-                            Track* track = song->findTrackById(selectedTracks.at(0));
+                            MidiTrack* track = song->findTrackById(selectedTracks.at(0));
                             QString text(f.filePath());
                             if(track)
                             {
-                                if (track->type() == Track::WAVE &&
-                                        (f.suffix().endsWith("wav", Qt::CaseInsensitive) ||
-                                        (f.suffix().endsWith("ogg", Qt::CaseInsensitive))))
-                                {
-                                    los->importWaveToTrack(text, song->cpos(), track);
-                                }
-                                else if ((track->isMidiTrack() || track->type() == Track::WAVE) && f.suffix().endsWith("mpt", Qt::CaseInsensitive))
+                                if (f.suffix().endsWith("mpt", Qt::CaseInsensitive))
                                 {//Who saves a wave part as anything but a wave file?
                                     los->importPartToTrack(text, song->cpos(), track);
                                 }
@@ -354,19 +348,11 @@ void AudioClipList::fileItemContextMenu(const QPoint& pos)/*{{{*/
                     break;
                     case 3:
                     {
-                        Track *track = 0;
+                        MidiTrack* track = 0;
 
-                        Track::TrackType t = Track::MIDI;
-                        if(f.suffix().endsWith("wav", Qt::CaseInsensitive) || f.suffix().endsWith("ogg", Qt::CaseInsensitive))
-                        {
-                            track = song->addTrackByName(f.baseName(), Track::WAVE, -1, true);
-                            song->updateTrackViews();
-                        }
-                        else
                         {
                             VirtualTrack* vt;
-                            CreateTrackDialog *ctdialog = new CreateTrackDialog(&vt, t, -1, this);
-                            ctdialog->lockType(true);
+                            CreateTrackDialog* ctdialog = new CreateTrackDialog(&vt, -1, this);
                             if(ctdialog->exec() && vt)
                             {
                                 qint64 nid = trackManager->addTrack(vt, -1);
@@ -376,10 +362,7 @@ void AudioClipList::fileItemContextMenu(const QPoint& pos)/*{{{*/
                         if(track)
                         {
                             QString text(f.filePath());
-                            if(track->type() == Track::WAVE)
-                                los->importWaveToTrack(text, song->cpos(), track);
-                            else
-                                los->importPartToTrack(text, song->cpos(), track);
+                            los->importPartToTrack(text, song->cpos(), track);
                         }
                     }
                     break;

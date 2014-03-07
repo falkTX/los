@@ -11,8 +11,8 @@
 #include <QString>
 #include <QPair>
 
+class MidiTrack;
 class Xml;
-class Track;
 
 struct PortConfig
 {
@@ -26,7 +26,6 @@ struct VirtualTrack {
 
     VirtualTrack();
     qint64 id;
-    int type;
     QString name;
     QString instrumentName;
     bool createMidiInputDevice;
@@ -54,7 +53,7 @@ class TrackManager : public QObject{
     int m_midiInPort;
     int m_midiOutPort;
 
-    Track* m_track;
+    MidiTrack* m_track;
 
     QMap<int, QString> m_currentMidiInputList;
     QMap<int, QString> m_currentMidiOutputList;

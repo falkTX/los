@@ -97,8 +97,8 @@ void Audio::msgRemoveRoute(Route src, Route dst)
                     audioDevice->disconnect(src.jackPort, dst.device->inClientPort()); // p3.3.55
             }
         }
-        else
-            audioDevice->disconnect(src.jackPort, ((AudioInputHelper*) dst.track)->jackPort(dst.channel));
+        //else
+        //    audioDevice->disconnect(src.jackPort, ((AudioInputHelper*) dst.track)->jackPort(dst.channel));
     }
     else if (dst.type == Route::JACK_ROUTE)
     {
@@ -112,8 +112,8 @@ void Audio::msgRemoveRoute(Route src, Route dst)
                     audioDevice->disconnect(src.device->outClientPort(), dst.jackPort); // p3.3.55
             }
         }
-        else
-            audioDevice->disconnect(((AudioOutputHelper*) src.track)->jackPort(src.channel), dst.jackPort);
+        //else
+        //    audioDevice->disconnect(((AudioOutputHelper*) src.track)->jackPort(src.channel), dst.jackPort);
     }
 }
 
@@ -175,8 +175,8 @@ void Audio::msgAddRoute(Route src, Route dst)
                         audioDevice->connect(src.jackPort, dst.device->inClientPort()); // p3.3.55
                 }
             }
-            else
-                audioDevice->connect(src.jackPort, ((AudioInputHelper*) dst.track)->jackPort(dst.channel));
+            //else
+            //    audioDevice->connect(src.jackPort, ((AudioInputHelper*) dst.track)->jackPort(dst.channel));
         }
     }
     else if (dst.type == Route::JACK_ROUTE)
@@ -192,8 +192,8 @@ void Audio::msgAddRoute(Route src, Route dst)
                         audioDevice->connect(src.device->outClientPort(), dst.jackPort); // p3.3.55
                 }
             }
-            else
-                audioDevice->connect(((AudioOutputHelper*) src.track)->jackPort(dst.channel), dst.jackPort);
+            //else
+            //    audioDevice->connect(((AudioOutputHelper*) src.track)->jackPort(dst.channel), dst.jackPort);
         }
     }
     msgAddRoute1(src, dst);
@@ -213,302 +213,10 @@ void Audio::msgAddRoute1(Route src, Route dst)
 }
 
 //---------------------------------------------------------
-//   msgSetRecord
-//---------------------------------------------------------
-
-void Audio::msgSetRecord(AudioTrack* node, bool val)
-{
-    AudioMsg msg;
-    msg.id = AUDIO_RECORD;
-    msg.snode = node;
-    msg.ival = int(val);
-    sendMsg(&msg);
-}
-
-//---------------------------------------------------------
-//   msgSetVolume
-//---------------------------------------------------------
-
-void Audio::msgSetVolume(AudioTrack* src, double val)
-{
-    AudioMsg msg;
-    msg.id = AUDIO_VOL;
-    msg.snode = src;
-    msg.dval = val;
-    sendMsg(&msg);
-    //los->composer->controllerChanged(src);
-}
-
-//---------------------------------------------------------
-//   msgSetPan
-//---------------------------------------------------------
-
-void Audio::msgSetPan(AudioTrack* node, double val)
-{
-    AudioMsg msg;
-    msg.id = AUDIO_PAN;
-    msg.snode = node;
-    msg.dval = val;
-    sendMsg(&msg);
-    //los->composer->controllerChanged(node);
-}
-
-//---------------------------------------------------------
-//   msgSetPrefader
-//---------------------------------------------------------
-
-void Audio::msgSetPrefader(AudioTrack* node, int val)
-{
-    AudioMsg msg;
-    msg.id = AUDIO_SET_PREFADER;
-    msg.snode = node;
-    msg.ival = val;
-    sendMsg(&msg);
-}
-
-//---------------------------------------------------------
-//   msgSetChannels
-//---------------------------------------------------------
-
-void Audio::msgSetChannels(AudioTrack* node, int n)
-{
-    if (n == node->channels())
-        return;
-    QString name = node->name();
-    int mc = std::max(n, node->channels());
-
-    if (!name.isEmpty())
-    {
-        if (node->type() == Track::WAVE_INPUT_HELPER)
-        {
-            if (!checkAudioDevice()) return;
-            AudioInputHelper* ai = (AudioInputHelper*) node;
-            for (int i = 0; i < mc; ++i)
-            {
-                if (i < n && ai->jackPort(i) == 0)
-                {
-                    char buffer[128];
-                    snprintf(buffer, 128, "%s-%d", name.toLatin1().constData(), i);
-                    //ai->setJackPort(i, audioDevice->registerInPort(buffer));
-                    ai->setJackPort(i, audioDevice->registerInPort(buffer, false));
-                }
-                else if ((i >= n) && ai->jackPort(i))
-                {
-                    RouteList* ir = node->inRoutes();
-                    for (iRoute ii = ir->begin(); ii != ir->end(); ++ii)
-                    {
-                        Route r = *ii;
-                        if ((r.type == Route::JACK_ROUTE) && (r.channel == i))
-                        {
-                            msgRemoveRoute(r, Route(node, i));
-                            break;
-                        }
-                    }
-                    audioDevice->unregisterPort(ai->jackPort(i));
-                    ai->setJackPort(i, 0);
-                }
-            }
-        }
-        else if (node->type() == Track::WAVE_OUTPUT_HELPER)
-        {
-            if (!checkAudioDevice()) return;
-            AudioOutputHelper* ao = (AudioOutputHelper*) node;
-            for (int i = 0; i < mc; ++i)
-            {
-                void* jp = ao->jackPort(i);
-                if (i < n && jp == 0)
-                {
-                    char buffer[128];
-                    snprintf(buffer, 128, "%s-%d", name.toLatin1().constData(), i);
-                    //ao->setJackPort(i, audioDevice->registerOutPort(buffer));
-                    ao->setJackPort(i, audioDevice->registerOutPort(buffer, false));
-                }
-                else if (i >= n && jp)
-                {
-                    RouteList* ir = node->outRoutes();
-                    for (iRoute ii = ir->begin(); ii != ir->end(); ++ii)
-                    {
-                        Route r = *ii;
-                        if ((r.type == Route::JACK_ROUTE) && (r.channel == i))
-                        {
-                            msgRemoveRoute(Route(node, i), r);
-                            break;
-                        }
-                    }
-                    audioDevice->unregisterPort(jp);
-                    ao->setJackPort(i, 0);
-                }
-            }
-        }
-    }
-
-    /* TODO TODO: Change all stereo routes to mono.
-    // If we are going from stereo to mono we need to disconnect any stray synti 'mono last channel'...
-    if(n == 1 && node->channels() > 1)
-    {
-      // This should always happen - syntis are fixed channels, user cannot change them. But to be safe...
-      if(node->type() != Track::AUDIO_SOFTSYNTH)
-      {
-        if(node->type() != Track::AUDIO_INPUT)
-        {
-          RouteList* rl = node->inRoutes();
-          for(iRoute r = rl->begin(); r != rl->end(); ++r)
-          {
-            // Only interested in synth tracks.
-            if(r->type != Route::TRACK_ROUTE || r->track->type() != Track::AUDIO_SOFTSYNTH)
-              continue;
-            // If it's the last channel...
-            if(r->channel + 1 == ((AudioTrack*)r->track)->totalOutChannels())
-            {
-              msgRemoveRoute(*r, Route(node, r->channel));
-              //msgRemoveRoute(r, Route(node, r->remoteChannel));
-              break;
-            }
-          }
-        }
-
-        if(node->type() != Track::AUDIO_OUTPUT)
-        {
-          RouteList* rl = node->outRoutes();
-          for(iRoute r = rl->begin(); r != rl->end(); ++r)
-          {
-            // Only interested in synth tracks.
-            if(r->type != Route::TRACK_ROUTE || r->track->type() != Track::AUDIO_SOFTSYNTH)
-              continue;
-            // If it's the last channel...
-            if(r->channel + 1 == ((AudioTrack*)r->track)->totalOutChannels())
-            {
-              msgRemoveRoute(Route(node, r->channel), *r);
-              //msgRemoveRoute(Route(node, r->remoteChannel), r);
-              break;
-            }
-          }
-        }
-      }
-    }
-     */
-
-    AudioMsg msg;
-    msg.id = AUDIO_SET_CHANNELS;
-    msg.snode = node;
-    msg.ival = n;
-    sendMsg(&msg);
-}
-
-//---------------------------------------------------------
-//   msgSwapControllerIDX
-//---------------------------------------------------------
-
-void Audio::msgSwapControllerIDX(AudioTrack* node, int idx1, int idx2)
-{
-    AudioMsg msg;
-
-    msg.id = AUDIO_SWAP_CONTROLLER_IDX;
-    msg.snode = node;
-    msg.a = idx1;
-    msg.b = idx2;
-    sendMsg(&msg);
-    //los->composer->controllerChanged(node);
-}
-
-//---------------------------------------------------------
-//   msgClearControllerEvents
-//---------------------------------------------------------
-
-void Audio::msgClearControllerEvents(AudioTrack* node, int acid)
-{
-    AudioMsg msg;
-
-    msg.id = AUDIO_CLEAR_CONTROLLER_EVENTS;
-    msg.snode = node;
-    msg.ival = acid;
-    sendMsg(&msg);
-    //los->composer->controllerChanged(node);
-}
-
-//---------------------------------------------------------
-//   msgSeekPrevACEvent
-//---------------------------------------------------------
-
-void Audio::msgSeekPrevACEvent(AudioTrack* node, int acid)
-{
-    AudioMsg msg;
-
-    msg.id = AUDIO_SEEK_PREV_AC_EVENT;
-    msg.snode = node;
-    msg.ival = acid;
-    sendMsg(&msg);
-}
-
-//---------------------------------------------------------
-//   msgSeekNextACEvent
-//---------------------------------------------------------
-
-void Audio::msgSeekNextACEvent(AudioTrack* node, int acid)
-{
-    AudioMsg msg;
-
-    msg.id = AUDIO_SEEK_NEXT_AC_EVENT;
-    msg.snode = node;
-    msg.ival = acid;
-    sendMsg(&msg);
-}
-
-//---------------------------------------------------------
-//   msgEraseACEvent
-//---------------------------------------------------------
-
-void Audio::msgEraseACEvent(AudioTrack* node, int acid, int frame)
-{
-    AudioMsg msg;
-
-    msg.id = AUDIO_ERASE_AC_EVENT;
-    msg.snode = node;
-    msg.ival = acid;
-    msg.a = frame;
-    sendMsg(&msg);
-    //los->composer->controllerChanged(node);
-}
-
-//---------------------------------------------------------
-//   msgEraseRangeACEvents
-//---------------------------------------------------------
-
-void Audio::msgEraseRangeACEvents(AudioTrack* node, int acid, int frame1, int frame2)
-{
-    AudioMsg msg;
-
-    msg.id = AUDIO_ERASE_RANGE_AC_EVENTS;
-    msg.snode = node;
-    msg.ival = acid;
-    msg.a = frame1;
-    msg.b = frame2;
-    sendMsg(&msg);
-    //los->composer->controllerChanged(node);
-}
-
-//---------------------------------------------------------
-//   msgAddACEvent
-//---------------------------------------------------------
-
-void Audio::msgAddACEvent(AudioTrack* node, int acid, int frame, double val)
-{
-    AudioMsg msg;
-
-    msg.id = AUDIO_ADD_AC_EVENT;
-    msg.snode = node;
-    msg.ival = acid;
-    msg.a = frame;
-    msg.dval = val;
-    sendMsg(&msg);
-    //los->composer->controllerChanged(node);
-}
-
-//---------------------------------------------------------
 //   msgSetSolo
 //---------------------------------------------------------
 
-void Audio::msgSetSolo(Track* track, bool val)
+void Audio::msgSetSolo(MidiTrack* track, bool val)
 {
     AudioMsg msg;
     msg.id = AUDIO_SET_SOLO;
@@ -598,7 +306,7 @@ void Audio::msgPlay(bool val)
 //   msgAddTrack
 //---------------------------------------------------------
 
-void Song::msgInsertTrack(Track* track, int idx, bool doUndoFlag)
+void Song::msgInsertTrack(MidiTrack* track, int idx, bool doUndoFlag)
 {
     AudioMsg msg;
     msg.id = SEQM_ADD_TRACK;
@@ -618,10 +326,8 @@ void Song::msgInsertTrack(Track* track, int idx, bool doUndoFlag)
 //   msgRemoveTrack
 //---------------------------------------------------------
 
-void Audio::msgRemoveTrack(Track* track, bool doUndoFlag)
+void Audio::msgRemoveTrack(MidiTrack* track, bool doUndoFlag)
 {
-    if(track->id() == song->masterId())
-        return;
     AudioMsg msg;
     msg.id = SEQM_REMOVE_TRACK;
     msg.track = track;
@@ -651,11 +357,11 @@ void Audio::msgRemoveTracks()
     do
     {
         loop = false;
-        TrackList* tl = song->tracks();
-        for (iTrack t = tl->begin(); t != tl->end(); ++t)
+        MidiTrackList* tl = song->tracks();
+        for (iMidiTrack t = tl->begin(); t != tl->end(); ++t)
         {
-            Track* tr = *t;
-            if(tr->selected() && (tr->id() != song->masterId()))
+            MidiTrack* tr = *t;
+            if(tr->selected())
             {
                 song->removeTrack1(tr);
                 msgRemoveTrack(tr, false);
@@ -672,7 +378,7 @@ void Audio::msgRemoveTracks()
 //    newTrack - modified original track
 //---------------------------------------------------------
 
-void Audio::msgChangeTrack(Track* oldTrack, Track* newTrack, bool doUndoFlag)
+void Audio::msgChangeTrack(MidiTrack* oldTrack, MidiTrack* newTrack, bool doUndoFlag)
 {
     AudioMsg msg;
     msg.id = SEQM_CHANGE_TRACK;
@@ -749,20 +455,15 @@ bool Song::msgRemoveParts()
         //TrackList* tl = song->tracks();
         //TODO: Check if this is used outside of the canvas part delete and fix them
         //since we should not be deleting parts we cant see.
-        TrackList* tl = visibletracks();/*{{{*/
+        MidiTrackList* tl = visibletracks();/*{{{*/
 
-        for (iTrack it = tl->begin(); it != tl->end(); ++it)
+        for (iMidiTrack it = tl->begin(); it != tl->end(); ++it)
         {
             PartList* pl = (*it)->parts();
             for (iPart ip = pl->begin(); ip != pl->end(); ++ip)
             {
                 if (ip->second->selected())
                 {
-                    if ((*it)->type() == Track::WAVE)
-                    {
-                        audio->msgRemovePart((WavePart*) (ip->second));
-                    }
-                    else
                     {
                         audio->msgRemovePart(ip->second, false);
                     }
@@ -817,7 +518,7 @@ void Audio::msgAddEvent(Event& event, Part* part, bool doUndoFlag, bool doCtrls,
     sendMessage(&msg, doUndoFlag, waitRead);
 }/*}}}*/
 
-void Audio::msgAddEventCheck(Track* track, Event& e, bool doUndoFlag, bool doCtrls, bool doClones, bool waitRead)/*{{{*/
+void Audio::msgAddEventCheck(MidiTrack* track, Event& e, bool doUndoFlag, bool doCtrls, bool doClones, bool waitRead)/*{{{*/
 {
     AudioMsg msg;
     msg.id = SEQM_ADD_EVENT_CHECK;

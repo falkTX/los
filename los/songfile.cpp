@@ -46,7 +46,7 @@ CloneList cloneList;
 //   readXmlPart
 //---------------------------------------------------------
 
-Part* readXmlPart(Xml& xml, Track* track, bool doClone, bool toTrack)/*{{{*/
+Part* readXmlPart(Xml& xml, MidiTrack* track, bool doClone, bool toTrack)/*{{{*/
 {
     int id = -1;
     Part* npart = 0;
@@ -54,7 +54,6 @@ Part* readXmlPart(Xml& xml, Track* track, bool doClone, bool toTrack)/*{{{*/
     uuid_clear(uuid);
     bool uuidvalid = false;
     bool clone = true;
-    bool wave = false;
     bool isclone = false;
 
     for (;;)
@@ -93,13 +92,13 @@ Part* readXmlPart(Xml& xml, Track* track, bool doClone, bool toTrack)/*{{{*/
                             // Is a matching part found in the clone list?
                             if (uuid_compare(uuid, i->uuid) == 0)
                             {
-                                Track* cpt = i->cp->track();
+                                MidiTrack* cpt = i->cp->track();
                                 // If we want to paste to the given track...
                                 if (toTrack)
                                 {
                                     // If the given track type is not the same as the part's
                                     //  original track type, we can't continue. Just return.
-                                    if (!track || cpt->type() != track->type())
+                                    if (!track)
                                     {
                                         xml.skip("part");
                                         return 0;
@@ -109,13 +108,12 @@ Part* readXmlPart(Xml& xml, Track* track, bool doClone, bool toTrack)/*{{{*/
                                     // ...else we want to paste to the part's original track.
                                 {
                                     // Make sure the track exists (has not been deleted).
-                                    if ((cpt->isMidiTrack() && song->midis()->find(cpt) != song->midis()->end()) ||
-                                            (cpt->type() == Track::WAVE && song->waves()->find(cpt) != song->waves()->end()))
+                                    if (song->midis()->find(cpt) != song->midis()->end())
                                         track = cpt;
                                     else
                                         // Track was not found. Try pasting to the given track, as above...
                                     {
-                                        if (!track || cpt->type() != track->type())
+                                        if (!track)
                                         {
                                             // No luck. Just return.
                                             xml.skip("part");
@@ -145,28 +143,8 @@ Part* readXmlPart(Xml& xml, Track* track, bool doClone, bool toTrack)/*{{{*/
                             xml.skip("part");
                             return 0;
                         }
-                        // If we're pasting to selected track and the 'wave'
-                        //  variable is valid, check for mismatch...
-                        if (toTrack && uuidvalid)
-                        {
-                            // If both the part and track are not midi or wave...
-                            if ((wave && track->isMidiTrack()) ||
-                                    (!wave && track->type() == Track::WAVE))
-                            {
-                                xml.skip("part");
-                                return 0;
-                            }
-                        }
 
-                        if (track->isMidiTrack())
-                            npart = new MidiPart((MidiTrack*) track);
-                        else if (track->type() == Track::WAVE)
-                            npart = new WavePart((WaveTrack*) track);
-                        else
-                        {
-                            xml.skip("part");
-                            return 0;
-                        }
+                        npart = new MidiPart(track);
 
                         // Signify a new non-clone part was created.
                         // Even if the original part was itself a clone, clear this because the
@@ -217,32 +195,12 @@ Part* readXmlPart(Xml& xml, Track* track, bool doClone, bool toTrack)/*{{{*/
                     npart->setMute(xml.parseInt());
                 else if(tag == "zIndex")
                     npart->setZIndex(xml.parseInt());
-                else if(tag == "rightClip")
-                    npart->setRightClip((unsigned)xml.parseInt());
-                else if(tag == "leftClip")
-                    npart->setLeftClip((unsigned)xml.parseInt());
-                else if (tag == "fadeIn")
-                {
-                    if (npart) {
-                        WavePart* wp = (WavePart*) npart;
-                        wp->fadeIn()->setWidth((long)xml.parseInt());
-                    }
-                }
-                else if (tag == "fadeOut")
-                {
-                    if (npart) {
-                        WavePart* wp = (WavePart*) npart;
-                        wp->fadeOut()->setWidth((long)xml.parseInt());
-                    }
-                }
                 else if (tag == "event")
                 {
                     // If a new non-clone part was created, accept the events...
                     if (!clone)
                     {
-                        EventType type = Wave;
-                        if (track->isMidiTrack())
-                            type = Note;
+                        EventType type = Note;
                         Event e(type);
                         e.read(xml);
                         // stored tickpos for event has absolute value. However internally
@@ -275,12 +233,7 @@ Part* readXmlPart(Xml& xml, Track* track, bool doClone, bool toTrack)/*{{{*/
                     xml.unknown("readXmlPart");
                 break;
             case Xml::Attribut:
-                if (tag == "type")
-                {
-                    if (xml.s2() == "wave")
-                        wave = true;
-                }
-                else if (tag == "cloneId")
+                if (tag == "cloneId")
                 {
                     id = xml.s2().toInt();
                 }
@@ -319,7 +272,6 @@ void Part::write(int level, Xml& xml, bool isCopy, bool forceWavePaths) const
     uuid_t uuid;
     uuid_clear(uuid);
     bool dumpEvents = true;
-    bool wave = _track->type() == Track::WAVE;
 
     if (isCopy)
     {
@@ -368,10 +320,8 @@ void Part::write(int level, Xml& xml, bool isCopy, bool forceWavePaths) const
         char sid[40]; // uuid string is 36 chars. Try 40 for good luck.
         sid[0] = 0;
         uuid_unparse_lower(uuid, sid);
-        if (wave)
-            xml.nput(level, "<part type=\"wave\" uuid=\"%s\"", sid);
-        else
-            xml.nput(level, "<part uuid=\"%s\"", sid);
+
+        xml.nput(level, "<part uuid=\"%s\"", sid);
 
         if (el->arefCount() > 1)
             xml.nput(" isclone=\"1\"");
@@ -392,14 +342,7 @@ void Part::write(int level, Xml& xml, bool isCopy, bool forceWavePaths) const
     xml.intTag(level, "selected", _selected);
     xml.intTag(level, "color", _colorIndex);
     xml.intTag(level, "zIndex", m_zIndex);
-    xml.intTag(level, "rightClip", m_rightClip);
-    xml.intTag(level, "leftClip", m_leftClip);
-    if (wave)
-    {
-        WavePart* wp = (WavePart*) this;
-        xml.intTag(level, "fadeIn", wp->fadeIn()->width());
-        xml.intTag(level, "fadeOut", wp->fadeOut()->width());
-    }
+
     if (_mute)
         xml.intTag(level, "mute", _mute);
     if (dumpEvents)
@@ -537,7 +480,6 @@ void Song::read(Xml& xml)/*{{{*/
                     setMasterFlag(xml.parseInt());
                 else if(tag == "masterTrackId")
                 {
-                    m_masterId = xml.parseLongLong();
                 }
                 else if (tag == "info")
                     songInfoStr = xml.parse1();
@@ -580,28 +522,6 @@ void Song::read(Xml& xml)/*{{{*/
                     track->read(xml);
                     insertTrack(track, -1);
                 }
-                else if (tag == "wavetrack")
-                {
-                    WaveTrack* track = new WaveTrack();
-                    track->read(xml);
-                    insertTrack(track, -1);
-                }
-                else if (tag == "AudioInput")
-                {
-                    AudioInputHelper* track = new AudioInputHelper();
-                    track->read(xml);
-                    insertTrack(track, -1);
-                }
-                else if (tag == "AudioOutput")
-                {
-                    AudioOutputHelper* track = new AudioOutputHelper();
-                    track->read(xml);
-                    insertTrack(track, -1);
-                    if(!m_masterId && (track->name() == "Master" || track->name() == tr("Master")))
-                    {
-                        m_masterId = track->id();
-                    }
-                }
                 else if (tag == "Route")
                 {
                     readRoute(xml);
@@ -610,8 +530,6 @@ void Song::read(Xml& xml)/*{{{*/
                     readMarker(xml);
                 else if (tag == "globalPitchShift")
                     _globalPitchShift = xml.parseInt();
-                else if (tag == "automation")
-                    automation = xml.parseInt();
                 else if (tag == "cpos")
                 {
                     int pos = xml.parseInt();
@@ -643,7 +561,7 @@ void Song::read(Xml& xml)/*{{{*/
                             TrackView::TrackViewTrack *tvt = tv->tracks()->value(tlist->at(i));
                             if(tvt && !tvt->is_virtual)
                             {
-                                Track *it = findTrackById(tvt->id);
+                                MidiTrack *it = findTrackById(tvt->id);
                                 if(it)
                                 {
                                     _viewtracks.push_back(it);
@@ -664,7 +582,6 @@ void Song::read(Xml& xml)/*{{{*/
                 if (tag == "song")
                 {
                     //Call song->updateTrackViews() to update the canvas and headers
-                    addMasterTrack();
                     updateTrackViews();
                     //Call to update the track view menu
                     update(SC_VIEW_CHANGED);
@@ -743,9 +660,7 @@ void Song::write(int level, Xml& xml) const
 {
     xml.tag(level++, "song");
     xml.strTag(level, "info", songInfoStr);
-    xml.qint64Tag(level, "masterTrackId", m_masterId);
     xml.strTag(level, "associatedRoute", associatedRoute);
-    xml.intTag(level, "automation", automation);
     xml.intTag(level, "cpos", song->cpos());
     xml.intTag(level, "rpos", song->rpos());
     xml.intTag(level, "lpos", song->lpos());
@@ -775,7 +690,7 @@ void Song::write(int level, Xml& xml) const
     // XXX investigate
 
     // then write Composer visible tracks since the track view will maintain order for itself
-    for (ciTrack i = _artracks.begin(); i != _artracks.end(); ++i)
+    for (ciMidiTrack i = _artracks.begin(); i != _artracks.end(); ++i)
     {
         if(!added.contains((*i)->id()))
         {
@@ -785,7 +700,7 @@ void Song::write(int level, Xml& xml) const
     }
 
     //Write out any remaining tracks that are not view members
-    for (ciTrack i = _tracks.begin(); i != _tracks.end(); ++i)
+    for (ciMidiTrack i = _tracks.begin(); i != _tracks.end(); ++i)
     {
         if(!added.contains((*i)->id()))
             (*i)->write(level, xml);
@@ -798,7 +713,7 @@ void Song::write(int level, Xml& xml) const
     }
 
     // write track routing
-    for (ciTrack i = _tracks.begin(); i != _tracks.end(); ++i)
+    for (ciMidiTrack i = _tracks.begin(); i != _tracks.end(); ++i)
     {
         (*i)->writeRouting(level, xml);
     }

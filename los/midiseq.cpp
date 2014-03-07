@@ -79,8 +79,8 @@ void MidiSeq::processMsg(const ThreadMsg* m)
         {
             for(int i = 0; i < msg->list.size(); i++)
             {
-                Track* track  = song->findTrackById(msg->list.at(i));
-                if(track && track->id() != song->masterId())
+                MidiTrack* track  = song->findTrackById(msg->list.at(i));
+                if(track)
                     song->cmdRemoveTrack(track);
             }
             updatePollFd();
@@ -88,7 +88,7 @@ void MidiSeq::processMsg(const ThreadMsg* m)
         break;
             break;
         case SEQM_CHANGE_TRACK:
-            song->changeTrack((Track*) (msg->p1), (Track*) (msg->p2));
+            song->changeTrack((MidiTrack*) (msg->p1), (MidiTrack*) (msg->p2));
             updatePollFd();
             break;
         case SEQM_ADD_PART:

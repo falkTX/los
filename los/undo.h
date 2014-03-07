@@ -16,13 +16,15 @@
 
 class QString;
 
-class Track;
 class TEvent;
 class SigEvent;
 class Part;
 class LOSCommand;
+class MidiTrack;
 
+// XXX remove
 extern std::list<QString> temporaryWavFiles; //!< Used for storing all tmp-files, for cleanup on shutdown
+
 //---------------------------------------------------------
 //   UndoOp
 //---------------------------------------------------------
@@ -55,8 +57,8 @@ struct UndoOp
         };
 
         struct {
-            Track* oTrack;
-            Track* nTrack;
+            MidiTrack* oTrack;
+            MidiTrack* nTrack;
             int trackno;
         };
 

@@ -103,7 +103,7 @@ void HeaderList::updateTrackList(bool viewupdate)/*{{{*/
     m_lockupdate = true;
     if(debugMsg)
         printf("HeaderList::updateTrackList\n");
-    TrackList* l = song->visibletracks();
+    MidiTrackList* l = song->visibletracks();
     //Attempt to prevent widget destruction recreation cycle and just set
     //the track on the header instead. I will also try to never recreate
     //the list at all unless the size changes and when that happens just add the
@@ -112,7 +112,7 @@ void HeaderList::updateTrackList(bool viewupdate)/*{{{*/
     if(viewupdate && !m_headers.isEmpty() && lsize == m_headers.size())
     {
         //printf("Using optimized update\n");
-        iTrack i = l->begin();
+        iMidiTrack i = l->begin();
         foreach(TrackHeader* header, m_headers)
         {
             //if((*i) != header->track())
@@ -142,7 +142,7 @@ void HeaderList::updateTrackList(bool viewupdate)/*{{{*/
             m_dirtyheaders.append(h);
         }
         int hcount = 0;
-        for(iTrack i = l->begin(); i != l->end(); ++hcount, ++i)
+        for(iMidiTrack i = l->begin(); i != l->end(); ++hcount, ++i)
         {
             m_headers.at(hcount)->setTrack((*i));
         }
@@ -155,9 +155,9 @@ void HeaderList::updateTrackList(bool viewupdate)/*{{{*/
         //printf("Using optimized update\n");
         int hcount = m_headers.size();
         int addcount = 0;
-        for(iTrack i = l->begin(); i != l->end(); ++addcount, ++i)
+        for(iMidiTrack i = l->begin(); i != l->end(); ++addcount, ++i)
         {
-            Track* track = (Track*)(*i);
+            MidiTrack* track = (*i);
             if(addcount < hcount)
             {
                 m_headers.at(addcount)->setTrack(track);
@@ -170,8 +170,8 @@ void HeaderList::updateTrackList(bool viewupdate)/*{{{*/
                     header->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
                     //header->setFixedHeight(track->height());
                     connect(this, SIGNAL(updateHeader(int)), header, SLOT(songChanged(int)));
-                    connect(header, SIGNAL(selectionChanged(Track*)), SIGNAL(selectionChanged(Track*)));
-                    connect(header, SIGNAL(trackInserted(int)), SIGNAL(trackInserted(int)));
+                    connect(header, SIGNAL(selectionChanged(MidiTrack*)), SIGNAL(selectionChanged(MidiTrack*)));
+                    connect(header, SIGNAL(trackInserted()), SIGNAL(trackInserted()));
                     connect(header, SIGNAL(trackHeightChanged()), SIGNAL(trackHeightChanged()));
                     m_layout->insertWidget(m_headers.size(), header);
                     m_headers.append(header);
@@ -194,17 +194,17 @@ void HeaderList::updateTrackList(bool viewupdate)/*{{{*/
         }
         m_headers.clear();
         int index = 0;
-        for (iTrack i = l->begin(); i != l->end();++index, ++i)
+        for (iMidiTrack i = l->begin(); i != l->end();++index, ++i)
         {
-            Track* track = *i;
+            MidiTrack* track = *i;
             //Track::TrackType type = track->type();
             //int trackHeight = track->height();
             TrackHeader* header = new TrackHeader(track, this);
             header->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
             header->setFixedHeight(track->height());
             connect(this, SIGNAL(updateHeader(int)), header, SLOT(songChanged(int)));
-            connect(header, SIGNAL(selectionChanged(Track*)), SIGNAL(selectionChanged(Track*)));
-            connect(header, SIGNAL(trackInserted(int)), SIGNAL(trackInserted(int)));
+            connect(header, SIGNAL(selectionChanged(MidiTrack*)), SIGNAL(selectionChanged(MidiTrack*)));
+            connect(header, SIGNAL(trackInserted()), SIGNAL(trackInserted()));
             connect(header, SIGNAL(trackHeightChanged()), SIGNAL(trackHeightChanged()));
             m_headers.append(header);
             m_layout->insertWidget(index, header);
@@ -237,18 +237,18 @@ void HeaderList::clear()/*{{{*/
     wantCleanup = true;
 }/*}}}*/
 
-void HeaderList::renameTrack(Track* t)/*{{{*/
+void HeaderList::renameTrack(MidiTrack* t)/*{{{*/
 {
     if (t && t->name() != "Master")
     {
     }
 }/*}}}*/
 
-Track* HeaderList::y2Track(int y) const/*{{{*/
+MidiTrack* HeaderList::y2Track(int y) const/*{{{*/
 {
-    TrackList* l = song->visibletracks();
+    MidiTrackList* l = song->visibletracks();
     int ty = 0;
-    for (iTrack it = l->begin(); it != l->end(); ++it)
+    for (iMidiTrack it = l->begin(); it != l->end(); ++it)
     {
         int h = (*it)->height();
         if (y >= ty && y < ty + h)
@@ -280,13 +280,13 @@ bool HeaderList::isEditing()/*{{{*/
     return false;
 }/*}}}*/
 
-TrackList HeaderList::getRecEnabledTracks()/*{{{*/
+MidiTrackList HeaderList::getRecEnabledTracks()/*{{{*/
 {
     //printf("getRecEnabledTracks\n");
-    TrackList recEnabled;
+    MidiTrackList recEnabled;
     //This changes to song->visibletracks()
-    TrackList* tracks = song->visibletracks();
-    for (iTrack t = tracks->begin(); t != tracks->end(); ++t)
+    MidiTrackList* tracks = song->visibletracks();
+    for (iMidiTrack t = tracks->begin(); t != tracks->end(); ++t)
     {
         if ((*t)->recordFlag())
         {
@@ -297,7 +297,7 @@ TrackList HeaderList::getRecEnabledTracks()/*{{{*/
     return recEnabled;
 }/*}}}*/
 
-void HeaderList::updateSelection(Track* t, bool shift)/*{{{*/
+void HeaderList::updateSelection(MidiTrack* t, bool shift)/*{{{*/
 {
     if(debugMsg)
         printf("HeaderList::updateSelection Before track check\n");
@@ -313,10 +313,10 @@ void HeaderList::updateSelection(Track* t, bool shift)/*{{{*/
             t->setSelected(true);
 
             // rec enable track if expected
-            TrackList recd = getRecEnabledTracks();
+            MidiTrackList recd = getRecEnabledTracks();
             if (recd.size() == 1 && config.moveArmedCheckBox)
             { // one rec enabled track, move rec enabled with selection
-                song->setRecordFlag((Track*) recd.front(), false);
+                song->setRecordFlag(recd.front(), false);
                 song->setRecordFlag(t, true);
             }
         }
@@ -330,17 +330,16 @@ void HeaderList::updateSelection(Track* t, bool shift)/*{{{*/
     }
 }/*}}}*/
 
-void HeaderList::selectTrack(Track* tr)/*{{{*/
+void HeaderList::selectTrack(MidiTrack* tr)/*{{{*/
 {
     song->deselectTracks();
     tr->setSelected(true);
 
-
     // rec enable track if expected
-    TrackList recd = getRecEnabledTracks();
+    MidiTrackList recd = getRecEnabledTracks();
     if (recd.size() == 1 && config.moveArmedCheckBox)
     { // one rec enabled track, move rec enabled with selection
-        song->setRecordFlag((Track*) recd.front(), false);
+        song->setRecordFlag(recd.front(), false);
         song->setRecordFlag(tr, true);
     }
 
@@ -351,10 +350,10 @@ void HeaderList::selectTrack(Track* tr)/*{{{*/
 void HeaderList::moveSelection(int n)/*{{{*/
 {
     //This changes to song->visibletracks()
-    TrackList* tracks = song->visibletracks();
+    MidiTrackList* tracks = song->visibletracks();
 
     // check for single selection
-    TrackList selectedTracks = song->getSelectedTracks();
+    MidiTrackList selectedTracks = song->getSelectedTracks();
     int nselect = selectedTracks.size();
 
     // if there isn't a selection, select the first in the list
@@ -363,7 +362,7 @@ void HeaderList::moveSelection(int n)/*{{{*/
     {
         if (song->visibletracks()->size())
         {
-            Track* track = (*(song->visibletracks()->begin()));
+            MidiTrack* track = (*(song->visibletracks()->begin()));
             track->setSelected(true);
             if(song->hasSelectedParts)
                 song->deselectAllParts();
@@ -378,7 +377,7 @@ void HeaderList::moveSelection(int n)/*{{{*/
         song->deselectTracks();
         if (n == 1)
         {
-            Track* bottomMostSelected = *(--selectedTracks.end());
+            MidiTrack* bottomMostSelected = *(--selectedTracks.end());
             bottomMostSelected->setSelected(true);
             if(song->hasSelectedParts)
                 song->deselectAllParts();
@@ -387,7 +386,7 @@ void HeaderList::moveSelection(int n)/*{{{*/
         }
         else if (n == -1)
         {
-            Track* topMostSelected = *(selectedTracks.begin());
+            MidiTrack* topMostSelected = *(selectedTracks.begin());
             topMostSelected->setSelected(true);
             if(song->hasSelectedParts)
                 song->deselectAllParts();
@@ -400,10 +399,10 @@ void HeaderList::moveSelection(int n)/*{{{*/
         }
     }
 
-    Track* selTrack = 0;
-    for (iTrack t = tracks->begin(); t != tracks->end(); ++t)
+    MidiTrack* selTrack = 0;
+    for (iMidiTrack t = tracks->begin(); t != tracks->end(); ++t)
     {
-        iTrack s = t;
+        iMidiTrack s = t;
         if ((*t)->selected())
         {
             if (n > 0)
@@ -432,10 +431,10 @@ void HeaderList::moveSelection(int n)/*{{{*/
             selTrack = *t;
 
             // rec enable track if expected
-            TrackList recd = getRecEnabledTracks();
+            MidiTrackList recd = getRecEnabledTracks();
             if (recd.size() == 1 && config.moveArmedCheckBox)
             { // one rec enabled track, move rec enabled with selection
-                song->setRecordFlag((Track*) recd.front(), false);
+                song->setRecordFlag(recd.front(), false);
                 song->setRecordFlag((*t), true);
             }
 
@@ -460,28 +459,24 @@ void HeaderList::selectTrackBelow()/*{{{*/
 
 void HeaderList::moveSelectedTrack(int dir)/*{{{*/
 {
-    TrackList tl = song->getSelectedTracks();
+    MidiTrackList tl = song->getSelectedTracks();
     if(tl.size() == 1)
     {
-        Track* src = (Track*)tl.front();
+        MidiTrack* src = tl.front();
         if(src)
         {
-            if(src->id() == song->masterId())
-                return;
             int i = song->visibletracks()->index(src);
-            ciTrack it = song->visibletracks()->index2iterator(i);
-            Track* t = 0;
+            ciMidiTrack it = song->visibletracks()->index2iterator(i);
+            MidiTrack* t = 0;
             if(dir == 1)
             {
                 if(it != song->visibletracks()->begin())//already at top
                 {
-                    ciTrack d = --it;
+                    ciMidiTrack d = --it;
                     t = *(d);
                 }
                 if (t)
                 {
-                    if(t->id() == song->masterId())
-                        return;
                     int dTrack = song->visibletracks()->index(t);
                     audio->msgMoveTrack(i, dTrack);
                     //The selection event should be harmless enough to call here to update
@@ -494,15 +489,13 @@ void HeaderList::moveSelectedTrack(int dir)/*{{{*/
             {
                 if(it != song->visibletracks()->end())//already at bottom
                 {
-                    ciTrack d = ++it;
+                    ciMidiTrack d = ++it;
                     if(d == song->visibletracks()->end())//already at bottom
                         return;
                     t = *(d);
                 }
                 if (t)
                 {
-                    if(t->id() == song->masterId())
-                        return;
                     int dTrack = song->visibletracks()->index(t);
                     audio->msgMoveTrack(i, dTrack);
                     //The selection event should be harmless enough to call here to update
@@ -583,8 +576,8 @@ void HeaderList::dropEvent(QDropEvent *event)/*{{{*/
         int index;
         QPoint offset;
         dataStream >> trackName >> index >> offset;
-        Track* srcTrack = song->findTrack(trackName);
-        Track* t = y2Track(event->pos().y() + ypos);
+        MidiTrack* srcTrack = song->findTrack(trackName);
+        MidiTrack* t = y2Track(event->pos().y() + ypos);
         if (srcTrack && t && t->name() != "Master")
         {
             int sTrack = song->visibletracks()->index(srcTrack);
@@ -622,26 +615,14 @@ void HeaderList::dropEvent(QDropEvent *event)/*{{{*/
             QString text = event->mimeData()->urls()[0].path();
             event->acceptProposedAction();
 
-            if (text.endsWith(".wav", Qt::CaseInsensitive) ||
-                    text.endsWith(".ogg", Qt::CaseInsensitive) ||
-                    text.endsWith(".mpt", Qt::CaseInsensitive))
+            if (text.endsWith(".mpt", Qt::CaseInsensitive))
             {
-                Track* track = y2Track(event->pos().y() + ypos);
+                MidiTrack* track = y2Track(event->pos().y() + ypos);
                 if (!track)
                 {//Create the track
-                    Track::TrackType t = Track::MIDI;
-                    if(text.endsWith(".wav", Qt::CaseInsensitive) || text.endsWith(".ogg", Qt::CaseInsensitive))
-                    {
-                        t = Track::WAVE;
-                        QFileInfo f(text);
-                        track = song->addTrackByName(f.baseName(), Track::WAVE, -1, true);
-                        song->updateTrackViews();
-                    }
-                    else
                     {
                         VirtualTrack* vt;
-                        CreateTrackDialog *ctdialog = new CreateTrackDialog(&vt, t, -1, this);
-                        ctdialog->lockType(true);
+                        CreateTrackDialog *ctdialog = new CreateTrackDialog(&vt, -1, this);
                         if(ctdialog->exec() && vt)
                         {
                             qint64 nid = trackManager->addTrack(vt, -1);
@@ -652,14 +633,8 @@ void HeaderList::dropEvent(QDropEvent *event)/*{{{*/
 
                 if (track)
                 {
-                    if (track->type() == Track::WAVE &&
-                            (text.endsWith(".wav", Qt::CaseInsensitive) ||
-                            (text.endsWith(".ogg", Qt::CaseInsensitive))))
+                    if (text.endsWith(".mpt", Qt::CaseInsensitive))
                     {
-                        los->importWaveToTrack(text, song->cpos(), track);
-                    }
-                    else if ((track->isMidiTrack() || track->type() == Track::WAVE) && text.endsWith(".mpt", Qt::CaseInsensitive))
-                    {//Who saves a wave part as anything but a wave file?
                         los->importPartToTrack(text, song->cpos(), track);
                     }
                 }
@@ -700,29 +675,13 @@ void HeaderList::mousePressEvent(QMouseEvent* ev) //{{{
     //Track* t = 0;
     if (button == Qt::RightButton)
     {
-        QMenu* p = new QMenu;
-        QAction* wave = p->addAction(*addAudioIcon, tr("Add Audio Track"));
-        wave->setData(Track::WAVE);
-        QAction* midi = p->addAction(*addMidiIcon, tr("Add Midi Track"));
-        midi->setData(Track::MIDI);
-
-        // Show the menu
-        QAction* act = p->exec(ev->globalPos(), 0);
-
-        // Valid click?
-        if (act)
         {
-            int n = act->data().toInt();
-            // Valid item?
-            if (n >= 0)
             {
-                CreateTrackDialog *ctdialog = new CreateTrackDialog(n, -1, this);
+                CreateTrackDialog *ctdialog = new CreateTrackDialog(-1, this);
                 connect(ctdialog, SIGNAL(trackAdded(qint64)), this, SLOT(newTrackAdded(qint64)));
                 ctdialog->exec();
             }
         }
-        if(p)
-            delete p;
     }
 
 }/*}}}*/
@@ -740,11 +699,11 @@ void HeaderList::wheelEvent(QWheelEvent* ev)/*{{{*/
 
 void HeaderList::newTrackAdded(qint64 id)
 {
-    Track* t = song->findTrackById(id);
+    MidiTrack* t = song->findTrackById(id);
     if(t)
     {
         emit selectionChanged(t);
-        emit trackInserted(t->type());
+        emit trackInserted();
         song->updateTrackViews();
     }
 }

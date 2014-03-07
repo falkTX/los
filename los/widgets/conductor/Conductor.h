@@ -17,7 +17,6 @@
 class QToolButton;
 class QComboBox;
 
-class Track;
 class Part;
 
 class QTableView;
@@ -27,6 +26,7 @@ class QModelIndex;
 class QItemSelection;
 class QItemSelectionModel;
 class Patch;
+class MidiTrack;
 
 //---------------------------------------------------------
 //   Conductor
@@ -35,7 +35,7 @@ class Patch;
 class Conductor : public QFrame/*QWidget*/, public Ui::ConductorBase {
     Q_OBJECT
 
-    Track* selected;
+    MidiTrack* selected;
     bool _midiDetect;
     int program, pan, volume, hbank, lbank;
     int _progRowNum, _selectedIndex;
@@ -99,11 +99,11 @@ protected slots:
     virtual void heartBeat();
 
 public slots:
-    void setTrack(Track*);
+    void setTrack(MidiTrack*);
     void configChanged();
     void instrPopup();
     void progRecClicked();
-    void progRecClicked(Track*);
+    void progRecClicked(MidiTrack*);
     void songChanged(int);
     void insertMatrixEvent(Part*, unsigned);
     void updateSize();
@@ -127,10 +127,10 @@ signals:
     void toggleComments(bool);
 
 public:
-    Conductor(QWidget*, Track* = 0);
+    Conductor(QWidget*, MidiTrack* = 0);
     ~Conductor();
 
-    Track* track() const {
+    MidiTrack* track() const {
     return selected;
     }
     QTableView* getView() const
