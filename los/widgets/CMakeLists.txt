@@ -49,7 +49,6 @@ QT4_WRAP_CPP(widget_mocs
     knob.h
     lcombo.h
     gcombo.h
-    mixdowndialog.h
     mtscale.h
     pcscale.h
     tvieweditor.h
@@ -93,9 +92,6 @@ QT4_WRAP_CPP(widget_mocs
     ccdelegate.h
     ccedit.h
     CreateTrackDialog.h
-    ClipList/BookmarkList.h
-    ClipList/AudioClipList.h
-    ClipList/AudioPlayer.h
     StretchDialog.h
     TimeHeader.h
     TrackInstrumentMenu.h
@@ -111,7 +107,6 @@ QT4_WRAP_CPP(widget_mocs
 
 file(GLOB widgets_ui_files
     aboutbox.ui
-    cliplisteditorbase.ui
     commentbase.ui
     commentdockbase.ui
     configmidifilebase.ui
@@ -122,7 +117,6 @@ file(GLOB widgets_ui_files
     gensetbase.ui
     itransformbase.ui
     mittransposebase.ui
-    mixdowndialogbase.ui
     conductor/ConductorBase.ui
     projectcreate.ui
     shortcutcapturedialogbase.ui
@@ -139,7 +133,6 @@ file(GLOB widgets_ui_files
     midiassignbase.ui
     cceditbase.ui
     createtrackbase.ui
-    ClipList/AudioClipListBase.ui
     stretchdialog.ui
 )
 
@@ -177,7 +170,6 @@ file(GLOB widgets_source_files
     knob.cpp
     lcombo.cpp
     gcombo.cpp
-    mixdowndialog.cpp
     mmath.cpp
     conductor/Conductor.cpp
     tvieweditor.cpp
@@ -224,9 +216,6 @@ file(GLOB widgets_source_files
     ccdelegate.cpp
     ccedit.cpp
     CreateTrackDialog.cpp
-    ClipList/BookmarkList.cpp
-    ClipList/AudioClipList.cpp
-    ClipList/AudioPlayer.cpp
     StretchDialog.cpp
     TimeHeader.cpp
     TrackInstrumentMenu.cpp

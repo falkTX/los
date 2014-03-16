@@ -25,7 +25,6 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 set(SubDirs
     Composer
-    cliplist
     ctrl
     driver
     instruments
@@ -59,7 +58,6 @@ QT4_WRAP_CPP(los_moc_headers
     traverso_shared/CommandGroup.h
     traverso_shared/OOMCommand.h
     midimonitor.h
-    FadeCurve.h
     TrackManager.h
     NameValidator.h
 )
@@ -115,8 +113,6 @@ file(GLOB core_source_files
     transpose.cpp
     utils.cpp
     undo.cpp
-    wave.cpp
-    waveevent.cpp
     xml.cpp
     traverso_shared/TConfig.cpp
     traverso_shared/AddRemoveCtrlValues.cpp
@@ -124,7 +120,6 @@ file(GLOB core_source_files
     traverso_shared/OOMCommand.cpp
     midimonitor.cpp
     ccinfo.cpp
-    FadeCurve.cpp
     TrackManager.cpp
     NameValidator.cpp
 )
@@ -211,7 +206,6 @@ set_target_properties(icons
 
 target_link_libraries(core
     Composer
-    cliplist
     ctrl
     driver
     icons
@@ -231,7 +225,6 @@ target_link_libraries(los
     al
     Composer
     awl
-    cliplist
     ctrl
     driver
     icons
@@ -251,7 +244,6 @@ target_link_libraries(los
     ${QT_LIBRARIES}
     ${ALSA_LIBRARIES}
     ${JACK_LIBRARIES}
-    ${SNDFILE_LIBRARIES}
     ${UUID_LIBRARIES}
     pthread
 )

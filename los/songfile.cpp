@@ -22,7 +22,6 @@
 #include "midiport.h"
 #include "audio.h"
 #include "midiplugins/mitplugin.h"
-#include "wave.h"
 #include "midictrl.h"
 #include "conf.h"
 #include "driver/jackmidi.h"
@@ -205,7 +204,6 @@ Part* readXmlPart(Xml& xml, MidiTrack* track, bool doClone, bool toTrack)/*{{{*/
                         e.read(xml);
                         // stored tickpos for event has absolute value. However internally
                         // tickpos is relative to start of part, we substract tick().
-                        // TODO: better handling for wave event
                         e.move(-npart->tick());
                         int tick = e.tick();
 

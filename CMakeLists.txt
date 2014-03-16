@@ -122,10 +122,6 @@ include_directories(${ALSA_INCLUDE_DIRS})
 PKG_CHECK_MODULES(JACK REQUIRED jack>=0.103)
 include_directories(${JACK_INCLUDE_DIRS})
 
-## sndfile >= 1.0.0
-PKG_CHECK_MODULES(SNDFILE REQUIRED sndfile>=1.0.0)
-include_directories(${SNDFILE_INCLUDE_DIRS})
-
 ## uuid
 PKG_CHECK_MODULES(UUID REQUIRED uuid>=0.0.1)
 include_directories(${UUID_INCLUDE_DIRS})

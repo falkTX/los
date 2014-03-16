@@ -8,7 +8,6 @@
 #ifndef __ABSTRACTMIDIEDITOR_H__
 #define __ABSTRACTMIDIEDITOR_H__
 
-///#include "sig.h"
 #include "al/sig.h"
 #include "cobject.h"
 #include <QList>
@@ -23,7 +22,6 @@ class ScrollScale;
 class CtrlEdit;
 class MTScale;
 class Part;
-class WavePart;
 class Event;
 
 //---------------------------------------------------------
@@ -66,10 +64,6 @@ public:
     void removePart(int sn);
     void removeParts(PartList*);
     int quantVal(int v) const;
-    ///int rasterStep(unsigned tick) const   { return sigmap.rasterStep(tick, _raster); }
-    ///unsigned rasterVal(unsigned v)  const { return sigmap.raster(v, _raster);  }
-    ///unsigned rasterVal1(unsigned v) const { return sigmap.raster1(v, _raster); }
-    ///unsigned rasterVal2(unsigned v) const { return sigmap.raster2(v, _raster); }
 
     int rasterStep(unsigned tick) const
     {
@@ -119,7 +113,6 @@ public:
     Part* curCanvasPart();
     bool isEventSelected(Event e);
     QList<Event> getSelectedEvents();
-    WavePart* curWavePart();
     virtual void setCurCanvasPart(Part*);
     virtual bool isGlobalEdit(){ return false; }
     virtual void updateCanvas() {}

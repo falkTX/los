@@ -96,7 +96,6 @@ static inline void los_atomic_destroy(los_atomic_t*) {
 
 class Xml;
 class Pipeline;
-class SndFile;
 
 // superceeded by dynamic allocation of fifoLength
 //const int FIFO_BUFFER = 4096;//64;

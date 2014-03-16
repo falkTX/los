@@ -17,7 +17,6 @@
 #include "globals.h"
 #include "event.h"
 #include "audio.h"
-#include "wave.h"
 #include "midiport.h"
 #include "song.h"
 #include "app.h"

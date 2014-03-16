@@ -996,7 +996,7 @@ void EventCanvas::pasteAt(const QString& pt, int pos)
             {
                 song->startUndo();
                 EventList* el = new EventList();
-                el->read(xml, "eventlist", true);
+                el->read(xml, "eventlist");
                 int modified = SC_EVENT_INSERTED;
                 for (iEvent i = el->begin(); i != el->end(); ++i)
                 {

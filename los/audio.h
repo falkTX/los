@@ -16,7 +16,6 @@
 #include "event.h"
 #include <QList>
 
-class SndFile;
 class MidiDevice;
 class AudioDevice;
 class Part;
@@ -36,7 +35,6 @@ struct AudioMsg : public ThreadMsg
 { // this should be an union
     int serialNo;
     qint64 sid;
-    SndFile* downmix;
     Route sroute, droute;
     AudioDevice* device;
     int ival;

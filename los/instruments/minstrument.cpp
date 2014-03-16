@@ -727,7 +727,7 @@ void KeyMap::write(int level, Xml& xml)/*{{{*/
 
 void MidiInstrument::readMidiState(Xml& xml)
 {
-    _midiState->read(xml, "midistate", true);
+    _midiState->read(xml, "midistate");
 }
 
 //---------------------------------------------------------

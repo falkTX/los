@@ -37,7 +37,6 @@
 #include "xpm/settings_midiport_softsynths.xpm"
 #include "xpm/settings_midisync.xpm"
 #include "xpm/view_bigtime_window.xpm"
-#include "xpm/view_cliplist.xpm"
 #include "xpm/view_marker.xpm"
 #include "xpm/view_transport_window.xpm"
 #include "xpm/note.xpm"
@@ -119,7 +118,6 @@
 #include "xpm/track_delete.xpm"
 #include "xpm/listS.xpm"
 #include "xpm/inputpluginS.xpm"
-#include "xpm/cliplistS.xpm"
 #include "xpm/initS.xpm"
 
 #include "xpm/addtrack_addmiditrack.xpm"
@@ -224,7 +222,6 @@ QPixmap* track_addIcon;
 QPixmap* track_deleteIcon;
 QPixmap* listSIcon;
 QPixmap* inputpluginSIcon;
-QPixmap* cliplistSIcon;
 QPixmap* initSIcon;
 QPixmap* songInfoIcon;
 
@@ -704,7 +701,6 @@ QPixmap* settings_midifileexportIcon;
 QPixmap* settings_midiport_softsynthsIcon;
 QPixmap* settings_midisyncIcon;
 QPixmap* view_bigtime_windowIcon;
-QPixmap* view_cliplistIcon;
 QPixmap* view_markerIcon;
 QPixmap* view_mixerIcon;
 QPixmap* view_transport_windowIcon;
@@ -1351,7 +1347,6 @@ void initIcons()
     track_deleteIcon     = new LOSPixmap(track_delete_xpm, nullptr);
     listSIcon            = new LOSPixmap(listS_xpm, nullptr);
     inputpluginSIcon     = new LOSPixmap(inputpluginS_xpm, nullptr);
-    cliplistSIcon        = new LOSPixmap(cliplistS_xpm, nullptr);
     initSIcon            = new LOSPixmap(initS_xpm, nullptr);
     songInfoIcon         = new LOSPixmap(":/images/icons/initSong.png", nullptr);
 
@@ -1416,7 +1411,6 @@ void initIcons()
     settings_midiport_softsynthsIcon              = new LOSPixmap(settings_midiport_softsynths_xpm, nullptr);
     settings_midisyncIcon                         = new LOSPixmap(settings_midisync_xpm, nullptr);
     view_bigtime_windowIcon                       = new LOSPixmap(view_bigtime_window_xpm, nullptr);
-    view_cliplistIcon                             = new LOSPixmap(view_cliplist_xpm, nullptr);
     view_markerIcon                               = new LOSPixmap(view_marker_xpm, nullptr);
     view_transport_windowIcon                     = new LOSPixmap(view_transport_window_xpm, nullptr);
 

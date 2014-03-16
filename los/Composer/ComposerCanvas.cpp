@@ -41,7 +41,6 @@
 #include "icons.h"
 #include "event.h"
 #include "xml.h"
-#include "wave.h"
 #include "audio.h"
 #include "shortcuts.h"
 #include "gconfig.h"
@@ -815,17 +814,7 @@ void ComposerCanvas::itemPopup(CItem* item, int n, const QPoint& pt)/*{{{*/
         {
             Part* p = item->part();
             EventList* el = p->events();
-            QString str = tr("Part name") + ": " + p->name() + "\n" + tr("Files") + ":";
-            for (iEvent e = el->begin(); e != el->end(); ++e)
-            {
-                Event event = e->second;
-                SndFileR f = event.sndFile();
-                if (f.isNull())
-                    continue;
-                //str.append("\n" + f.path());
-                str.append(QString("\n@") + QString().setNum(event.tick()) + QString(" len:") +
-                        QString().setNum(event.lenTick()) + QString(" ") + f.path());
-            }
+            QString str = tr("Part name") + ": " + p->name() + "\n";
             QMessageBox::information(this, "File info", str, "Ok", 0);
             break;
         }
@@ -2433,19 +2422,6 @@ void ComposerCanvas::dragEnterEvent(QDragEnterEvent* event)
                 text.endsWith(".los", Qt::CaseInsensitive) ||
                 text.endsWith(".mid", Qt::CaseInsensitive))
         {
-            /*if(text.endsWith(".mpt", Qt::CaseInsensitive))
-            {
-            }
-            else
-            {
-                SndFile* f = getWave(text, true);
-                if(f)
-                {
-                    int samples = f->samples();
-                    //
-                }
-            }*/
-            //qDebug("ComposerCanvas::dragEnterEvent: Found Audio file");
             event->acceptProposedAction();
         }
         else

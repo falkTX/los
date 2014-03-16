@@ -41,11 +41,7 @@ public:
 
     enum ToplevelType
     {
-        PIANO_ROLL, LISTE, DRUM, MASTER, WAVE,
-        LMASTER, CLIPLIST, MARKER
-#ifdef PATCHBAY
-        , M_PATCHBAY
-#endif /* PATCHBAY */
+        PIANO_ROLL, LISTE, DRUM, MASTER, LMASTER, MARKER
     };
 
     Toplevel(ToplevelType t, unsigned long obj, TopWin* cobj)

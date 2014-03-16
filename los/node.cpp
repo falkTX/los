@@ -8,7 +8,6 @@
 
 #include <cmath>
 #include <assert.h>
-#include <sndfile.h>
 #include <stdlib.h>
 
 #include "node.h"
@@ -18,7 +17,6 @@
 #include "xml.h"
 #include "audiodev.h"
 #include "audio.h"
-#include "wave.h"
 #include "utils.h"      //debug
 #include "al/dsp.h"
 #include "midictrl.h"

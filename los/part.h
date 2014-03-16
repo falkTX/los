@@ -13,9 +13,9 @@
 
 #include <uuid/uuid.h>
 #include <QList>
+#include <QString>
 
 #include "event.h"
-#include "FadeCurve.h"
 
 class QString;
 

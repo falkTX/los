@@ -10,7 +10,6 @@
 
 #include "event.h"
 #include "eventbase.h"
-#include "waveevent.h"
 #include "midievent.h"
 
 //---------------------------------------------------------
@@ -20,7 +19,7 @@
 EventBase::EventBase(EventType t)
 {
     _type = t;
-    Pos::setType(_type == Wave ? FRAMES : TICKS);
+    Pos::setType(TICKS);
     refCount = 0;
     _selected = false;
     m_leftclip = 0;
@@ -77,10 +76,7 @@ Event::Event()
 
 Event::Event(EventType t)
 {
-    if (t == Wave)
-        ev = new WaveEventBase(t);
-    else
-        ev = new MidiEventBase(t);
+    ev = new MidiEventBase(t);
     ++(ev->refCount);
 }
 
@@ -123,10 +119,7 @@ void Event::setType(EventType t)
         delete ev;
         ev = 0;
     }
-    if (t == Wave)
-        ev = new WaveEventBase(t);
-    else
-        ev = new MidiEventBase(t);
+    ev = new MidiEventBase(t);
     ++(ev->refCount);
 }
 
@@ -335,29 +328,6 @@ int Event::leftClip() const
 void Event::setLeftClip(int clip)
 {
     ev->setLeftClip(clip);
-}
-
-SndFileR Event::sndFile() const
-{
-    return ev->sndFile();
-}
-
-void Event::setSndFile(SndFileR& sf)
-{
-    ev->setSndFile(sf);
-}
-
-//void Event::read(unsigned offset, float** bpp, int channels, int nn, bool overwrite)
-//void Event::readAudio(unsigned offset, float** bpp, int channels, int nn, bool doSeek, bool overwrite)
-// p3.3.33
-
-void Event::readAudio(WavePart* part, unsigned offset, float** bpp, int channels, int nn, bool doSeek, bool overwrite)
-{
-    //ev->read(offset, bpp, channels, nn, overwrite);
-    //ev->readAudio(offset, bpp, channels, nn, doSeek, overwrite);
-    //_sfCurFrame = ev->readAudio(_src_state, _sfCurFrame, offset, bpp, channels, nn, doSeek, overwrite);
-    // p3.3.33
-    ev->readAudio(part, offset, bpp, channels, nn, doSeek, overwrite);
 }
 
 void Event::setTick(unsigned val)

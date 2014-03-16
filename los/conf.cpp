@@ -6,7 +6,6 @@
 //  (C) Copyright 1999-2003 Werner Schweer (ws@seh.de)
 //=========================================================
 
-#include <sndfile.h>
 #include <errno.h>
 #include <stdio.h>
 #include <QPair>
@@ -34,9 +33,7 @@
 #include "midictrl.h"
 #include "ctrlcombo.h"
 #include "genset.h"
-//#include "midiitransform.h"
 #include "audio.h"
-#include "wave.h"
 #include "midiseq.h"
 #include "TrackManager.h"
 #include "utils.h"

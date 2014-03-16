@@ -23,7 +23,6 @@
 #include "mididev.h"
 #include "driver/alsamidi.h"
 #include "driver/jackmidi.h"
-#include "wave.h"
 #include "midiseq.h"
 #include "gconfig.h"
 #include "minstrument.h"

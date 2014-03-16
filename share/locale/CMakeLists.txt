@@ -35,7 +35,6 @@ if (UPDATE_TRANSLATIONS)
         awl
         los
         Composer
-        cliplist
         ctrl
         driver
         instruments

@@ -33,7 +33,6 @@
 #include "driver/audiodev.h"
 #include "audioprefetch.h"
 #include "bigtime.h"
-#include "cliplist/cliplist.h"
 #include "conf.h"
 #include "debug.h"
 #include "filedialog.h"
@@ -50,7 +49,6 @@
 #include "midiport.h"
 #include "mididev.h"
 #include "driver/jackmidi.h"
-#include "mixdowndialog.h"
 #include "midiedit/Performer.h"
 #include "popupmenu.h"
 #include "shortcuts.h"
@@ -508,7 +506,6 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
 
     //Initialize the trackManager
     trackManager = new TrackManager;
-    clipListEdit = 0;
     midiSyncConfig = 0;
     midiRemoteConfig = 0;
     midiPortConfig = 0;
@@ -750,8 +747,6 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
     viewTransportAction->setCheckable(true);
     viewBigtimeAction = new QAction(QIcon(*view_bigtime_windowIcon), tr("Bigtime Window"), this);
     viewBigtimeAction->setCheckable(true);
-    viewCliplistAction = new QAction(QIcon(*cliplistSIcon), tr("Cliplist"), this);
-    viewCliplistAction->setCheckable(true);
     viewMarkerAction = new QAction(QIcon(*view_markerIcon), tr("Marker View"), this);
     viewMarkerAction->setCheckable(true);
 
@@ -883,7 +878,6 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
     //-------- View connections
     connect(viewTransportAction, SIGNAL(toggled(bool)), SLOT(toggleTransport(bool)));
     connect(viewBigtimeAction, SIGNAL(toggled(bool)), SLOT(toggleBigTime(bool)));
-    connect(viewCliplistAction, SIGNAL(toggled(bool)), SLOT(startClipList(bool)));
     connect(viewMarkerAction, SIGNAL(toggled(bool)), SLOT(toggleMarker(bool)));
 
     connect(viewToolbarOrchestra, SIGNAL(toggled(bool)), SLOT(showToolbarOrchestra(bool)));
@@ -1048,7 +1042,6 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
     master->addAction(masterListAction);
     menuView->addAction(viewTransportAction);
     menuView->addAction(viewBigtimeAction);
-    menuView->addAction(viewCliplistAction);
     menuView->addAction(viewMarkerAction);
 
     menuView->addSeparator();
@@ -2799,28 +2792,6 @@ void LOS::startSongInfo(bool editable)
 }
 
 //---------------------------------------------------------
-//   startDefineController
-//---------------------------------------------------------
-
-
-//---------------------------------------------------------
-//   startClipList
-//---------------------------------------------------------
-
-void LOS::startClipList(bool checked)
-{
-    if (clipListEdit == 0)
-    {
-        //clipListEdit = new ClipListEdit();
-        clipListEdit = new ClipListEdit(this);
-        toplevels.push_back(Toplevel(Toplevel::CLIPLIST, (unsigned long) (clipListEdit), clipListEdit));
-        connect(clipListEdit, SIGNAL(deleted(unsigned long)), SLOT(toplevelDeleted(unsigned long)));
-    }
-    clipListEdit->show();
-    viewCliplistAction->setChecked(checked);
-}
-
-//---------------------------------------------------------
 //   fileMenu
 //---------------------------------------------------------
 
@@ -2869,26 +2840,6 @@ void LOS::toplevelDeleted(unsigned long tl)
     {
         if (i->object() == tl)
         {
-            switch (i->type())
-            {
-                case Toplevel::MARKER:
-                    break;
-                case Toplevel::CLIPLIST:
-                    // ORCAN: This needs to be verified. aid2 used to correspond to Cliplist:
-                    //menu_audio->setItemChecked(aid2, false);
-                    viewCliplistAction->setChecked(false);
-                    return;
-                    //break;
-                    // the followin editors can exist in more than
-                    // one instantiation:
-                case Toplevel::PIANO_ROLL:
-                case Toplevel::LISTE:
-                case Toplevel::DRUM:
-                case Toplevel::MASTER:
-                case Toplevel::WAVE:
-                case Toplevel::LMASTER:
-                    break;
-            }
             toplevels.erase(i);
             return;
         }
@@ -2896,19 +2847,6 @@ void LOS::toplevelDeleted(unsigned long tl)
     printf("topLevelDeleted: top level %lx not found\n", tl);
     //assert(false);
 }
-
-//---------------------------------------------------------
-//   ctrlChanged
-//    midi ctrl value changed
-//---------------------------------------------------------
-
-#if 0
-
-void LOS::ctrlChanged()
-{
-    composer->updateInspector();
-}
-#endif
 
 //---------------------------------------------------------
 //   keyPressEvent
@@ -3804,13 +3742,11 @@ bool LOS::clearSong()
         unsigned long obj = tl.object();
         switch (tl.type())
         {
-            case Toplevel::CLIPLIST:
             case Toplevel::MARKER:
             case Toplevel::PIANO_ROLL:
             case Toplevel::LISTE:
             case Toplevel::DRUM:
             case Toplevel::MASTER:
-            case Toplevel::WAVE:
             case Toplevel::LMASTER:
             {
                 ((QWidget*) (obj))->blockSignals(true);

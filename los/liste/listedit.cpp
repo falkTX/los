@@ -364,8 +364,6 @@ QString EventListItem::text(int col) const
                     commentLabel = midiMetaComment(event);
                     s = QString("Meta");
                     break;
-                case Wave:
-                    break;
                 default:
                     printf("unknown event type %d\n", event.type());
             }

@@ -24,7 +24,6 @@
 #include "globaldefs.h"
 
 class Xml;
-class SndFile;
 class MPEventList;
 class MidiAssignData;
 class MidiPort;

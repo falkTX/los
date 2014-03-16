@@ -21,7 +21,6 @@
 //#include "driver/alsamidi.h"   // p4.0.2
 #include "audioprefetch.h"
 #include "audio.h"
-#include "wave.h"
 #include "midictrl.h"
 #include "midiseq.h"
 #include "midi.h"

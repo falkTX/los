@@ -11,21 +11,18 @@
 
 #include <map>
 #include <sys/types.h>
+#include <QString>
 
-#include "wave.h"   // wg. SndFile
 #include "pos.h"
 #include "evdata.h"
 
 enum EventType
 {
-    Note, Controller, Sysex, PAfter, CAfter, Meta, Wave
+    Note, Controller, Sysex, PAfter, CAfter, Meta
 };
-
-class QString;
 
 class Xml;
 class EventBase;
-class WavePart;
 
 //---------------------------------------------------------
 //   Event
@@ -91,12 +88,6 @@ public:
     void setRightClip(int clip);
     int leftClip() const;
     void setLeftClip(int clip);
-    SndFileR sndFile() const;
-    virtual void setSndFile(SndFileR& sf);
-
-    //virtual void read(unsigned offset, float** bpp, int channels, int nn, bool overwrite = true);
-    //virtual void readAudio(unsigned /*offset*/, float** /*bpp*/, int /*channels*/, int /*nn*/, bool /*doSeek*/, bool /*overwrite*/);
-    virtual void readAudio(WavePart* /*part*/, unsigned /*offset*/, float** /*bpp*/, int /*channels*/, int /*nn*/, bool /*doSeek*/, bool /*overwrite*/);
 
     void setTick(unsigned val);
     unsigned tick() const;
@@ -165,7 +156,7 @@ public:
     iEvent add(Event& event);
     void move(Event& event, unsigned tick);
     void dump() const;
-    void read(Xml& xml, const char* name, bool midi);
+    void read(Xml& xml, const char* name);
 };
 
 #endif

@@ -76,7 +76,7 @@ void UndoOp::dump()
         case AddSig:
         case SwapTrack:
         case DeleteSig:
-        case ModifyClip:
+        /*case ModifyClip:*/
         case ModifyMarker:
         case AddTrackView:
         case ModifyTrackView:
@@ -348,7 +348,7 @@ void Song::doUndo2()
                 AL::sigmap.add(i->a, AL::TimeSignature(i->b, i->c));
                 updateFlags |= SC_SIG;
                 break;
-            case UndoOp::ModifyClip:
+            /*case UndoOp::ModifyClip:*/
             case UndoOp::ModifyMarker:
                 break;
             case UndoOp::AddTrackView:
@@ -484,7 +484,7 @@ void Song::doRedo2()
                 AL::sigmap.del(i->a);
                 updateFlags |= SC_SIG;
                 break;
-            case UndoOp::ModifyClip:
+            /*case UndoOp::ModifyClip:*/
             case UndoOp::ModifyMarker:
                 break;
             case UndoOp::AddTrackView:
@@ -677,10 +677,8 @@ bool Song::doUndo1()
             case UndoOp::DeleteTrack:
                 insertTrack1(i->oTrack, i->trackno);
                 break;
-            case UndoOp::ModifyClip:
-                SndFile::applyUndoFile(i->filename, i->tmpwavfile, i->startframe, i->endframe);
-                break;
-
+            /*case UndoOp::ModifyClip:
+                break;*/
             default:
                 break;
         }
@@ -754,9 +752,9 @@ bool Song::doRedo1()
             case UndoOp::DeleteTrack:
                 removeTrack1(i->oTrack);
                 break;
-            case UndoOp::ModifyClip:
+            /*case UndoOp::ModifyClip:
                 SndFile::applyUndoFile(i->filename, i->tmpwavfile, i->startframe, i->endframe);
-                break;
+                break;*/
             default:
                 break;
         }

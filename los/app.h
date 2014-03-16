@@ -49,7 +49,6 @@ class MidiSyncConfig;
 class MRConfig;
 class AudioConf;
 class Xml;
-class ClipListEdit;
 class AudioRecord;
 class MidiFileConfig;
 class MidiFilterConfig;
@@ -127,7 +126,7 @@ class LOS : public QMainWindow
     QAction *midiTransformerAction;
 
     // View Menu actions
-    QAction *viewTransportAction, *viewBigtimeAction, *viewCliplistAction, *viewMarkerAction;
+    QAction *viewTransportAction, *viewBigtimeAction, *viewMarkerAction;
     QAction *viewToolbarOrchestra, *viewToolbarComposerSettings, *viewToolbarSnap, *viewToolbarTransport;
 
     // Structure Menu actions
@@ -191,7 +190,6 @@ class LOS : public QMainWindow
     AudioPortConfig* routingDialog;
 
     ToplevelList toplevels;
-    ClipListEdit* clipListEdit;
     MarkerView* markerView;
     MidiTransformerDialog* midiTransformerDialog;
     QMenu* openRecent;
@@ -310,7 +308,6 @@ private slots:
     void startMidiTransformer();
     void writeGlobalConfiguration() const;
     void startEditInstrument();
-    void startClipList(bool);
 
     void openRecentMenu();
     void selectProject(QAction* act);

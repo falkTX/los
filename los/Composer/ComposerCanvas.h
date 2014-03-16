@@ -11,7 +11,6 @@
 
 #include "song.h"
 #include "canvas.h"
-//#include "trackautomationview.h"
 #include <QHash>
 #include <QList>
 #include <QIcon>
@@ -27,7 +26,6 @@ class QKeyEvent;
 class QEvent;
 class QDragEnterEvent;
 class QPoint;
-class FadeCurve;
 
 #define beats     4
 

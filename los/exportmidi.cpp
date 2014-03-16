@@ -396,8 +396,6 @@ void LOS::exportMidi()
                         l->add(mpev);
                     }
                         break;
-                    case Wave:
-                        break;
                 }
             }
         }
