@@ -82,7 +82,6 @@ enum
     SHRT_PASTE, //Ctrl+V
     SHRT_DELETE, //Delete
 
-
     //Main:
     SHRT_SAVE_AS, //Default: undefined
     SHRT_OPEN_RECENT, //Ctrl+1
@@ -100,7 +99,6 @@ enum
     SHRT_OPEN_SCORE, //Ctrl+R
     SHRT_OPEN_DRUMS, //Ctrl+D
     SHRT_OPEN_LIST, //Ctrl+L
-    SHRT_OPEN_WAVE, //Ctrl+W
     SHRT_OPEN_GRAPHIC_MASTER, //Ctrl+M
     SHRT_OPEN_LIST_MASTER, //Ctrl+Shift+M
     SHRT_OPEN_MIDI_TRANSFORM, //Ctrl+T
@@ -145,12 +143,7 @@ enum
     SHRT_AUDIO_BOUNCE_TO_FILE, //Default: undefined
     SHRT_AUDIO_RESTART, //Default: undefined
 
-    SHRT_MIXER_AUTOMATION, //Default: undefined
-    SHRT_MIXER_SNAPSHOT, //Default: undefined
-    SHRT_MIXER_AUTOMATION_CLEAR, //Default: undefined
-
     SHRT_ADD_MIDI_TRACK, //Default: Ctrl+J
-    SHRT_ADD_WAVE_TRACK, //Default: undefined
     SHRT_RESET_MIDI, //Ctrl+Alt+Z
 
     SHRT_OPEN_HELP, //F1
@@ -202,36 +195,6 @@ enum
     SHRT_POS_DEC_NOSNAP,
     SHRT_TOGGLE_SOUND,
     SHRT_TOGGLE_ENABLE,
-
-    /*
-    SHRT_POS_INC_BAR,
-    SHRT_POS_DEC_BAR,
-    SHRT_POS_INC_BAR_NOSNAP,
-    SHRT_POS_DEC_BAR_NOSNAP,
-
-    SHRT_POS_INC_BEAT,
-    SHRT_POS_DEC_BEAT,
-    SHRT_POS_INC_BEAT_NOSNAP,
-    SHRT_POS_DEC_BEAT_NOSNAP,
-
-    SHRT_POS_INC_TICK,
-    SHRT_POS_DEC_TICK,
-    SHRT_POS_INC_TICK_NOSNAP,
-    SHRT_POS_DEC_TICK_NOSNAP,
-
-    SHRT_POS_INC_MINUTE,
-    SHRT_POS_DEC_MINUTE,
-    SHRT_POS_INC_MINUTE_NOSNAP,
-    SHRT_POS_DEC_MINUTE_NOSNAP,
-
-    SHRT_POS_INC_SECOND,
-    SHRT_POS_DEC_SECOND,
-    SHRT_POS_INC_SECOND_NOSNAP,
-    SHRT_POS_DEC_SECOND_NOSNAP,
-
-    SHRT_POS_INC_FRAME,
-    SHRT_POS_DEC_FRAME,
-     */
 
     SHRT_LOCATORS_TO_SELECTION, //Alt+P, currently in Composer & performer
     SHRT_INSERT_AT_LOCATION, //Shift+CrsrRight

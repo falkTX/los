@@ -59,13 +59,12 @@ void initShortCuts()
     defShrt(SHRT_OPEN_RECENT, Qt::CTRL + Qt::Key_1, "File: Open recent file", ARRANG_SHRT, "open_recent");
     defShrt(SHRT_SAVE_AS, 0, "File: Save as", ARRANG_SHRT, "save_project_as");
     defShrt(SHRT_LOAD_TEMPLATE, 0, "File: Load template", ARRANG_SHRT, "load_template");
-    //      defShrt(SHRT_CONFIG_PRINTER,        Qt::CTRL + Qt::Key_P, "Configure printer", ARRANG_SHRT, "config_printer");
     defShrt(SHRT_IMPORT_MIDI, 0, "File: Import midi file", ARRANG_SHRT, "import_midi");
     defShrt(SHRT_EXPORT_MIDI, 0, "File: Export midi file", ARRANG_SHRT, "export_midi");
     //defShrt(SHRT_IMPORT_PART, 0, "File: Import midi part", ARRANG_SHRT, "import_part");
     //defShrt(SHRT_IMPORT_AUDIO, 0, "File: Import audio file", ARRANG_SHRT, "import_audio");
     defShrt(SHRT_QUIT, Qt::CTRL + Qt::Key_Q, "File: Quit LOS", ARRANG_SHRT, "quit");
-    //      defShrt(SHRT_DESEL_PARTS,           Qt::CTRL + Qt::Key_B, "Deselect all parts", ARRANG_SHRT, "deselect_parts");
+    //defShrt(SHRT_DESEL_PARTS,           Qt::CTRL + Qt::Key_B, "Deselect all parts", ARRANG_SHRT, "deselect_parts");
     defShrt(SHRT_SELECT_PRTSTRACK, Qt::CTRL + Qt::ALT + Qt::Key_P, "Edit: Select parts on track", ARRANG_SHRT, "select_parts_on_track");
     defShrt(SHRT_OPEN_PIANO, Qt::Key_Return, "Open The Performer", ARRANG_SHRT, "open_performer");
     defShrt(SHRT_OPEN_LIST, Qt::CTRL + Qt::Key_L, "Open listeditor", ARRANG_SHRT, "open_listedit");
@@ -73,7 +72,6 @@ void initShortCuts()
     defShrt(SHRT_OPEN_LIST_MASTER, Qt::CTRL + Qt::SHIFT + Qt::Key_T, "Open list mastertrack editor", ARRANG_SHRT, "open_list_master");
     defShrt(SHRT_OPEN_MIDI_TRANSFORM, 0, "Open midi transformer", ARRANG_SHRT, "open_midi_transform");
     defShrt(SHRT_ADD_MIDI_TRACK, Qt::SHIFT + Qt::Key_M, "Add midi track", ARRANG_SHRT, "add_midi_track");
-    defShrt(SHRT_ADD_WAVE_TRACK, Qt::SHIFT + Qt::Key_W, "Add wave track", ARRANG_SHRT, "add_wave_track");
     defShrt(SHRT_GLOBAL_CUT, 0, "Structure: Global cut", ARRANG_SHRT, "global_cut");
     defShrt(SHRT_GLOBAL_INSERT, 0, "Structure: Global insert", ARRANG_SHRT, "global_insert");
     defShrt(SHRT_GLOBAL_SPLIT, 0, "Structure: Global split", ARRANG_SHRT, "global_split");
@@ -102,9 +100,7 @@ void initShortCuts()
     defShrt(SHRT_MIDI_INPUT_FILTER, 0, "Midi: Open midi input filter", ARRANG_SHRT, "midi_open_input_filter");
     defShrt(SHRT_MIDI_INPUT_TRANSPOSE, 0, "Midi: Midi input transpose", ARRANG_SHRT, "midi_open_input_transpose");
     defShrt(SHRT_MIDI_REMOTE_CONTROL, 0, "Midi: Midi remote control", ARRANG_SHRT, "midi_remote_control");
-#ifdef BUILD_EXPERIMENTAL
-    defShrt(SHRT_RANDOM_RHYTHM_GENERATOR, 0, "Midi: Random rhythm generator", ARRANG_SHRT, "midi_random_rhythm_generator");
-#endif
+
     defShrt(SHRT_MIDI_RESET, 0, "Midi: Reset midi", ARRANG_SHRT, "midi_reset");
     defShrt(SHRT_MIDI_INIT, 0, "Midi: Init midi", ARRANG_SHRT, "midi_init");
     defShrt(SHRT_MIDI_LOCAL_OFF, 0, "Midi: Midi local off", ARRANG_SHRT, "midi_local_off");
@@ -112,10 +108,6 @@ void initShortCuts()
     defShrt(SHRT_AUDIO_BOUNCE_TO_TRACK, 0, "Audio: Bounce audio to track", ARRANG_SHRT, "audio_bounce_to_track");
     defShrt(SHRT_AUDIO_BOUNCE_TO_FILE, 0, "Audio: Bounce audio to file", ARRANG_SHRT, "audio_bounce_to_file");
     defShrt(SHRT_AUDIO_RESTART, 0, "Audio: Restart audio", ARRANG_SHRT, "audio_restart");
-
-    defShrt(SHRT_MIXER_AUTOMATION, 0, "Automation: Mixer automation", ARRANG_SHRT, "mixer_automation");
-    defShrt(SHRT_MIXER_SNAPSHOT, 0, "Automation: Take mixer snapshot", ARRANG_SHRT, "mixer_snapshot");
-    defShrt(SHRT_MIXER_AUTOMATION_CLEAR, 0, "Automation: Clear mixer automation", ARRANG_SHRT, "mixer_automation_clear");
 
     //      defShrt(SHRT_OPEN_CLIPS,            0, "View audio clips", ARRANG_SHRT,                  "view_audio_clips");
     defShrt(SHRT_OPEN_HELP, Qt::Key_F1, "Help: Open Manual", ARRANG_SHRT, "open_help");

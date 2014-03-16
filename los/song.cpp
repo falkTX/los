@@ -207,7 +207,7 @@ void Song::setSig(const AL::TimeSignature& sig)
 //    Besides normal track types, n includes synth menu ids from populateAddTrack()
 //---------------------------------------------------------
 
-MidiTrack* Song::addNewTrack(QAction*)
+MidiTrack* Song::addNewTrack()
 {
     CreateTrackDialog *ctdialog = new CreateTrackDialog(-1, los);
     connect(ctdialog, SIGNAL(trackAdded(qint64)), this, SLOT(newTrackAdded(qint64)));

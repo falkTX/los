@@ -654,7 +654,7 @@ public slots:
     void processMonitorMessage(const void*);
     MidiTrack* addTrack(bool doUndo = true);
     MidiTrack* addTrackByName(QString name, int pos, bool doUndo);
-    MidiTrack* addNewTrack(QAction* action);
+    MidiTrack* addNewTrack();
     QString getScriptPath(int id, bool delivered);
     void populateScriptMenu(QMenu* menuPlugins, QObject* receiver);
     void updateTrackViews();

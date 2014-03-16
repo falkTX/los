@@ -393,25 +393,6 @@ void addProject(const QString& name)
 }
 
 //---------------------------------------------------------
-//   populateAddTrack
-//    this is also used in "mixer"
-//---------------------------------------------------------
-
-QActionGroup* populateAddTrack(QMenu* addTrack)
-{
-    QActionGroup* grp = new QActionGroup(addTrack);
-
-    QAction* midi = addTrack->addAction(QIcon(*addMidiIcon),
-            QT_TRANSLATE_NOOP("@default", "Add Midi Track"));
-    midi->setData(0);
-    grp->addAction(midi);
-
-    QObject::connect(addTrack, SIGNAL(triggered(QAction *)), song, SLOT(addNewTrack(QAction *)));
-
-    return grp;
-}
-
-//---------------------------------------------------------
 //   LOS
 //---------------------------------------------------------
 
@@ -705,11 +686,9 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
     editPaste2TrackAction = new QAction(QIcon(*editpaste2TrackIconSet), tr("Paste to &track"), this);
     editPasteC2TAction = new QAction(QIcon(*editpasteClone2TrackIconSet), tr("Paste clone to trac&k"), this);
     editInsertEMAction = new QAction(QIcon(*editpasteIconSet), tr("&Insert Empty Measure"), this);
+    trackMidiAction = new QAction(QIcon(*addMidiIcon), tr("Add New Track"), this);
     editDeleteSelectedAction = new QAction(QIcon(*edit_track_delIcon), tr("Delete Selected Tracks"), this);
 
-
-    addTrack = new QMenu(tr("Add Track"), this);
-    addTrack->setIcon(QIcon(*edit_track_addIcon));
     select = new QMenu(tr("Select"), this);
     select->setIcon(QIcon(*selectIcon));
 
@@ -720,7 +699,6 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
     editOutsideLoopAction = new QAction(QIcon(*select_outside_loopIcon), tr("&Outside Loop"), this);
     editAllPartsAction = new QAction(QIcon(*select_all_parts_on_trackIcon), tr("All &Parts on Track"), this);
     editSelectAllTracksAction = new QAction(QIcon(*select_allIcon), tr("Select All &Tracks"), this);
-
 
     startPianoEditAction = new QAction(*pianoIconSet, tr("Performer"), this);
     startListEditAction = new QAction(QIcon(*edit_listIcon), tr("List"), this);
@@ -875,6 +853,8 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
     connect(midiTransposeAction, SIGNAL(triggered()), SLOT(transpose()));
     connect(midiTransformerAction, SIGNAL(triggered()), SLOT(startMidiTransformer()));
 
+    connect(trackMidiAction, SIGNAL(triggered()), song, SLOT(addNewTrack()));
+
     //-------- View connections
     connect(viewTransportAction, SIGNAL(toggled(bool)), SLOT(toggleTransport(bool)));
     connect(viewBigtimeAction, SIGNAL(toggled(bool)), SLOT(toggleBigTime(bool)));
@@ -1013,9 +993,9 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
     menuEdit->addAction(editInsertEMAction);
     menuEdit->addAction(strGlobalSplitAction);
     menuEdit->addSeparator();
+    menuEdit->addAction(trackMidiAction);
     menuEdit->addAction(editDeleteSelectedAction);
 
-    menuEdit->addMenu(addTrack);
     menuEdit->addMenu(select);
     select->addAction(editSelectAllTracksAction);
     select->addAction(editSelectAllAction);
@@ -1146,10 +1126,6 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
         for(;i < PROJECT_LIST_LEN; ++i)
             projectList[i] = 0;
     }
-
-    QActionGroup *grp = populateAddTrack(addTrack);
-
-    trackMidiAction = grp->actions()[0];
 
     transport = new Transport(this, "transport");
     bigtime = 0;

@@ -476,9 +476,6 @@ void Song::read(Xml& xml)/*{{{*/
             case Xml::TagStart:
                 if (tag == "master")
                     setMasterFlag(xml.parseInt());
-                else if(tag == "masterTrackId")
-                {
-                }
                 else if (tag == "info")
                     songInfoStr = xml.parse1();
                 else if (tag == "associatedRoute")

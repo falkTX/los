@@ -168,7 +168,7 @@ class LOS : public QMainWindow
     QMenu *menuEdit, *menuStructure;
     QMenu* menu_audio, *menuAutomation;
     QMenu* menu_functions, *menuScriptPlugins;
-    QMenu* select, *master, *viewToolbars, *midiEdit, *addTrack;
+    QMenu* select, *master, *viewToolbars, *midiEdit;
 
     // Special 'stay-open' menu for routes.
     PopupMenu* routingPopupMenu;
