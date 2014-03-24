@@ -81,14 +81,14 @@ void initToolbars()
 EditToolBar::EditToolBar(QWidget* parent, int tools, bool addSpacer, const char*)
     : QFrame(parent),
       layout(this),
-      action(parent),
       actions(nullptr),
       nactions(0)
 {
     layout.setContentsMargins(0, 0, 0, 0);
     layout.setSpacing(0);
 
-    action.setExclusive(true);
+    action = new QActionGroup(parent);
+    action->setExclusive(true);
 
     for (unsigned i = 0; i < sizeof(toolList)/sizeof(*toolList); ++i)
     {
@@ -121,7 +121,7 @@ EditToolBar::EditToolBar(QWidget* parent, int tools, bool addSpacer, const char*
         }
 
         ToolB* t = &toolList[i];
-        Action* a = new Action(&action, 1 << i, t->tip, true);
+        Action* a = new Action(action, 1 << i, t->tip, true);
         actions[n] = a;
         a->setIcon(QIcon(*(t->icon)));
         a->setToolTip(tr(t->tip));
@@ -143,7 +143,7 @@ EditToolBar::EditToolBar(QWidget* parent, int tools, bool addSpacer, const char*
         ++n;
     }
 
-    action.setVisible(true);
+    action->setVisible(true);
 
     if (addMaster)
     {
@@ -158,7 +158,7 @@ EditToolBar::EditToolBar(QWidget* parent, int tools, bool addSpacer, const char*
     if (addSpacer)
         layout.addItem(new QSpacerItem(4, 2, QSizePolicy::Expanding, QSizePolicy::Minimum));
 
-    connect(&action, SIGNAL(selected(QAction*)), this, SLOT(toolChanged(QAction*)));
+    connect(action, SIGNAL(selected(QAction*)), this, SLOT(toolChanged(QAction*)));
 }
 
 //---------------------------------------------------------
@@ -168,6 +168,7 @@ EditToolBar::EditToolBar(QWidget* parent, int tools, bool addSpacer, const char*
 EditToolBar::~EditToolBar()
 {
     delete[] actions;
+    delete action;
 }
 
 //---------------------------------------------------------
@@ -187,7 +188,7 @@ int EditToolBar::curTool() const
 
 QList<QAction*> EditToolBar::getActions() const
 {
-    return action.actions();
+    return action->actions();
 }
 
 //---------------------------------------------------------

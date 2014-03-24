@@ -68,8 +68,8 @@ public slots:
     void setNoUpdate(int id);
 
 private:
-    QHBoxLayout  layout;
-    QActionGroup action;
+    QHBoxLayout   layout;
+    QActionGroup* action;
 
     Action** actions;
     int     nactions;
