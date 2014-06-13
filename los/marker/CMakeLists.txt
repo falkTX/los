@@ -23,7 +23,7 @@
 ## Expand Qt macros in source files
 ##
 
-QT4_WRAP_CPP(marker_mocs
+QT5_WRAP_CPP(marker_mocs
     markerview.h
 )
 
@@ -60,6 +60,5 @@ set(FILES_TO_TRANSLATE
 ##
 
 set_target_properties(marker
-    PROPERTIES COMPILE_FLAGS "-include ${PROJECT_BINARY_DIR}/all.h -fPIC"
-    OUTPUT_NAME los_marker
+    PROPERTIES OUTPUT_NAME los_marker
 )

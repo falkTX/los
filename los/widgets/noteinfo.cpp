@@ -6,9 +6,6 @@
 //  (C) Copyright 2011 Andrew Williams & Christopher Cherrett
 //=========================================================
 
-#include <QtGui>
-#include <QTableWidget>
-
 #include "config.h"
 #include "noteinfo.h"
 #include "awl/posedit.h"
@@ -17,6 +14,13 @@
 #include "pitchedit.h"
 #include "gcombo.h"
 #include "traverso_shared/TConfig.h"
+
+#include <QCheckBox>
+#include <QLabel>
+#include <QHBoxLayout>
+#include <QHeaderView>
+#include <QTableWidget>
+#include <QVBoxLayout>
 
 static int rasterTable[] = {
 	//------                8    4     2

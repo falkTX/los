@@ -4,7 +4,6 @@
 //  (C) Copyright 2011 Andrew Williams & Christopher Cherrett
 //===========================================================
 
-#include <QtGui>
 #include <fastlog.h>
 #include <math.h>
 
@@ -39,6 +38,10 @@
 #include "meter.h"
 #include "CreateTrackDialog.h"
 #include "TrackInstrumentMenu.h"
+
+#include <QDrag>
+#include <QMessageBox>
+#include <QMimeData>
 
 static QString styletemplate = "QLineEdit { border-width:1px; border-radius: 0px; border-image: url(:/images/frame.png) 4; border-top-color: #1f1f22; border-bottom-color: #505050; color: #%1; background-color: #%2; font-family: fixed-width; font-weight: bold; font-size: 15px; padding-left: 15px; }";
 static QString trackHeaderStyle = "QFrame#TrackHeader { border-bottom: 1px solid #888888; border-right: 1px solid #888888; border-left: 1px solid #888888; background-color: #2e2e2e; }";

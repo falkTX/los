@@ -23,7 +23,7 @@
 ## Expand Qt macros in source files
 ##
 
-QT4_WRAP_CPP(instruments_mocs
+QT5_WRAP_CPP(instruments_mocs
     editinstrument.h
 )
 
@@ -35,7 +35,7 @@ file(GLOB instruments_ui_files
     editinstrumentbase.ui
 )
 
-QT4_WRAP_UI(instruments_uis ${instruments_ui_files})
+QT5_WRAP_UI(instruments_uis ${instruments_ui_files})
 
 ##
 ## List of source files to compile
@@ -72,6 +72,5 @@ set(FILES_TO_TRANSLATE
 ##
 
 set_target_properties(instruments
-    PROPERTIES COMPILE_FLAGS "-include ${PROJECT_BINARY_DIR}/all.h -fPIC"
-    OUTPUT_NAME los_instruments
+    PROPERTIES OUTPUT_NAME los_instruments
 )

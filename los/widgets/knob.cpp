@@ -55,7 +55,7 @@ Knob::Knob(QWidget* parent, const char* name)
 	d_symbol = Line;
 	d_maxScaleTicks = 11;
 	d_knobWidth = 30;
-	_faceColSel = FALSE;
+	_faceColSel = false;
 	d_faceColor = palette().color(QPalette::Window);
 	d_curFaceColor = d_faceColor;
 	d_altFaceColor = d_faceColor;

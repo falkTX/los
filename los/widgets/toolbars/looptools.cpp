@@ -1,4 +1,4 @@
-#include <QtGui>
+
 #include "config.h"
 #include "gconfig.h"
 #include "globals.h"
@@ -6,6 +6,8 @@
 #include "song.h"
 #include "icons.h"
 #include "looptools.h"
+
+#include <QToolButton>
 
 LoopToolbar::LoopToolbar(Qt::Orientation orient, QWidget* parent)
 : QFrame(parent)	

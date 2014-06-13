@@ -28,6 +28,8 @@
 #include "config.h"
 #include "keymapmenu.h"
 
+#include <QLabel>
+
 KeyMapMenu::KeyMapMenu(QMenu* parent, MidiTrack *track, KeyMap* map, Patch* p) : QWidgetAction(parent)
 {
 	m_keymap = map;

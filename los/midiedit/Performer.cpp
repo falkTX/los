@@ -10,9 +10,6 @@
 // if fails to compile, why ?
 #include "app.h"
 
-#include <QApplication>
-#include <QtGui>
-
 #include <stdio.h>
 
 #include "xml.h"
@@ -47,6 +44,14 @@
 #include "toolbars/misctools.h"
 
 #include "traverso_shared/TConfig.h"
+
+#include <QApplication>
+#include <QDockWidget>
+#include <QMenuBar>
+#include <QSizeGrip>
+#include <QSignalMapper>
+#include <QClipboard>
+#include <QMimeData>
 
 int Performer::_quantInit = 96;
 int Performer::_rasterInit = 96;
@@ -2761,7 +2766,7 @@ void Performer::execDeliveredScript(int id)
 {
     //QString scriptfile = QString(INSTPREFIX) + SCRIPTSSUFFIX + deliveredScriptNames[id];
     QString scriptfile = song->getScriptPath(id, true);
-    song->executeScript(scriptfile.toAscii().data(), parts(), quant(), true);
+    song->executeScript(scriptfile.toUtf8().data(), parts(), quant(), true);
 }
 
 //---------------------------------------------------------
@@ -2771,7 +2776,7 @@ void Performer::execDeliveredScript(int id)
 void Performer::execUserScript(int id)
 {
     QString scriptfile = song->getScriptPath(id, false);
-    song->executeScript(scriptfile.toAscii().data(), parts(), quant(), true);
+    song->executeScript(scriptfile.toUtf8().data(), parts(), quant(), true);
 }
 
 

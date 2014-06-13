@@ -70,7 +70,7 @@ static bool limRange(double &val, double v1, double v2, double eps_rel = 0.0,
 		double eps_abs = 0.0)
 {
 
-	bool rv = TRUE;
+	bool rv = true;
 	double vmin = qwtMin(v1, v2);
 	double vmax = qwtMax(v1, v2);
 	double delta_min = qwtMax(qwtAbs(eps_rel * vmin), qwtAbs(eps_abs));
@@ -78,12 +78,12 @@ static bool limRange(double &val, double v1, double v2, double eps_rel = 0.0,
 
 	if (val < vmin)
 	{
-		if (val < vmin - delta_min) rv = FALSE;
+		if (val < vmin - delta_min) rv = false;
 		val = vmin;
 	}
 	else if (val > vmax)
 	{
-		if (val > vmax + delta_max) rv = FALSE;
+		if (val > vmax + delta_max) rv = false;
 		val = vmax;
 	}
 	return rv;
@@ -103,7 +103,7 @@ ScaleDiv::ScaleDiv()
 	d_lBound = 0.0;
 	d_hBound = 0.0;
 	d_majStep = 0.0;
-	d_log = FALSE;
+	d_log = false;
 }
 
 //------------------------------------------------------------
@@ -277,7 +277,7 @@ bool ScaleDiv::buildLinDiv(int maxMajSteps, int maxMinSteps, double step)
 	double firstTick, lastTick;
 	double minStep;
 	QVector<double> buffer;
-	bool rv = TRUE;
+	bool rv = true;
 
 	// parameter range check
 	maxMajSteps = qwtMax(1, maxMajSteps);
@@ -288,7 +288,7 @@ bool ScaleDiv::buildLinDiv(int maxMajSteps, int maxMinSteps, double step)
 	d_minMarks.resize(0);
 	d_majMarks.resize(0);
 
-	if (d_lBound == d_hBound) return TRUE;
+	if (d_lBound == d_hBound) return true;
 
 	//
 	// Set up major divisions
@@ -299,7 +299,7 @@ bool ScaleDiv::buildLinDiv(int maxMajSteps, int maxMinSteps, double step)
 	else
 		d_majStep = step;
 
-	if (d_majStep == 0.0) return TRUE;
+	if (d_majStep == 0.0) return true;
 
 	firstTick = ceil((d_lBound - step_eps * d_majStep) / d_majStep) * d_majStep;
 	lastTick = floor((d_hBound + step_eps * d_majStep) / d_majStep) * d_majStep;
@@ -313,11 +313,11 @@ bool ScaleDiv::buildLinDiv(int maxMajSteps, int maxMinSteps, double step)
 	// Set up minor divisions
 	//
 	if (maxMinSteps < 1) // no minor divs
-		return TRUE;
+		return true;
 
 	minStep = qwtCeil125(d_majStep / double(maxMinSteps));
 
-	if (minStep == 0.0) return TRUE;
+	if (minStep == 0.0) return true;
 
 	nMin = qwtAbs(int(rint(d_majStep / minStep))) - 1; // # minor steps per interval
 
@@ -390,7 +390,7 @@ bool ScaleDiv::buildLogDiv(int maxMajSteps, int maxMinSteps, double majStep)
 	double lFirst, lLast;
 	double val, sval, minStep, minFactor;
 	int nMaj, nMin, minSize, i, k, k0, kstep, kmax, i0;
-	int rv = TRUE;
+	int rv = true;
 	double width;
 
 	QVector<double> buffer;
@@ -409,7 +409,7 @@ bool ScaleDiv::buildLogDiv(int maxMajSteps, int maxMinSteps, double majStep)
 	d_minMarks.resize(0);
 	d_majMarks.resize(0);
 
-	if (d_lBound == d_hBound) return TRUE;
+	if (d_lBound == d_hBound) return true;
 
 	// scale width in decades
 	width = log10(d_hBound) - log10(d_lBound);
@@ -453,7 +453,7 @@ bool ScaleDiv::buildLogDiv(int maxMajSteps, int maxMinSteps, double majStep)
 	// Set up minor scale divisions
 	//
 
-	if ((d_majMarks.size() < 1) || (maxMinSteps < 1)) return TRUE; // no minor marks
+	if ((d_majMarks.size() < 1) || (maxMinSteps < 1)) return true; // no minor marks
 
 	if (d_majStep < 1.1) // major step width is one decade
 	{
@@ -536,7 +536,7 @@ bool ScaleDiv::buildLogDiv(int maxMajSteps, int maxMinSteps, double majStep)
 		if (qwtAbs(double(nMin + 1) * minStep - d_majStep) > step_eps * d_majStep)
 			nMin = 0;
 
-		if (nMin < 1) return TRUE; // no subticks
+		if (nMin < 1) return true; // no subticks
 
 		// resize buffer to max. possible number of subticks
 		buffer.resize((d_majMarks.size() + 1) * nMin);
@@ -643,7 +643,7 @@ void ScaleDiv::reset()
 	d_lBound = 0.0;
 	d_hBound = 0.0;
 	d_majStep = 0.0;
-	d_log = FALSE;
+	d_log = false;
 }
 
 

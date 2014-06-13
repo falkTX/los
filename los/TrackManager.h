@@ -10,6 +10,7 @@
 #include <QMap>
 #include <QString>
 #include <QPair>
+#include <QObject>
 
 class MidiTrack;
 class Xml;

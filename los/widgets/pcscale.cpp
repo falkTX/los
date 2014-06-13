@@ -793,7 +793,7 @@ void PCScale::pdraw(QPainter& p, const QRect& r)/*{{{*/
 
 		QRect tr(xp, 0, xe - xp, 13);
 
-		QRect wr = r.intersect(tr);
+		QRect wr = r.intersected(tr);
 		if (!wr.isEmpty())
 		{
 			//printf("PCScale::pdraw marker %s xp:%d y:%d h:%d r.x:%d r.w:%d\n", "Test Debug", xp, height(), y, r.x(), r.width());

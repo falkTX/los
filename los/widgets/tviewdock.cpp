@@ -25,7 +25,7 @@
 #include <QItemSelection>
 #include <QModelIndexList>
 #include <QList>
-#include <QtGui>
+#include <QMessageBox>
 
 TrackViewDock::TrackViewDock(QWidget* parent) : QFrame(parent)
 {

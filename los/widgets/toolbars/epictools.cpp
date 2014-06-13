@@ -1,10 +1,12 @@
-#include <QtGui>
+
 #include "config.h"
 #include "gconfig.h"
 #include "globals.h"
 #include "app.h"
 #include "song.h"
 #include "epictools.h"
+
+#include <QToolButton>
 
 EpicToolbar::EpicToolbar(QList<QAction*> actions, QWidget* parent)
 : QFrame(parent)	

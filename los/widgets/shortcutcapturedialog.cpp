@@ -22,7 +22,7 @@ ShortcutCaptureDialog::ShortcutCaptureDialog(QWidget* parent, int index)
 {
 	setupUi(this);
 	QKeySequence q = QKeySequence(shortcuts[index].key);
-	oshrtLabel->setText(q);
+	oshrtLabel->setText(q.toString());
 	connect(okButton, SIGNAL(clicked()), this, SLOT(apply()));
 	connect(cancelButton, SIGNAL(pressed()), this, SLOT(cancel()));
 	shortcutindex = index;
@@ -71,9 +71,9 @@ void ShortcutCaptureDialog::keyPressEvent(QKeyEvent* e)
 		realkey = true;
 		QKeySequence q = QKeySequence(key);
 		//QKeySequence q = QKeySequence(k, mods);
-		QString keyString = q;
+		QString keyString = q.toString();
 		if (keyString != QString::null)
-			nshrtLabel->setText(q);
+			nshrtLabel->setText(q.toString());
 
 		// Check against conflicting shortcuts
 		for (int i = 0; i < SHRT_NUM_OF_ELEMENTS; i++)

@@ -35,7 +35,7 @@ private slots:
     void setRcPlayNote(int);
 
 public:
-    MRConfig(QWidget* parent = 0, Qt::WFlags fl = 0);
+    MRConfig(QWidget* parent = 0, Qt::WindowFlags fl = 0);
 };
 
 #endif

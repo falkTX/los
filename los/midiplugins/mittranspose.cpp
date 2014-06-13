@@ -22,7 +22,7 @@ MITPluginTranspose* mitPluginTranspose;
 //   MITPluginTranspose
 //---------------------------------------------------------
 
-MITPluginTranspose::MITPluginTranspose(QWidget* parent, Qt::WFlags fl)
+MITPluginTranspose::MITPluginTranspose(QWidget* parent, Qt::WindowFlags fl)
 : QWidget(parent, fl)
 {
 	setupUi(this);

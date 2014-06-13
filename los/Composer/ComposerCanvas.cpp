@@ -33,6 +33,8 @@
 #include <QDomElement>
 #include <QDomNodeList>
 #include <QDomNode>
+#include <QMimeData>
+#include <QDrag>
 
 #include "widgets/toolbars/tools.h"
 #include "ComposerCanvas.h"
@@ -1790,7 +1792,7 @@ void ComposerCanvas::drawItem(QPainter& p, const CItem* item, const QRect& rect)
         to = part->lenTick();
 
     // Item bounding box x is in tick coordinates, same as rectangle.
-    if (item->bbox().intersect(rect).isNull())
+    if (item->bbox().intersected(rect).isNull())
     {
         //printf("ComposerCanvas::drawItem rectangle is null\n");
         return;

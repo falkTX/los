@@ -23,7 +23,7 @@
 ## Expand Qt macros in source files
 ##
 
-QT4_WRAP_CPP(liste_mocs
+QT5_WRAP_CPP(liste_mocs
     editevent.h
     listedit.h
 )
@@ -36,7 +36,7 @@ file(GLOB liste_ui_files
     editctrlbase.ui
 )
 
-QT4_WRAP_UI(liste_uis ${liste_ui_files})
+QT5_WRAP_UI(liste_ui_headers ${liste_ui_files})
 
 ##
 ## List of source files to compile
@@ -52,9 +52,9 @@ file(GLOB liste_source_files
 ##
 
 add_library(liste STATIC
-    ${liste_source_files}
     ${liste_mocs}
-    ${liste_uis}
+    ${liste_ui_headers}
+    ${liste_source_files}
 )
 
 ##
@@ -73,6 +73,5 @@ set(FILES_TO_TRANSLATE
 ##
 
 set_target_properties(liste
-    PROPERTIES COMPILE_FLAGS "-include ${PROJECT_BINARY_DIR}/all.h -fPIC"
-    OUTPUT_NAME los_liste
+    PROPERTIES OUTPUT_NAME los_liste
 )

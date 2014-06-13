@@ -1,10 +1,12 @@
-#include <QtGui>
+
 #include "config.h"
 #include "gconfig.h"
 #include "globals.h"
 #include "app.h"
 #include "song.h"
 #include "misctools.h"
+
+#include <QToolButton>
 
 MiscToolbar::MiscToolbar(QList<QAction*> actions, QWidget* parent)
 : QFrame(parent)	

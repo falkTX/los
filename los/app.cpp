@@ -1169,8 +1169,8 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
     loadInitialProject();
 
     QSize defaultScreenSize = tconfig().get_property("Interface", "size", QSize(0, 0)).toSize();
-    int dw = qApp->desktop()->width();
-    int dh = qApp->desktop()->height();
+    int dw = qApp->primaryScreen()->availableSize().width();
+    int dh = qApp->primaryScreen()->availableSize().height();
     if(defaultScreenSize.height())
     {
         if(defaultScreenSize.height() <= dh && defaultScreenSize.width() <= dw)
@@ -2242,7 +2242,7 @@ void LOS::updateRouteMenus(MidiTrack* track, QObject* master)
     // NOTE: The puropse of this routine is to make sure the items actually reflect
     //  the routing status. And with LOS-1 QT3, it was also required to actually
     //  check the items since QT3 didn't do it for us.
-    // But now with LOS-2 and QT4, QT4 checks an item when it is clicked.
+    // But now with LOS-2 and QT5, QT5 checks an item when it is clicked.
     // So this routine is less important now, since 99% of the time, the items
     //  will be in the right checked state.
     // But we still need this in case for some reason a route could not be

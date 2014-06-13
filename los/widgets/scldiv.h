@@ -81,7 +81,7 @@ public:
     }
     void reset();
     bool rebuild(double lBound, double hBound, int maxMaj, int maxMin,
-            bool log, double step = 0.0, bool ascend = TRUE);
+            bool log, double step = 0.0, bool ascend = true);
 };
 
 #endif

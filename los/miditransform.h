@@ -99,7 +99,7 @@ public slots:
     void songChanged(int);
 
 public:
-    MidiTransformerDialog(QDialog* parent = 0, Qt::WFlags fl = 0);
+    MidiTransformerDialog(QDialog* parent = 0, Qt::WindowFlags fl = 0);
     ~MidiTransformerDialog();
 };
 

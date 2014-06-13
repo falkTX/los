@@ -1,4 +1,4 @@
-#include <QtGui>
+
 #include "CanvasNavigator.h"
 #include "ComposerCanvas.h"
 #include "config.h"
@@ -9,6 +9,10 @@
 #include "part.h"
 #include "app.h"
 #include "marker/marker.h"
+
+#include <QGraphicsScene>
+#include <QGraphicsSceneMouseEvent>
+#include <QGraphicsView>
 
 static const double MIN_PART_HEIGHT = 1.0;
 static const double TICK_PER_PIXEL = 81.37;

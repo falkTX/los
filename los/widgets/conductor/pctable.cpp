@@ -8,6 +8,7 @@
 #include <QPoint>
 #include <QBrush>
 #include <QPen>
+#include <QMimeData>
 
 ProgramChangeTable::ProgramChangeTable(QWidget *parent) : QTableView(parent)
 {

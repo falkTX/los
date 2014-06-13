@@ -1,10 +1,12 @@
-#include <QtGui>
+
 #include "config.h"
 #include "gconfig.h"
 #include "globals.h"
 #include "app.h"
 #include "song.h"
 #include "edittools.h"
+
+#include <QToolButton>
 
 EditTools::EditTools(QList<QAction*> actions, QWidget* parent)
 : QFrame(parent)	

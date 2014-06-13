@@ -68,7 +68,7 @@ void ShortcutConfig::updateSCListView(int category)
 			//  catpre.clear();
 			//newItem->setText(SHRT_DESCR_COL, catpre + tr(shortcuts[i].descr));  // Tim
 			QKeySequence key = QKeySequence(shortcuts[i].key);
-			newItem->setText(SHRT_SHRTCUT_COL, key);
+			newItem->setText(SHRT_SHRTCUT_COL, key.toString());
 		}
 	}
 }
@@ -84,7 +84,7 @@ void ShortcutConfig::assignShortcut()
 	{
 		shortcuts[shortcutindex].key = key;
 		QKeySequence keySequence = QKeySequence(key);
-		active->setText(SHRT_SHRTCUT_COL, keySequence);
+		active->setText(SHRT_SHRTCUT_COL, keySequence.toString());
 		_config_changed = true;
 	}
 	clearButton->setEnabled(true);

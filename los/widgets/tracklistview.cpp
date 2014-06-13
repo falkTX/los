@@ -4,7 +4,6 @@
 //  (C) Copyright 2011 Andrew Williams & Christopher Cherrett
 //===========================================================
 
-#include <QtGui>
 #include "tracklistview.h"
 #include "globals.h"
 #include "gconfig.h"
@@ -19,6 +18,16 @@
 #include "event.h"
 #include "traverso_shared/TConfig.h"
 #include "icons.h"
+
+#include <QCheckBox>
+#include <QHeaderView>
+#include <QMenu>
+#include <QMessageBox>
+#include <QScrollBar>
+#include <QStandardItemModel>
+#include <QTableView>
+#include <QTimer>
+#include <QToolButton>
 
 TrackListView::TrackListView(AbstractMidiEditor* editor, QWidget* parent)
 : QFrame(parent)

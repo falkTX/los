@@ -1,5 +1,4 @@
 
-#include <QtGui>
 #include "config.h"
 #include "gconfig.h"
 #include "globals.h"
@@ -8,6 +7,8 @@
 #include "icons.h"
 #include "shortcuts.h"
 #include "transporttools.h"
+
+#include <QToolButton>
 
 TransportToolbar::TransportToolbar(QWidget* parent, bool showPanic, bool showMuteSolo)
 : QFrame(parent)

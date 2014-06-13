@@ -27,6 +27,8 @@
 #include "config.h"
 #include "instrumentmenu.h"
 
+#include <QLabel>
+
 InstrumentMenu::InstrumentMenu(QMenu* parent, MidiInstrument *instr) : QWidgetAction(parent)
 {
 	m_instrument = instr;

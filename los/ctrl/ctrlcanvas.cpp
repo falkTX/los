@@ -10,8 +10,8 @@
 
 #include <QPainter>
 #include <QCursor>
+#include <QMenu>
 #include <QMouseEvent>
-#include <QtGui>
 
 #include "globals.h"
 #include "ctrledit.h"

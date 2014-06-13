@@ -82,9 +82,9 @@ public:
         return d_orient;
     }
     QRect maxBoundingRect(QPainter *p) const;
-    int maxWidth(QPainter *p, bool worst = TRUE) const;
+    int maxWidth(QPainter *p, bool worst = true) const;
     int maxHeight(QPainter *p) const;
-    int maxLabelWidth(QPainter *p, int worst = TRUE) const;
+    int maxLabelWidth(QPainter *p, int worst = true) const;
     void draw(QPainter *p) const;
 };
 

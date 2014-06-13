@@ -23,7 +23,7 @@
 ## Expand Qt macros in source files
 ##
 
-QT4_WRAP_CPP(ctrl_mocs
+QT5_WRAP_CPP(ctrl_mocs
     ctrlcanvas.h 
     ctrledit.h 
     ctrlpanel.h
@@ -65,6 +65,5 @@ set(FILES_TO_TRANSLATE
 ##
 
 set_target_properties(ctrl
-    PROPERTIES COMPILE_FLAGS "-include ${PROJECT_BINARY_DIR}/all.h -fPIC"
-    OUTPUT_NAME los_ctrl
+    PROPERTIES OUTPUT_NAME los_ctrl
 )

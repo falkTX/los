@@ -356,7 +356,7 @@ void readShortCuts(Xml& xml)
             {
                 if (tag.length())
                 {
-                    int index = getShrtByTag(tag.toAscii().constData());
+                    int index = getShrtByTag(tag.toUtf8().constData());
                     if (index != -1)
                     {
                         //printf("Index: %d\n",index);

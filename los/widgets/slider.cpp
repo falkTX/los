@@ -765,7 +765,7 @@ void Slider::paintEvent(QPaintEvent* /*e*/)
 void Slider::resizeEvent(QResizeEvent *e)
 {
 
-	d_resized = TRUE;
+	d_resized = true;
 	QSize s = e->size();
 	int sliderWidth = d_thumbWidth + 2 * d_bwTrough;
 
@@ -924,7 +924,7 @@ QSize Slider::sizeHint() //const ddskrjo
 	{
 		if (p.begin(this))
 		{
-			msWidth = d_scale.maxWidth(&p, FALSE);
+			msWidth = d_scale.maxWidth(&p, false);
 			msHeight = d_scale.maxHeight(&p);
 		}
 		p.end();

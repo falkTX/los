@@ -408,7 +408,7 @@ int MidiPort::limitValToInstrCtlRange(int ctl, int val)
     MidiControllerList* cl = _instrument->controller();
 
     // Is it a drum controller?
-    MidiController *mc;
+    MidiController *mc = NULL;
 
     {
         // It's not a drum controller. Find it as a regular controller instead.

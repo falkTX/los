@@ -305,7 +305,6 @@ public:
 
 typedef MidiControllerList::iterator iMidiController;
 typedef MidiControllerList::const_iterator ciMidiController;
-typedef MidiControllerList MidiControllerList;
 
 extern MidiControllerList defaultMidiController;
 extern void initMidiController();

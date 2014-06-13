@@ -19,8 +19,6 @@
 #  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #=============================================================================
 
-include(${PROJECT_SOURCE_DIR}/pch.txt)
-
 ##
 ## List of source files to compile
 ##
@@ -45,7 +43,6 @@ endif (USE_SSE)
 ##
 
 add_library(al STATIC
-    ${PROJECT_BINARY_DIR}/all.h.pch
     ${al_source_files}
 )
 
@@ -59,7 +56,6 @@ set_source_files_properties(
     dspXMM.cpp
     sig.cpp
     xml.cpp
-    PROPERTIES COMPILE_FLAGS "-fPIC -DPIC -include ${PROJECT_BINARY_DIR}/all.h"
 )
 
 set_source_files_properties(

@@ -32,7 +32,7 @@ bool SpinBox::eventFilter(QObject* o, QEvent* ev)
 	// if (o != (QObject*)editor()) ddskrjo can't find editor()
 	//    return QSpinBox::eventFilter(o,ev);
 
-	bool retval = FALSE;
+	bool retval = false;
 	if (ev->type() == QEvent::KeyPress)
 	{
 		QKeyEvent* k = (QKeyEvent*) ev;
@@ -48,7 +48,7 @@ bool SpinBox::eventFilter(QObject* o, QEvent* ev)
 			//if(!editor()->isModified())
 			{
 				clearFocus();
-				return TRUE;
+				return true;
 			}
 		}
 	}
@@ -56,7 +56,7 @@ bool SpinBox::eventFilter(QObject* o, QEvent* ev)
 		if (ev->type() == QEvent::MouseButtonDblClick)
 	{
 		emit doubleClicked();
-		return TRUE;
+		return true;
 	}
 
 	retval = QSpinBox::eventFilter(o, ev);

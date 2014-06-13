@@ -13,6 +13,7 @@
 #include <list>
 #include <vector>
 #include <QHash>
+#include <QStandardItemModel>
 
 class MidiPort;
 class QMenu;

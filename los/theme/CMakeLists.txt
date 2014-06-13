@@ -22,7 +22,7 @@
 ## Expand Qt macros in source files
 ##
 
-QT4_WRAP_CPP(theme_mocs
+QT5_WRAP_CPP(theme_mocs
     CarlaStyle.hpp
     CarlaStyleAnimations.hpp
     CarlaStylePrivate.hpp
@@ -50,6 +50,5 @@ add_library(theme STATIC
 ##
 
 set_target_properties(theme
-    PROPERTIES
-    OUTPUT_NAME los_theme
+    PROPERTIES OUTPUT_NAME los_theme
 )

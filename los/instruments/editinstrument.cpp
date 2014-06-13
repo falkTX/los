@@ -39,7 +39,7 @@ enum
 //   EditInstrument
 //---------------------------------------------------------
 
-EditInstrument::EditInstrument(QWidget* parent, Qt::WFlags fl)
+EditInstrument::EditInstrument(QWidget* parent, Qt::WindowFlags fl)
 : QMainWindow(parent, fl)
 {
     setupUi(this);
@@ -424,7 +424,7 @@ void EditInstrument::fileSave()/*{{{*/
 
 bool EditInstrument::fileSave(MidiInstrument* instrument, const QString& name)/*{{{*/
 {
-    FILE* f = fopen(name.toAscii().constData(), "w");
+    FILE* f = fopen(name.toUtf8().constData(), "w");
     if (f == 0)
     {
         //if(debugMsg)
@@ -1347,7 +1347,7 @@ void EditInstrument::patchButtonClicked()
         {
             PatchGroup* pgp = *i;
             QMenu* pm = patchpopup->addMenu(pgp->name);
-            //pm->setCheckable(false);//Qt4 doc says this is unnecessary
+            //pm->setCheckable(false);//Qt5 doc says this is unnecessary
             pm->setFont(config.fonts[0]);
             const PatchList& pl = pgp->patches;
             for (ciPatch ipl = pl.begin(); ipl != pl.end(); ++ipl)

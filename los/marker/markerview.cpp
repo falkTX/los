@@ -91,7 +91,7 @@ void MarkerItem::setName(const QString& s)
 
 void MarkerItem::setLock(bool lck)
 {
-    setIcon(COL_LOCK, QIcon(lck ? *lockIcon : 0));
+    setIcon(COL_LOCK, QIcon(lck ? *lockIcon : QIcon()));
     _marker = song->setMarkerLock(_marker, lck);
 }
 

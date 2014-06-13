@@ -4,7 +4,6 @@
 //  (C) Copyright 2011 Andrew Williams & Christopher Cherrett
 //===========================================================
 
-#include <QtGui>
 #include "config.h"
 #include "gconfig.h"
 #include "globals.h"
@@ -13,6 +12,8 @@
 #include "song.h"
 #include "shortcuts.h"
 #include "feedbacktools.h"
+
+#include <QToolButton>
 
 FeedbackTools::FeedbackTools(QWidget* parent)
 : QFrame(parent)

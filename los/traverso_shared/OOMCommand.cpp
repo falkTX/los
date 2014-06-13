@@ -21,7 +21,7 @@ LOSCommand::~LOSCommand()
 void LOSCommand::processCommand(LOSCommand* cmd)
 {
     Q_ASSERT(cmd);
-    qDebug("processing %s\n", cmd->text().toAscii().data());
+    qDebug("processing %s\n", cmd->text().toUtf8().constData());
 
     cmd->redo();
 }

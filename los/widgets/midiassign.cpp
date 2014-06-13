@@ -6,9 +6,6 @@
 //  (C) Copyright 2011 Andrew Williams and Christopher Cherrett
 //=========================================================
 
-#include <QtGui>
-#include <QStringList>
-#include <QList>
 #include "song.h"
 #include "globals.h"
 #include "config.h"
@@ -31,6 +28,10 @@
 #include "confmport.h"
 #include "driver/audiodev.h"
 #include "traverso_shared/TConfig.h"
+
+#include <QStringList>
+#include <QList>
+#include <QMessageBox>
 
 MidiAssignDialog::MidiAssignDialog(QWidget* parent):QDialog(parent)
 {

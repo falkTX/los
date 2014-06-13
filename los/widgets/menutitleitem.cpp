@@ -7,7 +7,7 @@
 
 #include "menutitleitem.h"
 
-#include <QtGui/QLabel>
+#include <QLabel>
 
 //---------------------------------------------------------
 //   MenuTitleItem

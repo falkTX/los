@@ -9,7 +9,6 @@
 
 #include <QBoxLayout>
 #include <QIcon>
-#include <QIconSet>
 #include <QSpacerItem>
 #include <QToolButton>
 

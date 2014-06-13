@@ -154,7 +154,7 @@ void DiMap::setDblRange(double d1, double d2, bool lg)
 	}
 	else
 	{
-		d_log = FALSE;
+		d_log = false;
 		d_x1 = d1;
 		d_x2 = d2;
 	}

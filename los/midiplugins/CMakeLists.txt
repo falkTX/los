@@ -23,7 +23,7 @@
 ## Expand Qt macros in source files
 ##
 
-QT4_WRAP_CPP(midiplugins_mocs
+QT5_WRAP_CPP(midiplugins_mocs
     midifilterimpl.h
     midiitransform.h
     mittranspose.h
@@ -39,7 +39,7 @@ file(GLOB midiplugins_ui_files
     mrconfigbase.ui
 )
 
-QT4_WRAP_UI(midiplugins_uis ${midiplugins_ui_files})
+QT5_WRAP_UI(midiplugins_ui_headers ${midiplugins_ui_files})
 
 ##
 ## List of source files to compile
@@ -59,9 +59,9 @@ file(GLOB midiplugins_source_files
 ##
 
 add_library(midiplugins STATIC
-    ${midiplugins_source_files}
     ${midiplugins_mocs}
-    ${midiplugins_uis}
+    ${midiplugins_ui_headers}
+    ${midiplugins_source_files}
 )
 
 ##
@@ -80,6 +80,5 @@ set(FILES_TO_TRANSLATE
 ##
 
 set_target_properties(midiplugins
-    PROPERTIES COMPILE_FLAGS "-include ${PROJECT_BINARY_DIR}/all.h -fPIC"
-    OUTPUT_NAME los_midiplugins
+    PROPERTIES OUTPUT_NAME los_midiplugins
 )

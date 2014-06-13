@@ -12,9 +12,6 @@
 #include <stdio.h>
 #include <values.h>
 
-#include <QtGui>
-#include <QMainWindow>
-
 #include "Composer.h"
 #include "song.h"
 #include "app.h"
@@ -50,6 +47,11 @@
 #include "TempoHeader.h"
 #include "tempolabel.h"
 #include "DoubleSlider.h"
+
+#include <QDockWidget>
+#include <QMainWindow>
+#include <QScrollBar>
+#include <QStackedWidget>
 
 static int rasterTable[] = {
     1, 0, 768, 384, 192, 96

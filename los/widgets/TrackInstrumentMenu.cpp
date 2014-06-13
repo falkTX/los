@@ -28,6 +28,9 @@
 #include "TrackManager.h"
 #include "TrackInstrumentMenu.h"
 
+#include <QLabel>
+#include <QListView>
+
 TrackInstrumentMenu::TrackInstrumentMenu(QMenu* parent, MidiTrack *t) : QWidgetAction(parent)
 {
     m_track = t;
@@ -65,7 +68,7 @@ QWidget* TrackInstrumentMenu::createWidget(QWidget* parent)/*{{{*/
     layout->addWidget(list);
     w->setLayout(layout);
 
-    int desktopHeight = qApp->desktop()->height();
+    int desktopHeight = qApp->primaryScreen()->availableSize().height();
     int lstr = 0;
     QString longest;
 

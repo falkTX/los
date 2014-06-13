@@ -17,7 +17,7 @@
 //    Midi Remote Control Config
 //---------------------------------------------------------
 
-MRConfig::MRConfig(QWidget* parent, Qt::WFlags fl)
+MRConfig::MRConfig(QWidget* parent, Qt::WindowFlags fl)
 : QWidget(parent, fl)
 {
 	setupUi(this);

@@ -5,6 +5,9 @@
 //  (C) Copyright 2000 Werner Schweer (ws@seh.de)
 //=========================================================
 
+#ifndef LOS_FILEDIALOG_H_INCLUDED
+#define LOS_FILEDIALOG_H_INCLUDED
+
 #include <QFileDialog>
 
 #include "ui_fdialogbuttons.h"
@@ -60,7 +63,7 @@ public:
             QWidget* parent = 0, bool writeFlag = false);
 };
 
-/* ORCAN - Disable previeww for now. It is not available in qt4. We will
+/* ORCAN - Disable previeww for now. It is not available in qt5. We will
            need to implement it ourselves.
 //---------------------------------------------------------
 //   ContentsPreview
@@ -117,3 +120,4 @@ public:
             bool warnIfOverwrite, const QString& caption);
 };
 
+#endif // LOS_FILEDIALOG_H_INCLUDED

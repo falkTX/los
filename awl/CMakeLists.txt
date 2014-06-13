@@ -23,7 +23,7 @@
 ## Expand Qt macros in source files
 ##
 
-QT4_WRAP_CPP(awl_mocs
+QT5_WRAP_CPP(awl_mocs
     floatentry.h
     pitchedit.h
     pitchlabel.h
@@ -73,6 +73,5 @@ set(FILES_TO_TRANSLATE
 ##
 
 set_target_properties(awl
-    PROPERTIES COMPILE_FLAGS "-fPIC -include ${PROJECT_BINARY_DIR}/all.h"
-    OUTPUT_NAME los_awl
+    PROPERTIES OUTPUT_NAME los_awl
 )

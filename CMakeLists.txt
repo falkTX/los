@@ -32,7 +32,7 @@ include(cmake/TargetDoc.cmake)
 ## set cmake stuff
 ##
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8.11)
 
 if (COMMAND cmake_policy)
     cmake_policy(SET CMP0003 NEW)
@@ -51,7 +51,7 @@ IF(NOT DEFINED SHARE_INSTALL_PREFIX)
 ENDIF(NOT DEFINED SHARE_INSTALL_PREFIX)
 
 set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -std=c99   -Wall -Wextra")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall -Wextra -Winvalid-pch")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall -Wextra")
 
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2 -DNDEBUG -fomit-frame-pointer -ffast-math -fstrength-reduce")
 set(CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_CXX_FLAGS_DEBUG}   -O0 -DDEBUG -DQT_DEBUG -g")
@@ -126,46 +126,23 @@ include_directories(${JACK_INCLUDE_DIRS})
 PKG_CHECK_MODULES(UUID REQUIRED uuid>=0.0.1)
 include_directories(${UUID_INCLUDE_DIRS})
 
-##  Qt4
-set(QT_MIN_VERSION "4.3.0")
-set(QT_USE_QTSVG TRUE)
-set(QT_USE_QTXML TRUE)
+##  Qt5
+find_package(Qt5Core REQUIRED)
+find_package(Qt5Gui REQUIRED)
+find_package(Qt5LinguistTools REQUIRED)
+find_package(Qt5Xml REQUIRED)
+find_package(Qt5Widgets REQUIRED)
 
-find_package(Qt4)
+add_definitions(${Qt5Widgets_DEFINITIONS})
 
-if (NOT QT4_FOUND)
-      message(FATAL_ERROR "Fatal error: QT (version >= 4.3.0) required.\n"
-                          "cmake tries to detect QT4 by searching for 'qmake' in your PATH.\n"
-                          "If you have Qt4 installed, make sure qmake is found in your PATH.")
-endif (NOT QT4_FOUND)
+include_directories(${Qt5Xml_INCLUDE_DIRS})
+include_directories(${Qt5Widgets_INCLUDE_DIRS})
 
-include(${QT_USE_FILE})
+set(CMAKE_AUTOMOC ON)
 
-##
-## custom build commands
-## FIXME: needed?
-##
-
-# add_custom_command(
-#     OUTPUT ${PROJECT_BINARY_DIR}/all.h
-#     COMMAND cp ${PROJECT_SOURCE_DIR}/all.h ${PROJECT_BINARY_DIR}/all.h
-#     DEPENDS ${PROJECT_SOURCE_DIR}/all.h
-#     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
-# )
-#
-# add_custom_command(
-#     OUTPUT ${PROJECT_BINARY_DIR}/all-pic.h
-#     COMMAND cp ${PROJECT_SOURCE_DIR}/all.h ${PROJECT_BINARY_DIR}/all-pic.h
-#     DEPENDS ${PROJECT_SOURCE_DIR}/all.h
-#     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
-# )
-#
-# add_custom_command(
-#     OUTPUT ${PROJECT_BINARY_DIR}/all-pic-debug.h
-#     COMMAND cp ${PROJECT_SOURCE_DIR}/all.h ${PROJECT_BINARY_DIR}/all-pic-debug.h
-#     DEPENDS ${PROJECT_SOURCE_DIR}/all.h
-#     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
-# )
+if (Qt5_POSITION_INDEPENDENT_CODE)
+    set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+endif()
 
 ##
 ## produce config.h file

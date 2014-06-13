@@ -19,8 +19,6 @@
 #  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #=============================================================================
 
-include(${PROJECT_SOURCE_DIR}/pch.txt)
-
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 set(SubDirs
@@ -43,7 +41,7 @@ subdirs(${SubDirs})
 ## Expand Qt macros in source files
 ##
 
-QT4_WRAP_CPP(los_moc_headers
+QT5_WRAP_CPP(los_moc_headers
     app.h
     cobject.h
     conf.h
@@ -66,7 +64,7 @@ QT4_WRAP_CPP(los_moc_headers
 ## Resource files
 ##
 
-QT4_ADD_RESOURCES(los_qrc_files
+QT5_ADD_RESOURCES(los_qrc_files
     los.qrc
 )
 
@@ -173,12 +171,9 @@ include_directories(
 
 # Make sure to include the uic generated headers paths.
 include_directories(
-#     ${CMAKE_CURRENT_BINARY_DIR}/Composer
-#     ${CMAKE_CURRENT_BINARY_DIR}/driver
-#     ${CMAKE_CURRENT_BINARY_DIR}/instruments
-#     ${CMAKE_CURRENT_BINARY_DIR}/liste
-#     ${CMAKE_CURRENT_BINARY_DIR}/midiedit
-#     ${CMAKE_CURRENT_BINARY_DIR}/midiplugins
+    ${CMAKE_CURRENT_BINARY_DIR}/instruments
+    ${CMAKE_CURRENT_BINARY_DIR}/liste
+    ${CMAKE_CURRENT_BINARY_DIR}/midiplugins
     ${CMAKE_CURRENT_BINARY_DIR}/widgets
 )
 
@@ -187,9 +182,7 @@ include_directories(
 ##
 
 set_target_properties(core
-    PROPERTIES COMPILE_FLAGS "${PYREM_CPP_FLAGS} -include ${PROJECT_BINARY_DIR}/all.h -fPIC -fopenmp"
-    LINK_FLAGS "-fopenmp"
-    OUTPUT_NAME los_core
+    PROPERTIES OUTPUT_NAME los_core
 )
 
 set_target_properties(los
@@ -241,7 +234,8 @@ target_link_libraries(los
     ctrl
     widgets
 # system libs
-    ${QT_LIBRARIES}
+    Qt5::Xml
+    Qt5::Widgets
     ${ALSA_LIBRARIES}
     ${JACK_LIBRARIES}
     ${UUID_LIBRARIES}

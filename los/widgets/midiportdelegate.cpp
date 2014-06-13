@@ -6,8 +6,6 @@
 //  (C) Copyright 2011 Andrew Williams and Christopher Cherrett
 //=========================================================
 
-#include <QtGui>
-#include <QAbstractItemModel>
 #include "midiportdelegate.h"
 #include "globals.h"
 #include "config.h"
@@ -20,6 +18,9 @@
 #include "midi.h"
 #include "midictrl.h"
 #include "song.h"
+
+#include <QAbstractItemModel>
+#include <QComboBox>
 
 MidiPortDelegate::MidiPortDelegate(QObject* parent) : QItemDelegate(parent)
 {

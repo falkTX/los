@@ -918,7 +918,7 @@ void Track::writeRouting(int level, Xml& xml) const/*{{{*/
             if (r->remoteChannel != -1)
                 s += QString(QT_TRANSLATE_NOOP("@default", " remch=\"%1\"")).arg(r->remoteChannel);
 
-            xml.tag(level++, s.toAscii().constData());
+            xml.tag(level++, s.toUtf8().constData());
 
             xml.tag(level, "source name=\"%s\" trackId=\"%lld\"/", Xml::xmlString(name()).toLatin1().constData(), m_id);
 
@@ -934,7 +934,7 @@ void Track::writeRouting(int level, Xml& xml) const/*{{{*/
             else
                 s += QString(QT_TRANSLATE_NOOP("@default", " name=\"%1\"/")).arg(Xml::xmlString(r->name()));
 
-            xml.tag(level, s.toAscii().constData());
+            xml.tag(level, s.toUtf8().constData());
 
             xml.etag(--level, "Route");
         }

@@ -105,7 +105,7 @@ private slots:
     void auxChanged(double);
 
 public:
-    EditInstrument(QWidget* parent = 0, Qt::WFlags fl = Qt::Window);
+    EditInstrument(QWidget* parent = 0, Qt::WindowFlags fl = Qt::Window);
 };
 
 #endif

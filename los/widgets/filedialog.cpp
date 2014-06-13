@@ -426,7 +426,7 @@ QString getImageFileName(const QString& startWith,
     MFileDialog *dlg = new MFileDialog(*workingDirectory, QString::null,
             parent);
 
-    /* ORCAN - disable preview for now. It is not available in qt4. We will
+    /* ORCAN - disable preview for now. It is not available in qt5. We will
                need to implement it ourselves.
     dlg->setContentsPreviewEnabled(true);
     ContentsPreview* preview = new ContentsPreview(dlg);
@@ -519,11 +519,11 @@ FILE* fileOpen(QWidget* parent, QString name, const QString& ext,
         else
             zip += QString(" > ");
         zip += name;
-        fp = popen(zip.toAscii().data(), mode);
+        fp = popen(zip.toUtf8().data(), mode);
     }
     else
     {
-        fp = fopen(name.toAscii().data(), mode);
+        fp = fopen(name.toUtf8().data(), mode);
     }
     if (fp == 0 && !noError)
     {

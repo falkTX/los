@@ -26,6 +26,8 @@
 #include "tviewmenu.h"
 #include "TrackManager.h"
 
+#include <QLabel>
+
 TrackViewMenu::TrackViewMenu(QMenu* parent, TrackView *t, bool v) : QWidgetAction(parent)
 {
     m_trackview = t;

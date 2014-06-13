@@ -23,7 +23,7 @@
 # Expand Qt macros
 #
 
-QT4_WRAP_CPP(composer_mocs
+QT5_WRAP_CPP(composer_mocs
     Composer.h 
     ComposerCanvas.h 
     HeaderList.h
@@ -65,6 +65,5 @@ set(FILES_TO_TRANSLATE
 #
 
 set_target_properties(Composer
-    PROPERTIES COMPILE_FLAGS "-include ${PROJECT_BINARY_DIR}/all.h -fPIC -fopenmp"
-    OUTPUT_NAME los_composer
+    PROPERTIES OUTPUT_NAME los_composer
 )

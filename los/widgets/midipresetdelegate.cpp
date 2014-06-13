@@ -21,6 +21,8 @@
 #include "midictrl.h"
 #include "song.h"
 
+#include <QComboBox>
+
 MidiPresetDelegate::MidiPresetDelegate(QObject* parent) : QItemDelegate(parent)
 {
 }
