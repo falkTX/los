@@ -22,6 +22,7 @@
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 set(SubDirs
+    widgets
     Composer
     ctrl
     driver
@@ -32,7 +33,6 @@ set(SubDirs
     midiedit
     midiplugins
     theme
-    widgets
 )
 
 subdirs(${SubDirs})
