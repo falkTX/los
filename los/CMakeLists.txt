@@ -207,8 +207,8 @@ target_link_libraries(core
     marker
     master
     midiedit
-    midiplugins
     widgets
+    midiplugins
 )
 
 target_link_libraries(los
@@ -226,9 +226,9 @@ target_link_libraries(los
     marker
     master
     midiedit
-    midiplugins
     theme
     widgets
+    midiplugins
 # needed for linking
     core
     ctrl
