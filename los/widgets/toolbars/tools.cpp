@@ -157,7 +157,7 @@ EditToolBar::EditToolBar(QWidget* parent, int tools, bool addSpacer, const char*
     if (addSpacer)
         layout.addItem(new QSpacerItem(4, 2, QSizePolicy::Expanding, QSizePolicy::Minimum));
 
-    connect(action, SIGNAL(selected(QAction*)), this, SLOT(toolChanged(QAction*)));
+    connect(action, SIGNAL(triggered(QAction*)), this, SLOT(toolChanged(QAction*)));
 }
 
 //---------------------------------------------------------
