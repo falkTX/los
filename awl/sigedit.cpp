@@ -25,6 +25,8 @@
 #include <QKeyEvent>
 #include <QLineEdit>
 
+#include <cstdio>
+
 namespace Awl {
 
     //---------------------------------------------------------

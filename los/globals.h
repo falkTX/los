@@ -11,25 +11,6 @@
 
 #include <sys/types.h>
 
-/* Check for C++11 support */
-#if defined(HAVE_CPP11_SUPPORT)
-# define LOS_PROPER_CPP11_SUPPORT
-#elif defined(__GNUC__) && defined(__cplusplus)
-# if (__cplusplus >= 201103L || defined(__GXX_EXPERIMENTAL_CXX0X__)) && (__GNUC__ * 100 + __GNUC_MINOR__) >= 405
-#  define LOS_PROPER_CPP11_SUPPORT
-#  if (__GNUC__ * 100 + __GNUC_MINOR__) < 407
-#   define override // gcc4.7+ only
-#   define final    // gcc4.7+ only
-#  endif
-# endif
-#endif
-
-#if defined(__cplusplus) && !defined(LOS_PROPER_CPP11_SUPPORT)
-# define override
-# define final
-# define nullptr (0)
-#endif
-
 #include "route.h"
 
 #include <unistd.h>
