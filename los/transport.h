@@ -82,7 +82,6 @@ class Transport : public QWidget
     PosEdit* tl1; // left mark
     PosEdit* tl2; // right mark
     PosEdit* time1; // tick time
-    PosEdit* time2; // SMPTE
 
     QSlider* slider;
     TempoSig* tempo;

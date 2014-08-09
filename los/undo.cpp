@@ -338,7 +338,6 @@ void Song::doUndo2()
                 updateFlags |= SC_TEMPO;
                 break;
             case UndoOp::AddSig:
-                ///sigmap.del(i->a);
                 sigmap.del(i->a);
                 updateFlags |= SC_SIG;
                 break;

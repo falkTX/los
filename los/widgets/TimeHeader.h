@@ -17,16 +17,16 @@ class TimeHeader : public QFrame
     Q_OBJECT
 
     bool tickmode;
-	QVBoxLayout* m_layout;
+    QVBoxLayout* m_layout;
 
     bool setString(unsigned);
 
     PosLabel* cursorPos;
-    QLabel *timeLabel, *posLabel, *frameLabel;
+    QLabel *timeLabel, *posLabel;
 
 public slots:
     void setPos(int, unsigned, bool);
-	void setTime(unsigned);
+    void setTime(unsigned);
 
 signals:
     void removeAllSolo();

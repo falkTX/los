@@ -17,9 +17,6 @@ class Xml;
 
 static const uint kMaxTick = 0x7fffffff/100;
 
-// TODO: remove
-static const int  kMtcType  = 0;
-
 //---------------------------------------------------------
 //   TimeSignature
 //---------------------------------------------------------

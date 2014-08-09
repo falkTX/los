@@ -302,17 +302,11 @@ Transport::Transport(QWidget* parent, const char* name)
     hbox1->setContentsMargins(0, 0, 0, 0);
 
     time1 = new Awl::PosEdit(0);
-    time2 = new Awl::PosEdit(0);
-    time2->setSmpte(true);
     time1->setMinimumSize(105, 0);
-    time2->setMinimumSize(105, 0);
     time1->setSizePolicy(QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed));
-    time2->setSizePolicy(QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed));
     time1->setFocusPolicy(Qt::NoFocus);
-    time2->setFocusPolicy(Qt::NoFocus);
 
     hbox1->addWidget(time1);
-    hbox1->addWidget(time2);
     box4->addLayout(hbox1);
 
     slider = new QSlider;
@@ -385,12 +379,10 @@ Transport::Transport(QWidget* parent, const char* name)
     connect(tl1, SIGNAL(valueChanged(const Pos&)), SLOT(lposChanged(const Pos&)));
     connect(tl2, SIGNAL(valueChanged(const Pos&)), SLOT(rposChanged(const Pos&)));
     connect(time1, SIGNAL(valueChanged(const Pos&)), SLOT(cposChanged(const Pos&)));
-    connect(time2, SIGNAL(valueChanged(const Pos&)), SLOT(cposChanged(const Pos&)));
 
     connect(slider, SIGNAL(valueChanged(int)), SLOT(cposChanged(int)));
     connect(song, SIGNAL(posChanged(int, unsigned, bool)), SLOT(setPos(int, unsigned, bool)));
     connect(tempo, SIGNAL(tempoChanged(int)), song, SLOT(setTempo(int)));
-    ///connect(tempo, SIGNAL(sigChanged(int, int)), song, SLOT(setSig(int, int)));
     connect(tempo, SIGNAL(sigChanged(const TimeSignature&)), song, SLOT(setSig(const TimeSignature&)));
     connect(song, SIGNAL(playChanged(bool)), SLOT(setPlay(bool)));
     connect(song, SIGNAL(songChanged(int)), this, SLOT(songChanged(int)));
@@ -469,7 +461,6 @@ void Transport::setPos(int idx, unsigned v, bool)
     {
         case 0:
             time1->setValue(v);
-            time2->setValue(v);
             if ((unsigned) slider->value() != v)
             {
                 slider->blockSignals(true);
@@ -480,7 +471,6 @@ void Transport::setPos(int idx, unsigned v, bool)
                 setTempo(tempomap.tempo(v));
         {
             int z, n;
-            ///sigmap.timesig(v, z, n);
             sigmap.timesig(v, z, n);
             setTimesig(z, n);
         }

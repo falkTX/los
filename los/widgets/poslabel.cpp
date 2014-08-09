@@ -26,8 +26,7 @@ PosLabel::PosLabel(QWidget* parent, const char* name)
 {
     setObjectName(name);
     _tickValue = 0;
-    _sampleValue = 0;
-    _smpte = false;
+    //_sampleValue = 0;
     setFrameStyle(WinPanel | Sunken);
     setLineWidth(2);
     setMidLineWidth(3);
@@ -47,11 +46,7 @@ QSize PosLabel::sizeHint() const
     //int fw = style()->pixelMetric(QStyle::PM_DefaultFrameWidth, 0, this); // ddskrjo 0
     int fw = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
     int h = fm.height() + fw * 2;
-    int w;
-    if (_smpte)
-        w = 2 + fm.width('9') * 9 + fm.width(':') * 3 + fw * 4;
-    else
-        w = 2 + fm.width('9') * 9 + fm.width('.') * 2 + fw * 4;
+    int w = 2 + fm.width('9') * 9 + fm.width('.') * 2 + fw * 4;
     return QSize(w, h).expandedTo(QApplication::globalStrut());
 }
 
@@ -62,52 +57,11 @@ QSize PosLabel::sizeHint() const
 void PosLabel::updateValue()
 {
     QString s;
-    if (_smpte)
-    {
-        double time = double(_sampleValue) / double(sampleRate);
-        int min = int(time) / 60;
-        int sec = int(time) % 60;
-        double rest = time - (min * 60 + sec);
-        switch (kMtcType)
-        {
-            case 0: // 24 frames sec
-                rest *= 24;
-                break;
-            case 1: // 25
-                rest *= 25;
-                break;
-            case 2: // 30 drop frame
-                rest *= 30;
-                break;
-            case 3: // 30 non drop frame
-                rest *= 30;
-                break;
-        }
-        int frame = int(rest);
-        int subframe = int((rest - frame)*100);
-        s.sprintf("%03d:%02d:%02d:%02d", min, sec, frame, subframe);
-    }
-    else
-    {
-        int bar, beat;
-        unsigned tick;
-        sigmap.tickValues(_tickValue, &bar, &beat, &tick);
-        //s.sprintf("%04d.%02d.%03ud", bar+1, beat+1, tick);
-        s.sprintf("%04d.%02d.%03u", bar + 1, beat + 1, tick);
-    }
+    int bar, beat;
+    unsigned tick;
+    sigmap.tickValues(_tickValue, &bar, &beat, &tick);
+    s.sprintf("%04d.%02d.%03u", bar + 1, beat + 1, tick);
     setText(s);
-}
-
-//---------------------------------------------------------
-//   setSampleValue
-//---------------------------------------------------------
-
-void PosLabel::setSampleValue(unsigned val)
-{
-    if (val == _sampleValue)
-        return;
-    _sampleValue = val;
-    updateValue();
 }
 
 //---------------------------------------------------------
@@ -128,29 +82,13 @@ void PosLabel::setTickValue(unsigned val)
 //   setValue
 //---------------------------------------------------------
 
+// should probably be replaced by setTickValue
+
 void PosLabel::setValue(unsigned val)
 {
-    unsigned oval = _smpte ? _sampleValue : _tickValue;
+    unsigned oval = _tickValue;
     if (val == oval)
         return;
-    if (_smpte)
-        _sampleValue = val;
-    else
-        _tickValue = val;
+    _tickValue = val;
     updateValue();
 }
-
-//---------------------------------------------------------
-//   setSmpte
-//---------------------------------------------------------
-
-void PosLabel::setSmpte(bool val)
-{
-    _smpte = val;
-    if (val)
-        _sampleValue = tempomap.tick2frame(_tickValue);
-    else
-        _tickValue = tempomap.frame2tick(_sampleValue);
-    updateValue();
-}
-

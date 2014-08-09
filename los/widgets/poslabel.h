@@ -14,12 +14,14 @@
 //   PosLabel
 //---------------------------------------------------------
 
+// FIXME - remove setTickValue for setValue only
+
 class PosLabel : public QLabel
 {
-    bool _smpte;
-    unsigned _tickValue;
-    unsigned _sampleValue;
     Q_OBJECT
+
+    unsigned _tickValue;
+    //unsigned _sampleValue;
 
     void updateValue();
 
@@ -28,7 +30,7 @@ protected:
 
 public slots:
     void setTickValue(unsigned);
-    void setSampleValue(unsigned);
+    //void setSampleValue(unsigned);
     void setValue(unsigned);
 
 public:
@@ -36,7 +38,7 @@ public:
 
     unsigned value() const
     {
-        return _smpte ? _sampleValue : _tickValue;
+        return _tickValue;
     }
 
     unsigned tickValue() const
@@ -44,19 +46,10 @@ public:
         return _tickValue;
     }
 
-    unsigned sampleValue() const
-    {
-        return _sampleValue;
-    }
-    void setSmpte(bool);
-
-    bool smpte() const
-    {
-        return _smpte;
-    }
+//    unsigned sampleValue() const
+//    {
+//        return _sampleValue;
+//    }
 };
 
-
 #endif
-
-

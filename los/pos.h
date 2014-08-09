@@ -31,7 +31,6 @@ public:
     Pos();
     Pos(const Pos&);
     Pos(int, int, int);
-    Pos(int, int, int, int); // TODO: remove after smpte removal
     Pos(unsigned, bool ticks = true);
     Pos(const QString&);
 
@@ -61,7 +60,6 @@ public:
     void read(Xml& xml, const char*);
 
     void mbt(int*, int*, int*) const;
-    void msf(int*, int*, int*, int*) const;
 
     void dump(int n = 0) const;
 

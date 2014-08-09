@@ -26,8 +26,7 @@ class BigTime : public QWidget
     QLabel *absTickLabel;
     QLabel *absFrameLabel;
     QLabel *barLabel, *beatLabel, *tickLabel,
-    //*hourLabel, *minLabel, *secLabel, *frameLabel,
-    *minLabel, *secLabel, *frameLabel, *subFrameLabel,
+    *minLabel, *secLabel,
     *sep1, *sep2, *sep3, *sep4, *sep5;
 
     //int oldbar, oldbeat, oldhour, oldmin, oldsec, oldframe;

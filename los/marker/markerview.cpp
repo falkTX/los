@@ -28,7 +28,7 @@
 
 enum
 {
-    COL_TICK = 0, COL_SMPTE, COL_LOCK, COL_NAME
+    COL_TICK = 0, COL_LOCK, COL_NAME
 };
 
 //---------------------------------------------------------
@@ -104,36 +104,9 @@ void MarkerItem::setTick(unsigned v)
     QString s;
     int bar, beat;
     unsigned tick;
-    ///sigmap.tickValues(v, &bar, &beat, &tick);
     sigmap.tickValues(v, &bar, &beat, &tick);
     s.sprintf("%04d.%02d.%03d", bar + 1, beat + 1, tick);
     setText(COL_TICK, s);
-
-    double time = double(tempomap.tick2frame(v)) / double(sampleRate);
-    int hour = int(time) / 3600;
-    int min = (int(time) % 3600) / 60;
-    int sec = int(time) % 60;
-    double rest = time - (hour * 3600 + min * 60 + sec);
-    switch (kMtcType)
-    {
-        case 0: // 24 frames sec
-            rest *= 24;
-            break;
-        case 1: // 25
-            rest *= 25;
-            break;
-        case 2: // 30 drop frame
-            rest *= 30;
-            break;
-        case 3: // 30 non drop frame
-            rest *= 30;
-            break;
-    }
-    int frame = int(rest);
-    int subframe = int((rest - frame)*100);
-    s.sprintf("%02d:%02d:%02d:%02d:%02d",
-            hour, min, sec, frame, subframe);
-    setText(COL_SMPTE, s);
 }
 
 //---------------------------------------------------------
@@ -217,12 +190,6 @@ MarkerView::MarkerView(QWidget* parent)
     editTick->setSizePolicy(QSizePolicy(QSizePolicy::Fixed,
             QSizePolicy::Fixed));
 
-    ///editSMPTE = new PosEdit;
-    editSMPTE = new Awl::PosEdit;
-    editSMPTE->setSmpte(true);
-    editSMPTE->setSizePolicy(QSizePolicy(QSizePolicy::Fixed,
-            QSizePolicy::Fixed));
-
     lock = new QToolButton;
     lock->setIcon(*lockIcon);
     lock->setCheckable(true);
@@ -232,7 +199,6 @@ MarkerView::MarkerView(QWidget* parent)
             QSizePolicy::Preferred));
 
     hbox->addWidget(editTick);
-    hbox->addWidget(editSMPTE);
     hbox->addWidget(lock);
     hbox->addWidget(editName);
     props->setLayout(hbox);
@@ -241,12 +207,6 @@ MarkerView::MarkerView(QWidget* parent)
             SLOT(nameChanged(const QString&)));
     connect(editTick, SIGNAL(valueChanged(const Pos&)),
             SLOT(tickChanged(const Pos&)));
-    connect(editSMPTE, SIGNAL(valueChanged(const Pos&)),
-            SLOT(tickChanged(const Pos&)));
-    connect(editSMPTE, SIGNAL(valueChanged(const Pos&)),
-            editTick, SLOT(setValue(const Pos&)));
-    connect(editTick, SIGNAL(valueChanged(const Pos&)),
-            editSMPTE, SLOT(setValue(const Pos&)));
     connect(lock, SIGNAL(toggled(bool)),
             SLOT(lockChanged(bool)));
     connect(song, SIGNAL(markerChanged(int)),
@@ -473,10 +433,8 @@ void MarkerView::markerSelectionChanged()
     if (item == 0)
     { // never triggered
         editTick->setValue(0);
-        editSMPTE->setValue(0);
         editName->setText(QString(""));
         lock->setChecked(false);
-        editSMPTE->setEnabled(false);
         editTick->setEnabled(false);
         lock->setEnabled(false);
         editName->setEnabled(false);
@@ -484,7 +442,6 @@ void MarkerView::markerSelectionChanged()
     else
     {
         editTick->setValue(item->tick());
-        editSMPTE->setValue(item->tick());
         editName->setText(item->name());
         editName->setEnabled(true);
         lock->setChecked(item->lock());
@@ -492,7 +449,6 @@ void MarkerView::markerSelectionChanged()
 
         //printf("MarkerView::markerSelectionChanged item->lock:%d\n", item->lock());
 
-        editSMPTE->setEnabled(item->lock());
         editTick->setEnabled(!item->lock());
     }
 }
@@ -546,7 +502,6 @@ void MarkerView::lockChanged(bool lck)
     if (item)
     {
         item->setLock(lck);
-        editSMPTE->setEnabled(item->lock());
         editTick->setEnabled(!item->lock());
     }
 }

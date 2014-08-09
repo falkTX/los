@@ -41,11 +41,13 @@ Pos::Pos(unsigned t, bool ticks)
     {
         _type = TICKS;
         _tick = t;
+        _frame = 0;
     }
     else
     {
         _type = FRAMES;
         _frame = t;
+        _tick = 0;
     }
     sn = -1;
 }
@@ -56,6 +58,7 @@ Pos::Pos(const QString& s)
     sscanf(s.toLatin1(), "%04d.%02d.%03d", &m, &b, &t);
     _tick = sigmap.bar2tick(m, b, t);
     _type = TICKS;
+    _frame = 0;
     sn = -1;
 }
 
@@ -63,31 +66,7 @@ Pos::Pos(int measure, int beat, int tick)
 {
     _tick = sigmap.bar2tick(measure, beat, tick);
     _type = TICKS;
-    sn = -1;
-}
-
-Pos::Pos(int min, int sec, int frame, int subframe)
-{
-    double time = min * 60.0 + sec;
-
-    double f = frame + subframe / 100.0;
-    switch (kMtcType)
-    {
-        case 0: // 24 frames sec
-            time += f * 1.0 / 24.0;
-            break;
-        case 1: // 25
-            time += f * 1.0 / 25.0;
-            break;
-        case 2: // 30 drop frame
-            time += f * 1.0 / 30.0;
-            break;
-        case 3: // 30 non drop frame
-            time += f * 1.0 / 30.0;
-            break;
-    }
-    _type = FRAMES;
-    _frame = lrint(time * sampleRate);
+    _frame = 0;
     sn = -1;
 }
 
@@ -236,35 +215,6 @@ void Pos::read(Xml& xml, const char* name)
 void Pos::mbt(int* bar, int* beat, int* tk) const
 {
     sigmap.tickValues(tick(), bar, beat, (unsigned*) tk);
-}
-
-//---------------------------------------------------------
-//   msf
-//---------------------------------------------------------
-
-void Pos::msf(int* min, int* sec, int* fr, int* subFrame) const
-{
-    double time = double(frame()) / double(sampleRate);
-    *min = int(time) / 60;
-    *sec = int(time) % 60;
-    double rest = time - (*min * 60 + *sec);
-    switch (kMtcType)
-    {
-        case 0: // 24 frames sec
-            rest *= 24;
-            break;
-        case 1: // 25
-            rest *= 25;
-            break;
-        case 2: // 30 drop frame
-            rest *= 30;
-            break;
-        case 3: // 30 non drop frame
-            rest *= 30;
-            break;
-    }
-    *fr = int(rest);
-    *subFrame = int((rest - *fr)*100);
 }
 
 //---------------------------------------------------------

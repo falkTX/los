@@ -36,11 +36,8 @@ BigTime::BigTime(QWidget* parent)
     barLabel = new QLabel(dwin);
     beatLabel = new QLabel(dwin);
     tickLabel = new QLabel(dwin);
-    //hourLabel  = new QLabel(dwin);
     minLabel = new QLabel(dwin);
     secLabel = new QLabel(dwin);
-    frameLabel = new QLabel(dwin);
-    subFrameLabel = new QLabel(dwin);
     sep1 = new QLabel(QString("."), dwin);
     sep2 = new QLabel(QString("."), dwin);
     sep3 = new QLabel(QString(":"), dwin);
@@ -60,21 +57,15 @@ BigTime::BigTime(QWidget* parent)
     beatLabel->setObjectName("bigwinmiddle");
     tickLabel->setToolTip(tr("tick"));
     tickLabel->setObjectName("bigwinright");
-    //hourLabel->setToolTip(tr("hour"));
     minLabel->setToolTip(tr("minute"));
     minLabel->setObjectName("bigwinleft");
     secLabel->setToolTip(tr("second"));
     secLabel->setObjectName("bigwinmiddle");
-    frameLabel->setToolTip(tr("frame"));
-    frameLabel->setObjectName("bigwinmiddle");
-    subFrameLabel->setToolTip(tr("subframe"));
-    subFrameLabel->setObjectName("bigwinright");
     absTickLabel->setToolTip(tr("tick"));
     absTickLabel->setObjectName("bigwinright");
     absFrameLabel->setToolTip(tr("frame"));
     fmtButtonToggled(true);
     connect(fmtButton, SIGNAL(toggled(bool)), SLOT(fmtButtonToggled(bool)));
-    //oldbar = oldbeat = oldtick = oldhour = oldmin = oldsec = oldframe = -1;
     oldbar = oldbeat = oldtick = oldmin = oldsec = oldframe = oldsubframe = -1;
     oldAbsTick = oldAbsFrame = -1;
     setString(MAXINT);
@@ -100,11 +91,8 @@ void BigTime::fmtButtonToggled(bool v)
         barLabel->setEnabled(true);
         beatLabel->setEnabled(true);
         tickLabel->setEnabled(true);
-        //hourLabel->setEnabled(true);
         minLabel->setEnabled(true);
         secLabel->setEnabled(true);
-        frameLabel->setEnabled(true);
-        subFrameLabel->setEnabled(true);
         sep1->setEnabled(true);
         sep2->setEnabled(true);
         sep3->setEnabled(true);
@@ -116,11 +104,8 @@ void BigTime::fmtButtonToggled(bool v)
         barLabel->show();
         beatLabel->show();
         tickLabel->show();
-        //hourLabel->show();
         minLabel->show();
         secLabel->show();
-        frameLabel->show();
-        subFrameLabel->show();
         sep1->show();
         sep2->show();
         sep3->show();
@@ -136,11 +121,8 @@ void BigTime::fmtButtonToggled(bool v)
         barLabel->setEnabled(false);
         beatLabel->setEnabled(false);
         tickLabel->setEnabled(false);
-        //hourLabel->setEnabled(false);
         minLabel->setEnabled(false);
         secLabel->setEnabled(false);
-        frameLabel->setEnabled(false);
-        subFrameLabel->setEnabled(false);
         sep1->setEnabled(false);
         sep2->setEnabled(false);
         sep3->setEnabled(false);
@@ -152,11 +134,8 @@ void BigTime::fmtButtonToggled(bool v)
         barLabel->hide();
         beatLabel->hide();
         tickLabel->hide();
-        //hourLabel->hide();
         minLabel->hide();
         secLabel->hide();
-        frameLabel->hide();
-        subFrameLabel->hide();
         sep1->hide();
         sep2->hide();
         sep3->hide();
@@ -198,17 +177,12 @@ bool BigTime::setString(unsigned v)
         barLabel->setText(QString("----"));
         beatLabel->setText(QString("--"));
         tickLabel->setText(QString("---"));
-        //hourLabel->setText(QString("--"));
-        //minLabel->setText(QString("--"));
         minLabel->setText(QString("---"));
         secLabel->setText(QString("--"));
-        frameLabel->setText(QString("--"));
-        subFrameLabel->setText(QString("--"));
 
         absTickLabel->setText(QString("----------"));
         absFrameLabel->setText(QString("----------"));
         oldAbsTick = oldAbsFrame = -1;
-        //oldbar = oldbeat = oldtick = oldhour = oldmin = oldsec = oldframe = -1;
         oldbar = oldbeat = oldtick = oldmin = oldsec = oldframe = oldsubframe = -1;
         return true;
     }
@@ -218,28 +192,9 @@ bool BigTime::setString(unsigned v)
     unsigned tick;
     sigmap.tickValues(v, &bar, &beat, &tick);
     double time = double(absFrame) / double(sampleRate);
-    //int hour    = int(time) / 3600;
-    //int min     = (int(time) / 60) % 60;
+
     int min = int(time) / 60;
     int sec = int(time) % 60;
-    double rest = time - (min * 60 + sec);
-    switch (kMtcType)
-    {
-        case 0: // 24 frames sec
-            rest *= 24;
-            break;
-        case 1: // 25
-            rest *= 25;
-            break;
-        case 2: // 30 drop frame
-            rest *= 30;
-            break;
-        case 3: // 30 non drop frame
-            rest *= 30;
-            break;
-    }
-    int frame = int(rest);
-    int subframe = int((rest - frame)*100);
 
     QString s;
 
@@ -275,15 +230,8 @@ bool BigTime::setString(unsigned v)
         oldtick = tick;
     }
 
-    //if(oldhour != hour) {
-    //  s.sprintf("%02d", hour);
-    //  hourLabel->setText(s);
-    //  oldhour = hour;
-    //}
-
     if (oldmin != min)
     {
-        //s.sprintf("%02d", min);
         s.sprintf("%03d", min);
         minLabel->setText(s);
         oldmin = min;
@@ -294,20 +242,6 @@ bool BigTime::setString(unsigned v)
         s.sprintf("%02d", sec);
         secLabel->setText(s);
         oldsec = sec;
-    }
-
-    if (oldframe != frame)
-    {
-        s.sprintf("%02d", frame);
-        frameLabel->setText(s);
-        oldframe = frame;
-    }
-
-    if (oldsubframe != subframe)
-    {
-        s.sprintf("%02u", subframe);
-        subFrameLabel->setText(s);
-        oldsubframe = subframe;
     }
 
     return false;
@@ -371,12 +305,8 @@ void BigTime::resizeEvent(QResizeEvent *ev)
     barLabel->resize(digitWidth * 4, fs);
     beatLabel->resize(digitWidth * 2, fs);
     tickLabel->resize(digitWidth * 3, fs);
-    //hourLabel->resize(digitWidth*2, fs);
-    //minLabel->resize(digitWidth*2, fs);
     minLabel->resize(digitWidth * 3, fs);
     secLabel->resize(digitWidth * 2, fs);
-    frameLabel->resize(digitWidth * 2, fs);
-    subFrameLabel->resize(digitWidth * 2, fs);
 
     absTickLabel->resize(digitWidth * 10, fs);
     absFrameLabel->resize(digitWidth * 10, fs);
@@ -392,20 +322,13 @@ void BigTime::resizeEvent(QResizeEvent *ev)
     sep2->move(hspace + (digitWidth * 7), tickY);
     tickLabel->move(hspace + (digitWidth * 8), tickY);
 
-    //hourLabel->move(	hspace + (digitWidth*0), timeY);
-    //sep3->move(		hspace + (digitWidth*2), timeY);
-    //minLabel->move(		hspace + (digitWidth*3), timeY);
-    //sep4->move(		hspace + (digitWidth*5), timeY);
-    //secLabel->move(		hspace + (digitWidth*6), timeY);
-    //sep5->move(		hspace + (digitWidth*8), timeY);
-    //frameLabel->move(	hspace + (digitWidth*9), timeY);
     minLabel->move(hspace + (digitWidth * 0), timeY);
     sep3->move(hspace + (digitWidth * 3), timeY);
     secLabel->move(hspace + (digitWidth * 4), timeY);
     sep4->move(hspace + (digitWidth * 6), timeY);
-    frameLabel->move(hspace + (digitWidth * 7), timeY);
+    // frame was here
     sep5->move(hspace + (digitWidth * 9), timeY);
-    subFrameLabel->move(hspace + (digitWidth * 10), timeY);
+    // subframe was here
 
     absTickLabel->move(hspace + (digitWidth * 0), absTickY);
     absFrameLabel->move(hspace + (digitWidth * 0), absFrameY);
@@ -425,11 +348,8 @@ void BigTime::setFgColor(QColor c)
     barLabel->setPalette(newpalette);
     beatLabel->setPalette(newpalette);
     tickLabel->setPalette(newpalette);
-    //hourLabel->setPalette(newpalette);
     minLabel->setPalette(newpalette);
     secLabel->setPalette(newpalette);
-    frameLabel->setPalette(newpalette);
-    subFrameLabel->setPalette(newpalette);
 
     absTickLabel->setPalette(newpalette);
     absFrameLabel->setPalette(newpalette);
@@ -454,11 +374,8 @@ void BigTime::setBgColor(QColor c)
     barLabel->setPalette(newpalette);
     beatLabel->setPalette(newpalette);
     tickLabel->setPalette(newpalette);
-    //hourLabel->setPalette(newpalette);
     minLabel->setPalette(newpalette);
     secLabel->setPalette(newpalette);
-    frameLabel->setPalette(newpalette);
-    subFrameLabel->setPalette(newpalette);
 
     absTickLabel->setPalette(newpalette);
     absFrameLabel->setPalette(newpalette);

@@ -677,7 +677,6 @@ void LOS::processTrack(MidiTrack* track)
 
         int bar2, beat;
         unsigned tick;
-        ///sigmap.tickValues(len, &bar2, &beat, &tick);
         sigmap.tickValues(len, &bar2, &beat, &tick);
 
         int lastOff = 0;

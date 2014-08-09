@@ -56,16 +56,14 @@ public:
 
 class MarkerView : public TopWin
 {
+    Q_OBJECT
+
     QTreeWidget* table;
     QLineEdit* editName;
-    ///PosEdit* editSMPTE;
-    ///PosEdit* editTick;
-    Awl::PosEdit* editSMPTE;
     Awl::PosEdit* editTick;
     QToolButton* lock;
     QToolBar* tools;
 
-    Q_OBJECT
     virtual void closeEvent(QCloseEvent*);
 
 private slots:
