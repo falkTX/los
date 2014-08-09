@@ -5,7 +5,7 @@
 //===========================================================
 
 #include "TrackManager.h"
-#include "globaldefs.h"
+#include "globaldefs.hpp"
 #include "globals.h"
 #include "gconfig.h"
 #include "track.h"
@@ -158,7 +158,7 @@ TrackManager::TrackManager()
     m_midiOutPort = -1;
     m_track = 0;
 
-    m_allChannelBit = (1 << MIDI_CHANNELS) - 1;
+    m_allChannelBit = (1 << kMaxMidiChannels) - 1;
 }
 
 void TrackManager::setPosition(int v)

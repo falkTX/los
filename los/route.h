@@ -14,7 +14,7 @@
 #include <Qt>
 #include <QList>
 
-#include "globaldefs.h"
+#include "globaldefs.hpp"
 
 class QString;
 class MidiDevice;
@@ -75,7 +75,7 @@ struct Route
     {
         return ((type == TRACK_ROUTE) && (trackId > 0)) || ((type == JACK_ROUTE) && (jackPort != 0)) ||
                 ((type == MIDI_DEVICE_ROUTE) && (device != 0)) ||
-                ((type == MIDI_PORT_ROUTE) && (midiPortId > 0)/* && (midiPort < MIDI_PORTS)*/); // p3.3.49
+                ((type == MIDI_PORT_ROUTE) && (midiPortId > 0)/* && (midiPort < kMaxMidiPorts)*/); // p3.3.49
     }
     void read(Xml & xml);
     void dump() const;

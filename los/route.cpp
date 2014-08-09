@@ -87,7 +87,7 @@ Route::Route(int port, int ch)
     remoteChannel = -1;
     type = MIDI_PORT_ROUTE;
     trackId = -1;
-    if(midiPort >= 0 && midiPort < MIDI_PORTS)
+    if(midiPort >= 0 && midiPort < kMaxMidiPorts)
     {
         MidiPort* mp = &midiPorts[midiPort];
         midiPortId = mp->id();
@@ -139,7 +139,7 @@ Route::Route(const QString& s, bool dst, int ch, int rtype)
     {
         track = 0;
         midiPort = node.midiPort;
-        if(midiPort >= 0 && midiPort < MIDI_PORTS)
+        if(midiPort >= 0 && midiPort < kMaxMidiPorts)
         {
             MidiPort* mp = &midiPorts[midiPort];
             midiPortId = mp->id();
@@ -316,7 +316,7 @@ void addRoute(Route src, Route dst)/*{{{*/
             fprintf(stderr, "addRoute: source is midi port:%d, but destination is not track\n", src.midiPort);
             return;
         }
-        if (dst.channel < 1 || dst.channel >= (1 << MIDI_CHANNELS))
+        if (dst.channel < 1 || dst.channel >= (1 << kMaxMidiChannels))
         {
             fprintf(stderr, "addRoute: source is midi port:%d, but destination channel mask:%d out of range\n", src.midiPort, dst.channel);
             return;
@@ -365,7 +365,7 @@ void addRoute(Route src, Route dst)/*{{{*/
             fprintf(stderr, "addRoute: destination is midi port:%d, but source is not track\n", dst.midiPort);
             return;
         }
-        if (src.channel < 1 || src.channel >= (1 << MIDI_CHANNELS))
+        if (src.channel < 1 || src.channel >= (1 << kMaxMidiChannels))
         {
             fprintf(stderr, "addRoute: destination is midi port:%d, but source channel mask:%d out of range\n", dst.midiPort, src.channel);
             return;
@@ -1018,7 +1018,7 @@ void Route::read(Xml& xml)/*{{{*/
                             //qDebug("Route::read(): Found midiport from id: %d", midiPort);
                         }
                     }
-                    else if (port >= 0 && port < MIDI_PORTS)
+                    else if (port >= 0 && port < kMaxMidiPorts)
                     {
                         type = rtype;
                         midiPort = port;
@@ -1167,8 +1167,8 @@ void Song::readRoute(Xml& xml)/*{{{*/
                         // p3.3.49 Support pre- 1.1-RC2 midi-device-to-track routes. Obsolete. Replaced with midi port routes.
                         if (sroute.type == Route::MIDI_DEVICE_ROUTE && droute.type == Route::TRACK_ROUTE)
                         {
-                            if (sroute.device->midiPort() >= 0 && sroute.device->midiPort() < MIDI_PORTS
-                                    && ch >= 0 && ch < MIDI_CHANNELS)
+                            if (sroute.device->midiPort() >= 0 && sroute.device->midiPort() < kMaxMidiPorts
+                                    && ch >= 0 && ch < kMaxMidiChannels)
                             {
                                 sroute.midiPort = sroute.device->midiPort();
                                 sroute.device = 0;
@@ -1185,8 +1185,8 @@ void Song::readRoute(Xml& xml)/*{{{*/
                         }
                         else if (sroute.type == Route::TRACK_ROUTE && droute.type == Route::MIDI_DEVICE_ROUTE)
                         {
-                            if (droute.device->midiPort() >= 0 && droute.device->midiPort() < MIDI_PORTS
-                                    && ch >= 0 && ch < MIDI_CHANNELS) // p3.3.50
+                            if (droute.device->midiPort() >= 0 && droute.device->midiPort() < kMaxMidiPorts
+                                    && ch >= 0 && ch < kMaxMidiChannels) // p3.3.50
                             {
                                 droute.midiPort = droute.device->midiPort();
                                 droute.device = 0;

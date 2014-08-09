@@ -576,7 +576,7 @@ void CtrlCanvas::newValRamp(int x1, int y1, int x2, int y2)/*{{{*/
         {
             if (lastpv == CTRL_VAL_UNKNOWN)
             {
-                if (song->mtype() == MT_GM)
+                if (song->midiType() == MIDI_TYPE_GM)
                     event.setB(0xffff00 | (nval - 1));
                 else
                     event.setB(nval - 1);
@@ -626,7 +626,7 @@ void CtrlCanvas::changeValRamp(int x1, int y1, int x2, int y2)/*{{{*/
                 if (event.dataB() == CTRL_VAL_UNKNOWN)
                 {
                     --nval;
-                    if (song->mtype() == MT_GM)
+                    if (song->midiType() == MIDI_TYPE_GM)
                         nval |= 0xffff00;
                 }
                 else
@@ -903,7 +903,7 @@ void CtrlCanvas::changeVal(int x1, int x2, int y)/*{{{*/
                     if (event.dataB() == CTRL_VAL_UNKNOWN)
                     {
                         --nval;
-                        if (song->mtype() == MT_GM)
+                        if (song->midiType() == MIDI_TYPE_GM)
                             nval |= 0xffff00;
                     }
                     else
@@ -973,7 +973,7 @@ void CtrlCanvas::newVal(int x1, int x2, int y)/*{{{*/
                 if (lastpv == CTRL_VAL_UNKNOWN)
                 {
                     --nval;
-                    if (song->mtype() == MT_GM)
+                    if (song->midiType() == MIDI_TYPE_GM)
                         nval |= 0xffff00;
                 }
                 else
@@ -1022,7 +1022,7 @@ void CtrlCanvas::newVal(int x1, int x2, int y)/*{{{*/
             {
                 if (lastpv == CTRL_VAL_UNKNOWN)
                 {
-                    if (song->mtype() == MT_GM)
+                    if (song->midiType() == MIDI_TYPE_GM)
                         event.setB(0xffff00 | (newval - 1));
                     else
                         event.setB(newval - 1);

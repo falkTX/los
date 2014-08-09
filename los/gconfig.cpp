@@ -677,7 +677,6 @@ GlobalConfigValues config = {
     QString("sweep"), // externalWavEditor
     false, // useOldStyleStopShortCut
     true, // moveArmedCheckBox
-    true, // useDenormalBias
     false, // useOutputLimiter
     44100, // Dummy audio preferred sample rate
     512, // Dummy audio buffer size

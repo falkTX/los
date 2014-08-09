@@ -11,7 +11,7 @@
 #include <fcntl.h>
 
 #include "globals.h"
-#include "globaldefs.h"
+#include "globaldefs.hpp"
 #include "config.h"
 #include "midiport.h"
 #include "mididev.h"

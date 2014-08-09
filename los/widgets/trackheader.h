@@ -10,7 +10,7 @@
 #define CtrlIDRole Qt::UserRole+2
 
 #include "ui_trackheaderbase.h"
-#include "globaldefs.h"
+#include "globaldefs.hpp"
 #include <QHash>
 #include <QList>
 

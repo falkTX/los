@@ -348,7 +348,7 @@ void MidiJackDevice::recordEvent(MidiRecordEvent& event)/*{{{*/
         return;
 
     // Split the events up into channel fifos. Special 'channel' number 17 for sysex events.
-    unsigned int ch = (typ == ME_SYSEX) ? MIDI_CHANNELS : event.channel();
+    unsigned int ch = (typ == ME_SYSEX) ? kMaxMidiChannels : event.channel();
     if (_recordFifo[ch].put(MidiPlayEvent(event)))
         printf("MidiJackDevice::recordEvent: fifo channel %d overflow\n", ch);
 }/*}}}*/

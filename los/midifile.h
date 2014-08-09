@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <list>
 
-#include "globaldefs.h"
+#include "globaldefs.hpp"
 #include "mpevent.h"
 
 struct MPEventList;
@@ -47,7 +47,7 @@ class MidiFile
     int format; // smf file format
     int ntracks; // number of midi tracks
     int _division;
-    MType _mtype;
+    MidiType _mtype;
     MidiFileTrackList* _tracks;
 
     int status, click;
@@ -110,12 +110,12 @@ public:
         return _division;
     }
 
-    void setMType(MType t)
+    void setMidiType(MidiType t)
     {
         _mtype = t;
     }
 
-    MType mtype() const
+    MidiType midiType() const
     {
         return _mtype;
     }
@@ -129,9 +129,9 @@ public:
        __value; })
 #else
 #define XCHG_LONG(x) ((((x)&0xFF)<<24) | \
-		      (((x)&0xFF00)<<8) | \
-		      (((x)&0xFF0000)>>8) | \
-		      (((x)>>24)&0xFF))
+              (((x)&0xFF00)<<8) | \
+              (((x)&0xFF0000)>>8) | \
+              (((x)>>24)&0xFF))
 #endif
 
 #if __BYTE_ORDER == __LITTLE_ENDIAN

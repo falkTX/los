@@ -16,7 +16,7 @@
 #include "utils.h"
 #include "globals.h"
 #include "gconfig.h"
-#include "globaldefs.h"
+#include "globaldefs.hpp"
 #include "trackview.h"
 #include "track.h"
 #include "TrackManager.h"

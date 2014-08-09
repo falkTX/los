@@ -676,7 +676,7 @@ void Composer::updateAll()
 
     trackSelectionChanged();
     canvas->partsChanged();
-    typeBox->setCurrentIndex(int(song->mtype()));
+    typeBox->setCurrentIndex(int(song->midiType()));
 }
 
 //---------------------------------------------------------
@@ -695,7 +695,7 @@ void Composer::songChanged(int type)
         }
 
         if (type & SC_SONG_TYPE)
-            setMode(song->mtype());
+            setMode(song->midiType());
 
         if (type & SC_SIG)
             time->redraw();
@@ -809,7 +809,7 @@ CItem* Composer::addCanvasPart(MidiTrack* t)
 
 void Composer::modeChange(int mode)
 {
-    song->setMType(MType(mode));
+    song->setMidiType(MidiType(mode));
     updateConductor(-1);
 }
 

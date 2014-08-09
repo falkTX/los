@@ -589,7 +589,7 @@ QString sanitize(const QString text)
 int getFreeMidiPort()/*{{{*/
 {
     int rv = -1;
-    for (int i = 0; i < MIDI_PORTS; ++i)
+    for (int i = 0; i < kMaxMidiPorts; ++i)
     {
         MidiPort* mp = &midiPorts[i];
         //Use the first unconfigured port

@@ -60,7 +60,7 @@ MidiFile::MidiFile(FILE* f)
 {
     fp = f;
     curPos = 0;
-    _mtype = MT_UNKNOWN;
+    _mtype = MIDI_TYPE_NULL;
     _error = MF_NO_ERROR;
     _tracks = new MidiFileTrackList;
 }
@@ -245,18 +245,18 @@ bool MidiFile::readTrack(MidiFileTrack* t)
         if (lastport != -1)
         {
             port = lastport;
-            if (port >= MIDI_PORTS)
+            if (port >= kMaxMidiPorts)
             {
-                printf("port %d >= %d, reset to 0\n", port, MIDI_PORTS);
+                printf("port %d >= %d, reset to 0\n", port, kMaxMidiPorts);
                 port = 0;
             }
         }
         if (lastchannel != -1)
         {
             channel = lastchannel;
-            if (channel >= MIDI_CHANNELS)
+            if (channel >= kMaxMidiChannels)
             {
-                printf("channel %d >= %d, reset to 0\n", port, MIDI_CHANNELS);
+                printf("channel %d >= %d, reset to 0\n", port, kMaxMidiChannels);
                 channel = 0;
             }
         }
@@ -353,28 +353,28 @@ int MidiFile::readEvent(MidiPlayEvent* event, MidiFileTrack* t)
             event->setData(buffer, len);
             if (((unsigned) len == gmOnMsgLen) && memcmp(buffer, gmOnMsg, gmOnMsgLen) == 0)
             {
-                setMType(MT_GM);
+                setMidiType(MIDI_TYPE_GM);
                 return -1;
             }
             if (((unsigned) len == gsOnMsgLen) && memcmp(buffer, gsOnMsg, gsOnMsgLen) == 0)
             {
-                setMType(MT_GS);
+                setMidiType(MIDI_TYPE_GS);
                 return -1;
             }
             if (((unsigned) len == xgOnMsgLen) && memcmp(buffer, xgOnMsg, xgOnMsgLen) == 0)
             {
-                setMType(MT_XG);
+                setMidiType(MIDI_TYPE_XG);
                 return -1;
             }
             if (buffer[0] == 0x41)
             { // Roland
-                if (mtype() != MT_UNKNOWN)
-                    setMType(MT_GS);
+                if (midiType() != MIDI_TYPE_NULL)
+                    setMidiType(MIDI_TYPE_GS);
             }
             else if (buffer[0] == 0x43)
             { // Yamaha
-                if (mtype() == MT_UNKNOWN || mtype() == MT_GM)
-                    setMType(MT_XG);
+                if (midiType() == MIDI_TYPE_NULL || midiType() == MIDI_TYPE_GM)
+                    setMidiType(MIDI_TYPE_XG);
                 int type = buffer[1] & 0xf0;
                 switch (type)
                 {

@@ -14,7 +14,7 @@
 #include <QHash>
 
 #include "pos.h"
-#include "globaldefs.h"
+#include "globaldefs.hpp"
 #include "tempo.h"
 #include "al/sig.h"
 #include "undo.h"
@@ -188,7 +188,7 @@ private:
     bool punchoutFlag;
     bool recordFlag;
     bool soloFlag;
-    enum MType _mtype;
+    MidiType _mtype;
     int _recMode;
     int _cycleMode;
     //bool _click;
@@ -222,9 +222,9 @@ public:
     void undoFromQtUndoStack();
     void redoFromQtUndoStack();
 
-    void setMType(MType t);
+    void setMidiType(MidiType t);
 
-    MType mtype() const {
+    MidiType midiType() const {
         return _mtype;
     }
 

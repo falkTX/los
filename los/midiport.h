@@ -9,7 +9,7 @@
 #ifndef __MIDIPORT_H__
 #define __MIDIPORT_H__
 
-#include "globaldefs.h"
+#include "globaldefs.hpp"
 #include "route.h"
 #include <QHash>
 
@@ -40,7 +40,6 @@ class MidiPort
     QString _state; // result of device open
     QList<PatchSequence*> _patchSequences;
     MidiInstrument* _instrument;
-    AutomationType _automationType[MIDI_CHANNELS];
     // p3.3.50 Just a flag to say the port was found in the song file, even if it has no device right now.
     bool _foundInSongFile;
     // When creating a new midi track, add these global default channel routes to/from this port. Ignored if 0.
@@ -197,16 +196,6 @@ public:
     //bool sendEvent(const MidiPlayEvent&);
     bool sendEvent(const MidiPlayEvent&, bool forceSend = false );
 
-    AutomationType automationType(int channel)
-    {
-        return _automationType[channel];
-    }
-
-    void setAutomationType(int channel, AutomationType t)
-    {
-        _automationType[channel] = t;
-    }
-
     void addPreset(int i, QString p) { m_presets.insert(i, p); }
     bool hasPreset(int i)
     {
@@ -229,7 +218,7 @@ public:
     QHash<int, QString> * presets() { return &m_presets; }
 };
 
-extern MidiPort midiPorts[MIDI_PORTS];
+extern MidiPort midiPorts[kMaxMidiPorts];
 extern QHash<qint64, MidiPort*> losMidiPorts;
 extern void initMidiPorts();
 

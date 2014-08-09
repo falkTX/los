@@ -441,14 +441,14 @@ MidiInstrument& MidiInstrument::assign(const MidiInstrument& ins)
 //    send note off to all channels
 //---------------------------------------------------------
 
-void MidiInstrument::reset(int portNo, MType)
+void MidiInstrument::reset(int portNo, MidiType)
 {
     MidiPort* port = &midiPorts[portNo];
     MidiPlayEvent ev;
     ev.setType(0x90);
     ev.setPort(portNo);
     ev.setTime(0);
-    for (int chan = 0; chan < MIDI_CHANNELS; ++chan)
+    for (int chan = 0; chan < kMaxMidiChannels; ++chan)
     {
         ev.setChannel(chan);
         for (int pitch = 0; pitch < 128; ++pitch)
@@ -894,7 +894,7 @@ void MidiInstrument::write(int level, Xml& xml)
 //   getPatchName
 //---------------------------------------------------------
 
-QString MidiInstrument::getPatchName(int channel, int prog, MType mode)/*{{{*/
+QString MidiInstrument::getPatchName(int channel, int prog, MidiType mode)/*{{{*/
 {
     int pr = prog & 0xff;
     if (prog == CTRL_VAL_UNKNOWN || pr == 0xff)
@@ -908,16 +908,16 @@ QString MidiInstrument::getPatchName(int channel, int prog, MType mode)/*{{{*/
     bool lb = false;
     switch (mode)
     {
-        case MT_GS:
+        case MIDI_TYPE_GS:
             tmask = 2;
             hb = true;
             break;
-        case MT_XG:
+        case MIDI_TYPE_XG:
             hb = true;
             lb = true;
             tmask = 4;
             break;
-        case MT_GM:
+        case MIDI_TYPE_GM:
             if (drumchan)
                 return gmdrumname;
             tmask = 1;
@@ -943,7 +943,7 @@ QString MidiInstrument::getPatchName(int channel, int prog, MType mode)/*{{{*/
     return "<unknown>";
 }/*}}}*/
 
-Patch* MidiInstrument::getPatch(int channel, int prog, MType mode)/*{{{*/
+Patch* MidiInstrument::getPatch(int channel, int prog, MidiType mode)/*{{{*/
 {
     int pr = prog & 0xff;
     if (prog == CTRL_VAL_UNKNOWN || pr == 0xff)
@@ -957,16 +957,16 @@ Patch* MidiInstrument::getPatch(int channel, int prog, MType mode)/*{{{*/
     bool lb = false;
     switch (mode)
     {
-        case MT_GS:
+        case MIDI_TYPE_GS:
             tmask = 2;
             hb = true;
             break;
-        case MT_XG:
+        case MIDI_TYPE_XG:
             hb = true;
             lb = true;
             tmask = 4;
             break;
-        case MT_GM:
+        case MIDI_TYPE_GM:
             if (drumchan)
                 return 0;
             tmask = 1;
@@ -996,23 +996,23 @@ Patch* MidiInstrument::getPatch(int channel, int prog, MType mode)/*{{{*/
 //   populatePatchPopup
 //---------------------------------------------------------
 
-void MidiInstrument::populatePatchPopup(QMenu* menu, int chan, MType songType)
+void MidiInstrument::populatePatchPopup(QMenu* menu, int chan, MidiType songType)
 {
     menu->clear();
     int mask = 0;
     bool drumchan = chan == 9;
     switch (songType)
     {
-        case MT_XG: mask = 4;
+        case MIDI_TYPE_XG: mask = 4;
             break;
-        case MT_GS: mask = 2;
+        case MIDI_TYPE_GS: mask = 2;
             break;
-        case MT_GM:
+        case MIDI_TYPE_GM:
             if (drumchan)
                 return;
             mask = 1;
             break;
-        case MT_UNKNOWN: mask = 7;
+        case MIDI_TYPE_NULL: mask = 7;
             break;
     }
     if (pg.size() > 1)
@@ -1071,23 +1071,26 @@ void MidiInstrument::populatePatchPopup(QMenu* menu, int chan, MType songType)
 //   populatePatchModel
 //---------------------------------------------------------
 
-void MidiInstrument::populatePatchModel(QStandardItemModel* model, int chan, MType songType)
+void MidiInstrument::populatePatchModel(QStandardItemModel* model, int chan, MidiType songType)
 {
     model->clear();
     int mask = 0;
     bool drumchan = chan == 9;
     switch (songType)
     {
-        case MT_XG: mask = 4;
+        case MIDI_TYPE_XG:
+            mask = 4;
             break;
-        case MT_GS: mask = 2;
+        case MIDI_TYPE_GS:
+            mask = 2;
             break;
-        case MT_GM:
+        case MIDI_TYPE_GM:
             if (drumchan)
                 return;
             mask = 1;
             break;
-        case MT_UNKNOWN: mask = 7;
+        case MIDI_TYPE_NULL:
+            mask = 7;
             break;
     }
     if (pg.size() > 1)

@@ -424,7 +424,7 @@ void TrackHeader::heartBeat()/*{{{*/
 
                 // No port assigned to the device?
                 mpt = r->midiPort;
-                if (mpt < 0 || mpt >= MIDI_PORTS)
+                if (mpt < 0 || mpt >= kMaxMidiPorts)
                     continue;
 
                 if (midiPorts[mpt].syncInfo().actDetectBits() & r->channel)

@@ -23,7 +23,7 @@
 #include "song.h"
 #include "utils.h"
 
-MidiPort midiPorts[MIDI_PORTS];
+MidiPort midiPorts[kMaxMidiPorts];
 QHash<qint64, MidiPort*> losMidiPorts;
 
 //---------------------------------------------------------
@@ -34,7 +34,7 @@ void initMidiPorts()
 {
     //TODO: Remove the need for this code
     //We should populate the losMidiPort hash with ports as we create them
-    for (int i = 0; i < MIDI_PORTS; ++i)
+    for (int i = 0; i < kMaxMidiPorts; ++i)
     {
         MidiPort* port = &midiPorts[i];
         ///port->setInstrument(genericMidiInstrument);
@@ -62,12 +62,11 @@ MidiPort::MidiPort()
     // create minimum set of managed controllers
     // to make midi mixer operational
     //
-    for (int i = 0; i < MIDI_CHANNELS; ++i)
+    for (int i = 0; i < kMaxMidiChannels; ++i)
     {
         addManagedController(i, CTRL_PROGRAM);
         addManagedController(i, CTRL_VOLUME);
         addManagedController(i, CTRL_PANPOT);
-        _automationType[i] = AUTO_READ;
     }
 }
 
@@ -113,7 +112,7 @@ void MidiPort::setMidiDevice(MidiDevice* dev)
     // set-up new device
     if (dev)
     {
-        for (int i = 0; i < MIDI_PORTS; ++i)
+        for (int i = 0; i < kMaxMidiPorts; ++i)
         {
             MidiPort* mp = &midiPorts[i];
             if (mp->device() == dev)
@@ -149,7 +148,7 @@ void MidiPort::clearDevice()
 
 int MidiPort::portno() const
 {
-    for (int i = 0; i < MIDI_PORTS; ++i)
+    for (int i = 0; i < kMaxMidiPorts; ++i)
     {
         if (&midiPorts[i] == this)
             return i;
@@ -166,7 +165,7 @@ int MidiPort::portno() const
 QMenu* midiPortsPopup(QWidget* parent, int checkPort)
 {
     QMenu* p = new QMenu(parent);
-    for (int i = 0; i < MIDI_PORTS; ++i)
+    for (int i = 0; i < kMaxMidiPorts; ++i)
     {
         MidiPort* port = &midiPorts[i];
         QString name;
@@ -254,7 +253,7 @@ void MidiPort::setInstrument(MidiInstrument* i)
 
 void MidiPort::sendGmInitValues()
 {
-    for (int i = 0; i < MIDI_CHANNELS; ++i)
+    for (int i = 0; i < kMaxMidiChannels; ++i)
     {
         // By T356. Initialize from instrument controller if it has an initial value, otherwise use the specified value.
         // Tested: Ultimately, a track's controller stored values take priority by sending any 'zero time' value
@@ -283,7 +282,7 @@ void MidiPort::sendGsInitValues()
 
 void MidiPort::sendXgInitValues()
 {
-    for (int i = 0; i < MIDI_CHANNELS; ++i)
+    for (int i = 0; i < kMaxMidiChannels; ++i)
     {
         // By T356. Initialize from instrument controller if it has an initial value, otherwise use the specified value.
         tryCtrlInitVal(i, CTRL_PROGRAM, 0);

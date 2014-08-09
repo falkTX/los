@@ -491,7 +491,7 @@ void Song::read(Xml& xml)/*{{{*/
                 else if (tag == "solo")
                     soloFlag = xml.parseInt();
                 else if (tag == "type")
-                    _mtype = MType(xml.parseInt());
+                    _mtype = MidiType(xml.parseInt());
                 else if (tag == "recmode")
                     _recMode = xml.parseInt();
                 else if (tag == "cycle")
@@ -720,7 +720,7 @@ void Song::write(int level, Xml& xml) const
     }
 
     //Write midi port routing.
-    for (int i = 0; i < MIDI_PORTS; ++i)
+    for (int i = 0; i < kMaxMidiPorts; ++i)
     {
         midiPorts[i].writeRouting(level, xml);
     }

@@ -1183,7 +1183,7 @@ void Piano::viewMousePressEvent(QMouseEvent* event)
                             if (program != CTRL_VAL_UNKNOWN && program != 0xffffff)
                             {
                                 hasProgram = true;
-                                patch = instr->getPatch(channel, program, song->mtype());
+                                patch = instr->getPatch(channel, program, song->midiType());
                             }
                             KeyMap *km = instr->keymap(c_pitch);
                             //int prog = km->program;

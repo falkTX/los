@@ -13,7 +13,7 @@
 
 #include "mpevent.h"
 #include "route.h"
-#include "globaldefs.h"
+#include "globaldefs.hpp"
 
 #include <QString>
 #include <QHash>
@@ -37,7 +37,7 @@ class MidiDevice {
     MPEventList _playEvents;
 
     // Used for multiple reads of fifos during process.
-    int _tmpRecordCount[MIDI_CHANNELS + 1];
+    int _tmpRecordCount[kMaxMidiChannels + 1];
     bool _sysexFIFOProcessed;
 
 
@@ -56,7 +56,7 @@ protected:
     QHash<int, NRPNCache*> m_nrpnCache;
 
     // Recording fifos. To speed up processing, one per channel plus one special system 'channel' for channel-less events like sysex.
-    MidiRecFifo _recordFifo[MIDI_CHANNELS + 1];
+    MidiRecFifo _recordFifo[kMaxMidiChannels + 1];
 
     RouteList _inRoutes, _outRoutes;
 

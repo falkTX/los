@@ -17,7 +17,7 @@
 #include "song.h"
 #include "xml.h"
 #include "audio.h"
-#include "globaldefs.h"
+#include "globaldefs.hpp"
 #include "route.h"
 #include "midimonitor.h"
 #include "ccinfo.h"
@@ -146,7 +146,7 @@ void Track::init()
     _selected = false;
     _height = DEFAULT_TRACKHEIGHT;
     _locked = false;
-    for (int i = 0; i < MAX_CHANNELS; ++i)
+    for (int i = 0; i < kMaxAudioChannels; ++i)
     {
         _meter[i] = 0.0;
         _peak[i] = 0.0;
@@ -235,7 +235,7 @@ Track::Track(const Track& t, bool cloneParts)
         //      ip->second->setTrack(this);
     }
 
-    for (int i = 0; i < MAX_CHANNELS; ++i)
+    for (int i = 0; i < kMaxAudioChannels; ++i)
     {
         //_meter[i] = 0;
         //_peak[i]  = 0;
@@ -282,7 +282,7 @@ Track& Track::operator=(const Track& t)
 
     _parts = *(t.cparts());
 
-    for (int i = 0; i < MAX_CHANNELS; ++i)
+    for (int i = 0; i < kMaxAudioChannels; ++i)
     {
         _meter[i] = t._meter[i];
         _peak[i] = t._peak[i];
@@ -722,28 +722,6 @@ Part* MidiTrack::newPart(Part*p, bool clone)
     return part;
 }
 
-//---------------------------------------------------------
-//   automationType
-//---------------------------------------------------------
-
-AutomationType MidiTrack::automationType() const
-{
-    MidiPort* port = &midiPorts[outPort()];
-    return port->automationType(outChannel());
-}
-
-//---------------------------------------------------------
-//   setAutomationType
-//---------------------------------------------------------
-
-void MidiTrack::setAutomationType(AutomationType t)
-{
-    {
-        MidiPort* port = &midiPorts[outPort()];
-        port->setAutomationType(outChannel(), t);
-    }
-}
-
 bool MidiTrack::setRecordFlag1(bool f, bool monitor)
 {
     _recordFlag = f;
@@ -847,8 +825,8 @@ bool Track::readProperties(Xml& xml, const QString& tag)/*{{{*/
     else if (tag == "channels")
     {
         _channels = xml.parseInt();
-        if (_channels > MAX_CHANNELS)
-            _channels = MAX_CHANNELS;
+        if (_channels > kMaxAudioChannels)
+            _channels = kMaxAudioChannels;
     }
     else if (tag == "locked")
         _locked = xml.parseInt();
@@ -979,8 +957,6 @@ void MidiTrack::write(int level, Xml& xml) const/*{{{*/
     xml.intTag(level, "len", len);
     xml.intTag(level, "compression", compression);
 
-    xml.intTag(level, "automation", int(automationType()));
-
     const PartList* pl = cparts();
     for (ciPart p = pl->begin(); p != pl->end(); ++p)
         p->second->write(level, xml);
@@ -1041,8 +1017,6 @@ void MidiTrack::read(Xml& xml)/*{{{*/
                     _locked = xml.parseInt();
                 else if (tag == "echo")
                     _recEcho = xml.parseInt();
-                else if (tag == "automation")
-                    setAutomationType(AutomationType(xml.parseInt()));
                 else if (Track::readProperties(xml, tag))
                 {
                     // version 1.0 compatibility:

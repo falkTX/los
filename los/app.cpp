@@ -1177,7 +1177,7 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
     int dw = qApp->desktop()->width();
     int dh = qApp->desktop()->height();
 #endif
-    
+
     if(defaultScreenSize.height())
     {
         if(defaultScreenSize.height() <= dh && defaultScreenSize.width() <= dw)
@@ -1795,7 +1795,7 @@ bool LOS::saveRouteMapping(QString name, QString notes)
     {
         (*i)->writeRouting(level, xml);
     }
-    for (int i = 0; i < MIDI_PORTS; ++i)
+    for (int i = 0; i < kMaxMidiPorts; ++i)
     {
         midiPorts[i].writeRouting(level, xml);
     }
@@ -2276,7 +2276,7 @@ void LOS::updateRouteMenus(MidiTrack* track, QObject* master)
     {
         // p3.3.50 Ignore the 'toggle' items.
         if (imm->second.type == Route::MIDI_PORT_ROUTE &&
-                imm->first >= (MIDI_PORTS * MIDI_CHANNELS) && imm->first < (MIDI_PORTS * MIDI_CHANNELS + MIDI_PORTS))
+                imm->first >= (kMaxMidiPorts * kMaxMidiChannels) && imm->first < (kMaxMidiPorts * kMaxMidiChannels + kMaxMidiPorts))
             continue;
 
         //bool found = false;
@@ -2430,7 +2430,7 @@ PopupMenu* LOS::prepareRoutingPopupMenu(MidiTrack* track, bool dst)
         gRoutingMenuMap.clear();
         gid = 0;
 
-        for (int i = 0; i < MIDI_PORTS; ++i)
+        for (int i = 0; i < kMaxMidiPorts; ++i)
         {
             //MidiInPort* track = *i;
             // NOTE: Could possibly list all devices, bypassing ports, but no, let's stick with ports.
@@ -2461,9 +2461,9 @@ PopupMenu* LOS::prepareRoutingPopupMenu(MidiTrack* track, bool dst)
                 }
             }
 
-            for (int ch = 0; ch < MIDI_CHANNELS; ++ch)
+            for (int ch = 0; ch < kMaxMidiChannels; ++ch)
             {
-                gid = i * MIDI_CHANNELS + ch;
+                gid = i * kMaxMidiChannels + ch;
 
                 //printf("LOS::prepareRoutingPopupMenu inserting gid:%d\n", gid);
 
@@ -2492,11 +2492,11 @@ PopupMenu* LOS::prepareRoutingPopupMenu(MidiTrack* track, bool dst)
             }
 
             // p3.3.50 One route with all channel bits set.
-            gid = MIDI_PORTS * MIDI_CHANNELS + i; // Make sure each 'toggle' item gets a unique id.
+            gid = kMaxMidiPorts * kMaxMidiChannels + i; // Make sure each 'toggle' item gets a unique id.
             act = subp->addAction(QString("Toggle all"));
             //act->setCheckable(true);
             act->setData(gid);
-            Route togRoute(i, (1 << MIDI_CHANNELS) - 1); // Set all channel bits.
+            Route togRoute(i, (1 << kMaxMidiChannels) - 1); // Set all channel bits.
             gRoutingMenuMap.insert(pRouteMenuMap(gid, togRoute));
 
             pup->addMenu(subp);

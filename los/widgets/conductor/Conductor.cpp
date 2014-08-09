@@ -287,7 +287,7 @@ void Conductor::heartBeat()/*{{{*/
 
                 // No port assigned to the device?
                 mpt = r->midiPort;
-                if (mpt < 0 || mpt >= MIDI_PORTS)
+                if (mpt < 0 || mpt >= kMaxMidiPorts)
                     continue;
 
                 /// XXX FIXME
@@ -351,12 +351,12 @@ void Conductor::heartBeat()/*{{{*/
                     else
                     {
                         MidiInstrument* instr = mp->instrument();
-                        QString name = instr->getPatchName(outChannel, nprogram, song->mtype());
+                        QString name = instr->getPatchName(outChannel, nprogram, song->midiType());
                         if (name.isEmpty())
                         {
                             name = "???";
                         }
-                        Patch *patch = instr->getPatch(outChannel, nprogram, song->mtype());
+                        Patch *patch = instr->getPatch(outChannel, nprogram, song->midiType());
                         if(patch)
                         {
                             emit patchChanged(patch);
@@ -373,8 +373,8 @@ void Conductor::heartBeat()/*{{{*/
                     program = nprogram;
 
                     MidiInstrument* instr = mp->instrument();
-                    QString name = instr->getPatchName(outChannel, program, song->mtype());
-                    Patch *patch = instr->getPatch(outChannel, program, song->mtype());
+                    QString name = instr->getPatchName(outChannel, program, song->midiType());
+                    Patch *patch = instr->getPatch(outChannel, program, song->midiType());
                     if(patch)
                     {
                         emit patchChanged(patch);
@@ -741,8 +741,8 @@ void Conductor::iProgHBankChanged()/*{{{*/
     audio->msgPlayMidiEvent(&ev);
 
     MidiInstrument* instr = mp->instrument();
-    emit updateCurrentPatch(instr->getPatchName(channel, program, song->mtype()));
-    Patch *patch = instr->getPatch(channel, program, song->mtype());
+    emit updateCurrentPatch(instr->getPatchName(channel, program, song->midiType()));
+    Patch *patch = instr->getPatch(channel, program, song->midiType());
     if(patch)
     {
         emit patchChanged(patch);
@@ -751,7 +751,7 @@ void Conductor::iProgHBankChanged()/*{{{*/
     {
         emit patchChanged(new Patch);
     }
-    //iPatch->setText(instr->getPatchName(channel, program, song->mtype()));
+    //iPatch->setText(instr->getPatchName(channel, program, song->midiType()));
 }/*}}}*/
 
 //---------------------------------------------------------
@@ -828,9 +828,9 @@ void Conductor::iProgLBankChanged()/*{{{*/
     audio->msgPlayMidiEvent(&ev);
 
     MidiInstrument* instr = mp->instrument();
-    emit updateCurrentPatch(instr->getPatchName(channel, program, song->mtype()));
-    //iPatch->setText(instr->getPatchName(channel, program, song->mtype()));
-    Patch *patch = instr->getPatch(channel, program, song->mtype());
+    emit updateCurrentPatch(instr->getPatchName(channel, program, song->midiType()));
+    //iPatch->setText(instr->getPatchName(channel, program, song->midiType()));
+    Patch *patch = instr->getPatch(channel, program, song->midiType());
     if(patch)
     {
         emit patchChanged(patch);
@@ -915,8 +915,8 @@ void Conductor::iProgramChanged()/*{{{*/
         audio->msgPlayMidiEvent(&ev);
 
         MidiInstrument* instr = mp->instrument();
-        emit updateCurrentPatch(instr->getPatchName(channel, program, song->mtype()));
-        Patch *patch = instr->getPatch(channel, program, song->mtype());
+        emit updateCurrentPatch(instr->getPatchName(channel, program, song->midiType()));
+        Patch *patch = instr->getPatch(channel, program, song->midiType());
         if(patch)
         {
             emit patchChanged(patch);
@@ -925,7 +925,7 @@ void Conductor::iProgramChanged()/*{{{*/
         {
             emit patchChanged(new Patch);
         }
-        //iPatch->setText(instr->getPatchName(channel, program, song->mtype()));
+        //iPatch->setText(instr->getPatchName(channel, program, song->midiType()));
     }
 
     //      updateConductor();
@@ -1338,7 +1338,7 @@ void Conductor::updateConductor(int flags)
 
         iOutput->clear();
 
-        for (int i = 0; i < MIDI_PORTS; ++i)
+        for (int i = 0; i < kMaxMidiPorts; ++i)
         {
             QString name;
             name.sprintf("%d:%s", i + 1, midiPorts[i].portname().toLatin1().constData());
@@ -1387,8 +1387,8 @@ void Conductor::updateConductor(int flags)
         else
         {
             MidiInstrument* instr = mp->instrument();
-            emit updateCurrentPatch(instr->getPatchName(outChannel, nprogram, song->mtype()));
-            Patch *patch = instr->getPatch(outChannel, nprogram, song->mtype());
+            emit updateCurrentPatch(instr->getPatchName(outChannel, nprogram, song->midiType()));
+            Patch *patch = instr->getPatch(outChannel, nprogram, song->midiType());
             if(patch)
             {
                 emit patchChanged(patch);
@@ -1404,8 +1404,8 @@ void Conductor::updateConductor(int flags)
         program = nprogram;
 
         MidiInstrument* instr = mp->instrument();
-        emit updateCurrentPatch(instr->getPatchName(outChannel, program, song->mtype()));
-        Patch *patch = instr->getPatch(outChannel, program, song->mtype());
+        emit updateCurrentPatch(instr->getPatchName(outChannel, program, song->midiType()));
+        Patch *patch = instr->getPatch(outChannel, program, song->midiType());
         if(patch)
         {
             emit patchChanged(patch);
@@ -2072,7 +2072,7 @@ void Conductor::populatePatches()
     int port = track->outPort();
     MidiInstrument* instr = midiPorts[port].instrument();
     if (instr && _patchModel/* && instr != genericMidiInstrument*/)
-        instr->populatePatchModel(_patchModel, channel, song->mtype());
+        instr->populatePatchModel(_patchModel, channel, song->midiType());
 }
 
 void Conductor::patchDoubleClicked(QModelIndex index)/*{{{*/

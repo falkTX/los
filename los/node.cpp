@@ -182,8 +182,8 @@ void Track::setOff(bool val)
 
 void Track::setChannels(int n)
 {
-    if (n > MAX_CHANNELS)
-        _channels = MAX_CHANNELS;
+    if (n > kMaxAudioChannels)
+        _channels = kMaxAudioChannels;
     else
         _channels = n;
     for (int i = 0; i < _channels; ++i)

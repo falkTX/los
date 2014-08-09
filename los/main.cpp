@@ -239,9 +239,6 @@ int main(int argc, char* argv[])
 
     losUserInstruments = config.userInstrumentsDir;
 
-    if (config.useDenormalBias)
-        printf("Denormal protection enabled.\n");
-
     int i;
 
     QString optstr("ahvdDmMsP:Y:l:py");

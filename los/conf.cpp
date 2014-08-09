@@ -397,10 +397,10 @@ static void readConfigMidiPort(Xml& xml)/*{{{*/
                         }
                     }
 
-                    if (idx < 0 || idx >= MIDI_PORTS)
+                    if (idx < 0 || idx >= kMaxMidiPorts)
                     {
                         fprintf(stderr, "bad midi port %d (>%d)\n",
-                                idx, MIDI_PORTS);
+                                idx, kMaxMidiPorts);
                         idx = 0;
                     }
 
@@ -502,7 +502,7 @@ static void readSeqConfiguration(Xml& xml)
                     //All Midiports have been read so put all the unconfigured ports in the id list
                     //if(updatePorts)
                     //{
-                        for(int i = 0; i < MIDI_PORTS; ++i)
+                        for(int i = 0; i < kMaxMidiPorts; ++i)
                         {
                             MidiPort *mp = &midiPorts[i];
                             if(!losMidiPorts.contains(mp->id()))
@@ -754,8 +754,6 @@ void readConfiguration(Xml& xml, bool readOnlySequencer)/*{{{*/
                     config.minSlider = xml.parseDouble();
                 else if (tag == "freewheelMode")
                     config.freewheelMode = xml.parseInt();
-                else if (tag == "denormalProtection")
-                    config.useDenormalBias = xml.parseInt();
                 else if (tag == "outputLimiter")
                     config.useOutputLimiter = xml.parseInt();
                 else if (tag == "dummyAudioSampleRate")
@@ -887,7 +885,7 @@ static void writeSeqConfiguration(int level, Xml& xml, bool writePortInfo)/*{{{*
         // write information about all midi ports, their assigned
         // instruments and all managed midi controllers
         //
-        for (int i = 0; i < MIDI_PORTS; ++i)
+        for (int i = 0; i < kMaxMidiPorts; ++i)
         {
             bool used = false;
             MidiPort* mport = &midiPorts[i];
@@ -943,7 +941,7 @@ static void writeSeqConfiguration(int level, Xml& xml, bool writePortInfo)/*{{{*
             }
             // write out registered controller for all channels
             MidiCtrlValListList* vll = mport->controller();
-            for (int k = 0; k < MIDI_CHANNELS; ++k)
+            for (int k = 0; k < kMaxMidiChannels; ++k)
             {
                 int min = k << 24;
                 int max = min + 0x100000;
@@ -1020,7 +1018,6 @@ void LOS::writeGlobalConfiguration(int level, Xml& xml) const
     xml.intTag(level, "minMeter", config.minMeter);
     xml.doubleTag(level, "minSlider", config.minSlider);
     xml.intTag(level, "freewheelMode", config.freewheelMode);
-    xml.intTag(level, "denormalProtection", config.useDenormalBias);
     xml.intTag(level, "outputLimiter", config.useOutputLimiter);
     xml.intTag(level, "dummyAudioBufSize", config.dummyAudioBufSize);
     xml.intTag(level, "dummyAudioSampleRate", config.dummyAudioSampleRate);

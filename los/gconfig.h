@@ -105,7 +105,6 @@ struct GlobalConfigValues
     QString externalWavEditor;
     bool useOldStyleStopShortCut;
     bool moveArmedCheckBox;
-    bool useDenormalBias;
     bool useOutputLimiter;
     int dummyAudioSampleRate;
     int dummyAudioBufSize;

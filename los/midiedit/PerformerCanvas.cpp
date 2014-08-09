@@ -170,7 +170,7 @@ void PerformerCanvas::drawTopItem(QPainter& p, const QRect& rect)
                 Patch* patch = 0;
                 if (program != CTRL_VAL_UNKNOWN && program != 0xffffff)
                 {
-                    patch = instr->getPatch(channel, program, song->mtype());
+                    patch = instr->getPatch(channel, program, song->midiType());
                 }
 
                 p.setPen(config.partColors[_curPart->colorIndex()]);

@@ -74,7 +74,7 @@ void MidiDevice::init()
     _openFlags = 3;
     _port = -1;
     m_nrpnCache.clear();
-    for (unsigned int i = 0; i <= MIDI_CHANNELS; ++i)
+    for (unsigned int i = 0; i <= kMaxMidiChannels; ++i)
     {
         NRPNCache* c = new NRPNCache;
         c->msb = -1;
@@ -92,7 +92,7 @@ void MidiDevice::init()
 MidiDevice::MidiDevice()
 : m_cachenrpn(false)
 {
-    for (unsigned int i = 0; i < MIDI_CHANNELS + 1; ++i)
+    for (unsigned int i = 0; i < kMaxMidiChannels + 1; ++i)
         _tmpRecordCount[i] = 0;
 
     _sysexFIFOProcessed = false;
@@ -105,7 +105,7 @@ MidiDevice::MidiDevice()
 MidiDevice::MidiDevice(const QString& n)
 : _name(n),m_cachenrpn(false)
 {
-    for (unsigned int i = 0; i < MIDI_CHANNELS + 1; ++i)
+    for (unsigned int i = 0; i < kMaxMidiChannels + 1; ++i)
         _tmpRecordCount[i] = 0;
 
     _sysexFIFOProcessed = false;
@@ -248,7 +248,7 @@ bool filterEvent(const MEvent& event, int type, bool thru)
 
 void MidiDevice::afterProcess()
 {
-    for (unsigned int i = 0; i < MIDI_CHANNELS + 1; ++i)
+    for (unsigned int i = 0; i < kMaxMidiChannels + 1; ++i)
     {
         while (_tmpRecordCount[i]--)
             _recordFifo[i].remove();
@@ -262,7 +262,7 @@ void MidiDevice::afterProcess()
 
 void MidiDevice::beforeProcess()
 {
-    for (unsigned int i = 0; i < MIDI_CHANNELS + 1; ++i)
+    for (unsigned int i = 0; i < kMaxMidiChannels + 1; ++i)
         _tmpRecordCount[i] = _recordFifo[i].getSize();
 
     // Reset this.
@@ -343,7 +343,7 @@ void MidiDevice::recordEvent(MidiRecordEvent& event)
         return;
 
     // Split the events up into channel fifos. Special 'channel' number 17 for sysex events.
-    unsigned int ch = (typ == ME_SYSEX) ? MIDI_CHANNELS : event.channel();
+    unsigned int ch = (typ == ME_SYSEX) ? kMaxMidiChannels : event.channel();
     if (_recordFifo[ch].put(MidiPlayEvent(event)))
         printf("MidiDevice::recordEvent: fifo channel %d overflow\n", ch);
 }
@@ -469,7 +469,7 @@ bool MidiDevice::putEvent(const MidiPlayEvent& ev)
         if (a == CTRL_PROGRAM)
         {
             // don't output program changes for GM drum channel
-            if (!(song->mtype() == MT_GM && chn == 9))
+            if (!(song->midiType() == MIDI_TYPE_GM && chn == 9))
             {
                 int hb = (b >> 16) & 0xff;
                 int lb = (b >> 8) & 0xff;

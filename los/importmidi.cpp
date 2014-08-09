@@ -105,7 +105,7 @@ bool LOS::importMidi(const QString name, bool merge)/*{{{*/
     //
     //  evaluate song Type (GM, XG, GS, unknown)
     //
-    MType t = song->mtype();
+    MType t = song->midiType();
     if (!merge)
     {
         t = mf.mtype();
@@ -115,7 +115,7 @@ bool LOS::importMidi(const QString name, bool merge)/*{{{*/
     for (iMidiInstrument i = midiInstruments.begin(); i != midiInstruments.end(); ++i)
     {
         MidiInstrument* mi = *i;
-        if ((mi->iname() == "GM" && ((t == MT_UNKNOWN) || (t == MT_GM)))
+        if ((mi->iname() == "GM" && ((t == MT_UNKNOWN) || (t == MIDI_TYPE_GM)))
                 || ((mi->iname() == "GS") && (t == MT_GS))
                 || ((mi->iname() == "XG") && (t == MT_XG)))
         {
@@ -150,9 +150,9 @@ bool LOS::importMidi(const QString name, bool merge)/*{{{*/
 
         bool first = true;
         // somewhat silly and slooow:
-        for (int port = 0; port < MIDI_PORTS; ++port)
+        for (int port = 0; port < kMaxMidiPorts; ++port)
         {
-            for (int channel = 0; channel < MIDI_CHANNELS; ++channel)
+            for (int channel = 0; channel < kMaxMidiChannels; ++channel)
             {
                 //
                 // check if there are any events for port/channel in track:
@@ -188,7 +188,7 @@ bool LOS::importMidi(const QString name, bool merge)/*{{{*/
 
                 // Hmm. buildMidiEventList already takes care of this.
                 // But it seems to work. How? Must test.
-                if (channel == 9 && song->mtype() != MT_UNKNOWN)
+                if (channel == 9 && song->midiType() != MT_UNKNOWN)
                 {
                     track->setType(Track::DRUM);
                     //
@@ -262,7 +262,7 @@ bool LOS::importMidi(const QString name, bool merge)/*{{{*/
         song->updatePos();
 
         composer->reset();
-        ///composer->setMode(int(song->mtype())); // p4.0.7 Tim
+        ///composer->setMode(int(song->midiType())); // p4.0.7 Tim
     }
     else
     {
@@ -294,7 +294,7 @@ bool LOS::importMidi(const QString name, bool merge)/*{{{*/
     //
     //  evaluate song Type (GM, XG, GS, unknown)
     //
-    MType t = song->mtype();
+    MType t = song->midiType();
     if (!merge)
     {
         t = mf.mtype();
@@ -304,7 +304,7 @@ bool LOS::importMidi(const QString name, bool merge)/*{{{*/
     for (iMidiInstrument i = midiInstruments.begin(); i != midiInstruments.end(); ++i)
     {
         MidiInstrument* mi = *i;
-        if ((mi->iname() == "GM" && ((t == MT_UNKNOWN) || (t == MT_GM)))
+        if ((mi->iname() == "GM" && ((t == MT_UNKNOWN) || (t == MIDI_TYPE_GM)))
                 || ((mi->iname() == "GS") && (t == MT_GS))
                 || ((mi->iname() == "XG") && (t == MT_XG)))
         {
@@ -341,9 +341,9 @@ bool LOS::importMidi(const QString name, bool merge)/*{{{*/
         bool first = true;
         // somewhat silly and slooow:
         QList<QPair<int, int> > eventChannelList;
-        if(mPort >= 0 && mPort < MIDI_PORTS)
+        if(mPort >= 0 && mPort < kMaxMidiPorts)
         {
-            for (int channel = 0; channel < MIDI_CHANNELS; ++channel)
+            for (int channel = 0; channel < kMaxMidiChannels; ++channel)
             {
                 //
                 // check if there are any events for port/channel in track:
@@ -415,7 +415,7 @@ bool LOS::importMidi(const QString name, bool merge)/*{{{*/
         mPort++;
         //FIXME: Provice a non-iterative way to do this using the new losMidiPorts hash
         //Or maintain a list of configured or inuse ports
-        while((&midiPorts[mPort])->device() && mPort < MIDI_PORTS)
+        while((&midiPorts[mPort])->device() && mPort < kMaxMidiPorts)
             mPort++;//Just incase we have a configured port after an empty one
     }
 
@@ -474,19 +474,19 @@ bool LOS::importMidi(const QString name, bool merge)/*{{{*/
     //
     //  evaluate song Type (GM, XG, GS, unknown)
     //
-    MType t = song->mtype();
+    MidiType t = song->midiType();
     if (!merge)
     {
-        t = mf.mtype();
-        song->setMType(t);
+        t = mf.midiType();
+        song->setMidiType(t);
     }
     MidiInstrument* instr = 0;
     for (iMidiInstrument i = midiInstruments.begin(); i != midiInstruments.end(); ++i)
     {
         MidiInstrument* mi = *i;
-        if ((mi->iname() == "GM" && ((t == MT_UNKNOWN) || (t == MT_GM)))
-                || ((mi->iname() == "GS") && (t == MT_GS))
-                || ((mi->iname() == "XG") && (t == MT_XG)))
+        if ((mi->iname() == "GM" && ((t == MIDI_TYPE_NULL) || (t == MIDI_TYPE_GM))) ||
+            (mi->iname() == "GS" &&   t == MIDI_TYPE_GS) ||
+            (mi->iname() == "XG" &&   t == MIDI_TYPE_XG))
         {
             instr = mi;
             break;
@@ -568,7 +568,7 @@ bool LOS::importMidi(const QString name, bool merge)/*{{{*/
                     mPort++;
                     //FIXME: Provice a non-iterative way to do this using the new losMidiPorts hash
                     //Or maintain a list of configured or inuse ports
-                    while((&midiPorts[mPort])->device() && mPort < MIDI_PORTS)
+                    while((&midiPorts[mPort])->device() && mPort < kMaxMidiPorts)
                         mPort++;//Just incase we have a configured port after an empty one
                 }
             }
@@ -601,7 +601,7 @@ bool LOS::importMidi(const QString name, bool merge)/*{{{*/
             processTrack(track);
             song->insertTrack(track, -1);
             mPort++;
-            while((&midiPorts[mPort])->device() && mPort < MIDI_PORTS)
+            while((&midiPorts[mPort])->device() && mPort < kMaxMidiPorts)
                 mPort++;
         }
     }

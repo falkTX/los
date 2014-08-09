@@ -100,7 +100,6 @@ GlobalSettingsConfig::GlobalSettingsConfig(QWidget* parent)
     minSliderSelect->setValue(int(config.minSlider));
     minMeterSelect->setValue(config.minMeter);
     freewheelCheckBox->setChecked(config.freewheelMode);
-    denormalCheckBox->setChecked(config.useDenormalBias);
     outputLimiterCheckBox->setChecked(config.useOutputLimiter);
     dummyAudioRate->setValue(config.dummyAudioSampleRate);
 
@@ -213,7 +212,6 @@ void GlobalSettingsConfig::updateSettings()
     minSliderSelect->setValue(int(config.minSlider));
     minMeterSelect->setValue(config.minMeter);
     freewheelCheckBox->setChecked(config.freewheelMode);
-    denormalCheckBox->setChecked(config.useDenormalBias);
     outputLimiterCheckBox->setChecked(config.useOutputLimiter);
     dummyAudioRate->setValue(config.dummyAudioSampleRate);
 
@@ -250,7 +248,6 @@ void GlobalSettingsConfig::apply()
     config.minSlider = minSliderSelect->value();
     config.minMeter = minMeterSelect->value();
     config.freewheelMode = freewheelCheckBox->isChecked();
-    config.useDenormalBias = denormalCheckBox->isChecked();
     config.useOutputLimiter = outputLimiterCheckBox->isChecked();
     config.rtcTicks = rtcResolutions[rtcticks];
     config.userInstrumentsDir = userInstrumentsPath->text();

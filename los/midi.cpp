@@ -650,9 +650,9 @@ void Audio::midiPortsChanged()
 
 void Audio::sendLocalOff()
 {
-    for (int k = 0; k < MIDI_PORTS; ++k)
+    for (int k = 0; k < kMaxMidiPorts; ++k)
     {
-        for (int i = 0; i < MIDI_CHANNELS; ++i)
+        for (int i = 0; i < kMaxMidiChannels; ++i)
             midiPorts[k].sendEvent(MidiPlayEvent(0, k, i, ME_CONTROLLER, CTRL_LOCAL_OFF, 0));
     }
 }
@@ -689,12 +689,12 @@ void Audio::panic()
     }
 #endif
 
-    for (int i = 0; i < MIDI_PORTS; ++i)/*{{{*/
+    for (int i = 0; i < kMaxMidiPorts; ++i)/*{{{*/
     {
         MidiPort* port = &midiPorts[i];
         if (!port || !port->device())
             continue;
-        for (int chan = 0; chan < MIDI_CHANNELS; ++chan)
+        for (int chan = 0; chan < kMaxMidiChannels; ++chan)
         {
             if (debugMsg)
                  printf("send all sound of to midi port %d channel %d\n", i, chan);
@@ -716,8 +716,8 @@ void Audio::initDevices()
     //
     // mark all used ports
     //
-    bool activePorts[MIDI_PORTS];
-    for (int i = 0; i < MIDI_PORTS; ++i)
+    bool activePorts[kMaxMidiPorts];
+    for (int i = 0; i < kMaxMidiPorts; ++i)
         activePorts[i] = false;
 
     MidiTrackList* tracks = song->midis();
@@ -731,7 +731,7 @@ void Audio::initDevices()
     // test for explicit instrument initialization
     //
 
-    for (int i = 0; i < MIDI_PORTS; ++i)
+    for (int i = 0; i < kMaxMidiPorts; ++i)
     {
         if (!activePorts[i])
             continue;
@@ -761,39 +761,39 @@ void Audio::initDevices()
     //
 
     // Standard initialization...
-    for (int i = 0; i < MIDI_PORTS; ++i)
+    for (int i = 0; i < kMaxMidiPorts; ++i)
     {
         if (!activePorts[i])
             continue;
         MidiPort* port = &midiPorts[i];
-        switch (song->mtype())
+        switch (song->midiType())
         {
-            case MT_GS:
-            case MT_UNKNOWN:
+            case MIDI_TYPE_GS:
+            case MIDI_TYPE_NULL:
                 break;
-            case MT_GM:
-            case MT_XG:
+            case MIDI_TYPE_GM:
+            case MIDI_TYPE_XG:
                 port->sendGmOn();
                 break;
         }
     }
-    for (int i = 0; i < MIDI_PORTS; ++i)
+    for (int i = 0; i < kMaxMidiPorts; ++i)
     {
         if (!activePorts[i])
             continue;
         MidiPort* port = &midiPorts[i];
-        switch (song->mtype())
+        switch (song->midiType())
         {
-            case MT_UNKNOWN:
+            case MIDI_TYPE_NULL:
                 break;
-            case MT_GM:
+            case MIDI_TYPE_GM:
                 port->sendGmInitValues();
                 break;
-            case MT_GS:
+            case MIDI_TYPE_GS:
                 port->sendGsOn();
                 port->sendGsInitValues();
                 break;
-            case MT_XG:
+            case MIDI_TYPE_XG:
                 port->sendXgOn();
                 port->sendXgInitValues();
                 break;
@@ -1005,7 +1005,7 @@ void Audio::processMidi()
                 int channelMask = r->channel;
                 if (channelMask == -1 || channelMask == 0)
                     continue;
-                for (int channel = 0; channel < MIDI_CHANNELS; ++channel)
+                for (int channel = 0; channel < kMaxMidiChannels; ++channel)
                 {
                     if (!(channelMask & (1 << channel)))
                         continue;
@@ -1013,9 +1013,9 @@ void Audio::processMidi()
                     if (!dev->sysexFIFOProcessed())
                     {
                         // Set to the sysex fifo at first.
-                        MidiRecFifo& rf = dev->recordEvents(MIDI_CHANNELS);
+                        MidiRecFifo& rf = dev->recordEvents(kMaxMidiChannels);
                         // Get the frozen snapshot of the size.
-                        int count = dev->tmpRecordCount(MIDI_CHANNELS);
+                        int count = dev->tmpRecordCount(kMaxMidiChannels);
 
                         for (int i = 0; i < count; ++i)
                         {

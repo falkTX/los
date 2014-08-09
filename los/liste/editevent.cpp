@@ -847,7 +847,7 @@ void EditCtrlDialog::updatePatch()
     int port = track->outPort();
     int channel = track->outChannel();
     MidiInstrument* instr = midiPorts[port].instrument();
-    patchName->setText(instr->getPatchName(channel, val, song->mtype()));
+    patchName->setText(instr->getPatchName(channel, val, song->midiType()));
 
     int hb = ((val >> 16) & 0xff) + 1;
     if (hb == 0x100)
@@ -883,9 +883,9 @@ void EditCtrlDialog::instrPopup()
     int port = track->outPort();
     MidiInstrument* instr = midiPorts[port].instrument();
 
-    ///instr->populatePatchPopup(pop, channel, song->mtype(), track->type() == Track::DRUM);
+    ///instr->populatePatchPopup(pop, channel, song->midiType(), track->type() == Track::DRUM);
     QMenu* pup = new QMenu(this);
-    instr->populatePatchPopup(pup, channel, song->mtype());
+    instr->populatePatchPopup(pup, channel, song->midiType());
 
     ///if(pop->actions().count() == 0)
     ///  return;

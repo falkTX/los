@@ -9,7 +9,7 @@
 #ifndef __MINSTRUMENT_H__
 #define __MINSTRUMENT_H__
 
-#include "globaldefs.h"
+#include "globaldefs.hpp"
 #include <list>
 #include <vector>
 #include <QHash>
@@ -266,11 +266,11 @@ public:
     {
     }
 
-    virtual void reset(int, MType);
-    virtual QString getPatchName(int, int, MType);
-    virtual Patch* getPatch(int, int, MType);
-    virtual void populatePatchPopup(QMenu*, int, MType);
-    virtual void populatePatchModel(QStandardItemModel*, int, MType);
+    virtual void reset(int, MidiType);
+    virtual QString getPatchName(int, int, MidiType);
+    virtual Patch* getPatch(int, int, MidiType);
+    virtual void populatePatchPopup(QMenu*, int, MidiType);
+    virtual void populatePatchModel(QStandardItemModel*, int, MidiType);
     void read(Xml&);
     void write(int level, Xml&);
 

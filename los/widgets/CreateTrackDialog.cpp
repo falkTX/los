@@ -21,7 +21,7 @@
 
 #include <QMessageBox>
 
-static const int s_allChannelBit = (1 << MIDI_CHANNELS) - 1;
+static const int s_allChannelBit = (1 << kMaxMidiChannels) - 1;
 
 CreateTrackDialog::CreateTrackDialog(int pos, QWidget* parent)
     : QDialog(parent),
@@ -233,7 +233,7 @@ void CreateTrackDialog::populateInputList()/*{{{*/
 
         cmbInput->addItem(tr("My MIDI Inputs"), 1025);
 
-        for (int i = 0; i < MIDI_PORTS; ++i)
+        for (int i = 0; i < kMaxMidiPorts; ++i)
         {
             MidiPort* mp = &midiPorts[i];
             MidiDevice* md = mp->device();
@@ -274,7 +274,7 @@ void CreateTrackDialog::populateOutputList()/*{{{*/
         m_currentMidiOutputList.clear();
         m_currentOutput.clear();
 
-        for (int i = 0; i < MIDI_PORTS; ++i)
+        for (int i = 0; i < kMaxMidiPorts; ++i)
         {
             MidiPort* mp = &midiPorts[i];
             MidiDevice* md = mp->device();

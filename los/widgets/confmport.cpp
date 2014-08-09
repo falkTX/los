@@ -51,7 +51,7 @@ MPConfig::MPConfig(QWidget* parent)
 : QFrame(parent)
 {
     setupUi(this);
-    mdevView->setRowCount(MIDI_PORTS);
+    mdevView->setRowCount(kMaxMidiPorts);
     mdevView->verticalHeader()->hide();
     mdevView->setSelectionMode(QAbstractItemView::SingleSelection);
     mdevView->setShowGrid(false);
@@ -101,7 +101,7 @@ MPConfig::MPConfig(QWidget* parent)
     connect(mdevView, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(mdevViewItemRenamed(QTableWidgetItem*)));
     connect(song, SIGNAL(songChanged(int)), SLOT(songChanged(int)));
 
-    for (int i = MIDI_PORTS - 1; i >= 0; --i)
+    for (int i = kMaxMidiPorts - 1; i >= 0; --i)
     {
         mdevView->blockSignals(true); // otherwise itemChanged() is triggered and bad things happen.
         QString s;
@@ -174,9 +174,9 @@ void MPConfig::mdevViewItemRenamed(QTableWidgetItem* item)
         {
             QString id = item->tableWidget()->item(item->row(), DEVCOL_NO)->text();
             int no = atoi(id.toLatin1().constData()) - 1;
-            if (no < 0 || no >= MIDI_PORTS)
+            if (no < 0 || no >= kMaxMidiPorts)
                 return;
-            midiPorts[no].setDefaultInChannels(((1 << MIDI_CHANNELS) - 1) & string2bitmap(s));
+            midiPorts[no].setDefaultInChannels(((1 << kMaxMidiChannels) - 1) & string2bitmap(s));
             song->update();
         }
             break;
@@ -184,9 +184,9 @@ void MPConfig::mdevViewItemRenamed(QTableWidgetItem* item)
         {
             QString id = item->tableWidget()->item(item->row(), DEVCOL_NO)->text();
             int no = atoi(id.toLatin1().constData()) - 1;
-            if (no < 0 || no >= MIDI_PORTS)
+            if (no < 0 || no >= kMaxMidiPorts)
                 return;
-            midiPorts[no].setDefaultOutChannels(((1 << MIDI_CHANNELS) - 1) & string2bitmap(s));
+            midiPorts[no].setDefaultOutChannels(((1 << kMaxMidiChannels) - 1) & string2bitmap(s));
             song->update();
         }
             break;
@@ -194,7 +194,7 @@ void MPConfig::mdevViewItemRenamed(QTableWidgetItem* item)
         {
             QString id = item->tableWidget()->item(item->row(), DEVCOL_NO)->text();
             int no = atoi(id.toLatin1().constData()) - 1;
-            if (no < 0 || no >= MIDI_PORTS)
+            if (no < 0 || no >= kMaxMidiPorts)
                 return;
 
             MidiPort* port = &midiPorts[no];
@@ -236,7 +236,7 @@ void MPConfig::rbClicked(QTableWidgetItem* item)
         return;
     QString id = item->tableWidget()->item(item->row(), DEVCOL_NO)->text();
     int no = atoi(id.toLatin1().constData()) - 1;
-    if (no < 0 || no >= MIDI_PORTS)
+    if (no < 0 || no >= kMaxMidiPorts)
         return;
 
     int n;
@@ -804,12 +804,12 @@ void MPConfig::songChanged(int flags)
     {
         QString id = sitem->tableWidget()->item(sitem->row(), DEVCOL_NO)->text();
         no = atoi(id.toLatin1().constData()) - 1;
-        if (no < 0 || no >= MIDI_PORTS)
+        if (no < 0 || no >= kMaxMidiPorts)
             no = -1;
     }
 
     sitem = 0;
-    for (int i = MIDI_PORTS - 1; i >= 0; --i)
+    for (int i = kMaxMidiPorts - 1; i >= 0; --i)
     {
         mdevView->blockSignals(true); // otherwise itemChanged() is triggered and bad things happen.
         MidiPort* port = &midiPorts[i];

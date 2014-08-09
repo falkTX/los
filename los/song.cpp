@@ -258,7 +258,7 @@ MidiTrack* Song::addTrack(bool doUndo)/*{{{*/
         MidiTrack* mt = (MidiTrack*) track;
         int c, cbi, ch;
         bool defOutFound = false; /// TODO: Remove this when multiple out routes supported.
-        for (int i = 0; i < MIDI_PORTS; ++i)
+        for (int i = 0; i < kMaxMidiPorts; ++i)
         {
             MidiPort* mp = &midiPorts[i];
 
@@ -274,7 +274,7 @@ MidiTrack* Song::addTrack(bool doUndo)/*{{{*/
                 c = mp->defaultOutChannels();
                 if (c)
                 {
-                    for (ch = 0; ch < MIDI_CHANNELS; ++ch)
+                    for (ch = 0; ch < kMaxMidiChannels; ++ch)
                     {
                         cbi = 1 << ch;
                         if (c & cbi)
@@ -323,7 +323,7 @@ MidiTrack* Song::addTrackByName(QString name, int pos, bool doUndo)/*{{{*/
         MidiTrack* mt = (MidiTrack*) track;
         int c, cbi, ch;
         bool defOutFound = false; /// TODO: Remove this when multiple out routes supported.
-        for (int i = 0; i < MIDI_PORTS; ++i)
+        for (int i = 0; i < kMaxMidiPorts; ++i)
         {
             MidiPort* mp = &midiPorts[i];
 
@@ -345,7 +345,7 @@ MidiTrack* Song::addTrackByName(QString name, int pos, bool doUndo)/*{{{*/
                     audio->msgAddRoute(Route(track, c), Route(i, c));
                     updateFlags |= SC_ROUTE;
 #else
-                    for (ch = 0; ch < MIDI_CHANNELS; ++ch)
+                    for (ch = 0; ch < kMaxMidiChannels; ++ch)
                     {
                         cbi = 1 << ch;
                         if (c & cbi)
@@ -891,7 +891,7 @@ void Song::setRecord(bool f, bool autoRecEnable)
 #if 0
             // check for midi devices suitable for recording
             bool portFound = false;
-            for (int i = 0; i < MIDI_PORTS; ++i)
+            for (int i = 0; i < kMaxMidiPorts; ++i)
             {
                 MidiDevice* dev = midiPorts[i].device();
                 if (dev && (dev->rwFlags() & 0x2))
@@ -1379,7 +1379,7 @@ PartList* Song::getSelectedMidiParts() const
     return parts;
 }
 
-void Song::setMType(MType t)
+void Song::setMidiType(MidiType t)
 {
     //   printf("set MType %d\n", t);
     _mtype = t;
@@ -1876,7 +1876,7 @@ void Song::clear(bool signal)
     _midis.clearDelete();
 
     //Clear all midi port devices.
-    for (int i = 0; i < MIDI_PORTS; ++i)
+    for (int i = 0; i < kMaxMidiPorts; ++i)
     {
         //Since midi ports are not deleted, clear all midi port in/out routes. They point to non-existant tracks now.
         midiPorts[i].inRoutes()->clear();
@@ -1961,7 +1961,7 @@ void Song::clear(bool signal)
     clearMidiInputTransforms();
 
     // Clear all midi port controller values.
-    for (int i = 0; i < MIDI_PORTS; ++i)
+    for (int i = 0; i < kMaxMidiPorts; ++i)
         // Don't remove the controllers, just the values.
         midiPorts[i].controller()->clearDelete(false);
 
@@ -1973,7 +1973,7 @@ void Song::clear(bool signal)
     recordFlag = false;
     soloFlag = false;
     // seq
-    _mtype = MT_UNKNOWN;
+    _mtype = MIDI_TYPE_NULL;
     _recMode = REC_OVERDUP;
     _cycleMode = CYCLE_NORMAL;
     _quantize = false;
@@ -2034,7 +2034,7 @@ void Song::cleanupForQuit()
     if (debugMsg)
         printf("deleting midiport controllers\n");
     // Clear all midi port controllers and values.
-    for (int i = 0; i < MIDI_PORTS; ++i)
+    for (int i = 0; i < kMaxMidiPorts; ++i)
     {
         //Clear out the patch sequences
         midiPorts[i].patchSequences()->clear();

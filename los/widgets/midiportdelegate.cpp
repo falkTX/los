@@ -28,55 +28,55 @@ MidiPortDelegate::MidiPortDelegate(QObject* parent) : QItemDelegate(parent)
 
 QWidget *MidiPortDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &/* option */, const QModelIndex & index ) const
 {
-	if(index.isValid())
-	{
-		const QAbstractItemModel* mod = index.model();
-		if(mod)
-		{
-			int port = mod->data(index, MidiPortRole).toInt();
-			QComboBox *combo = new QComboBox(parent);
-			for (int i = 0; i < MIDI_PORTS; ++i)
-			{
-				QString name;
-				name.sprintf("%d:%s", i + 1, midiPorts[i].portname().toLatin1().constData());
-				combo->insertItem(i, name);
-				if (i == port)
-					combo->setCurrentIndex(i);
-			}
-			return combo;
-		}
-	}
+    if(index.isValid())
+    {
+        const QAbstractItemModel* mod = index.model();
+        if(mod)
+        {
+            int port = mod->data(index, MidiPortRole).toInt();
+            QComboBox *combo = new QComboBox(parent);
+            for (int i = 0; i < kMaxMidiPorts; ++i)
+            {
+                QString name;
+                name.sprintf("%d:%s", i + 1, midiPorts[i].portname().toLatin1().constData());
+                combo->insertItem(i, name);
+                if (i == port)
+                    combo->setCurrentIndex(i);
+            }
+            return combo;
+        }
+    }
 
-	return 0;
+    return 0;
 }
 
 void MidiPortDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
 {
-	QComboBox *combo = static_cast<QComboBox*>(editor);
-	const QAbstractItemModel* mod = index.model();
-	if(combo && mod)
-	{
-		int prog = mod->data(index, MidiPortRole).toInt();
-		combo->setCurrentIndex(prog);
-	}
+    QComboBox *combo = static_cast<QComboBox*>(editor);
+    const QAbstractItemModel* mod = index.model();
+    if(combo && mod)
+    {
+        int prog = mod->data(index, MidiPortRole).toInt();
+        combo->setCurrentIndex(prog);
+    }
 }
 
 void MidiPortDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
 {
-	QComboBox *combo = static_cast<QComboBox*>(editor);
-	if(combo)
-	{
-		int i = combo->currentIndex();
-		QString name;
-		name.sprintf("%d:%s", i + 1, midiPorts[i].portname().toLatin1().constData());
+    QComboBox *combo = static_cast<QComboBox*>(editor);
+    if(combo)
+    {
+        int i = combo->currentIndex();
+        QString name;
+        name.sprintf("%d:%s", i + 1, midiPorts[i].portname().toLatin1().constData());
 
-		model->setData(index, name, Qt::DisplayRole);
-		model->setData(index, i, MidiPortRole);
-	}
+        model->setData(index, name, Qt::DisplayRole);
+        model->setData(index, i, MidiPortRole);
+    }
 }
 
 void MidiPortDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &/* index */) const
 {
-	editor->setGeometry(option.rect);
+    editor->setGeometry(option.rect);
 }
 

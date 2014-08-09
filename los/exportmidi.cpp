@@ -76,13 +76,13 @@ static void addController(MPEventList* l, int tick, int port, int channel, int a
         int lb = (b >> 8) & 0xff;
         int pr = b & 0x7f;
         int tickoffset = 0;
-        switch (song->mtype())
+        switch (song->midiType())
         {
-            case MT_GM: // no HBANK/LBANK
+            case MIDI_TYPE_GM: // no HBANK/LBANK
                 break;
-            case MT_GS:
-            case MT_XG:
-            case MT_UNKNOWN:
+            case MIDI_TYPE_GS:
+            case MIDI_TYPE_XG:
+            case MIDI_TYPE_NULL:
                 if (hb != 0xff)
                 {
                     l->add(MidiPlayEvent(tick, port, channel, ME_CONTROLLER, CTRL_HBANK, hb));
@@ -206,20 +206,20 @@ void LOS::exportMidi()
             //    Write Songtype SYSEX: GM/GS/XG
             //
 
-            switch (song->mtype())
+            switch (song->midiType())
             {
-                case MT_GM:
+                case MIDI_TYPE_GM:
                     l->add(MidiPlayEvent(0, port, ME_SYSEX, gmOnMsg, gmOnMsgLen));
                     break;
-                case MT_GS:
+                case MIDI_TYPE_GS:
                     l->add(MidiPlayEvent(0, port, ME_SYSEX, gmOnMsg, gmOnMsgLen));
                     l->add(MidiPlayEvent(250, port, ME_SYSEX, gsOnMsg, gsOnMsgLen));
                     break;
-                case MT_XG:
+                case MIDI_TYPE_XG:
                     l->add(MidiPlayEvent(0, port, ME_SYSEX, gmOnMsg, gmOnMsgLen));
                     l->add(MidiPlayEvent(250, port, ME_SYSEX, xgOnMsg, xgOnMsgLen));
                     break;
-                case MT_UNKNOWN:
+                case MIDI_TYPE_NULL:
                     break;
             }
 
@@ -401,7 +401,7 @@ void LOS::exportMidi()
         }
     }
     mf.setDivision(config.midiDivision);
-    mf.setMType(song->mtype());
+    mf.setMidiType(song->midiType());
     mf.setTrackList(mtl, ntracks);
     mf.write();
 }

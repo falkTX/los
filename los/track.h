@@ -21,7 +21,7 @@
 #include "node.h"
 #include "route.h"
 #include "ctrl.h"
-#include "globaldefs.h"
+#include "globaldefs.hpp"
 
 class Xml;
 class MPEventList;
@@ -104,8 +104,8 @@ protected:
 
     int _activity;
     int _lastActivity;
-    double _meter[MAX_CHANNELS];
-    double _peak[MAX_CHANNELS];
+    double _meter[kMaxAudioChannels];
+    double _peak[kMaxAudioChannels];
 
     int _y;
     int _height; // visual height in Composer
@@ -436,8 +436,6 @@ public:
     {
         return false;
     }
-    virtual AutomationType automationType() const = 0;
-    virtual void setAutomationType(AutomationType t) = 0;
 };
 
 //---------------------------------------------------------
@@ -462,8 +460,6 @@ public:
     virtual ~MidiTrack();
 
     void init();
-    virtual AutomationType automationType() const;
-    virtual void setAutomationType(AutomationType);
 
     bool transpose;
     int transposition;

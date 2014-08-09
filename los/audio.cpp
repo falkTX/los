@@ -407,10 +407,10 @@ void Audio::process(unsigned frames)
                 _loopFrame = lpos - n;
 
                 // clear sustain
-                for (int i = 0; i < MIDI_PORTS; ++i)
+                for (int i = 0; i < kMaxMidiPorts; ++i)
                 {
                     MidiPort* mp = &midiPorts[i];
-                    for (int ch = 0; ch < MIDI_CHANNELS; ++ch)
+                    for (int ch = 0; ch < kMaxMidiChannels; ++ch)
                     {
                         if (mp->hwCtrlState(ch, CTRL_SUSTAIN) == 127)
                         {
@@ -546,10 +546,10 @@ void Audio::processMsg(AudioMsg* msg)
 #endif
             break;
         case SEQM_RESET_DEVICES:
-            for (int i = 0; i < MIDI_PORTS; ++i)
+            for (int i = 0; i < kMaxMidiPorts; ++i)
             {
                 if(midiPorts[i].device())
-                    midiPorts[i].instrument()->reset(i, song->mtype());
+                    midiPorts[i].instrument()->reset(i, song->midiType());
             }
             break;
         case SEQM_INIT_DEVICES:
@@ -683,10 +683,10 @@ void Audio::startRolling()
     write(sigFd, "1", 1); // Play
 
     // reenable sustain
-    for (int i = 0; i < MIDI_PORTS; ++i)
+    for (int i = 0; i < kMaxMidiPorts; ++i)
     {
         MidiPort* mp = &midiPorts[i];
-        for (int ch = 0; ch < MIDI_CHANNELS; ++ch)
+        for (int ch = 0; ch < kMaxMidiChannels; ++ch)
         {
             if (mp->hwCtrlState(ch, CTRL_SUSTAIN) == 127)
             {
@@ -719,10 +719,10 @@ void Audio::stopRolling()
 
 
     // clear sustain
-    for (int i = 0; i < MIDI_PORTS; ++i)
+    for (int i = 0; i < kMaxMidiPorts; ++i)
     {
         MidiPort* mp = &midiPorts[i];
-        for (int ch = 0; ch < MIDI_CHANNELS; ++ch)
+        for (int ch = 0; ch < kMaxMidiChannels; ++ch)
         {
             if(!mp->device())
                 continue;
