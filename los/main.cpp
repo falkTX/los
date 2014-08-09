@@ -340,7 +340,11 @@ int main(int argc, char* argv[])
     }
 
     static QTranslator translator(0);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
     QString locale(qApp->inputMethod()->locale().name());
+#else
+    QString locale(QApplication::keyboardInputLocale().name());
+#endif
     if (locale_override.length())
         locale = locale_override;
     if (locale != "C")

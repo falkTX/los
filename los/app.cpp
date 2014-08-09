@@ -1169,8 +1169,15 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
     loadInitialProject();
 
     QSize defaultScreenSize = tconfig().get_property("Interface", "size", QSize(0, 0)).toSize();
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
     int dw = qApp->primaryScreen()->availableSize().width();
     int dh = qApp->primaryScreen()->availableSize().height();
+#else
+    int dw = qApp->desktop()->width();
+    int dh = qApp->desktop()->height();
+#endif
+    
     if(defaultScreenSize.height())
     {
         if(defaultScreenSize.height() <= dh && defaultScreenSize.width() <= dw)

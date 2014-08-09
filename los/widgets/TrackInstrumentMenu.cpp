@@ -68,7 +68,11 @@ QWidget* TrackInstrumentMenu::createWidget(QWidget* parent)/*{{{*/
     layout->addWidget(list);
     w->setLayout(layout);
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
     int desktopHeight = qApp->primaryScreen()->availableSize().height();
+#else
+    int desktopHeight = qApp->desktop()->height();
+#endif
     int lstr = 0;
     QString longest;
 
