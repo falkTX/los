@@ -116,8 +116,8 @@ signed int AlsaTimer::initTimer()
         return -1;
     }
 
-    if(debugMsg)
-        fprintf(stderr, "AlsaTimer::initTimer(): best available ALSA timer: %s\n", snd_timer_info_get_name(info));
+    //if(debugMsg)
+    fprintf(stderr, "AlsaTimer::initTimer(): best available ALSA timer: %s\n", snd_timer_info_get_name(info));
 
     snd_timer_params_set_auto_start(params, 1);
     snd_timer_params_set_ticks(params, 1);
