@@ -302,7 +302,7 @@ namespace Awl {
                     else
                     {
                         int nf = 23; // 24 frames sec
-                        switch (AL::mtcType)
+                        switch (AL::kMtcType)
                         {
                                 //case 0:     // 24 frames sec
                                 //      nf = 23;
@@ -418,7 +418,7 @@ namespace Awl {
                 rv = state;
 
             int nf = 23; // 24 frames sec
-            switch (AL::mtcType)
+            switch (AL::kMtcType)
             {
                     //case 0:     // 24 frames sec
                     //      nf = 23;
@@ -564,7 +564,7 @@ namespace Awl {
                 case 2:
                 {
                     int nf = 23; // 24 frames sec
-                    switch (AL::mtcType)
+                    switch (AL::kMtcType)
                     {
                             //case 0:     // 24 frames sec
                             //      nf = 23;

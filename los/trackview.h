@@ -14,7 +14,6 @@
 #include <vector>
 #include <algorithm>
 
-#include "node.h"
 #include "globaldefs.hpp"
 #include <QHash>
 #include <QMap>

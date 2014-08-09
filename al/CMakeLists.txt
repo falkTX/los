@@ -24,19 +24,8 @@
 ##
 
 file(GLOB al_source_files
-    al.cpp
-    dsp.cpp
     sig.cpp
-    xml.cpp
 )
-
-if (USE_SSE)
-    file(GLOB al_source_files
-        ${al_source_files}
-        dspSSE.cpp
-        dspXMM.cpp
-    )
-endif (USE_SSE)
 
 ##
 ## Define target
@@ -49,19 +38,6 @@ add_library(al STATIC
 ##
 ## Compilation flags and target name
 ##
-
-set_source_files_properties(
-    al.cpp
-    dsp.cpp
-    dspXMM.cpp
-    sig.cpp
-    xml.cpp
-)
-
-set_source_files_properties(
-    dspSSE.cpp
-    PROPERTIES COMPILE_FLAGS "-x assembler"
-)
 
 set_target_properties(al
     PROPERTIES OUTPUT_NAME los_al

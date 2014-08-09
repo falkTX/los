@@ -95,7 +95,7 @@ bool TimeHeader::setString(unsigned v)
     int min = (int)((time/60000) % 60);
     int hours = (int)((time/3600000) % 24);*/
     double rest = time - (min * 60 + sec);
-    switch (AL::mtcType)
+    switch (AL::kMtcType)
     {
         case 0: // 24 frames sec
             rest *= 24;

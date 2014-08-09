@@ -116,7 +116,7 @@ void MarkerItem::setTick(unsigned v)
     int min = (int(time) % 3600) / 60;
     int sec = int(time) % 60;
     double rest = time - (hour * 3600 + min * 60 + sec);
-    switch (AL::mtcType)
+    switch (AL::kMtcType)
     {
         case 0: // 24 frames sec
             rest *= 24;

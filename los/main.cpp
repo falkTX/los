@@ -18,7 +18,6 @@
 #include <sys/mman.h>
 #include <alsa/asoundlib.h>
 
-#include "al/dsp.h"
 #include "app.h"
 #include "audio.h"
 #include "driver/audiodev.h"
@@ -280,8 +279,6 @@ int main(int argc, char* argv[])
                 return -1;
         }
     }
-
-    AL::initDsp();
 
     if (debugMode)
     {

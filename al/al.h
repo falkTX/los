@@ -21,12 +21,15 @@
 #ifndef __AL_H__
 #define __AL_H__
 
+#include "defines.h"
+
 namespace AL
 {
-    extern bool debugMsg;
-    //extern int sampleRate;
-    extern int mtcType;
-    //extern int division;
-}
+
+static const bool kDebugMsg = true;
+static const int  kMtcType  = 0;
+static const int  kDivision = 384;
+
+} // namespace AL
 
 #endif

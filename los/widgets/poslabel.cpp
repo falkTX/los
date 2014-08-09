@@ -69,7 +69,7 @@ void PosLabel::updateValue()
         int min = int(time) / 60;
         int sec = int(time) % 60;
         double rest = time - (min * 60 + sec);
-        switch (AL::mtcType)
+        switch (AL::kMtcType)
         {
             case 0: // 24 frames sec
                 rest *= 24;

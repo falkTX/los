@@ -19,7 +19,6 @@
 #include "midiseq.h"
 #include "track.h"
 #include "song.h"
-#include "node.h"
 #include "audio.h"
 #include "app.h"
 #include "Composer.h"

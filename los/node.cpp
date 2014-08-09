@@ -10,7 +10,6 @@
 #include <assert.h>
 #include <stdlib.h>
 
-#include "node.h"
 #include "globals.h"
 #include "gconfig.h"
 #include "song.h"
@@ -18,16 +17,10 @@
 #include "audiodev.h"
 #include "audio.h"
 #include "utils.h"      //debug
-#include "al/dsp.h"
 #include "midictrl.h"
 #include "mididev.h"
 #include "midiport.h"
 #include "midimonitor.h"
-
-// Uncomment this (and make sure to set Jack buffer size high like 2048)
-//  to see process flow messages.
-//#define NODE_DEBUG
-//#define FIFO_DEBUG
 
 //---------------------------------------------------------
 //   isMute
@@ -223,196 +216,4 @@ void Track::resetAllMeter()
     MidiTrackList* tl = song->tracks();
     for (iMidiTrack i = tl->begin(); i != tl->end(); ++i)
         (*i)->resetMeter();
-}
-
-//---------------------------------------------------------
-//   Fifo
-//---------------------------------------------------------
-
-Fifo::Fifo()
-{
-    los_atomic_init(&count);
-    //nbuffer = FIFO_BUFFER;
-    nbuffer = fifoLength;
-    buffer = new FifoBuffer*[nbuffer];
-    for (int i = 0; i < nbuffer; ++i)
-        buffer[i] = new FifoBuffer;
-    clear();
-}
-
-Fifo::~Fifo()
-{
-    for (int i = 0; i < nbuffer; ++i)
-    {
-        // p3.3.45
-        if (buffer[i]->buffer)
-        {
-            //printf("Fifo::~Fifo freeing buffer\n");
-            free(buffer[i]->buffer);
-        }
-
-        delete buffer[i];
-    }
-
-    delete[] buffer;
-    los_atomic_destroy(&count);
-}
-
-//---------------------------------------------------------
-//   put
-//    return true if fifo full
-//---------------------------------------------------------
-
-bool Fifo::put(int segs, unsigned long samples, float** src, unsigned pos)
-{
-#ifdef FIFO_DEBUG
-    printf("FIFO::put segs:%d samples:%lu pos:%u\n", segs, samples, pos);
-#endif
-
-    if (los_atomic_read(&count) == nbuffer)
-    {
-        if(debugMsg)
-            printf("FIFO %p overrun... %d\n", this, count.counter);
-        return true;
-    }
-    FifoBuffer* b = buffer[widx];
-    int n = segs * samples;
-    if (b->maxSize < n)
-    {
-        if (b->buffer)
-        {
-            //delete[] b->buffer;
-            free(b->buffer);
-            b->buffer = 0;
-        }
-        posix_memalign((void**) &(b->buffer), 16, sizeof (float) * n);
-        if (!b->buffer)
-        {
-            printf("Fifo::put could not allocate buffer segs:%d samples:%lu pos:%u\n", segs, samples, pos);
-            return true;
-        }
-
-        b->maxSize = n;
-    }
-    // p3.3.45
-    if (!b->buffer)
-    {
-        printf("Fifo::put no buffer! segs:%d samples:%lu pos:%u\n", segs, samples, pos);
-        return true;
-    }
-
-    b->size = samples;
-    b->segs = segs;
-    b->pos = pos;
-    for (int i = 0; i < segs; ++i)
-        //memcpy(b->buffer + i * samples, src[i], samples * sizeof(float));
-        AL::dsp->cpy(b->buffer + i * samples, src[i], samples);
-    add();
-    return false;
-}
-
-//---------------------------------------------------------
-//   get
-//    return true if fifo empty
-//---------------------------------------------------------
-
-bool Fifo::get(int segs, unsigned long samples, float** dst, unsigned* pos)
-{
-#ifdef FIFO_DEBUG
-    printf("FIFO::get segs:%d samples:%lu\n", segs, samples);
-#endif
-
-    if (los_atomic_read(&count) == 0)
-    {
-        if(debugMsg)
-            printf("FIFO %p underrun... %d\n", this, count.counter);
-        return true;
-    }
-    FifoBuffer* b = buffer[ridx];
-    if (!b->buffer)
-    {
-        if(debugMsg)
-            printf("Fifo::get no buffer! segs:%d samples:%lu b->pos:%u\n", segs, samples, b->pos);
-        return true;
-    }
-
-    if (pos)
-        *pos = b->pos;
-
-    for (int i = 0; i < segs; ++i)
-        dst[i] = b->buffer + samples * (i % b->segs);
-    remove();
-    return false;
-}
-
-int Fifo::getCount()
-{
-    return los_atomic_read(&count);
-}
-//---------------------------------------------------------
-//   remove
-//---------------------------------------------------------
-
-void Fifo::remove()
-{
-    ridx = (ridx + 1) % nbuffer;
-    los_atomic_dec(&count);
-}
-
-//---------------------------------------------------------
-//   getWriteBuffer
-//---------------------------------------------------------
-
-bool Fifo::getWriteBuffer(int segs, unsigned long samples, float** buf, unsigned pos)
-{
-#ifdef FIFO_DEBUG
-    printf("Fifo::getWriteBuffer segs:%d samples:%lu pos:%u\n", segs, samples, pos);
-#endif
-
-    if (los_atomic_read(&count) == nbuffer)
-        return true;
-    FifoBuffer* b = buffer[widx];
-    int n = segs * samples;
-    if (b->maxSize < n)
-    {
-        if (b->buffer)
-        {
-            free(b->buffer);
-            b->buffer = 0;
-        }
-
-        posix_memalign((void**) &(b->buffer), 16, sizeof (float) * n);
-        if (!b->buffer)
-        {
-            printf("Fifo::getWriteBuffer could not allocate buffer segs:%d samples:%lu pos:%u\n", segs, samples, pos);
-            return true;
-        }
-
-        b->maxSize = n;
-    }
-
-    // p3.3.45
-    if (!b->buffer)
-    {
-        printf("Fifo::getWriteBuffer no buffer! segs:%d samples:%lu pos:%u\n", segs, samples, pos);
-        return true;
-    }
-
-    for (int i = 0; i < segs; ++i)
-        buf[i] = b->buffer + i * samples;
-
-    b->size = samples;
-    b->segs = segs;
-    b->pos = pos;
-    return false;
-}
-
-//---------------------------------------------------------
-//   add
-//---------------------------------------------------------
-
-void Fifo::add()
-{
-    widx = (widx + 1) % nbuffer;
-    los_atomic_inc(&count);
 }

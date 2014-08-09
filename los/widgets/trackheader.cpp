@@ -27,7 +27,6 @@
 #include "midiseq.h"
 #include "midictrl.h"
 #include "comment.h"
-#include "node.h"
 #include "instruments/minstrument.h"
 #include "Composer.h"
 #include "event.h"
@@ -249,7 +248,6 @@ void TrackHeader::setSelected(bool sel, bool force)/*{{{*/
     {
         if(m_selected)
         {
-            bool usePixmap = false;
             QColor sliderBgColor = g_trackColorListSelected.value(0);/*{{{*/
             switch(vuColorStrip)
             {
@@ -263,7 +261,6 @@ void TrackHeader::setSelected(bool sel, bool force)/*{{{*/
                     //myPen.setBrush(m_scaledPixmap_w);
                     //myPen.setBrush(m_trackColor);
                     sliderBgColor = g_trackColorListSelected.value(0);
-                    usePixmap = true;
                 break;
                 case 2:
                     sliderBgColor = QColor(0,166,172);

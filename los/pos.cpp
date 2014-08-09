@@ -72,7 +72,7 @@ Pos::Pos(int min, int sec, int frame, int subframe)
     double time = min * 60.0 + sec;
 
     double f = frame + subframe / 100.0;
-    switch (AL::mtcType)
+    switch (AL::kMtcType)
     {
         case 0: // 24 frames sec
             time += f * 1.0 / 24.0;
@@ -263,7 +263,7 @@ void Pos::msf(int* min, int* sec, int* fr, int* subFrame) const
     *min = int(time) / 60;
     *sec = int(time) % 60;
     double rest = time - (*min * 60 + *sec);
-    switch (AL::mtcType)
+    switch (AL::kMtcType)
     {
         case 0: // 24 frames sec
             rest *= 24;

@@ -10,7 +10,6 @@
 
 #include "song.h"
 #include "route.h"
-#include "node.h"
 #include "audio.h"
 #include "track.h"
 #include "driver/audiodev.h"
@@ -22,8 +21,7 @@
 
 //#define ROUTE_DEBUG
 
-//#define ROUTE_MIDIPORT_NAME_PREFIX       "LOS MidiPort "
-const QString ROUTE_MIDIPORT_NAME_PREFIX = "LOS MidiPort ";
+static const QString ROUTE_MIDIPORT_NAME_PREFIX = "LOS MidiPort ";
 
 //---------------------------------------------------------
 //   Route

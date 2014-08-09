@@ -172,7 +172,7 @@ void TempoCanvas::pdraw(QPainter& p, const QRect& rect)/*{{{*/
         {
             QColor green = QColor(config.partWaveColors[1]);
             green.setAlpha(140);
-            QColor yellow = QColor(41, 130, 140);
+            //QColor yellow = QColor(41, 130, 140);
             QColor red = QColor(config.partColors[1]);
             red.setAlpha(140);
             QLinearGradient vuGrad(QPointF(0, 0), QPointF(0, height()));

@@ -27,7 +27,6 @@
 
 #include "app.h"
 #include "master/lmaster.h"
-#include "al/dsp.h"
 #include "Composer/Composer.h"
 #include "audio.h"
 #include "driver/audiodev.h"
@@ -2154,10 +2153,6 @@ void LOS::closeEvent(QCloseEvent* event)
         d.remove(filename);
         d.remove(f.completeBaseName() + ".wca");
     }
-
-    if (debugMsg)
-        printf("LOS: Exiting Dsp\n");
-    AL::exitDsp();
 
     // p3.3.47
     delete midiMonitor;

@@ -521,7 +521,6 @@ _redisplay:
 
                 int aix = 0x10000000;
                 int jix = 0x20000000;
-                int six = 0x30000000;
                 for (iMidiDevice i = midiDevices.begin(); i != midiDevices.end(); ++i)
                 {
                     if ((*i)->deviceType() == MidiDevice::ALSA_MIDI)

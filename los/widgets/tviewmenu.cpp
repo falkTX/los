@@ -18,7 +18,6 @@
 #include "globals.h"
 #include "icons.h"
 #include "song.h"
-#include "node.h"
 #include "audio.h"
 #include "app.h"
 #include "gconfig.h"
