@@ -7,9 +7,9 @@
 //=========================================================
 
 #include <stdio.h>
-#include <assert.h>
 #include "sig.h"
 #include "gconfig.h"
+#include "globals.h"
 #include "xml.h"
 
 SigList sigmap;
@@ -33,14 +33,20 @@ void SigList::add(unsigned tick, int z, int n)
 {
     if (z == 0 || n == 0)
     {
-        printf("SigList::add illegal signature %d/%d\n", z, n);
+        if (debugMsg)
+            printf("SigList::add illegal signature %d/%d\n", z, n);
 
         // Added p3.3.43
         return;
     }
     tick = raster1(tick, 0);
     iSigEvent e = upper_bound(tick);
-    assert(e != end());
+    if (e == end())
+    {
+        if(debugMsg)
+            printf("SigList::add Signal not found tick:%d\n", tick);
+        return;
+    }
 
     if (tick == e->second->tick)
     {
@@ -67,14 +73,16 @@ void SigList::del(unsigned tick)
     iSigEvent e = find(tick);
     if (e == end())
     {
-        printf("SigList::del(%d): not found\n", tick);
+        if(debugMsg)
+            printf("SigList::del(%d): not found\n", tick);
         return;
     }
     iSigEvent ne = e;
     ++ne;
     if (ne == end())
     {
-        printf("SigList::del() HALLO\n");
+        if(debugMsg)
+            printf("SigList::del() next event not found!\n");
         return;
     }
     ne->second->sig = e->second->sig;
@@ -130,8 +138,8 @@ void SigList::dump() const
     for (ciSigEvent i = begin(); i != end(); ++i)
     {
         printf("%6d %06d Bar %3d %02d/%d\n",
-                i->first, i->second->tick,
-                i->second->bar, i->second->sig.z, i->second->sig.n);
+               i->first, i->second->tick,
+               i->second->bar, i->second->sig.z, i->second->sig.n);
     }
 }
 
@@ -157,8 +165,8 @@ int SigList::ticksMeasure(unsigned tick) const
     ciSigEvent i = upper_bound(tick);
     if (i == end())
     {
-        printf("ticksMeasure: not found %d\n", tick);
-        // abort();
+        if(debugMsg)
+            printf("ticksMeasure: not found %d\n", tick);
         return 0;
     }
     return ticksMeasure(i->second->sig.z, i->second->sig.n);
@@ -171,7 +179,12 @@ int SigList::ticksMeasure(unsigned tick) const
 int SigList::ticksBeat(unsigned tick) const
 {
     ciSigEvent i = upper_bound(tick);
-    assert(i != end());
+    if (i == end())
+    {
+        if(debugMsg)
+            printf("SigList::ticksBeat event not found! tick:%d\n", tick);
+        return 0;
+    }
     return ticks_beat(i->second->sig.n);
 }
 
@@ -180,25 +193,25 @@ int SigList::ticks_beat(int n) const
     int m = config.division;
     switch (n)
     {
-        case 1: m <<= 2;
-            break; // 1536
-        case 2: m <<= 1;
-            break; // 768
-        case 3: m += m >> 1;
-            break; // 384+192
-        case 4: break; // 384
-        case 8: m >>= 1;
-            break; // 192
-        case 16: m >>= 2;
-            break; // 96
-        case 32: m >>= 3;
-            break; // 48
-        case 64: m >>= 4;
-            break; // 24
-        case 128: m >>= 5;
-            break; // 12
-        default: assert(false);
-            break;
+    case 1: m <<= 2;
+        break; // 1536
+    case 2: m <<= 1;
+        break; // 768
+    case 3: m += m >> 1;
+        break; // 384+192
+    case 4: break; // 384
+    case 8: m >>= 1;
+        break; // 192
+    case 16: m >>= 2;
+        break; // 96
+    case 32: m >>= 3;
+        break; // 48
+    case 64: m >>= 4;
+        break; // 24
+    case 128: m >>= 5;
+        break; // 12
+    default:
+        break;
     }
     return m;
 }
@@ -212,8 +225,8 @@ void SigList::timesig(unsigned tick, int& z, int& n) const
     ciSigEvent i = upper_bound(tick);
     if (i == end())
     {
-        printf("timesig(%d): not found\n", tick);
-        // abort();
+        if (debugMsg)
+            printf("timesig(%d): not found\n", tick);
         z = 4;
         n = 4;
     }
@@ -233,8 +246,8 @@ void SigList::tickValues(unsigned t, int* bar, int* beat, unsigned* tick) const
     ciSigEvent e = upper_bound(t);
     if (e == end())
     {
-        fprintf(stderr, "tickValues(0x%x) not found(%zd)\n", t, size());
-        // abort();
+        if (debugMsg)
+            fprintf(stderr, "tickValues(0x%x) not found(%zd)\n", t, size());
         *bar = 0;
         *beat = 0;
         *tick = 0;
@@ -286,8 +299,8 @@ unsigned SigList::raster(unsigned t, int raster) const
     ciSigEvent e = upper_bound(t);
     if (e == end())
     {
-        printf("SigList::raster(%x,)\n", t);
-        // abort();
+        if (debugMsg)
+            printf("SigList::raster(%x,)\n", t);
         return t;
     }
     int delta = t - e->second->tick;
@@ -309,7 +322,12 @@ unsigned SigList::raster1(unsigned t, int raster) const
     if (raster == 1)
         return t;
     ciSigEvent e = upper_bound(t);
-    assert(e != end());
+    if (e == end())
+    {
+        if (debugMsg)
+            printf("SigList::raster1 event not found tick:%d\n", t);
+        return t;
+    }
 
     int delta = t - e->second->tick;
     int ticksM = ticks_beat(e->second->sig.n) * e->second->sig.z;
@@ -330,7 +348,12 @@ unsigned SigList::raster2(unsigned t, int raster) const
     if (raster == 1)
         return t;
     ciSigEvent e = upper_bound(t);
-    assert(e != end());
+    if (e == end())
+    {
+        if (debugMsg)
+            printf("SigList::raster2 event not found tick:%d\n", t);
+        return t;
+    }
 
     int delta = t - e->second->tick;
     int ticksM = ticks_beat(e->second->sig.n) * e->second->sig.z;
@@ -350,7 +373,12 @@ int SigList::rasterStep(unsigned t, int raster) const
     if (raster == 0)
     {
         ciSigEvent e = upper_bound(t);
-        assert(e != end());
+        if (e == end())
+        {
+            if (debugMsg)
+                printf("SigList::rasterStep event not found tick:%d\n", t);
+            return raster;
+        }
         return ticks_beat(e->second->sig.n) * e->second->sig.z;
     }
     return raster;
@@ -380,32 +408,32 @@ void SigList::read(Xml& xml)
         const QString& tag = xml.s1();
         switch (token)
         {
-            case Xml::Error:
-            case Xml::End:
+        case Xml::Error:
+        case Xml::End:
+            return;
+        case Xml::TagStart:
+            if (tag == "sig")
+            {
+                SigEvent* t = new SigEvent();
+                unsigned tick = t->read(xml);
+                iSigEvent pos = find(tick);
+                if (pos != end())
+                    erase(pos);
+                insert(std::pair<const unsigned, SigEvent*> (tick, t));
+            }
+            else
+                xml.unknown("SigList");
+            break;
+        case Xml::Attribut:
+            break;
+        case Xml::TagEnd:
+            if (tag == "siglist")
+            {
+                normalize();
                 return;
-            case Xml::TagStart:
-                if (tag == "sig")
-                {
-                    SigEvent* t = new SigEvent();
-                    unsigned tick = t->read(xml);
-                    iSigEvent pos = find(tick);
-                    if (pos != end())
-                        erase(pos);
-                    insert(std::pair<const unsigned, SigEvent*> (tick, t));
-                }
-                else
-                    xml.unknown("SigList");
-                break;
-            case Xml::Attribut:
-                break;
-            case Xml::TagEnd:
-                if (tag == "siglist")
-                {
-                    normalize();
-                    return;
-                }
-            default:
-                break;
+            }
+        default:
+            break;
         }
     }
 }
@@ -420,7 +448,7 @@ void SigEvent::write(int level, Xml& xml, int at) const
     xml.intTag(level, "tick", tick);
     xml.intTag(level, "nom", sig.z);
     xml.intTag(level, "denom", sig.n);
-    xml.tag(level, "/sig");
+    xml.tag(--level, "/sig");
 }
 
 //---------------------------------------------------------
@@ -436,28 +464,28 @@ int SigEvent::read(Xml& xml)
         const QString& tag = xml.s1();
         switch (token)
         {
-            case Xml::Error:
-            case Xml::End:
-                return 0;
-            case Xml::TagStart:
-                if (tag == "tick")
-                    tick = xml.parseInt();
-                else if (tag == "nom")
-                    sig.z = xml.parseInt();
-                else if (tag == "denom")
-                    sig.n = xml.parseInt();
-                else
-                    xml.unknown("SigEvent");
-                break;
-            case Xml::Attribut:
-                if (tag == "at")
-                    at = xml.s2().toInt();
-                break;
-            case Xml::TagEnd:
-                if (tag == "sig")
-                    return at;
-            default:
-                break;
+        case Xml::Error:
+        case Xml::End:
+            return 0;
+        case Xml::TagStart:
+            if (tag == "tick")
+                tick = xml.parseInt();
+            else if (tag == "nom")
+                sig.z = xml.parseInt();
+            else if (tag == "denom")
+                sig.n = xml.parseInt();
+            else
+                xml.unknown("SigEvent");
+            break;
+        case Xml::Attribut:
+            if (tag == "at")
+                at = xml.s2().toInt();
+            break;
+        case Xml::TagEnd:
+            if (tag == "sig")
+                return at;
+        default:
+            break;
         }
     }
     return 0;

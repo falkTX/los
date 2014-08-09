@@ -730,8 +730,6 @@ void readConfiguration(Xml& xml, bool readOnlySequencer)/*{{{*/
                 {
                     lastTrackPartColorIndex = xml.parseInt();
                 }
-                //else if (tag == "mtctype")
-                //    AL::kMtcType = xml.parseInt();
                 else if (tag == "jackTransportMaster")
                 {
                     // XXX FIXME
