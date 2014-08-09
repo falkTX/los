@@ -12,7 +12,6 @@
 #include "thread.h"
 #include "mpevent.h"
 #include "driver/alsatimer.h"
-#include "driver/rtctimer.h"
 
 class MidiPort;
 class MidiDevice;

@@ -29,7 +29,6 @@ file (GLOB driver_source_files
     dummyaudio.cpp
     jack.cpp
     jackmidi.cpp
-    rtctimer.cpp
 )
 
 ##

@@ -254,16 +254,6 @@ signed int MidiSeq::selectTimer()
 {
     int tmrFd;
 
-    printf("Trying RTC timer...\n");
-    timer = new RtcTimer();
-    tmrFd = timer->initTimer();
-    if (tmrFd != -1)
-    { // ok!
-        printf("got timer = %d\n", tmrFd);
-        return tmrFd;
-    }
-    delete timer;
-
     printf("Trying ALSA timer...\n");
     timer = new AlsaTimer();
     tmrFd = timer->initTimer();
