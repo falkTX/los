@@ -8,7 +8,7 @@
 #ifndef __ABSTRACTMIDIEDITOR_H__
 #define __ABSTRACTMIDIEDITOR_H__
 
-#include "al/sig.h"
+#include "sig.h"
 #include "cobject.h"
 #include <QList>
 
@@ -67,22 +67,22 @@ public:
 
     int rasterStep(unsigned tick) const
     {
-        return AL::sigmap.rasterStep(tick, _raster);
+        return sigmap.rasterStep(tick, _raster);
     }
 
     unsigned rasterVal(unsigned v) const
     {
-        return AL::sigmap.raster(v, _raster);
+        return sigmap.raster(v, _raster);
     }
 
     unsigned rasterVal1(unsigned v) const
     {
-        return AL::sigmap.raster1(v, _raster);
+        return sigmap.raster1(v, _raster);
     }
 
     unsigned rasterVal2(unsigned v) const
     {
-        return AL::sigmap.raster2(v, _raster);
+        return sigmap.raster2(v, _raster);
     }
 
     int quant() const

@@ -203,8 +203,7 @@ include_directories(
 ##       are scanned before coming to share/locale
 ##
 
-subdirs(al awl man los packaging utils share)
-# subdirs(al awl man los packaging patchcanvas utils share)
+subdirs(awl man los packaging utils share)
 
 ##
 ## set uninstall

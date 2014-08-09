@@ -9,7 +9,7 @@
 #ifndef __TRANSPORT_H__
 #define __TRANSPORT_H__
 
-#include "al/sig.h"
+#include "sig.h"
 
 #include <QWidget>
 
@@ -50,7 +50,7 @@ public slots:
 
 signals:
     void tempoChanged(int);
-    void sigChanged(const AL::TimeSignature&);
+    void sigChanged(const TimeSignature&);
 
 public:
     TempoSig(QWidget* parent = 0);

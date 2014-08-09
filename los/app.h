@@ -16,7 +16,7 @@
 #include <QFileInfo>
 #include <QPair>
 
-#include "al/sig.h"
+#include "sig.h"
 
 class QCloseEvent;
 class QFocusEvent;
@@ -446,22 +446,22 @@ public:
 
     int rasterStep(unsigned tick) const/*{{{*/
     {
-        return AL::sigmap.rasterStep(tick, m_rasterVal);
+        return sigmap.rasterStep(tick, m_rasterVal);
     }
 
     unsigned rasterVal(unsigned v) const
     {
-        return AL::sigmap.raster(v, m_rasterVal);
+        return sigmap.raster(v, m_rasterVal);
     }
 
     unsigned rasterVal1(unsigned v) const
     {
-        return AL::sigmap.raster1(v, m_rasterVal);
+        return sigmap.raster1(v, m_rasterVal);
     }
 
     unsigned rasterVal2(unsigned v) const
     {
-        return AL::sigmap.raster2(v, m_rasterVal);
+        return sigmap.raster2(v, m_rasterVal);
     }/*}}}*/
     int raster(){return m_rasterVal;}
 };

@@ -18,10 +18,9 @@
 //  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //=============================================================================
 
-#include "al/al.h"
 #include "awl.h"
+#include "sig.h"
 #include "posedit.h"
-#include "al/sig.h"
 
 #include <QApplication>
 #include <QKeyEvent>
@@ -29,8 +28,6 @@
 #include <QStyle>
 
 namespace Awl {
-
-    using AL::sigmap;
 
     //---------------------------------------------------------
     //   PosEdit
@@ -302,7 +299,7 @@ namespace Awl {
                     else
                     {
                         int nf = 23; // 24 frames sec
-                        switch (AL::kMtcType)
+                        switch (kMtcType)
                         {
                                 //case 0:     // 24 frames sec
                                 //      nf = 23;
@@ -334,11 +331,11 @@ namespace Awl {
         {
             int bar, beat;
             unsigned tick;
-            AL::sigmap.tickValues(_pos.tick(), &bar, &beat, &tick);
+            sigmap.tickValues(_pos.tick(), &bar, &beat, &tick);
             //sigmap.tickValues(_pos.tick(), &bar, &beat, &tick);
-            unsigned tb = AL::sigmap.ticksBeat(_pos.tick());
+            unsigned tb = sigmap.ticksBeat(_pos.tick());
             //unsigned tb = sigmap.ticksBeat(_pos.tick());
-            unsigned tm = AL::sigmap.ticksMeasure(_pos.tick());
+            unsigned tm = sigmap.ticksMeasure(_pos.tick());
             //unsigned tm = sigmap.ticksMeasure(_pos.tick());
             int bm = tm / tb;
 
@@ -418,7 +415,7 @@ namespace Awl {
                 rv = state;
 
             int nf = 23; // 24 frames sec
-            switch (AL::kMtcType)
+            switch (kMtcType)
             {
                     //case 0:     // 24 frames sec
                     //      nf = 23;
@@ -455,8 +452,8 @@ namespace Awl {
                 return QValidator::Invalid;
             }
 
-            int tb = AL::sigmap.ticksBeat(_pos.tick());
-            unsigned tm = AL::sigmap.ticksMeasure(_pos.tick());
+            int tb = sigmap.ticksBeat(_pos.tick());
+            unsigned tm = sigmap.ticksMeasure(_pos.tick());
             int bm = tm / tb;
 
             validator->setRange(1, 9999);
@@ -564,7 +561,7 @@ namespace Awl {
                 case 2:
                 {
                     int nf = 23; // 24 frames sec
-                    switch (AL::kMtcType)
+                    switch (kMtcType)
                     {
                             //case 0:     // 24 frames sec
                             //      nf = 23;
@@ -614,10 +611,8 @@ namespace Awl {
             int bar, beat, tick;
             _pos.mbt(&bar, &beat, &tick);
 
-            int tb = AL::sigmap.ticksBeat(_pos.tick());
-            //int tb = sigmap.ticksBeat(_pos.tick());
-            unsigned tm = AL::sigmap.ticksMeasure(_pos.tick());
-            //unsigned tm = sigmap.ticksMeasure(_pos.tick());
+            int tb = sigmap.ticksBeat(_pos.tick());
+            unsigned tm = sigmap.ticksMeasure(_pos.tick());
             int bm = tm / tb;
 
             switch (segment)

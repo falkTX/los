@@ -11,36 +11,110 @@
 
 #include <map>
 
-#ifndef MAX_TICK
-#define MAX_TICK (0x7fffffff/100)
-#endif
+#include "defines.h"
 
 class Xml;
+
+static const uint kMaxTick = 0x7fffffff/100;
+
+// TODO: remove
+static const int  kMtcType  = 0;
+
+//---------------------------------------------------------
+//   TimeSignature
+//---------------------------------------------------------
+
+struct TimeSignature {
+    int z, n;
+
+    TimeSignature() noexcept
+        : z(4), n(4) {}
+
+    TimeSignature(const int z2, const int n2) noexcept
+        : z(z2), n(n2) {}
+
+    TimeSignature(const TimeSignature& ts) noexcept
+        : z(ts.z), n(ts.n) {}
+
+    bool isValid() const noexcept
+    {
+        if (z < 1 || z > 63)
+            return false;
+
+        switch (n)
+        {
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        case 8:
+        case 16:
+        case 32:
+        case 64:
+        case 128:
+            return true;
+        }
+
+        return false;
+    }
+
+    TimeSignature& operator=(const TimeSignature& ts) noexcept
+    {
+        z = ts.z;
+        n = ts.n;
+        return *this;
+    }
+
+    bool operator==(const TimeSignature& ts) const noexcept
+    {
+        return ts.z == z && ts.n == n;
+    }
+
+    bool operator!=(const TimeSignature& ts) const noexcept
+    {
+        return ts.z != z || ts.n != n;
+    }
+};
 
 //---------------------------------------------------------
 //   Signature Event
 //---------------------------------------------------------
 
-struct SigEvent
-{
-    int z, n; // takt signatur
-    unsigned tick; // ab dieser Position gilt signatur
-    int bar; // precomputed
+struct SigEvent {
+    TimeSignature sig;
+    uint tick; // signature valid from this position
+    int  bar;  // precomputed
+
+    SigEvent() noexcept
+        : sig(),
+          tick(0),
+          bar(0) {}
+
+    SigEvent(const int sigz, const int sign, uint tick2) noexcept
+        : sig(sigz, sign),
+          tick(tick2),
+          bar(0) {}
+
+    SigEvent(const TimeSignature& sig2, uint tick2) noexcept
+        : sig(sig2),
+          tick(tick2),
+          bar(0) {}
+
+    SigEvent(const SigEvent& sig2) noexcept
+        : sig(sig2.sig),
+          tick(sig2.tick),
+          bar(sig2.bar) {}
+
+    SigEvent& operator=(const SigEvent& sig2) noexcept
+    {
+        sig  = sig2.sig;
+        tick = sig2.tick;
+        bar  = sig2.bar;
+        return *this;
+    }
 
     int read(Xml&);
     void write(int, Xml&, int) const;
-
-    SigEvent()
-    {
-    }
-
-    SigEvent(int Z, int N, unsigned tk)
-    {
-        z = Z;
-        n = N;
-        tick = tk;
-        bar = 0;
-    }
 };
 
 //---------------------------------------------------------

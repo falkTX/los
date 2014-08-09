@@ -56,9 +56,9 @@ void MasterEdit::songChanged(int type)
     if (type & SC_SIG)
     {
         int z, n;
-        AL::sigmap.timesig(song->cpos(), z, n);
+        sigmap.timesig(song->cpos(), z, n);
         curSig->blockSignals(true);
-        curSig->setValue(AL::TimeSignature(z, n));
+        curSig->setValue(TimeSignature(z, n));
         curSig->blockSignals(false);
         sign->redraw();
     }
@@ -136,13 +136,13 @@ MasterEdit::MasterEdit()
     info->addWidget(new QLabel(tr("CurPos ")));
     curTempo = new TempoEdit(0);
     curSig = new SigEdit(0);
-    curSig->setValue(AL::TimeSignature(4, 4));
+    curSig->setValue(TimeSignature(4, 4));
     curTempo->setToolTip(tr("tempo at current position"));
     curSig->setToolTip(tr("time signature at current position"));
     info->addWidget(curTempo);
     info->addWidget(curSig);
     ///connect(curSig, SIGNAL(valueChanged(int,int)), song, SLOT(setSig(int,int)));
-    connect(curSig, SIGNAL(valueChanged(const AL::TimeSignature&)), song, SLOT(setSig(const AL::TimeSignature&)));
+    connect(curSig, SIGNAL(valueChanged(const TimeSignature&)), song, SLOT(setSig(const TimeSignature&)));
 
     ///connect(curTempo, SIGNAL(valueChanged(double)), song, SLOT(setTempo(double)));
     connect(curTempo, SIGNAL(tempoChanged(double)), song, SLOT(setTempo(double)));
@@ -414,12 +414,12 @@ void MasterEdit::posChanged(int idx, unsigned val, bool)
     {
         int z, n;
         int tempo = tempomap.tempo(val);
-        AL::sigmap.timesig(val, z, n);
+        sigmap.timesig(val, z, n);
         curTempo->blockSignals(true);
         curSig->blockSignals(true);
 
         curTempo->setValue(double(60000000.0 / tempo));
-        curSig->setValue(AL::TimeSignature(z, n));
+        curSig->setValue(TimeSignature(z, n));
 
         curTempo->blockSignals(false);
         curSig->blockSignals(false);

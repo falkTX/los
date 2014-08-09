@@ -132,7 +132,7 @@ TempoSig::TempoSig(QWidget* parent)
 
     connect(l1, SIGNAL(valueChanged(double, int)), SLOT(setTempo(double)));
     ///connect(l2, SIGNAL(valueChanged(int,int)), SIGNAL(sigChanged(int,int)));
-    connect(l2, SIGNAL(valueChanged(const AL::TimeSignature&)), SIGNAL(sigChanged(const AL::TimeSignature&)));
+    connect(l2, SIGNAL(valueChanged(const TimeSignature&)), SIGNAL(sigChanged(const TimeSignature&)));
     connect(los, SIGNAL(configChanged()), SLOT(configChanged()));
 
     this->setLayout(vb1);
@@ -391,7 +391,7 @@ Transport::Transport(QWidget* parent, const char* name)
     connect(song, SIGNAL(posChanged(int, unsigned, bool)), SLOT(setPos(int, unsigned, bool)));
     connect(tempo, SIGNAL(tempoChanged(int)), song, SLOT(setTempo(int)));
     ///connect(tempo, SIGNAL(sigChanged(int, int)), song, SLOT(setSig(int, int)));
-    connect(tempo, SIGNAL(sigChanged(const AL::TimeSignature&)), song, SLOT(setSig(const AL::TimeSignature&)));
+    connect(tempo, SIGNAL(sigChanged(const TimeSignature&)), song, SLOT(setSig(const TimeSignature&)));
     connect(song, SIGNAL(playChanged(bool)), SLOT(setPlay(bool)));
     connect(song, SIGNAL(songChanged(int)), this, SLOT(songChanged(int)));
     connect(los, SIGNAL(configChanged()), SLOT(configChanged()));
@@ -481,7 +481,7 @@ void Transport::setPos(int idx, unsigned v, bool)
         {
             int z, n;
             ///sigmap.timesig(v, z, n);
-            AL::sigmap.timesig(v, z, n);
+            sigmap.timesig(v, z, n);
             setTimesig(z, n);
         }
             break;
@@ -594,7 +594,7 @@ void Transport::songChanged(int flags)
     if (flags & SC_SIG)
     {
         int z, n;
-        AL::sigmap.timesig(cpos, z, n);
+        sigmap.timesig(cpos, z, n);
         setTimesig(z, n);
     }
     if (flags & SC_MASTER)

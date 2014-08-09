@@ -13,8 +13,7 @@
 
 #include "poslabel.h"
 
-#include "al/al.h"
-#include "al/sig.h"
+#include "sig.h"
 #include "tempo.h"
 #include "globals.h"
 
@@ -69,7 +68,7 @@ void PosLabel::updateValue()
         int min = int(time) / 60;
         int sec = int(time) % 60;
         double rest = time - (min * 60 + sec);
-        switch (AL::kMtcType)
+        switch (kMtcType)
         {
             case 0: // 24 frames sec
                 rest *= 24;
@@ -92,7 +91,7 @@ void PosLabel::updateValue()
     {
         int bar, beat;
         unsigned tick;
-        AL::sigmap.tickValues(_tickValue, &bar, &beat, &tick);
+        sigmap.tickValues(_tickValue, &bar, &beat, &tick);
         //s.sprintf("%04d.%02d.%03ud", bar+1, beat+1, tick);
         s.sprintf("%04d.%02d.%03u", bar + 1, beat + 1, tick);
     }

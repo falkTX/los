@@ -285,7 +285,7 @@ Composer::Composer(QMainWindow* parent, const char* name)
     //    Editor
     //---------------------------------------------------
 
-    //int offset = AL::sigmap.ticksMeasure(0);
+    //int offset = sigmap.ticksMeasure(0);
     int offset = -(config.division / 4);
     hscroll = new ScrollScale(-1000, -10, xscale, song->len(), Qt::Horizontal, this, offset);
     hscroll->setFocusPolicy(Qt::NoFocus);
@@ -461,9 +461,9 @@ QWidget* Composer::headerCornerWidget(int tab)
 
     //TODO: Add sigedit
     m_sigEdit = new SigEdit(0);
-    m_sigEdit->setValue(AL::TimeSignature(4, 4));
+    m_sigEdit->setValue(TimeSignature(4, 4));
     m_sigEdit->setToolTip(tr("Time signature at current position"));
-    connect(m_sigEdit, SIGNAL(valueChanged(const AL::TimeSignature&)), song, SLOT(setSig(const AL::TimeSignature&)));
+    connect(m_sigEdit, SIGNAL(valueChanged(const TimeSignature&)), song, SLOT(setSig(const TimeSignature&)));
     layout->addSpacing(4);
     layout->addWidget(m_sigEdit);
     layout->addSpacing(6);
@@ -516,9 +516,9 @@ void Composer::posChanged(int idx, unsigned val, bool)
         if(m_sigEdit)
         {
             int z, n;
-            AL::sigmap.timesig(val, z, n);
+            sigmap.timesig(val, z, n);
             m_sigEdit->blockSignals(true);
-            m_sigEdit->setValue(AL::TimeSignature(z, n));
+            m_sigEdit->setValue(TimeSignature(z, n));
             m_sigEdit->blockSignals(false);
         }
     }
@@ -636,7 +636,7 @@ void Composer::configChanged()
 
 void Composer::songlenChanged(int n)
 {
-    int newLen = AL::sigmap.bar2tick(n, 0, 0);
+    int newLen = sigmap.bar2tick(n, 0, 0);
     //printf("New Song Length: %d - %d \n", n, newLen);
     song->setLen(newLen);
 }
@@ -652,7 +652,7 @@ void Composer::composerViewChanged()
 void Composer::updateAll()
 {
     unsigned endTick = song->len();
-    int offset = AL::sigmap.ticksMeasure(endTick);
+    int offset = sigmap.ticksMeasure(endTick);
     /*hscroll->setRange(-offset, endTick + offset); //DEBUG
     canvas->setOrigin(-offset, 0);
     time->setOrigin(-offset, 0);*/
@@ -666,7 +666,7 @@ void Composer::updateAll()
 
     int bar, beat;
     unsigned tick;
-    AL::sigmap.tickValues(endTick, &bar, &beat, &tick);
+    sigmap.tickValues(endTick, &bar, &beat, &tick);
     if (tick || beat)
         ++bar;
     lenEntry->blockSignals(true);
@@ -715,9 +715,9 @@ void Composer::songChanged(int type)
         if (m_sigEdit && (type & SC_SIG))
         {
             int z, n;
-            AL::sigmap.timesig(song->cpos(), z, n);
+            sigmap.timesig(song->cpos(), z, n);
             m_sigEdit->blockSignals(true);
-            m_sigEdit->setValue(AL::TimeSignature(z, n));
+            m_sigEdit->setValue(TimeSignature(z, n));
             m_sigEdit->blockSignals(false);
             m_sigRuler->redraw();
         }

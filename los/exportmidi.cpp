@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <QString>
 
-#include "al/sig.h"  // Tim.
+#include "sig.h"  // Tim.
 
 #include "app.h"
 #include "midifile.h"
@@ -244,12 +244,12 @@ void LOS::exportMidi()
             //    Write Signatures
             //
             ///const SigList* sl = &sigmap;
-            const AL::SigList* sl = &AL::sigmap;
+            const SigList* sl = &sigmap;
             ///for (ciSigEvent e = sl->begin(); e != sl->end(); ++e) {
-            for (AL::ciSigEvent e = sl->begin(); e != sl->end(); ++e)
+            for (ciSigEvent e = sl->begin(); e != sl->end(); ++e)
             {
                 ///SigEvent* event = e->second;
-                AL::SigEvent* event = e->second;
+                SigEvent* event = e->second;
                 int sz = (config.exp2ByteTimeSigs ? 2 : 4); // export 2 byte timesigs instead of 4 ?
                 unsigned char data[sz];
                 data[0] = event->sig.z;

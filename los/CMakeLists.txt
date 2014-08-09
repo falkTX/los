@@ -215,7 +215,6 @@ target_link_libraries(los
 # core
     core
 # all libs
-    al
     Composer
     awl
     ctrl

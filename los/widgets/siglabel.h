@@ -8,7 +8,7 @@
 #ifndef __SIGLABEL_H__
 #define __SIGLABEL_H__
 
-#include <al/sig.h>
+#include <sig.h>
 
 #include <QLabel>
 
@@ -31,19 +31,19 @@ protected:
     int z, n;
 
 signals:
-    void valueChanged(const AL::TimeSignature&);
+    void valueChanged(const TimeSignature&);
 
 public slots:
     virtual void setValue(int, int);
 
-    virtual void setValue(const AL::TimeSignature& sig)
+    virtual void setValue(const TimeSignature& sig)
     {
         setValue(sig.z, sig.n);
     }
 
 public:
     SigLabel(int z, int n, QWidget*);
-    SigLabel(const AL::TimeSignature&, QWidget*);
+    SigLabel(const TimeSignature&, QWidget*);
 
     void value(int& a, int& b) const
     {
@@ -51,9 +51,9 @@ public:
         b = n;
     }
 
-    AL::TimeSignature value() const
+    TimeSignature value() const
     {
-        return AL::TimeSignature(z, n);
+        return TimeSignature(z, n);
     }
     void setFrame(bool);
 };

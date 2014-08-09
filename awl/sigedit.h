@@ -21,8 +21,7 @@
 #ifndef __SIGEDIT_H__
 #define __SIGEDIT_H__
 
-#include "al/sig.h"
-//#include "sig.h"
+#include "../los/sig.h"
 
 #include <QAbstractSpinBox>
 
@@ -42,7 +41,7 @@ namespace Awl
     {
         Q_OBJECT
 
-        AL::TimeSignature _sig;
+        TimeSignature _sig;
         bool initialized;
 
         virtual void paintEvent(QPaintEvent* event);
@@ -55,21 +54,17 @@ namespace Awl
         virtual bool event(QEvent*);
 
     signals:
-        void valueChanged(const AL::TimeSignature&);
-	void returnPressed();
+        void valueChanged(const TimeSignature&);
+    void returnPressed();
 
     public slots:
-        void setValue(const AL::TimeSignature&);
+        void setValue(const TimeSignature&);
         void setValue(const QString& s);
 
     public:
         SigEdit(QWidget* parent = 0);
         ~SigEdit();
-
-        AL::TimeSignature sig() const
-        {
-            return _sig;
-        }
+        const TimeSignature& sig() { return _sig; }
     };
 }
 

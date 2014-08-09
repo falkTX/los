@@ -141,7 +141,7 @@ static void timebase_callback(jack_transport_state_t /* state */,
     pos->bar_start_tick = Pos(pos->bar, 0, 0).tick();
 
     int z, n;
-    AL::sigmap.timesig(p.tick(), z, n);
+    sigmap.timesig(p.tick(), z, n);
     pos->beats_per_bar = z;
     pos->beat_type = n;
     pos->ticks_per_beat = 24;

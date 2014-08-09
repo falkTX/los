@@ -31,12 +31,9 @@ public:
     Pos();
     Pos(const Pos&);
     Pos(int, int, int);
-    Pos(int, int, int, int);
+    Pos(int, int, int, int); // TODO: remove after smpte removal
     Pos(unsigned, bool ticks = true);
     Pos(const QString&);
-
-    static bool isValid(int m, int b, int t);
-    static bool isValid(int, int, int, int);
 
     bool isValid() const
     {

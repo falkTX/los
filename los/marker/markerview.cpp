@@ -5,8 +5,7 @@
 //  (C) Copyright 2000 Werner Schweer (ws@seh.de)
 //=========================================================
 
-#include "al/al.h"
-#include "al/sig.h"  // Tim.
+#include "sig.h"  // Tim.
 
 #include "marker.h"
 #include "markerview.h"
@@ -14,7 +13,6 @@
 #include "globals.h"
 #include "icons.h"
 #include "song.h"
-///#include "posedit.h"
 #include "awl/posedit.h"
 
 #include <QCloseEvent>
@@ -107,7 +105,7 @@ void MarkerItem::setTick(unsigned v)
     int bar, beat;
     unsigned tick;
     ///sigmap.tickValues(v, &bar, &beat, &tick);
-    AL::sigmap.tickValues(v, &bar, &beat, &tick);
+    sigmap.tickValues(v, &bar, &beat, &tick);
     s.sprintf("%04d.%02d.%03d", bar + 1, beat + 1, tick);
     setText(COL_TICK, s);
 
@@ -116,7 +114,7 @@ void MarkerItem::setTick(unsigned v)
     int min = (int(time) % 3600) / 60;
     int sec = int(time) % 60;
     double rest = time - (hour * 3600 + min * 60 + sec);
-    switch (AL::kMtcType)
+    switch (kMtcType)
     {
         case 0: // 24 frames sec
             rest *= 24;

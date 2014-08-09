@@ -11,7 +11,6 @@
 #include <QPair>
 #include <QHash>
 
-#include "al/al.h"
 #include "app.h"
 #include "transport.h"
 #include "icons.h"

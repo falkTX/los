@@ -419,7 +419,7 @@ QPoint ComposerCanvas::raster(const QPoint& p) const
     int x = p.x();
     if (x < 0)
         x = 0;
-    x = AL::sigmap.raster(x, *_raster);
+    x = sigmap.raster(x, *_raster);
     if (x < 0)
         x = 0;
     return QPoint(x, y);
@@ -476,14 +476,14 @@ void ComposerCanvas::resizeItem(CItem* i, bool noSnap)/*{{{*/
     Part* p = ((NPart*) (i))->part();
 
     int pos = p->tick() + i->width();
-    int snappedpos = AL::sigmap.raster(pos, *_raster);
+    int snappedpos = sigmap.raster(pos, *_raster);
     if (noSnap)
     {
         snappedpos = p->tick();
     }
     unsigned int newwidth = snappedpos - p->tick();
     if (newwidth == 0)
-        newwidth = AL::sigmap.rasterStep(p->tick(), *_raster);
+        newwidth = sigmap.rasterStep(p->tick(), *_raster);
 
     song->cmdResizePart(t, p, newwidth);
 }/*}}}*/
@@ -494,7 +494,7 @@ void ComposerCanvas::resizeItemLeft(CItem* i, QPoint pos, bool noSnap)/*{{{*/
     Part* p = ((NPart*) (i))->part();
 
     int endtick = (p->tick() + p->lenTick());
-    int snappedpos = AL::sigmap.raster(i->x(), *_raster);
+    int snappedpos = sigmap.raster(i->x(), *_raster);
     //printf("ComposerCanvas::resizeItemLeft snap pos:%d , nosnap pos: %d\n", snappedpos, i->x());
     if (noSnap)
     {
@@ -534,7 +534,7 @@ CItem* ComposerCanvas::newItem(const QPoint& pos, int)
     int x = pos.x();
     if (x < 0)
         x = 0;
-    x = AL::sigmap.raster(x, *_raster);
+    x = sigmap.raster(x, *_raster);
     unsigned trackIndex = y2pitch(pos.y());
     if (trackIndex >= tracks->size())
         return 0;
@@ -566,9 +566,9 @@ void ComposerCanvas::newItem(CItem* i, bool noSnap)
 
     int len = i->width();
     if (!noSnap)
-        len = AL::sigmap.raster(len, *_raster);
+        len = sigmap.raster(len, *_raster);
     if (len == 0)
-        len = AL::sigmap.rasterStep(p->tick(), *_raster);
+        len = sigmap.rasterStep(p->tick(), *_raster);
     p->setLenTick(len);
     p->setSelected(true);
     audio->msgAddPart(p);
@@ -597,7 +597,7 @@ void ComposerCanvas::splitItem(CItem* item, const QPoint& pt)
     int x = pt.x();
     if (x < 0)
         x = 0;
-    song->cmdSplitPart(t, p, AL::sigmap.raster(x, *_raster));
+    song->cmdSplitPart(t, p, sigmap.raster(x, *_raster));
 }
 
 //---------------------------------------------------------
@@ -917,8 +917,8 @@ CItemList ComposerCanvas::getSelectedItems()
 
 void ComposerCanvas::mousePress(QMouseEvent* event)/*{{{*/
 {
-//	qDebug("ComposerCanvas::mousePress: One pixel = %d ticks", AL::sigmap.raster(1, *_raster));
-//	qDebug("ComposerCanvas::mousePress: width = %d ticks, length: %d", AL::sigmap.raster(width(), *_raster), song->len());
+//	qDebug("ComposerCanvas::mousePress: One pixel = %d ticks", sigmap.raster(1, *_raster));
+//	qDebug("ComposerCanvas::mousePress: width = %d ticks, length: %d", sigmap.raster(width(), *_raster), song->len());
     if (event->modifiers() & Qt::ShiftModifier && _tool != AutomationTool)
     {
         return;
@@ -987,7 +987,7 @@ void ComposerCanvas::mouseMove(QMouseEvent* event)/*{{{*/
     if (x < 0)
         x = 0;
 
-    emit timeChanged(AL::sigmap.raster(x, *_raster));
+    emit timeChanged(sigmap.raster(x, *_raster));
 }/*}}}*/
 
 //---------------------------------------------------------
@@ -1091,7 +1091,7 @@ void ComposerCanvas::keyPress(QKeyEvent* event)/*{{{*/
         if (spos > 0)
         {
             spos -= 1; // Nudge by -1, then snap down with raster1.
-            spos = AL::sigmap.raster1(spos, *_raster);
+            spos = sigmap.raster1(spos, *_raster);
         }
         if (spos < 0)
             spos = 0;
@@ -1101,14 +1101,14 @@ void ComposerCanvas::keyPress(QKeyEvent* event)/*{{{*/
     }
     else if (key == shortcuts[SHRT_POS_INC].key)
     {
-        int spos = AL::sigmap.raster2(_pos[0] + 1, *_raster); // Nudge by +1, then snap up with raster2.
+        int spos = sigmap.raster2(_pos[0] + 1, *_raster); // Nudge by +1, then snap up with raster2.
         Pos p(spos, true);
         song->setPos(0, p, true, true, true);
         return;
     }
     else if (key == shortcuts[SHRT_POS_DEC_NOSNAP].key)
     {
-        int spos = _pos[0] - AL::sigmap.rasterStep(_pos[0], *_raster);
+        int spos = _pos[0] - sigmap.rasterStep(_pos[0], *_raster);
         if (spos < 0)
             spos = 0;
         Pos p(spos, true);
@@ -1117,7 +1117,7 @@ void ComposerCanvas::keyPress(QKeyEvent* event)/*{{{*/
     }
     else if (key == shortcuts[SHRT_POS_INC_NOSNAP].key)
     {
-                Pos p(_pos[0] + AL::sigmap.rasterStep(_pos[0], *_raster), true);
+                Pos p(_pos[0] + sigmap.rasterStep(_pos[0], *_raster), true);
         song->setPos(0, p, true, true, true);
         return;
     }
@@ -2033,7 +2033,7 @@ void ComposerCanvas::cmd(int cmd)/*{{{*/
         {
             song->startUndo();
             int startPos = song->vcpos();
-            int oneMeas = AL::sigmap.ticksMeasure(startPos);
+            int oneMeas = sigmap.ticksMeasure(startPos);
             movePartsTotheRight(startPos, oneMeas);
             song->endUndo(SC_PART_INSERTED);
             break;
@@ -2441,7 +2441,7 @@ void ComposerCanvas::dragMoveEvent(QDragMoveEvent* ev)
 {
     //      printf("drag move %x\n", this);
     QPoint p = mapDev(ev->pos());
-    int x = AL::sigmap.raster(p.x(), *_raster);
+    int x = sigmap.raster(p.x(), *_raster);
     if(x < 0)
         x = 0;
     emit timeChanged(x);
@@ -2498,7 +2498,7 @@ void ComposerCanvas::viewDropEvent(QDropEvent* event)
     {
         text = QString(event->mimeData()->data("text/partlist"));
 
-        int x = AL::sigmap.raster(event->pos().x(), *_raster);
+        int x = sigmap.raster(event->pos().x(), *_raster);
         if (x < 0)
             x = 0;
         unsigned trackNo = y2pitch(event->pos().y());
@@ -2519,10 +2519,10 @@ void ComposerCanvas::viewDropEvent(QDropEvent* event)
 
         if (text.endsWith(".mpt", Qt::CaseInsensitive))
         {
-            int x = AL::sigmap.raster(event->pos().x(), *_raster);
+            int x = sigmap.raster(event->pos().x(), *_raster);
             if (x < 0)
                 x = 0;
-            //qDebug("ComposerCanvas::dropEvent: x: %d cursor x: %d", x, AL::sigmap.raster(QCursor::pos().x(), *_raster));
+            //qDebug("ComposerCanvas::dropEvent: x: %d cursor x: %d", x, sigmap.raster(QCursor::pos().x(), *_raster));
             unsigned trackNo = y2pitch(event->pos().y());
             Track* track = 0;
             if (trackNo < tracks->size())
@@ -2588,10 +2588,10 @@ void ComposerCanvas::drawCanvas(QPainter& p, const QRect& rect)
         int bar, beat;
         unsigned tick;
 
-        AL::sigmap.tickValues(x, &bar, &beat, &tick);
+        sigmap.tickValues(x, &bar, &beat, &tick);
         for (;;)
         {
-            int xt = AL::sigmap.bar2tick(bar++, 0, 0);
+            int xt = sigmap.bar2tick(bar++, 0, 0);
             if (xt >= x + w)
                 break;
             if (!((bar - 1) % 4))

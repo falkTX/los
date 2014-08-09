@@ -13,8 +13,7 @@
 #include "tempo.h"
 #include "globals.h"
 
-#include "al/al.h"
-#include "al/sig.h"
+#include "sig.h"
 
 //---------------------------------------------------------
 //   Pos
@@ -55,14 +54,14 @@ Pos::Pos(const QString& s)
 {
     int m, b, t;
     sscanf(s.toLatin1(), "%04d.%02d.%03d", &m, &b, &t);
-    _tick = AL::sigmap.bar2tick(m, b, t);
+    _tick = sigmap.bar2tick(m, b, t);
     _type = TICKS;
     sn = -1;
 }
 
 Pos::Pos(int measure, int beat, int tick)
 {
-    _tick = AL::sigmap.bar2tick(measure, beat, tick);
+    _tick = sigmap.bar2tick(measure, beat, tick);
     _type = TICKS;
     sn = -1;
 }
@@ -72,7 +71,7 @@ Pos::Pos(int min, int sec, int frame, int subframe)
     double time = min * 60.0 + sec;
 
     double f = frame + subframe / 100.0;
-    switch (AL::kMtcType)
+    switch (kMtcType)
     {
         case 0: // 24 frames sec
             time += f * 1.0 / 24.0;
@@ -90,20 +89,6 @@ Pos::Pos(int min, int sec, int frame, int subframe)
     _type = FRAMES;
     _frame = lrint(time * sampleRate);
     sn = -1;
-}
-
-//---------------------------------------------------------
-//   isValid
-//---------------------------------------------------------
-
-bool Pos::isValid(int, int, int)
-{
-    return true;
-}
-
-bool Pos::isValid(int, int, int, int)
-{
-    return true;
 }
 
 //---------------------------------------------------------
@@ -250,7 +235,7 @@ void Pos::read(Xml& xml, const char* name)
 
 void Pos::mbt(int* bar, int* beat, int* tk) const
 {
-    AL::sigmap.tickValues(tick(), bar, beat, (unsigned*) tk);
+    sigmap.tickValues(tick(), bar, beat, (unsigned*) tk);
 }
 
 //---------------------------------------------------------
@@ -263,7 +248,7 @@ void Pos::msf(int* min, int* sec, int* fr, int* subFrame) const
     *min = int(time) / 60;
     *sec = int(time) % 60;
     double rest = time - (*min * 60 + *sec);
-    switch (AL::kMtcType)
+    switch (kMtcType)
     {
         case 0: // 24 frames sec
             rest *= 24;

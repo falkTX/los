@@ -486,8 +486,8 @@ void buildMidiEventList(EventList* del, const MPEventList* el, MidiTrack* track,
                         for (int i = 0; i < n; i++)
                             timesig_n *= 2;
                         int ltick = CALC_TICK(tick); //(tick * config.division + div/2) / div;
-                        ///sigmap.add(ltick, timesig_z, timesig_n);
-                        AL::sigmap.add(ltick, AL::TimeSignature(timesig_z, timesig_n));
+                        sigmap.add(ltick, timesig_z, timesig_n);
+                        //sigmap.add(ltick, TimeSignature(timesig_z, timesig_n));
                     }
                         break;
                     case 0x59: // Key Signature

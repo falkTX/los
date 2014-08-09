@@ -2930,7 +2930,7 @@ void LOS::kbAccel(int key)
         if (spos > 0)
         {
             spos -= 1; // Nudge by -1, then snap down with raster1.
-            spos = AL::sigmap.raster1(spos, song->composerRaster());
+            spos = sigmap.raster1(spos, song->composerRaster());
         }
         if (spos < 0)
             spos = 0;
@@ -2940,14 +2940,14 @@ void LOS::kbAccel(int key)
     }
     else if (key == shortcuts[SHRT_POS_INC].key)
     {
-        int spos = AL::sigmap.raster2(song->cpos() + 1, song->composerRaster()); // Nudge by +1, then snap up with raster2.
+        int spos = sigmap.raster2(song->cpos() + 1, song->composerRaster()); // Nudge by +1, then snap up with raster2.
         Pos p(spos, true);
         song->setPos(0, p, true, true, true); //CDW
         return;
     }
     else if (key == shortcuts[SHRT_POS_DEC_NOSNAP].key)
     {
-        int spos = song->cpos() - AL::sigmap.rasterStep(song->cpos(), song->composerRaster());
+        int spos = song->cpos() - sigmap.rasterStep(song->cpos(), song->composerRaster());
         if (spos < 0)
             spos = 0;
         Pos p(spos, true);
@@ -2956,7 +2956,7 @@ void LOS::kbAccel(int key)
     }
     else if (key == shortcuts[SHRT_POS_INC_NOSNAP].key)
     {
-        Pos p(song->cpos() + AL::sigmap.rasterStep(song->cpos(), song->composerRaster()), true);
+        Pos p(song->cpos() + sigmap.rasterStep(song->cpos(), song->composerRaster()), true);
         song->setPos(0, p, true, true, true);
         return;
     }

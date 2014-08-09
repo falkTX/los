@@ -17,11 +17,7 @@
 
 #include <QTreeWidgetItem>
 
-namespace AL
-{
-    class SigEvent;
-};
-using AL::SigEvent;
+class SigEvent;
 
 namespace Awl
 {

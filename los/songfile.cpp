@@ -509,8 +509,7 @@ void Song::read(Xml& xml)/*{{{*/
                     tempomap.read(xml);
                 }
                 else if (tag == "siglist")
-                    ///sigmap.read(xml);
-                    AL::sigmap.read(xml);
+                    sigmap.read(xml);
                 else if (tag == "miditrack")
                 {
                     MidiTrack* track = new MidiTrack();
@@ -726,7 +725,7 @@ void Song::write(int level, Xml& xml) const
     }
 
     tempomap.write(level, xml);
-    AL::sigmap.write(level, xml);
+    sigmap.write(level, xml);
     _markerList->write(level, xml);
 
     xml.tag(--level, "/song");

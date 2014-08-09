@@ -11,8 +11,6 @@
 #include "app.h"
 #include "gconfig.h"
 
-#include "al/al.h"
-
 //
 // the bigtime widget
 // display is split into several parts to avoid flickering.
@@ -218,14 +216,14 @@ bool BigTime::setString(unsigned v)
     unsigned absFrame = tempomap.tick2frame(v);
     int bar, beat;
     unsigned tick;
-    AL::sigmap.tickValues(v, &bar, &beat, &tick);
+    sigmap.tickValues(v, &bar, &beat, &tick);
     double time = double(absFrame) / double(sampleRate);
     //int hour    = int(time) / 3600;
     //int min     = (int(time) / 60) % 60;
     int min = int(time) / 60;
     int sec = int(time) % 60;
     double rest = time - (min * 60 + sec);
-    switch (AL::kMtcType)
+    switch (kMtcType)
     {
         case 0: // 24 frames sec
             rest *= 24;
