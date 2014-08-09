@@ -426,7 +426,7 @@ QString getImageFileName(const QString& startWith,
     MFileDialog *dlg = new MFileDialog(*workingDirectory, QString::null,
             parent);
 
-    /* ORCAN - disable preview for now. It is not available in qt5. We will
+    /* ORCAN - disable preview for now. It is not available in qt4/5. We will
                need to implement it ourselves.
     dlg->setContentsPreviewEnabled(true);
     ContentsPreview* preview = new ContentsPreview(dlg);

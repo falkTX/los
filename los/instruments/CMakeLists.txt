@@ -23,7 +23,7 @@
 ## Expand Qt macros in source files
 ##
 
-QT5_WRAP_CPP(instruments_mocs
+QT4_WRAP_CPP(instruments_mocs
     editinstrument.h
 )
 
@@ -35,7 +35,7 @@ file(GLOB instruments_ui_files
     editinstrumentbase.ui
 )
 
-QT5_WRAP_UI(instruments_uis ${instruments_ui_files})
+QT4_WRAP_UI(instruments_uis ${instruments_ui_files})
 
 ##
 ## List of source files to compile

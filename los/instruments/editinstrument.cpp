@@ -1347,7 +1347,7 @@ void EditInstrument::patchButtonClicked()
         {
             PatchGroup* pgp = *i;
             QMenu* pm = patchpopup->addMenu(pgp->name);
-            //pm->setCheckable(false);//Qt5 doc says this is unnecessary
+            //pm->setCheckable(false);//Qt4/5 doc says this is unnecessary
             pm->setFont(config.fonts[0]);
             const PatchList& pl = pgp->patches;
             for (ciPatch ipl = pl.begin(); ipl != pl.end(); ++ipl)

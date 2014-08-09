@@ -23,7 +23,7 @@
 ## Expand Qt macros in source files
 ##
 
-QT5_WRAP_CPP(awl_mocs
+QT4_WRAP_CPP(awl_mocs
     floatentry.h
     pitchedit.h
     pitchlabel.h

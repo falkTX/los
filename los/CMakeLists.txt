@@ -41,7 +41,7 @@ subdirs(${SubDirs})
 ## Expand Qt macros in source files
 ##
 
-QT5_WRAP_CPP(los_moc_headers
+QT4_WRAP_CPP(los_moc_headers
     app.h
     cobject.h
     conf.h
@@ -64,7 +64,7 @@ QT5_WRAP_CPP(los_moc_headers
 ## Resource files
 ##
 
-QT5_ADD_RESOURCES(los_qrc_files
+QT4_ADD_RESOURCES(los_qrc_files
     los.qrc
 )
 
@@ -234,8 +234,7 @@ target_link_libraries(los
     ctrl
     widgets
 # system libs
-    Qt5::Xml
-    Qt5::Widgets
+    ${QT_LIBRARIES}
     ${ALSA_LIBRARIES}
     ${JACK_LIBRARIES}
     ${UUID_LIBRARIES}

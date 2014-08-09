@@ -23,9 +23,9 @@
 # Expand Qt macros
 #
 
-QT5_WRAP_CPP(composer_mocs
-    Composer.h 
-    ComposerCanvas.h 
+QT4_WRAP_CPP(composer_mocs
+    Composer.h
+    ComposerCanvas.h
     HeaderList.h
     CanvasNavigator.h
 )

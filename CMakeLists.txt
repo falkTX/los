@@ -126,23 +126,40 @@ include_directories(${JACK_INCLUDE_DIRS})
 PKG_CHECK_MODULES(UUID REQUIRED uuid>=0.0.1)
 include_directories(${UUID_INCLUDE_DIRS})
 
+#################################################
+## Qt4
+
+set(QT_MIN_VERSION "4.3.0")
+set(QT_USE_QTXML TRUE)
+
+find_package(Qt4)
+
+if (NOT QT4_FOUND)
+    message(FATAL_ERROR "Fatal error: QT (version >= 4.3.0) required.\n"
+                        "cmake tries to detect QT4 by searching for 'qmake' in your PATH.\n"
+                        "If you have Qt4 installed, make sure qmake is found in your PATH.")
+endif (NOT QT4_FOUND)
+
+include(${QT_USE_FILE})
+
+#################################################
 ##  Qt5
-find_package(Qt5Core REQUIRED)
-find_package(Qt5Gui REQUIRED)
-find_package(Qt5LinguistTools REQUIRED)
-find_package(Qt5Xml REQUIRED)
-find_package(Qt5Widgets REQUIRED)
 
-add_definitions(${Qt5Widgets_DEFINITIONS})
+# find_package(Qt5Core REQUIRED)
+# find_package(Qt5Gui REQUIRED)
+# find_package(Qt5LinguistTools REQUIRED)
+# find_package(Qt5Xml REQUIRED)
+# find_package(Qt5Widgets REQUIRED)
 
-include_directories(${Qt5Xml_INCLUDE_DIRS})
-include_directories(${Qt5Widgets_INCLUDE_DIRS})
+# add_definitions(${Qt5Widgets_DEFINITIONS})
+# include_directories(${Qt5Xml_INCLUDE_DIRS})
+# include_directories(${Qt5Widgets_INCLUDE_DIRS})
 
-set(CMAKE_AUTOMOC ON)
+# set(CMAKE_AUTOMOC ON)
 
-if (Qt5_POSITION_INDEPENDENT_CODE)
-    set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-endif()
+# if (Qt5_POSITION_INDEPENDENT_CODE)
+#     set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+# endif()
 
 ##
 ## produce config.h file

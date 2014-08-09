@@ -608,7 +608,7 @@ EditCtrlDialog::EditCtrlDialog(int tick, const Event& event,
     }
 
     ///pop = new QMenu(this);
-    //pop->setCheckable(false);//not necessary in Qt5
+    //pop->setCheckable(false);//not necessary in Qt4/5
 
     MidiTrack* track = part->track();
     int portn = track->outPort();
@@ -696,7 +696,7 @@ EditCtrlDialog::EditCtrlDialog(int tick, const Event& event,
 void EditCtrlDialog::newController()
 {
     QMenu* pup = new QMenu(this);
-    //pup->setCheckable(this);//not necessary in Qt5
+    //pup->setCheckable(this);//not necessary in Qt4/5
     //
     // populate popup with all controllers available for
     // current instrument

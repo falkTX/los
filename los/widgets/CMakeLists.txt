@@ -23,7 +23,7 @@
 ## Expand Qt macros in source files
 ##
 
-QT5_WRAP_CPP(widgets_mocs
+QT4_WRAP_CPP(widgets_mocs
     toolbars/transporttools.h
     toolbars/edittools.h
     toolbars/epictools.h
@@ -136,7 +136,7 @@ file(GLOB widgets_ui_files
     stretchdialog.ui
 )
 
-QT5_WRAP_UI(widgets_ui_headers ${widgets_ui_files})
+QT4_WRAP_UI(widgets_ui_headers ${widgets_ui_files})
 
 ##
 ## List of source files to compile

@@ -23,10 +23,10 @@
 ## Expand Qt macros in source files
 ##
 
-QT5_WRAP_CPP(master_mocs
-    lmaster.h 
-    masteredit.h 
-    master.h 
+QT4_WRAP_CPP(master_mocs
+    lmaster.h
+    masteredit.h
+    master.h
     tscale.h
 )
 

@@ -23,7 +23,7 @@
 ## Expand Qt macros in source files
 ##
 
-QT5_WRAP_CPP(ctrl_mocs
+QT4_WRAP_CPP(ctrl_mocs
     ctrlcanvas.h 
     ctrledit.h 
     ctrlpanel.h

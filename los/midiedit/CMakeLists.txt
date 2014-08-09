@@ -22,7 +22,8 @@
 ##
 ## Expand Qt macros in source files
 ##
-QT5_WRAP_CPP(midiedit_mocs
+
+QT4_WRAP_CPP(midiedit_mocs
     EventCanvas.h
     Piano.h
     Performer.h

@@ -23,7 +23,7 @@
 ## Expand Qt macros in source files
 ##
 
-QT5_WRAP_CPP(midiplugins_mocs
+QT4_WRAP_CPP(midiplugins_mocs
     midifilterimpl.h
     midiitransform.h
     mittranspose.h
@@ -39,7 +39,7 @@ file(GLOB midiplugins_ui_files
     mrconfigbase.ui
 )
 
-QT5_WRAP_UI(midiplugins_ui_headers ${midiplugins_ui_files})
+QT4_WRAP_UI(midiplugins_ui_headers ${midiplugins_ui_files})
 
 ##
 ## List of source files to compile

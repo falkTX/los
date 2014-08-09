@@ -63,7 +63,7 @@ public:
             QWidget* parent = 0, bool writeFlag = false);
 };
 
-/* ORCAN - Disable previeww for now. It is not available in qt5. We will
+/* ORCAN - Disable previeww for now. It is not available in qt4/5. We will
            need to implement it ourselves.
 //---------------------------------------------------------
 //   ContentsPreview

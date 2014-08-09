@@ -23,7 +23,7 @@
 ## Expand Qt macros in source files
 ##
 
-QT5_WRAP_CPP(liste_mocs
+QT4_WRAP_CPP(liste_mocs
     editevent.h
     listedit.h
 )
@@ -36,7 +36,7 @@ file(GLOB liste_ui_files
     editctrlbase.ui
 )
 
-QT5_WRAP_UI(liste_ui_headers ${liste_ui_files})
+QT4_WRAP_UI(liste_ui_headers ${liste_ui_files})
 
 ##
 ## List of source files to compile

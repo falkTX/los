@@ -22,7 +22,7 @@
 ## Expand Qt macros in source files
 ##
 
-QT5_WRAP_CPP(theme_mocs
+QT4_WRAP_CPP(theme_mocs
     CarlaStyle.hpp
     CarlaStyleAnimations.hpp
     CarlaStylePrivate.hpp

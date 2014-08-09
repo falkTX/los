@@ -2242,7 +2242,7 @@ void LOS::updateRouteMenus(MidiTrack* track, QObject* master)
     // NOTE: The puropse of this routine is to make sure the items actually reflect
     //  the routing status. And with LOS-1 QT3, it was also required to actually
     //  check the items since QT3 didn't do it for us.
-    // But now with LOS-2 and QT5, QT5 checks an item when it is clicked.
+    // But now with LOS-2 and QT4/5, QT4/5 checks an item when it is clicked.
     // So this routine is less important now, since 99% of the time, the items
     //  will be in the right checked state.
     // But we still need this in case for some reason a route could not be
