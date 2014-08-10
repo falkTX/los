@@ -12,13 +12,13 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <stdarg.h>
-//#include <time.h>
 #include <unistd.h>
-#include <jack/midiport.h>
 #include <string.h>
+#include <jack/midiport.h>
 
 #include "audio.h"
 #include "globals.h"
+#include "gconfig.h"
 #include "song.h"
 #include "jackaudio.h"
 #include "track.h"
@@ -136,18 +136,18 @@ static void timebase_callback(jack_transport_state_t /* state */,
 
     pos->valid = JackPositionBBT;
     p.mbt(&pos->bar, &pos->beat, &pos->tick);
+    pos->bar_start_tick = Pos(pos->bar, 0, 0).tick();
     pos->bar++;
     pos->beat++;
-    pos->bar_start_tick = Pos(pos->bar, 0, 0).tick();
 
     int z, n;
     sigmap.timesig(p.tick(), z, n);
     pos->beats_per_bar = z;
     pos->beat_type = n;
-    pos->ticks_per_beat = 24;
+    pos->ticks_per_beat = config.division;
 
-    int tempo = tempomap.tempo(p.tick());
-    pos->beats_per_minute = (60000000.0 / tempo) * tempomap.globalTempo() / 100.0;
+    const double tempo = tempomap.tempo(p.tick());
+    pos->beats_per_minute = (60000000.0 / tempo) * double(tempomap.globalTempo())/100.0;
 }
 
 //---------------------------------------------------------
