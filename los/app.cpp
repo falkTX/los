@@ -486,7 +486,6 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
 
     //Initialize the trackManager
     trackManager = new TrackManager;
-    midiSyncConfig = 0;
     midiRemoteConfig = 0;
     midiPortConfig = 0;
     midiAssignDialog = 0;

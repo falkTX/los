@@ -111,15 +111,12 @@ public:
         return "LOS";
     }
 
-    //virtual void* registerOutPort(const char*) {
-
-    virtual void* registerOutPort(const char*, bool)
+    virtual void* registerOutPort(const char*)
     {
         return (void*) 1;
     }
-    //virtual void* registerInPort(const char*) {
 
-    virtual void* registerInPort(const char*, bool)
+    virtual void* registerInPort(const char*)
     {
         return (void*) 2;
     }
@@ -205,11 +202,6 @@ public:
         if (DEBUG_DUMMY)
             printf("DummyAudioDevice::stopTransport, playPos=%d\n", playPos);
         state = Audio::STOP;
-    }
-
-    virtual int setMaster(bool)
-    {
-        return 1;
     }
 
     virtual void seekTransport(const Pos &p)

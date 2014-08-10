@@ -730,13 +730,6 @@ void readConfiguration(Xml& xml, bool readOnlySequencer)/*{{{*/
                 {
                     lastTrackPartColorIndex = xml.parseInt();
                 }
-                else if (tag == "jackTransportMaster")
-                {
-                    // XXX FIXME
-                    bool jackTransportMaster = xml.parseInt();
-                    if (audioDevice)
-                        audioDevice->setMaster(jackTransportMaster);
-                }
                 else if (tag == "shortcuts")
                     readShortCuts(xml);
                 else if (tag == "division")

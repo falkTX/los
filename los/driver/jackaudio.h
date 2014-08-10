@@ -26,8 +26,6 @@ class JackAudioDevice : public AudioDevice
     jack_transport_state_t transportState;
     jack_position_t pos;
     char jackRegisteredName[16];
-    int dummyState;
-    int dummyPos;
     // Free-running frame counter incremented always in process.
     jack_nframes_t _frameCounter;
 
@@ -46,7 +44,7 @@ public:
     {
         return JACK_AUDIO;
     } // p3.3.52
-    
+
     virtual bool isJackAudio()
     {
         return true;
@@ -54,10 +52,8 @@ public:
 
     void scanMidiPorts();
 
-    //virtual void start();
     virtual void start(int);
     virtual void stop();
-    virtual bool dummySync(int state); // Artificial sync when not using Jack transport.
 
     virtual int framePos() const;
 
@@ -81,12 +77,8 @@ public:
         return jackRegisteredName;
     }
 
-    //virtual void* registerOutPort(const char* name);
-    //virtual void* registerInPort(const char* name);
-    virtual void* registerOutPort(const char* /*name*/, bool /*midi*/);
-    virtual void* registerInPort(const char* /*name*/, bool /*midi*/);
-
-    //virtual char* getJackName();
+    virtual void* registerOutPort(const char* name);
+    virtual void* registerInPort(const char* name);
 
     virtual void unregisterPort(void*);
     virtual void connect(void*, void*);
@@ -121,15 +113,10 @@ public:
     void registrationChanged();
     void connectJackMidiPorts();
 
-    virtual int setMaster(bool f);
-
     jack_client_t* getJackClient()
     {
         return _client;
     }
-
-    //static bool jackStarted;
 };
 
 #endif
-

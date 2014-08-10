@@ -71,9 +71,6 @@ private slots:
     void btnUpdateDefault();
     void currentTabChanged(int);
 
-    //midi sync transport
-    void updateJackMaster(int);
-
 public slots:
     void switchTabs(int tab = 0);
 

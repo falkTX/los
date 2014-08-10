@@ -38,13 +38,12 @@ public:
     }
 
     virtual int deviceType() = 0; // p3.3.52
-    
+
     virtual bool isJackAudio()
     {
         return false;
     }
 
-    //virtual void start() = 0;
     virtual void start(int priority) = 0;
 
     virtual void stop() = 0;
@@ -60,10 +59,8 @@ public:
 
     virtual const char* clientName() = 0;
 
-    //virtual void* registerOutPort(const char* name) = 0;
-    //virtual void* registerInPort(const char* name) = 0;
-    virtual void* registerOutPort(const char* /*name*/, bool /*midi*/) = 0;
-    virtual void* registerInPort(const char* /*name*/, bool /*midi*/) = 0;
+    virtual void* registerOutPort(const char* name) = 0;
+    virtual void* registerInPort(const char* name) = 0;
 
     virtual void unregisterPort(void*) = 0;
     virtual void connect(void*, void*) = 0;
@@ -89,7 +86,6 @@ public:
     virtual void registrationChanged()
     {
     }
-    virtual int setMaster(bool f) = 0;
 };
 
 #endif

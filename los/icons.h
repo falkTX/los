@@ -438,7 +438,6 @@ extern QPixmap* settings_follow_songIcon;
 extern QPixmap* settings_globalsettingsIcon;
 extern QPixmap* settings_midifileexportIcon;
 extern QPixmap* settings_midiport_softsynthsIcon;
-extern QPixmap* settings_midisyncIcon;
 extern QPixmap* view_bigtime_windowIcon;
 extern QPixmap* view_markerIcon;
 extern QPixmap* view_mixerIcon;

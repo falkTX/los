@@ -35,7 +35,6 @@
 #include "xpm/settings_globalsettings.xpm"
 #include "xpm/settings_midifileexport.xpm"
 #include "xpm/settings_midiport_softsynths.xpm"
-#include "xpm/settings_midisync.xpm"
 #include "xpm/view_bigtime_window.xpm"
 #include "xpm/view_marker.xpm"
 #include "xpm/view_transport_window.xpm"
@@ -699,7 +698,6 @@ QPixmap* settings_follow_songIcon;
 QPixmap* settings_globalsettingsIcon;
 QPixmap* settings_midifileexportIcon;
 QPixmap* settings_midiport_softsynthsIcon;
-QPixmap* settings_midisyncIcon;
 QPixmap* view_bigtime_windowIcon;
 QPixmap* view_markerIcon;
 QPixmap* view_mixerIcon;
@@ -1409,7 +1407,6 @@ void initIcons()
     settings_globalsettingsIcon                   = new LOSPixmap(settings_globalsettings_xpm, nullptr);
     settings_midifileexportIcon                   = new LOSPixmap(settings_midifileexport_xpm, nullptr);
     settings_midiport_softsynthsIcon              = new LOSPixmap(settings_midiport_softsynths_xpm, nullptr);
-    settings_midisyncIcon                         = new LOSPixmap(settings_midisync_xpm, nullptr);
     view_bigtime_windowIcon                       = new LOSPixmap(view_bigtime_window_xpm, nullptr);
     view_markerIcon                               = new LOSPixmap(view_marker_xpm, nullptr);
     view_transport_windowIcon                     = new LOSPixmap(view_transport_window_xpm, nullptr);

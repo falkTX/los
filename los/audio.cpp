@@ -191,32 +191,13 @@ void Audio::stop(bool)
 
 bool Audio::sync(int jackState, unsigned frame)
 {
-
-    // Changed by Tim. p3.3.24
-    /*
-          bool done = true;
-          if (state == LOOP1)
-                state = LOOP2;
-          else {
-                if (_pos.frame() != frame) {
-                      Pos p(frame, false);
-                      seek(p);
-                      }
-                state = State(jackState);
-                if (!_freewheel)
-                      //done = audioPrefetch->seekDone;
-                      done = audioPrefetch->seekDone();
-                }
-
-          return done;
-     */
     bool done = true;
     if (state == LOOP1)
         state = LOOP2;
     else
     {
         State s = State(jackState);
-        //
+
         //  STOP -> START_PLAY      start rolling
         //  STOP -> STOP            seek in stop state
         //  PLAY -> START_PLAY  seek in play state
@@ -234,7 +215,6 @@ bool Audio::sync(int jackState, unsigned frame)
         }
         else
         {
-            //if (frame != _seqTime.pos.frame()) {
             if (frame != _pos.frame())
             {
                 // seek during seek

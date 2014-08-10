@@ -431,8 +431,6 @@ void MidiAssignDialog::btnResetClicked()/*{{{*/
     m_trackname->setText("");
     cmbTypeSelected(m_lasttype);
 
-    //if(midiSyncConfig)
-    //	midiSyncConfig->songChanged(-1);
     if(midiPortConfig)
         midiPortConfig->songChanged(-1);
 }/*}}}*/
@@ -449,21 +447,12 @@ void MidiAssignDialog::currentTabChanged(int flags)/*{{{*/
         case 2: //MidiPortPreset
         case 3: //MidiAssign
         break;
-        //case 4: //MidiSync
-        //	midiSyncConfig->songChanged(-1);
-        //break;
     }
 }/*}}}*/
 
 void MidiAssignDialog::switchTabs(int tab)
 {
     m_tabpanel->setCurrentIndex(tab);
-}
-
-void MidiAssignDialog::updateJackMaster(int val)
-{
-    if (audioDevice)
-        audioDevice->setMaster(val == Qt::Checked);
 }
 
 //Virtuals

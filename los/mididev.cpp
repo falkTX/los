@@ -34,8 +34,6 @@ extern bool initMidiJack();
 MidiDeviceList midiDevices;
 extern void processMidiInputTransformPlugins(MEvent&);
 
-extern unsigned int volatile lastExtMidiSyncTick;
-
 //---------------------------------------------------------
 //   initMidiDevices
 //---------------------------------------------------------

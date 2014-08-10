@@ -88,7 +88,6 @@ void initShortCuts()
 
     defShrt(SHRT_GLOBAL_CONFIG, 0, "Settings: Global configuration", ARRANG_SHRT, "configure_global");
     defShrt(SHRT_CONFIG_SHORTCUTS, 0, "Settings: Configure shortcuts", ARRANG_SHRT, "configure_shortcuts");
-    defShrt(SHRT_CONFIG_MIDISYNC, 0, "Settings: Midi sync configuration", ARRANG_SHRT, "configure_midi_sync");
     defShrt(SHRT_MIDI_FILE_CONFIG, 0, "Settings: Midi file import/export configuration", ARRANG_SHRT, "configure_midi_file");
     //defShrt(SHRT_APPEARANCE_SETTINGS, 0, "Settings: Appearance settings", ARRANG_SHRT, "configure_appearance_settings");
     defShrt(SHRT_CONFIG_MIDI_PORTS, Qt::Key_F2, "Settings: Midi ports / Soft Synth", ARRANG_SHRT, "configure_midi_ports");

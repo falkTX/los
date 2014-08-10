@@ -66,7 +66,7 @@ bool checkAudioDevice()
 
 
 //---------------------------------------------------------
-//   jack_thread_init
+//   processAudio
 //---------------------------------------------------------
 
 int JackAudioDevice::processAudio(jack_nframes_t frames, void*)
@@ -203,8 +203,6 @@ JackAudioDevice::JackAudioDevice(jack_client_t* cl, char* name)
     _frameCounter = 0;
     strcpy(jackRegisteredName, name);
     _client = cl;
-    dummyState = Audio::STOP;
-    dummyPos = 0;
 }
 
 //---------------------------------------------------------
@@ -303,8 +301,6 @@ bool initJackAudio()
             fprintf(stderr, "initJackAudio(): registering client...\n");
 
         jackAudio->registerClient();
-        //jack_set_thread_init_callback(client, (JackThreadInitCallback) jack_thread_init, 0);
-        //jack_set_timebase_callback(client, 0, (JackTimebaseCallback) timebase_callback, 0);
     }
 
     if (client)
@@ -680,6 +676,7 @@ void JackAudioDevice::registerClient()
     if (!checkJackClient(_client)) return;
     jack_set_process_callback(_client, processAudio, 0);
     jack_set_sync_callback(_client, processSync, 0);
+    jack_set_timebase_callback(_client, 0, timebase_callback, 0);
 
     jack_on_shutdown(_client, processShutdown, 0);
     jack_set_buffer_size_callback(_client, bufsize_callback, 0);
@@ -689,7 +686,7 @@ void JackAudioDevice::registerClient()
     jack_set_port_connect_callback(_client, port_connect_callback, 0);
 
     jack_set_graph_order_callback(_client, graph_callback, 0);
-    //      jack_set_xrun_callback(client, xrun_callback, 0);
+    // jack_set_xrun_callback(client, xrun_callback, 0);
     jack_set_freewheel_callback(_client, freewheel_callback, 0);
 }
 
@@ -697,28 +694,26 @@ void JackAudioDevice::registerClient()
 //   registerInPort
 //---------------------------------------------------------
 
-void* JackAudioDevice::registerInPort(const char* name, bool midi)
+void* JackAudioDevice::registerInPort(const char* name)
 {
     if (JACK_DEBUG)
         printf("registerInPort()\n");
     if (!checkJackClient(_client)) return NULL;
-    const char* type = midi ? JACK_DEFAULT_MIDI_TYPE : JACK_DEFAULT_AUDIO_TYPE;
-    void* p = jack_port_register(_client, name, type, JackPortIsInput, 0);
-    return p;
+
+    return jack_port_register(_client, name, JACK_DEFAULT_MIDI_TYPE, JackPortIsInput, 0);
 }
 
 //---------------------------------------------------------
 //   registerOutPort
 //---------------------------------------------------------
 
-void* JackAudioDevice::registerOutPort(const char* name, bool midi)
+void* JackAudioDevice::registerOutPort(const char* name)
 {
     if (JACK_DEBUG)
         printf("registerOutPort()\n");
     if (!checkJackClient(_client)) return NULL;
-    const char* type = midi ? JACK_DEFAULT_MIDI_TYPE : JACK_DEFAULT_AUDIO_TYPE;
-    void* p = jack_port_register(_client, name, type, JackPortIsOutput, 0);
-    return p;
+
+    return jack_port_register(_client, name, JACK_DEFAULT_MIDI_TYPE, JackPortIsOutput, 0);
 }
 
 //---------------------------------------------------------
@@ -736,7 +731,6 @@ void exitJackAudio()
         printf("exitJackAudio() after delete jackAudio\n");
 
     audioDevice = NULL;
-
 }
 
 //---------------------------------------------------------
@@ -1086,36 +1080,6 @@ void JackAudioDevice::setFreewheel(bool f)
 }
 
 //---------------------------------------------------------
-//   dummySync
-//---------------------------------------------------------
-
-bool JackAudioDevice::dummySync(int state)
-{
-    // Roughly segment time length.
-    //timespec ts = { 0, (1000000000 * segmentSize) / sampleRate };     // In nanoseconds.
-    unsigned int sl = (1000000 * segmentSize) / sampleRate; // In microseconds.
-
-    double ct = curTime();
-    // Wait for a default maximum of 5 seconds.
-    // Similar to how Jack is supposed to wait a default of 2 seconds for slow clients.
-    // TODO: Make this timeout a 'settings' option so it can be applied both to Jack and here.
-    while ((curTime() - ct) < 5.0)
-    {
-        if (audio->sync(state, dummyPos))
-            return true;
-
-        // Not ready. Wait a 'segment', try again...
-        //nanosleep(&ts, NULL);
-        usleep(sl); // usleep is supposed to be obsolete!
-    }
-
-    //if(JACK_DEBUG)
-    printf("JackAudioDevice::dummySync Sync timeout - audio not ready!\n");
-
-    return false;
-}
-
-//---------------------------------------------------------
 //   startTransport
 //---------------------------------------------------------
 
@@ -1137,8 +1101,6 @@ void JackAudioDevice::stopTransport()
     if (JACK_DEBUG)
         printf("JackAudioDevice::stopTransport()\n");
 
-    dummyState = Audio::STOP;
-
     if (!checkJackClient(_client)) return;
     if (transportState != JackTransportStopped)
     {
@@ -1156,8 +1118,6 @@ void JackAudioDevice::seekTransport(unsigned frame)
     if (JACK_DEBUG)
         printf("JackAudioDevice::seekTransport() frame:%d\n", frame);
 
-    dummyPos = frame;
-
     if (!checkJackClient(_client)) return;
     jack_transport_locate(_client, frame);
 }
@@ -1170,8 +1130,6 @@ void JackAudioDevice::seekTransport(const Pos &p)
 {
     if (JACK_DEBUG)
         printf("JackAudioDevice::seekTransport() frame:%d\n", p.frame());
-
-    dummyPos = p.frame();
 
     if (!checkJackClient(_client)) return;
 
@@ -1189,40 +1147,6 @@ void* JackAudioDevice::findPort(const char* name)
     if (!checkJackClient(_client)) return NULL;
     void* p = jack_port_by_name(_client, name);
     return p;
-}
-
-//---------------------------------------------------------
-//   setMaster
-//---------------------------------------------------------
-
-int JackAudioDevice::setMaster(bool f)
-{
-    if (JACK_DEBUG)
-        printf("JackAudioDevice::setMaster val:%d\n", f);
-    if (!checkJackClient(_client))
-        return 0;
-
-    int r = 0;
-    if (f)
-    {
-        // Make LOS the Jack timebase master. Do it unconditionally (second param = 0).
-        r = jack_set_timebase_callback(_client, 0, (JackTimebaseCallback) timebase_callback, 0);
-        if (debugMsg || JACK_DEBUG)
-        {
-            if (r)
-                printf("JackAudioDevice::setMaster jack_set_timebase_callback failed: result:%d\n", r);
-        }
-    }
-    else
-    {
-        r = jack_release_timebase(_client);
-        if (debugMsg || JACK_DEBUG)
-        {
-            if (r)
-                printf("JackAudioDevice::setMaster jack_release_timebase failed: result:%d\n", r);
-        }
-    }
-    return r;
 }
 
 //---------------------------------------------------------

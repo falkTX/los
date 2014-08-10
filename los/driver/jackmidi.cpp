@@ -141,7 +141,7 @@ QString MidiJackDevice::open()
                 if (audioDevice->deviceType() == AudioDevice::JACK_AUDIO)
                 {
                     s = name() + QString(JACK_MIDI_OUT_PORT_SUFFIX);
-                    _out_client_jackport = (jack_port_t*) audioDevice->registerOutPort(s.toLatin1().constData(), true);
+                    _out_client_jackport = (jack_port_t*) audioDevice->registerOutPort(s.toLatin1().constData());
                     if (!_out_client_jackport)
                     {
                         fprintf(stderr, "LOS: MidiJackDevice::open failed creating output port name %s\n", s.toLatin1().constData());
@@ -168,7 +168,7 @@ QString MidiJackDevice::open()
             if (audioDevice->deviceType() == AudioDevice::JACK_AUDIO)
             {
                 s = name() + QString(JACK_MIDI_IN_PORT_SUFFIX);
-                _in_client_jackport = (jack_port_t*) audioDevice->registerInPort(s.toLatin1().constData(), true);
+                _in_client_jackport = (jack_port_t*) audioDevice->registerInPort(s.toLatin1().constData());
                 if (!_in_client_jackport)
                 {
                     fprintf(stderr, "LOS: MidiJackDevice::open failed creating input port name %s\n", s.toLatin1().constData());
