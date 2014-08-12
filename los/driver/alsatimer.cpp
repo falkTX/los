@@ -49,16 +49,9 @@ signed int AlsaTimer::initTimer()
     int subdevice = 0;
     int test_ids[] = { SND_TIMER_GLOBAL_SYSTEM,
                        SND_TIMER_GLOBAL_RTC
-#ifdef SND_TIMER_GLOBAL_HPET
-                     , SND_TIMER_GLOBAL_HPET
-#endif
-#ifdef SND_TIMER_GLOBAL_HRTIMER
-                     , SND_TIMER_GLOBAL_HRTIMER
-#endif
-    };
+                     };
     int max_ids = sizeof (test_ids) / sizeof (int);
     long best_res = LONG_MAX;
-    //int best_dev = -1; // SND_TIMER_GLOBAL_SYSTEM;
     int best_dev = SND_TIMER_GLOBAL_SYSTEM; // p3.3.51
     int i;
 
