@@ -43,7 +43,6 @@ file(GLOB awl_source_files
     sigedit.cpp
     tempoedit.cpp
     tempolabel.cpp
-    utils.cpp
 )
 
 ##
