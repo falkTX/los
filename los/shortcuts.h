@@ -137,8 +137,6 @@ enum
     SHRT_MIDI_INIT, //Default: undefined
     SHRT_MIDI_LOCAL_OFF, //Default: undefined
 
-    SHRT_AUDIO_BOUNCE_TO_TRACK, //Default: undefined
-    SHRT_AUDIO_BOUNCE_TO_FILE, //Default: undefined
     SHRT_AUDIO_RESTART, //Default: undefined
 
     SHRT_ADD_MIDI_TRACK, //Default: Ctrl+J

@@ -63,9 +63,6 @@ struct GlobalConfigValues
 
     int division;
     int rtcTicks;
-    int minMeter;
-    double minSlider;
-    bool freewheelMode;
     int guiRefresh;
     QString userInstrumentsDir;
 
@@ -99,20 +96,15 @@ struct GlobalConfigValues
     bool canvasShowGrid;
     QString canvasBgPixmap;
     QStringList canvasCustomBgList;
-    QString styleSheetFile;
-    QString style;
 
-    QString externalWavEditor;
     bool useOldStyleStopShortCut;
     bool moveArmedCheckBox;
-    bool useOutputLimiter;
     QString projectBaseFolder;
     bool projectStoreInFolder;
     bool useProjectSaveDialog;
 
     int audioRaster;
     int midiRaster;
-    bool useAutoCrossFades;
 };
 
 extern GlobalConfigValues config;

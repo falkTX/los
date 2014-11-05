@@ -83,9 +83,6 @@ Audio::Audio()
     _running = false;
     recording = false;
     idle = false;
-    _freewheel = false;
-    _bounce = false;
-    //loopPassed    = false;
     _loopFrame = 0;
     _loopCount = 0;
 
@@ -208,8 +205,9 @@ bool Audio::sync(int jackState, unsigned frame)
             //    seek(p);
             Pos p(frame, false);
             seek(p);
-            if (!_freewheel)
-                done = audioPrefetch->seekDone();
+
+            done = audioPrefetch->seekDone();
+
             if (s == START_PLAY)
                 state = START_PLAY;
         }
@@ -226,16 +224,6 @@ bool Audio::sync(int jackState, unsigned frame)
     }
     return done;
 
-}
-
-//---------------------------------------------------------
-//   setFreewheel
-//---------------------------------------------------------
-
-void Audio::setFreewheel(bool val)
-{
-    // printf("JACK: freewheel callback %d\n", val);
-    _freewheel = val;
 }
 
 //---------------------------------------------------------
@@ -285,8 +273,6 @@ void Audio::process(unsigned frames)
     {
         _loopCount = 0;
         startRolling();
-        if (_bounce)
-            write(sigFd, "f", 1);
     }
     else if (state == LOOP2 && jackState == PLAY)
     {
@@ -297,27 +283,12 @@ void Audio::process(unsigned frames)
     }
     else if (isPlaying() && jackState == STOP)
     {
-        // p3.3.43 Make sure to stop bounce and freewheel mode, for example if user presses stop
-        //  in QJackCtl before right-hand marker is reached (which is handled below).
-        //printf("Audio::process isPlaying() && jackState == STOP\n");
-        if (freewheel())
-        {
-        //printf("  stopping bounce...\n");
-          _bounce = false;
-          write(sigFd, "F", 1);
-        }
-
         stopRolling();
     }
     else if (state == START_PLAY && jackState == STOP)
     {
         state = STOP;
-        if (_bounce)
-        {
-            audioDevice->startTransport();
-        }
-        else
-            write(sigFd, "3", 1); // abort rolling
+        write(sigFd, "3", 1); // abort rolling
     }
     else if (state == STOP && jackState == PLAY)
     {
@@ -341,23 +312,12 @@ void Audio::process(unsigned frames)
 
     if (isPlaying())
     {
-        if (!freewheel())
-            audioPrefetch->msgTick();
-
-        if (_bounce && _pos >= song->rPos())
-        {
-            _bounce = false;
-            write(sigFd, "F", 1);
-            return;
-        }
+        audioPrefetch->msgTick();
 
         //
         //  check for end of song
         //
-        if ((curTickPos >= song->len())
-                && !(song->record()
-                || _bounce
-                || song->loop()))
+        if (curTickPos >= song->len() && ! (song->record() || song->loop()))
         {
             //if(debugMsg)
             //  printf("Audio::process curTickPos >= song->len\n");
@@ -369,7 +329,7 @@ void Audio::process(unsigned frames)
         //
         //  check for loop end
         //
-        if (state == PLAY && song->loop() && !_bounce)
+        if (state == PLAY && song->loop())
         {
             const Pos& loop = song->rPos();
             unsigned n = loop.frame() - samplePos - (3 * frames);
@@ -626,7 +586,7 @@ void Audio::seek(const Pos& p)
     midiSeq->msgSeek(); // handle stuck notes and set
     // controller for new position
 
-    if (state != LOOP2 && !freewheel())
+    if (state != LOOP2)
     {
         // We need to force prefetch to update,
         //  to ensure the most recent data. Things can happen to a part

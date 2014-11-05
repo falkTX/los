@@ -107,7 +107,6 @@ public:
     virtual void stopTransport();
     virtual void seekTransport(unsigned frame);
     virtual void seekTransport(const Pos &p);
-    virtual void setFreewheel(bool f);
     jack_transport_state_t transportQuery(jack_position_t* pos);
     void graphChanged();
     void registrationChanged();

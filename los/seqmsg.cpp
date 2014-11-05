@@ -297,7 +297,6 @@ void Audio::msgPlay(bool val)
     {
         if (audioDevice)
             audioDevice->stopTransport();
-        _bounce = false;
     }
 }
 
@@ -788,19 +787,6 @@ void Audio::msgSetTrackOutPort(MidiTrack* track, int port)
     msg.p1 = track;
     msg.a = port;
     sendMessage(&msg, false);
-}
-
-//---------------------------------------------------------
-//   msgBounce
-//    start bounce operation
-//---------------------------------------------------------
-
-void Audio::msgBounce()
-{
-    _bounce = true;
-    if (!checkAudioDevice()) return;
-    //audioDevice->seekTransport(song->lPos().frame());
-    audioDevice->seekTransport(song->lPos());
 }
 
 //---------------------------------------------------------

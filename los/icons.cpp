@@ -11,8 +11,6 @@
 #include <QIcon>
 
 #include "xpm/track_comment.xpm"
-#include "xpm/audio_bounce_to_file.xpm"
-#include "xpm/audio_bounce_to_track.xpm"
 #include "xpm/audio_restartaudio.xpm"
 #include "xpm/automation_clear_data.xpm"
 #include "xpm/automation_take_snapshot.xpm"
@@ -674,8 +672,6 @@ QPixmap* select_inside_loopIcon;
 QPixmap* select_invert_selectionIcon;
 QPixmap* select_outside_loopIcon;
 
-QPixmap* audio_bounce_to_fileIcon;
-QPixmap* audio_bounce_to_trackIcon;
 QPixmap* audio_restartaudioIcon;
 QPixmap* automation_clear_dataIcon;
 QPixmap* automation_mixerIcon;
@@ -1383,8 +1379,6 @@ void initIcons()
     select_outside_loopIcon       = new LOSPixmap(select_outside_loop_xpm, nullptr);
     pianoIconSet                  = new LOSIcon(edit_pianoroll_xpm, nullptr); // ddskrjo
 
-    audio_bounce_to_fileIcon                      = new LOSPixmap(audio_bounce_to_file_xpm, nullptr);
-    audio_bounce_to_trackIcon                     = new LOSPixmap(audio_bounce_to_track_xpm, nullptr);
     audio_restartaudioIcon                        = new LOSPixmap(audio_restartaudio_xpm, nullptr);
     automation_clear_dataIcon                     = new LOSPixmap(automation_clear_data_xpm, nullptr);
     automation_take_snapshotIcon                  = new LOSPixmap(automation_take_snapshot_xpm, nullptr);

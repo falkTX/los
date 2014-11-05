@@ -2185,31 +2185,6 @@ void Song::seqSignal(int fd)/*{{{*/
             }
 
                 break;
-            case 'f': // start freewheel
-                if (debugMsg)
-                    printf("Song: seqSignal: case f: setFreewheel start\n");
-
-                // Enabled by Tim. p3.3.6
-                if (config.freewheelMode)
-                    audioDevice->setFreewheel(true);
-
-                break;
-
-            case 'F': // stop freewheel
-                if (debugMsg)
-                    printf("Song: seqSignal: case F: setFreewheel stop\n");
-
-                // Enabled by Tim. p3.3.6
-                if (config.freewheelMode)
-                    audioDevice->setFreewheel(false);
-
-                audio->msgPlay(false);
-#if 0
-                if (record())
-                    audio->recordStop();
-                setStopPlay(false);
-#endif
-                break;
 
             case 'C': // Graph changed
                 if (audioDevice)

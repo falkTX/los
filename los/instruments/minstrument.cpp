@@ -319,7 +319,6 @@ void MidiInstrument::init()
 MidiInstrument::MidiInstrument()
 {
     m_panValue = 0.0;
-    m_verbValue = config.minSlider;
     init();
 }
 
@@ -431,7 +430,6 @@ MidiInstrument& MidiInstrument::assign(const MidiInstrument& ins)
     _filePath = ins._filePath;
     m_keymaps = ins.m_keymaps;
     m_panValue = ins.m_panValue;
-    m_verbValue = ins.m_verbValue;
 
     return *this;
 }
@@ -829,8 +827,6 @@ void MidiInstrument::read(Xml& xml)
                 }
                 else if(tag == "panValue")
                     m_panValue = xml.s2().toDouble();
-                else if(tag == "verbValue")
-                    m_verbValue = xml.s2().toDouble();
                 break;
             case Xml::TagEnd:
                 if (tag == "MidiInstrument")
@@ -850,8 +846,8 @@ void MidiInstrument::write(int level, Xml& xml)
     xml.header();
     xml.tag(level, "los version=\"1.0\"");
     level++;
-    xml.nput(level, "<MidiInstrument name=\"%s\" panValue=\"%f\" verbValue=\"%f\"",
-            Xml::xmlString(iname()).toLatin1().constData(), m_panValue, m_verbValue);
+    xml.nput(level, "<MidiInstrument name=\"%s\" panValue=\"%f\"",
+            Xml::xmlString(iname()).toLatin1().constData(), m_panValue);
 
     if (_nullvalue != -1)
     {

@@ -15,7 +15,7 @@
 
 class QStandardItemModel;
 
-enum {CONF_APP_TAB = 0, CONF_AUDIO_TAB, CONF_MIDI_TAB, CONF_GUI_TAB};
+enum {CONF_APP_TAB = 0, CONF_MIDI_TAB, CONF_GUI_TAB};
 
 //---------------------------------------------------------
 //   GlobalSettingsConfig

@@ -104,8 +104,6 @@ void initShortCuts()
     defShrt(SHRT_MIDI_INIT, 0, "Midi: Init midi", ARRANG_SHRT, "midi_init");
     defShrt(SHRT_MIDI_LOCAL_OFF, 0, "Midi: Midi local off", ARRANG_SHRT, "midi_local_off");
 
-    defShrt(SHRT_AUDIO_BOUNCE_TO_TRACK, 0, "Audio: Bounce audio to track", ARRANG_SHRT, "audio_bounce_to_track");
-    defShrt(SHRT_AUDIO_BOUNCE_TO_FILE, 0, "Audio: Bounce audio to file", ARRANG_SHRT, "audio_bounce_to_file");
     defShrt(SHRT_AUDIO_RESTART, 0, "Audio: Restart audio", ARRANG_SHRT, "audio_restart");
 
     //      defShrt(SHRT_OPEN_CLIPS,            0, "View audio clips", ARRANG_SHRT,                  "view_audio_clips");

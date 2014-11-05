@@ -415,8 +415,6 @@ extern QPixmap* select_inside_loopIcon;
 extern QPixmap* select_invert_selectionIcon;
 extern QPixmap* select_outside_loopIcon;
 
-extern QPixmap* audio_bounce_to_fileIcon;
-extern QPixmap* audio_bounce_to_trackIcon;
 extern QPixmap* audio_restartaudioIcon;
 extern QPixmap* automation_clear_dataIcon;
 extern QPixmap* automation_mixerIcon;

@@ -643,9 +643,6 @@ GlobalConfigValues config = {
 
     384, // division;
     1024, // rtcTicks
-    -60, // int minMeter;
-    -60.0, // double minSlider;
-    false, // use Jack freewheel
     20, // int guiRefresh;
     QString(""), // userInstrumentsDir
     true, // extendedMidi
@@ -672,18 +669,13 @@ GlobalConfigValues config = {
     true, // canvasShowGrid;
     QString(""), // canvasBgPixmap;
     QStringList(), // canvasCustomBgList
-    QString(":/style.qss"), // default styleSheetFile
-    QString(""), // style
-    QString("sweep"), // externalWavEditor
     false, // useOldStyleStopShortCut
     true, // moveArmedCheckBox
-    false, // useOutputLimiter
     QString("./"), // projectBaseFolder
     true,	 // projectStoreInFolder
     false,	// useProjectSaveDialog
 
     0, //Default audio raster index
-    1, //Default midi raster index
-    true //Use auto crossfades
+    1  //Default midi raster index
 };
 

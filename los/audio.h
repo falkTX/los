@@ -123,9 +123,6 @@ private:
     bool _running; // audio is active
     bool recording; // recording is active
     bool idle; // do nothing in idle mode
-    bool _freewheel;
-    bool _bounce;
-    //bool loopPassed;
     unsigned _loopFrame; // Startframe of loop if in LOOP mode. Not quite the same as left marker !
     int _loopCount; // Number of times we have looped so far
 
@@ -213,12 +210,9 @@ public:
     void msgRemovePart(Part*, bool u = true);
     void msgRemoveParts(QList<Part*>, bool u = true);
     void msgChangePart(Part* oldPart, Part* newPart, bool u = true, bool doCtrls = true, bool doClones = false);
-    //void msgAddEvent(Event&, Part*, bool u = true);
     void msgAddEvent(Event&, Part*, bool u = true, bool doCtrls = true, bool doClones = false, bool waitRead = true);
     void msgAddEventCheck(MidiTrack*, Event&, bool u = true, bool doCtrls = true, bool doClones = false, bool waitRead = true);
-    //void msgDeleteEvent(Event&, Part*, bool u = true);
     void msgDeleteEvent(Event&, Part*, bool u = true, bool doCtrls = true, bool doClones = false, bool waitRead = true);
-    //void msgChangeEvent(Event&, Event&, Part*, bool u = true);
     void msgChangeEvent(Event&, Event&, Part*, bool u = true, bool doCtrls = true, bool doClones = false, bool waitRead = true);
     void msgScanAlsaMidiPorts();
     void msgAddTempo(int tick, int tempo, bool doUndoFlag = true);
@@ -245,7 +239,6 @@ public:
     void msgInitMidiDevices();
     void msgResetMidiDevices();
     void msgIdle(bool);
-    void msgBounce();
     void msgSetSolo(MidiTrack*, bool);
     void msgSetHwCtrlState(MidiPort*, int, int, int);
     void msgSetHwCtrlStates(MidiPort*, int, int, int, int);
@@ -293,12 +286,6 @@ public:
     void recordStop();
     void preloadControllers();
 
-    bool freewheel() const
-    {
-        return _freewheel;
-    }
-    void setFreewheel(bool val);
-
     int getFrameOffset() const
     {
         return frameOffset;
@@ -306,11 +293,6 @@ public:
     void initDevices();
 
     void sendMsgToGui(char c);
-
-    bool bounce() const
-    {
-        return _bounce;
-    }
 };
 
 extern int processAudio(unsigned long, void*);

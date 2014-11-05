@@ -106,7 +106,6 @@ class MidiInstrument
     bool _dirty;
     int _nullvalue;
     double m_panValue;
-    double m_verbValue;
 
     void init();
 
@@ -282,17 +281,9 @@ public:
     {
         m_panValue = p;
     }
-    void setDefaultVerb(double v)
-    {
-        m_verbValue = v;
-    }
     double defaultPan()
     {
         return m_panValue;
-    }
-    double defaultVerb()
-    {
-        return m_verbValue;
     }
 };
 

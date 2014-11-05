@@ -218,7 +218,6 @@ QHash<int, QColor> g_trackColorList;
 QHash<int, QColor> g_trackColorListSelected;
 QHash<int, QPixmap> g_trackDragImageList;
 int vuColorStrip = 0; //default vuColor is gradient
-bool gUpdateAuxes = false;
 TrackManager* trackManager;
 
 QList<QPair<int, QString> > gInputList;

@@ -334,17 +334,6 @@ static int srate_callback(jack_nframes_t srate, void*)
 }
 
 //---------------------------------------------------------
-//   freewheel_callback
-//---------------------------------------------------------
-
-static void freewheel_callback(int starting, void*)
-{
-    if (debugMsg || JACK_DEBUG)
-        printf("JACK: freewheel_callback: starting%d\n", starting);
-    audio->setFreewheel(starting);
-}
-
-//---------------------------------------------------------
 //   registration_callback
 //---------------------------------------------------------
 
@@ -687,7 +676,6 @@ void JackAudioDevice::registerClient()
 
     jack_set_graph_order_callback(_client, graph_callback, 0);
     // jack_set_xrun_callback(client, xrun_callback, 0);
-    jack_set_freewheel_callback(_client, freewheel_callback, 0);
 }
 
 //---------------------------------------------------------
@@ -1042,18 +1030,6 @@ int JackAudioDevice::getState()
         default:
             return Audio::STOP;
     }
-}
-
-//---------------------------------------------------------
-//   setFreewheel
-//---------------------------------------------------------
-
-void JackAudioDevice::setFreewheel(bool f)
-{
-    if (JACK_DEBUG)
-        printf("JackAudioDevice::setFreewheel(\n");
-    if (!checkJackClient(_client)) return;
-    jack_set_freewheel(_client, f);
 }
 
 //---------------------------------------------------------

@@ -86,10 +86,6 @@ GlobalSettingsConfig::GlobalSettingsConfig(QWidget* parent)
     connect(defaultInstrumentsDirButton, SIGNAL(clicked()), SLOT(defaultInstrumentsPath()));
 
     guiRefreshSelect->setValue(config.guiRefresh);
-    minSliderSelect->setValue(int(config.minSlider));
-    minMeterSelect->setValue(config.minMeter);
-    freewheelCheckBox->setChecked(config.freewheelMode);
-    outputLimiterCheckBox->setChecked(config.useOutputLimiter);
 
     startSongEntry->setText(config.startSong);
     startSongGroup->button(config.startMode)->setChecked(true);
@@ -97,8 +93,6 @@ GlobalSettingsConfig::GlobalSettingsConfig(QWidget* parent)
     oldStyleStopCheckBox->setChecked(config.useOldStyleStopShortCut);
     moveArmedCheckBox->setChecked(config.moveArmedCheckBox);
     projectSaveCheckBox->setChecked(config.useProjectSaveDialog);
-
-    m_chkAutofade->setChecked(config.useAutoCrossFades);
 
     connect(applyButton, SIGNAL(clicked()), SLOT(apply()));
     connect(okButton, SIGNAL(clicked()), SLOT(ok()));
@@ -187,10 +181,6 @@ void GlobalSettingsConfig::updateSettings()
     }
 
     guiRefreshSelect->setValue(config.guiRefresh);
-    minSliderSelect->setValue(int(config.minSlider));
-    minMeterSelect->setValue(config.minMeter);
-    freewheelCheckBox->setChecked(config.freewheelMode);
-    outputLimiterCheckBox->setChecked(config.useOutputLimiter);
 
     startSongEntry->setText(config.startSong);
     startSongGroup->button(config.startMode)->setChecked(true);
@@ -220,10 +210,6 @@ void GlobalSettingsConfig::apply()
 {
     int rtcticks = rtcResolutionSelect->currentIndex();
     config.guiRefresh = guiRefreshSelect->value();
-    config.minSlider = minSliderSelect->value();
-    config.minMeter = minMeterSelect->value();
-    config.freewheelMode = freewheelCheckBox->isChecked();
-    config.useOutputLimiter = outputLimiterCheckBox->isChecked();
     config.rtcTicks = rtcResolutions[rtcticks];
     config.userInstrumentsDir = userInstrumentsPath->text();
     config.startSong = startSongEntry->text();
@@ -237,7 +223,6 @@ void GlobalSettingsConfig::apply()
     config.useOldStyleStopShortCut = oldStyleStopCheckBox->isChecked();
     config.moveArmedCheckBox = moveArmedCheckBox->isChecked();
     config.useProjectSaveDialog = projectSaveCheckBox->isChecked();
-    config.useAutoCrossFades = m_chkAutofade->isChecked();
 
     losUserInstruments = config.userInstrumentsDir;
 

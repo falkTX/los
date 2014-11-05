@@ -77,7 +77,6 @@ public:
     virtual void stopTransport() = 0;
     virtual void seekTransport(unsigned frame) = 0;
     virtual void seekTransport(const Pos &p) = 0;
-    virtual void setFreewheel(bool f) = 0;
 
     virtual void graphChanged()
     {

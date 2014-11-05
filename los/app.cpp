@@ -2232,8 +2232,6 @@ void LOS::updateRouteMenus(MidiTrack* track, QObject* master)
     // But we still need this in case for some reason a route could not be
     //  added (or removed). Then the item will be properly un-checked (or checked) here.
 
-    //if(!track || track != gRoutingPopupMenuMaster || track->type() == Track::AUDIO_AUX)
-    //if(!track || track->type() == Track::AUDIO_AUX)
     if (!track || gRoutingPopupMenuMaster != master) // p3.3.50
         return;
 

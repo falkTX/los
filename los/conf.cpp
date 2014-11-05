@@ -622,16 +622,10 @@ void readConfiguration(Xml& xml, bool readOnlySequencer)/*{{{*/
                     break;
                 }
 
-                if (tag == "theme")
-                    config.style = xml.parse1();
-                else if (tag == "styleSheetFile")
-                    config.styleSheetFile = xml.parse1();
-                else if (tag == "useOldStyleStopShortCut")
+                /**/ if (tag == "useOldStyleStopShortCut")
                     config.useOldStyleStopShortCut = xml.parseInt();
                 else if (tag == "moveArmedCheckBox")
                     config.moveArmedCheckBox = xml.parseInt();
-                else if (tag == "externalWavEditor")
-                    config.externalWavEditor = xml.parse1();
                 else if (tag == "font0")
                     config.fonts[0].fromString(xml.parse1());
                 else if (tag == "font1")
@@ -738,14 +732,6 @@ void readConfiguration(Xml& xml, bool readOnlySequencer)/*{{{*/
                     config.guiDivision = xml.parseInt();
                 else if (tag == "rtcTicks")
                     config.rtcTicks = xml.parseInt();
-                else if (tag == "minMeter")
-                    config.minMeter = xml.parseInt();
-                else if (tag == "minSlider")
-                    config.minSlider = xml.parseDouble();
-                else if (tag == "freewheelMode")
-                    config.freewheelMode = xml.parseInt();
-                else if (tag == "outputLimiter")
-                    config.useOutputLimiter = xml.parseInt();
                 else if (tag == "guiRefresh")
                     config.guiRefresh = xml.parseInt();
                 else if (tag == "userInstrumentsDir")
@@ -764,8 +750,6 @@ void readConfiguration(Xml& xml, bool readOnlySequencer)/*{{{*/
                     config.projectStoreInFolder = xml.parseInt();
                 else if (tag == "useProjectSaveDialog")
                     config.useProjectSaveDialog = xml.parseInt();
-                else if (tag == "useAutoCrossFades")
-                    config.useAutoCrossFades = xml.parseInt();
                 else if(tag == "globalInputList")
                     readGlobalInputList(xml);
                 else
@@ -1001,10 +985,6 @@ void LOS::writeGlobalConfiguration(int level, Xml& xml) const
 
     xml.intTag(level, "division", config.division);
     xml.intTag(level, "rtcTicks", config.rtcTicks);
-    xml.intTag(level, "minMeter", config.minMeter);
-    xml.doubleTag(level, "minSlider", config.minSlider);
-    xml.intTag(level, "freewheelMode", config.freewheelMode);
-    xml.intTag(level, "outputLimiter", config.useOutputLimiter);
 
     xml.intTag(level, "guiRefresh", config.guiRefresh);
     xml.strTag(level, "userInstrumentsDir", config.userInstrumentsDir);
@@ -1019,7 +999,6 @@ void LOS::writeGlobalConfiguration(int level, Xml& xml) const
     xml.strTag(level, "projectBaseFolder", config.projectBaseFolder);
     xml.intTag(level, "projectStoreInFolder", config.projectStoreInFolder);
     xml.intTag(level, "useProjectSaveDialog", config.useProjectSaveDialog);
-    xml.intTag(level, "useAutoCrossFades", config.useAutoCrossFades);
     xml.intTag(level, "midiInputDevice", midiInputPorts);
     xml.intTag(level, "midiInputChannel", midiInputChannel);
     xml.intTag(level, "midiRecordType", midiRecordType);
@@ -1029,7 +1008,6 @@ void LOS::writeGlobalConfiguration(int level, Xml& xml) const
     xml.intTag(level, "midiFilterCtrl3", midiFilterCtrl3);
     xml.intTag(level, "midiFilterCtrl4", midiFilterCtrl4);
 
-    xml.strTag(level, "externalWavEditor", config.externalWavEditor);
     xml.intTag(level, "useOldStyleStopShortCut", config.useOldStyleStopShortCut);
     xml.intTag(level, "moveArmedCheckBox", config.moveArmedCheckBox);
 

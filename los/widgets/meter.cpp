@@ -6,6 +6,8 @@
 //  (C) Copyright 2000 Werner Schweer (ws@seh.de)
 //=========================================================
 
+// XXX REMOVE ME
+
 #include <stdio.h>
 #include <cmath>
 
@@ -39,7 +41,7 @@ Meter::Meter(QWidget* parent, MeterType type, Qt::Orientation layout)
     overflow = false;
     val = 0.0;
     maxVal = 0.0;
-    minScale = mtype == DBMeter ? config.minMeter : 0.0; // min value in dB or int
+    minScale = 0.0; // min value in dB or int
     maxScale = mtype == DBMeter ? 10.0 : 127.0;
     yellowScale = -10;
     redScale = 0;

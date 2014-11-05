@@ -171,7 +171,7 @@ void AudioPrefetch::prefetch(bool doSeek)
         printf("AudioPrefetch::prefetch: invalid write position\n");
         return;
     }
-    if (song->loop() && !audio->bounce())
+    if (song->loop())
     {
         const Pos& loop = song->rPos();
         unsigned n = loop.frame() - writePos;

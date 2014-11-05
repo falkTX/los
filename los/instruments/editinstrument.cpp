@@ -90,31 +90,6 @@ EditInstrument::EditInstrument(QWidget* parent, Qt::WindowFlags fl)
     panBox->addWidget(m_panKnob);
     panBox->addWidget(m_panLabel);
 
-
-    m_auxKnob = new Knob(this);
-    m_auxKnob->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed));
-
-    m_auxKnob->setRange(config.minSlider - 0.1, 10.0);
-    m_auxKnob->setKnobImage(":images/knob_aux_new.png");
-    m_auxKnob->setToolTip(tr("Reverb Sends level"));
-    m_auxKnob->setBackgroundRole(QPalette::Mid);
-
-    m_auxLabel = new DoubleLabel(0.0, config.minSlider, 10.1, this);
-    m_auxLabel->setSlider(m_auxKnob);
-    m_auxLabel->setFont(config.fonts[1]);
-    m_auxLabel->setBackgroundRole(QPalette::Mid);
-    m_auxLabel->setFrame(true);
-    m_auxLabel->setAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
-    m_auxLabel->setPrecision(0);
-    m_auxLabel->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
-
-    connect(m_auxKnob, SIGNAL(valueChanged(double, int)), m_auxLabel, SLOT(setValue(double)));
-    connect(m_auxLabel, SIGNAL(valueChanged(double, int)), m_auxKnob, SLOT(setValue(double)));
-    connect(m_auxKnob, SIGNAL(valueChanged(double, int)), this, SLOT(auxChanged(double)));
-
-    auxBox->addWidget(m_auxKnob);
-    auxBox->addWidget(m_auxLabel);
-
     populateInstruments();
     connect(instrumentList, SIGNAL(itemSelectionChanged()), SLOT(instrumentChanged()));
     connect(patchView, SIGNAL(itemSelectionChanged()), SLOT(patchChanged()));
@@ -217,18 +192,6 @@ void EditInstrument::panChanged(double val)
     if(item)
     {
         workingInstrument.setDefaultPan(val);
-        workingInstrument.setDirty(true);
-    }
-}
-
-void EditInstrument::auxChanged(double val)
-{
-    if(m_loading)
-        return;
-    QListWidgetItem* item = instrumentList->currentItem();
-    if(item)
-    {
-        workingInstrument.setDefaultVerb(val);
         workingInstrument.setDirty(true);
     }
 }
@@ -856,11 +819,6 @@ void EditInstrument::changeInstrument()/*{{{*/
     m_panKnob->setValue(workingInstrument.defaultPan());
     m_panLabel->setValue(workingInstrument.defaultPan());
     //m_panKnob->blockSignals(false);
-
-    //m_auxKnob->blockSignals(true);
-    m_auxKnob->setValue(workingInstrument.defaultVerb());
-    m_auxLabel->setValue(workingInstrument.defaultVerb());
-    //m_auxKnob->blockSignals(false);
 
     // populate patch list
     patchView->blockSignals(true);

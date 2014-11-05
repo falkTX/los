@@ -34,8 +34,6 @@ class EditInstrument : public QMainWindow, public Ui::EditInstrumentBase
 
     Knob* m_panKnob;
     DoubleLabel* m_panLabel;
-    Knob* m_auxKnob;
-    DoubleLabel* m_auxLabel;
     bool m_loading;
 
     void closeEvent(QCloseEvent*);
@@ -56,8 +54,6 @@ class EditInstrument : public QMainWindow, public Ui::EditInstrumentBase
     QString getPatchName(int);
     void deleteInstrument(QListWidgetItem*);
 
-    ///QMenu* patchpopup;
-
 private slots:
     virtual void fileNew();
     virtual void fileOpen();
@@ -69,7 +65,6 @@ private slots:
     void tabChanged(QWidget*);
     void patchChanged();
     void controllerChanged();
-    //void instrumentNameChanged(const QString&);
     void instrumentNameReturn();
     void patchNameReturn();
     void deletePatchClicked();
@@ -77,12 +72,10 @@ private slots:
     void newGroupClicked();
     void patchButtonClicked();
     void defPatchChanged(int);
-    //void newCategoryClicked();
     void deleteControllerClicked();
     void newControllerClicked();
     void addControllerClicked();
     void ctrlTypeChanged(int);
-    //void ctrlNameChanged(const QString&);
     void ctrlNameReturn();
     void ctrlHNumChanged(int);
     void ctrlLNumChanged(int);
@@ -90,9 +83,6 @@ private slots:
     void ctrlMaxChanged(int);
     void ctrlDefaultChanged(int);
     void populateInstruments();
-    //void sysexChanged();
-    //void deleteSysexClicked();
-    //void newSysexClicked();
     void ctrlNullParamHChanged(int);
     void ctrlNullParamLChanged(int);
     void autoLoadChecked(bool);
@@ -102,7 +92,6 @@ private slots:
     void patchFilenameChanged();
     void browseFilenameClicked();
     void panChanged(double);
-    void auxChanged(double);
 
 public:
     EditInstrument(QWidget* parent = 0, Qt::WindowFlags fl = Qt::Window);

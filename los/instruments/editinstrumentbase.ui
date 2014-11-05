@@ -424,23 +424,6 @@
           </layout>
          </item>
          <item>
-          <widget class="QLabel" name="label_13">
-           <property name="text">
-            <string>Verb:</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <layout class="QVBoxLayout" name="auxBox">
-           <property name="spacing">
-            <number>0</number>
-           </property>
-          </layout>
-         </item>
-         <item>
           <widget class="QLabel" name="label_12">
            <property name="minimumSize">
             <size>
@@ -1398,14 +1381,14 @@ handled like normal controllers.</string>
                          <string>Midi controller number low byte (* means drum controller)</string>
                         </property>
                         <property name="whatsThis">
-                         <string>Midi controller number low byte. 
-If low byte is * then the controller is a 
- 'drum controller'. For drum tracks and 
+                         <string>Midi controller number low byte.
+If low byte is * then the controller is a
+ 'drum controller'. For drum tracks and
  GS/XG type songs and instruments.
-Allows controllers for each instrument in 
- LOS's drum map. The low byte will be 
+Allows controllers for each instrument in
+ LOS's drum map. The low byte will be
  replaced by the 'ANote' in the drum map.
-Examples: The GS and XG instruments' 
+Examples: The GS and XG instruments'
  Drum controllers.</string>
                         </property>
                         <property name="specialValueText">
@@ -1480,22 +1463,22 @@ Examples: The GS and XG instruments'
                          <string>Minimum value. If negative, auto-translate.</string>
                         </property>
                         <property name="whatsThis">
-                         <string>Minimum value. If the minimum value 
+                         <string>Minimum value. If the minimum value
  is negative, the range will automatically
- be translated to a positive range. 
+ be translated to a positive range.
 
-Useful for controllers which should be 
- displayed with zero bias. For example, 
+Useful for controllers which should be
+ displayed with zero bias. For example,
 'Pan': Minimum: -64 Maximum: 63
 True range: Min: 0 Max: 127 (bias = 64)
 'CoarseTuning': Min: -24 Max: 23
 True range: Min: 40 Max: 87 (bias = 64)
 
 Bias is determined from controller type:
-7-bit Controller7 / RPN: Bias = 64 
+7-bit Controller7 / RPN: Bias = 64
 14-bit Controller14 / RPN14: Bias = 8192
 
-Type 'Pitch' is the exception. It is biased 
+Type 'Pitch' is the exception. It is biased
  at zero, even with a negative minimum:
 'Pitch': Min: -8192 Max: 8191
 True range: Min: -8192 Max: 8191 (bias 0)</string>
@@ -1597,16 +1580,16 @@ True range: Min: -8192 Max: 8191 (bias 0)</string>
 
 If a default value is chosen, the value will be sent
  to the controller when the controller is added to
- the song (in Performer or event editor). When 
+ the song (in Performer or event editor). When
  the song is re-loaded, the value is sent again.
 Otherwise the controller remains at its last value.
-Controllers are also automatically added to a 
+Controllers are also automatically added to a
  song upon reception of a midi controller event.
 
-Caution! Watch out for controllers such as 
- 'Sustain' and 'ResetAllController' with default 
- values. You should probably turn 'off' their 
- default (in Performer or drum edit, and 
+Caution! Watch out for controllers such as
+ 'Sustain' and 'ResetAllController' with default
+ values. You should probably turn 'off' their
+ default (in Performer or drum edit, and
  instrument editor).</string>
                         </property>
                         <property name="specialValueText">
@@ -1826,8 +1809,8 @@ Caution! Watch out for controllers such as
                          <string>Null parameter number High byte</string>
                         </property>
                         <property name="whatsThis">
-                         <string>If set, these 'null' parameter numbers will 
- be sent after each RPN/NRPN event. 
+                         <string>If set, these 'null' parameter numbers will
+ be sent after each RPN/NRPN event.
 This prevents subsequent 'data' events
  from corrupting the RPN/NRPN controller.
 Typically, set to 127/127, or an unused
@@ -1869,8 +1852,8 @@ Typically, set to 127/127, or an unused
                          <string>Null parameter number Low byte</string>
                         </property>
                         <property name="whatsThis">
-                         <string>If set, these 'null' parameter numbers will 
- be sent after each RPN/NRPN event. 
+                         <string>If set, these 'null' parameter numbers will
+ be sent after each RPN/NRPN event.
 This prevents subsequent 'data' events
  from corrupting the RPN/NRPN controller.
 Typically, set to 127/127, or an unused
