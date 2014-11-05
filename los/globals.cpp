@@ -212,29 +212,11 @@ QAction* masterEnableAction;
 
 LOS* los;
 
-int preMeasures = 2;
-unsigned char measureClickNote = 63;
-unsigned char measureClickVelo = 127;
-unsigned char beatClickNote    = 63;
-unsigned char beatClickVelo    = 70;
-unsigned char clickChan = 9;
-unsigned char clickPort = 0;
-bool precountEnableFlag = false;
-bool precountFromMastertrackFlag = false;
-int precountSigZ = 4;
-int precountSigN = 4;
-bool precountPrerecord = false;
-bool precountPreroll = false;
-bool midiClickFlag   = false;
-bool audioClickFlag  = true;
-float audioClickVolume = 0.5f;
-
 bool rcEnable = false;
 unsigned char rcStopNote = 28;
 unsigned char rcRecordNote = 31;
 unsigned char rcGotoLeftMarkNote = 33;
 unsigned char rcPlayNote = 29;
-bool automation = true;
 
 QObject* gRoutingPopupMenuMaster = 0;
 RouteMenuMap gRoutingMenuMap;
@@ -256,4 +238,3 @@ TrackManager* trackManager;
 
 QList<QPair<int, QString> > gInputList;
 QList<int> gInputListPorts;
-bool gSamplerStarted = false;

@@ -171,6 +171,5 @@ extern int vuColorStrip;
 extern TrackManager* trackManager;
 extern QList<QPair<int, QString> > gInputList;
 extern QList<int> gInputListPorts;
-extern bool gSamplerStarted;
 #endif
 
