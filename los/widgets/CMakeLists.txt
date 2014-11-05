@@ -68,6 +68,7 @@ QT4_WRAP_CPP(widgets_mocs
     scrollscale.h
     shortcutcapturedialog.h
     shortcutconfig.h
+    sigedit.h
     siglabel.h
     sigscale.h
     slider.h
@@ -193,6 +194,7 @@ file(GLOB widgets_source_files
     scrollscale.cpp
     shortcutcapturedialog.cpp
     shortcutconfig.cpp
+    sigedit.cpp
     siglabel.cpp
     sigscale.cpp
     slider.cpp
