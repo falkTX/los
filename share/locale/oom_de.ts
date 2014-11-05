@@ -3454,14 +3454,14 @@ OOMidi behandelt allerdings Kontroller wie &quot;pitch&quot; und &quot;program c
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Midi controller number low byte. 
-If low byte is * then the controller is a 
- &apos;drum controller&apos;. For drum tracks and 
+        <source>Midi controller number low byte.
+If low byte is * then the controller is a
+ &apos;drum controller&apos;. For drum tracks and
  GS/XG type songs and instruments.
-Allows controllers for each instrument in 
- OOMidi&apos;s drum map. The low byte will be 
+Allows controllers for each instrument in
+ OOMidi&apos;s drum map. The low byte will be
  replaced by the &apos;ANote&apos; in the drum map.
-Examples: The GS and XG instruments&apos; 
+Examples: The GS and XG instruments&apos;
  Drum controllers.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3479,22 +3479,22 @@ Examples: The GS and XG instruments&apos;
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Minimum value. If the minimum value 
+        <source>Minimum value. If the minimum value
  is negative, the range will automatically
- be translated to a positive range. 
+ be translated to a positive range.
 
-Useful for controllers which should be 
- displayed with zero bias. For example, 
+Useful for controllers which should be
+ displayed with zero bias. For example,
 &apos;Pan&apos;: Minimum: -64 Maximum: 63
 True range: Min: 0 Max: 127 (bias = 64)
 &apos;CoarseTuning&apos;: Min: -24 Max: 23
 True range: Min: 40 Max: 87 (bias = 64)
 
 Bias is determined from controller type:
-7-bit Controller7 / RPN: Bias = 64 
+7-bit Controller7 / RPN: Bias = 64
 14-bit Controller14 / RPN14: Bias = 8192
 
-Type &apos;Pitch&apos; is the exception. It is biased 
+Type &apos;Pitch&apos; is the exception. It is biased
  at zero, even with a negative minimum:
 &apos;Pitch&apos;: Min: -8192 Max: 8191
 True range: Min: -8192 Max: 8191 (bias 0)</source>
@@ -3537,16 +3537,16 @@ True range: Min: -8192 Max: 8191 (bias 0)</source>
 
 If a default value is chosen, the value will be sent
  to the controller when the controller is added to
- the song (in Performer or event editor). When 
+ the song (in Performer or event editor). When
  the song is re-loaded, the value is sent again.
 Otherwise the controller remains at its last value.
-Controllers are also automatically added to a 
+Controllers are also automatically added to a
  song upon reception of a midi controller event.
 
-Caution! Watch out for controllers such as 
- &apos;Sustain&apos; and &apos;ResetAllController&apos; with default 
- values. You should probably turn &apos;off&apos; their 
- default (in Performer or drum edit, and 
+Caution! Watch out for controllers such as
+ &apos;Sustain&apos; and &apos;ResetAllController&apos; with default
+ values. You should probably turn &apos;off&apos; their
+ default (in Performer or drum edit, and
  instrument editor).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3592,8 +3592,8 @@ Caution! Watch out for controllers such as
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>If set, these &apos;null&apos; parameter numbers will 
- be sent after each RPN/NRPN event. 
+        <source>If set, these &apos;null&apos; parameter numbers will
+ be sent after each RPN/NRPN event.
 This prevents subsequent &apos;data&apos; events
  from corrupting the RPN/NRPN controller.
 Typically, set to 127/127, or an unused
@@ -4318,8 +4318,8 @@ Configuration</source>
     <message>
         <source>Actual rate used depends on limitations of
  timer used. If a high rate timer is available,
- short periods can be used with high sample rates. 
-Period affects midi playback resolution. 
+ short periods can be used with high sample rates.
+Period affects midi playback resolution.
 Shorter periods are desirable.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6157,9 +6157,9 @@ Apply sync settings?</source>
     </message>
     <message>
         <source>Make OOMidi the Jack transport Timebase Master.
-Allows Jack to show time as 
- OOMidi Bars, Beats, and Ticks. 
-OOMidi will try to become master, but other 
+Allows Jack to show time as
+ OOMidi Bars, Beats, and Ticks.
+OOMidi will try to become master, but other
  Jack clients can also take over later.
 You can always click here again for Master.</source>
         <translation type="unfinished"></translation>
@@ -6175,7 +6175,7 @@ You can always click here again for Master.</source>
     <message>
         <source>When in slave mode, tempo is
  controlled externally.
-OOMidi can sync to midi clock, or MTC quarter frame sync. 
+OOMidi can sync to midi clock, or MTC quarter frame sync.
 Enabled inputs in the list will
  be in effect (RMC, RMMC, RMTC).</source>
         <translation type="unfinished"></translation>
@@ -6318,7 +6318,7 @@ recording:
    1 2 3      record from channel 1 2 and 3
    1-3         same
    1-3 5	     record from channel 1 2 3 and 5</source>
-        <translation type="obsolete">Ereignisse von allen gewählten Kanälen 
+        <translation type="obsolete">Ereignisse von allen gewählten Kanälen
 werden auf dieser Spur aufgenommen.
 Zur Aufnahme können mehrere Kanäle gewählt werden:
 	1 2 3	Aufnahme von den Kanälen 1 2 und 3
@@ -6375,8 +6375,8 @@ Zur Aufnahme können mehrere Kanäle gewählt werden:
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Input detect indicator. Detects all note on-off, controller, aftertouch, 
-                  program change, and pitchbend (but not sysex or realtime) events 
+        <source>Input detect indicator. Detects all note on-off, controller, aftertouch,
+                  program change, and pitchbend (but not sysex or realtime) events
                   on the selected channels, on the selected midi ports.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -9683,10 +9683,10 @@ click on the Restart button.</source>
 Virtual Analog for OOMidi
 Released under GPL.
 Copyright(C) 2002
-Jotsif Lindman Hörnlund 
+Jotsif Lindman Hörnlund
 ( jotsif@linux.nu )
 Copyright(C) 2005
-Robert Jonsson 
+Robert Jonsson
 (rj@spamatica.se)</source>
         <translation type="unfinished"></translation>
     </message>

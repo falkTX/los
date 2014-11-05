@@ -13,12 +13,7 @@
 #include "ui_editctrlbase.h"
 #include "event.h"
 
-namespace Awl
-{
-    class PosEdit;
-};
-
-///class PosEdit;
+class PosEdit;
 class IntLabel;
 class PitchEdit;
 class QDialog;
@@ -29,6 +24,7 @@ class QRadioButton;
 class MidiPart;
 class QListWidgetItem;
 class QMenu;
+
 //---------------------------------------------------------
 //   EditEventDialog
 //---------------------------------------------------------
@@ -134,7 +130,7 @@ class EditMetaDialog : public EditEventDialog
     unsigned char* meta;
     int len;
     ///PosEdit* epos;
-    Awl::PosEdit* epos;
+    PosEdit* epos;
     QTextEdit* edit;
     IntLabel* il2;
     QRadioButton* hexButton;
@@ -166,7 +162,7 @@ class EditCAfterDialog : public EditEventDialog
     Q_OBJECT
 
     ///PosEdit* epos;
-    Awl::PosEdit* epos;
+    PosEdit* epos;
     IntLabel* il2;
 
 protected:
@@ -189,7 +185,7 @@ class EditPAfterDialog : public EditEventDialog
     Q_OBJECT
 
     ///PosEdit* epos;
-    Awl::PosEdit* epos;
+    PosEdit* epos;
     PitchEdit* pl;
     IntLabel* il2;
 

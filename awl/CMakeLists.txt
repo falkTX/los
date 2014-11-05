@@ -26,7 +26,6 @@
 QT4_WRAP_CPP(awl_mocs
     pitchedit.h
     pitchlabel.h
-    posedit.h
     tempoedit.h
     tempolabel.h
 )
@@ -38,7 +37,6 @@ QT4_WRAP_CPP(awl_mocs
 file(GLOB awl_source_files
     pitchedit.cpp
     pitchlabel.cpp
-    posedit.cpp
     tempoedit.cpp
     tempolabel.cpp
 )

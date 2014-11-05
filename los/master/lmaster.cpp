@@ -5,7 +5,7 @@
 //  (C) Copyright 2000 Werner Schweer (ws@seh.de)
 //=========================================================
 
-#include "awl/posedit.h"
+#include "posedit.h"
 #include "sigedit.h"
 
 #include "lmaster.h"
@@ -442,7 +442,7 @@ void LMaster::itemDoubleClicked(QTreeWidgetItem* i)
         {
             if (!pos_editor)
                 ///pos_editor = new PosEdit(view->viewport());
-                pos_editor = new Awl::PosEdit(view->viewport());
+                pos_editor = new PosEdit(view->viewport());
             pos_editor->setValue(editedItem->tick());
             QRect itemRect = view->visualItemRect(editedItem);
             itemRect.setX(0);

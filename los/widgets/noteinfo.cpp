@@ -8,7 +8,7 @@
 
 #include "config.h"
 #include "noteinfo.h"
-#include "awl/posedit.h"
+#include "posedit.h"
 #include "song.h"
 #include "globals.h"
 #include "pitchedit.h"
@@ -58,7 +58,7 @@ NoteInfo::NoteInfo(QWidget* parent)
 
 	m_layout = new QVBoxLayout(this);
 
-	selTime = new Awl::PosEdit;
+	selTime = new PosEdit;
 	selTime->setObjectName("Start");
 	addTool(tr("Start"), selTime);
 

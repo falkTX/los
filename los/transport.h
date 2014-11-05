@@ -13,13 +13,6 @@
 
 #include <QWidget>
 
-namespace Awl
-{
-    class PosEdit;
-};
-
-using Awl::PosEdit;
-
 class QComboBox;
 class QHBoxLayout;
 class QLabel;
@@ -27,8 +20,9 @@ class QSlider;
 class QToolButton;
 
 class DoubleLabel;
-class SigLabel;
 class Pos;
+class PosEdit;
+class SigLabel;
 
 //---------------------------------------------------------
 //    TempoSig

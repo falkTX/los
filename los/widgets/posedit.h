@@ -8,112 +8,56 @@
 #ifndef __POSEDIT_H__
 #define __POSEDIT_H__
 
-#include <QWidget>
+#include "../pos.h"
 
-#include "pos.h"
-#include "section.h"
-
-class QResizeEvent;
-class QTimerEvent;
-
-class PosEditor;
-class SpinBox;
+#include <QAbstractSpinBox>
 
 //---------------------------------------------------------
 //   PosEdit
 //---------------------------------------------------------
 
-class PosEdit : public QWidget
+class PosEdit : public QAbstractSpinBox
 {
     Q_OBJECT
-    Q_PROPERTY(QString separator READ separator WRITE setSeparator)
-    Q_PROPERTY(bool smpte READ smpte WRITE setSmpte)
 
-    void init();
-    void setSections();
-    QString sectionText(int sec);
-    Section midiSections[3];
-    Section smpteSections[4];
-    Section* sec;
+    Pos _pos;
+    bool initialized;
 
-    bool _smpte;
+    QIntValidator* validator;
 
-    bool adv;
-    bool overwrite;
-    int timerId;
-    bool typing;
-    Pos min;
-    Pos max;
-    bool changed;
-    PosEditor *ed;
-    SpinBox* controls;
-
-private slots:
-    void stepUp();
-    void stepDown();
+    virtual void paintEvent(QPaintEvent* event);
+    virtual void stepBy(int steps);
+    virtual StepEnabled stepEnabled() const;
+    virtual void fixup(QString& input) const;
+    virtual QValidator::State validate(QString&, int&) const;
+    void updateValue();
+    int curSegment() const;
+    virtual bool event(QEvent*);
+    void finishEdit();
 
 signals:
     void valueChanged(const Pos&);
+
+    // Choose these three carefully, watch out for focusing recursion.
     void returnPressed();
-
-protected:
-    bool event(QEvent *e);
-    void timerEvent(QTimerEvent* e);
-    void resizeEvent(QResizeEvent*);
-    QString sectionFormattedText(int sec);
-    void addNumber(int sec, int num);
-    void removeLastNumber(int sec);
-    bool setFocusSection(int s);
-
-    virtual bool outOfRange(int, int) const;
-    virtual void setSec(int, int);
-    friend class PosEditor;
-
-protected slots:
-    void updateButtons();
+    void lostFocus();
+    // This is emitted when focus lost or return pressed (same as QAbstractSpinBox).
+    void editingFinished();
 
 public slots:
-    virtual void setValue(const Pos& time);
+    void setValue(const Pos& time);
     void setValue(int t);
     void setValue(const QString& s);
-    // Added p3.3.43
-    virtual void setEnabled(bool);
 
 public:
-    PosEdit(QWidget* = 0, const char* = 0);
-    PosEdit(const Pos& time, QWidget*, const char* = 0);
+    PosEdit(QWidget* parent = 0);
     ~PosEdit();
-
     QSize sizeHint() const;
-    Pos pos() const;
 
-    virtual void setAutoAdvance(bool advance)
+    Pos pos() const
     {
-        adv = advance;
+        return _pos;
     }
-
-    bool autoAdvance() const
-    {
-        return adv;
-    }
-
-    virtual void setMinValue(const Pos& d)
-    {
-        setRange(d, maxValue());
-    }
-    Pos minValue() const;
-
-    virtual void setMaxValue(const Pos& d)
-    {
-        setRange(minValue(), d);
-    }
-    Pos maxValue() const;
-    virtual void setRange(const Pos& min, const Pos& max);
-    QString separator() const;
-    virtual void setSeparator(const QString& s);
-    void setSmpte(bool);
-    bool smpte() const;
-    void enterPressed();
 };
 
 #endif

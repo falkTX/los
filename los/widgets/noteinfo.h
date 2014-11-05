@@ -9,17 +9,11 @@
 
 #include <QToolBar>
 
-namespace Awl
-{
-    class PosEdit;
-    //class PitchEdit;
-};
-
 class QTableWidget;
 class GridCombo;
 class QSpinBox;
 class QCheckBox;
-///class PosEdit;
+class PosEdit;
 class PitchEdit;
 class Pos;
 class QVBoxLayout;
@@ -39,7 +33,7 @@ class NoteInfo : public QWidget
     QTableWidget* rlist;
 	//end merge
 
-    Awl::PosEdit* selTime;
+    PosEdit* selTime;
 	QVBoxLayout* m_layout;
     QSpinBox* selLen;
     PitchEdit* selPitch;
@@ -48,7 +42,7 @@ class NoteInfo : public QWidget
     QSpinBox* m_renderAlpha;
 	QCheckBox* m_partLines;
     bool deltaMode;
-	
+
 	void addTool(QString label, QWidget* tool);
 
 public:

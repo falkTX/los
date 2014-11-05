@@ -63,6 +63,7 @@ QT4_WRAP_CPP(widgets_mocs
     pitchedit.h
     pitchlabel.h
     popupmenu.h
+    posedit.h
     poslabel.h
     projectcreateimpl.h
     scrollscale.h
@@ -186,6 +187,7 @@ file(GLOB widgets_source_files
     pitchedit.cpp
     pitchlabel.cpp
     popupmenu.cpp
+    posedit.cpp
     poslabel.cpp
     projectcreateimpl.cpp
     scldiv.cpp

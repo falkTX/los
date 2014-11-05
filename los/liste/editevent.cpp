@@ -21,7 +21,7 @@
 #include <QTextEdit>
 #include <QVBoxLayout>
 
-#include "awl/posedit.h"
+#include "posedit.h"
 
 #include "song.h"
 #include "event.h"
@@ -262,7 +262,7 @@ EditMetaDialog::EditMetaDialog(int tick, const Event& ev,
 
     QLabel* l1 = new QLabel(tr("Time Position"));
     ///epos = new PosEdit;
-    epos = new Awl::PosEdit;
+    epos = new PosEdit;
 
     QLabel* l2 = new QLabel(tr("Meta Type"));
     il2 = new IntLabel(-1, 0, 127, this, -1);
@@ -434,7 +434,7 @@ EditCAfterDialog::EditCAfterDialog(int tick, const Event& event,
 
     QLabel* l1 = new QLabel(tr("Time Position"));
     ///epos = new PosEdit;
-    epos = new Awl::PosEdit;
+    epos = new PosEdit;
 
     QLabel* l2 = new QLabel(tr("Pressure"));
     il2 = new IntLabel(-1, 0, 127, this, -1);
@@ -495,7 +495,7 @@ EditPAfterDialog::EditPAfterDialog(int tick, const Event& event,
 
     QLabel* l1 = new QLabel(tr("Time Position"));
     ///epos = new PosEdit;
-    epos = new Awl::PosEdit;
+    epos = new PosEdit;
 
     QLabel* l2 = new QLabel(tr("Pitch"));
     pl = new PitchEdit;

@@ -17,16 +17,10 @@
 
 #include <QTreeWidgetItem>
 
+class QLineEdit;
+class PosEdit;
 class SigEdit;
 class SigEvent;
-
-namespace Awl
-{
-    class PosEdit;
-};
-using Awl::PosEdit;
-
-class QLineEdit;
 
 enum LMASTER_LVTYPE
 {

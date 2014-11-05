@@ -42,7 +42,7 @@
       </widget>
      </item>
      <item>
-      <widget class="Awl::PosEdit" name="epos"/>
+      <widget class="PosEdit" name="epos"/>
      </item>
      <item>
       <spacer name="Spacer2">
@@ -152,9 +152,9 @@
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>Awl::PosEdit</class>
+   <class>PosEdit</class>
    <extends>QWidget</extends>
-   <header>awl/posedit.h</header>
+   <header>posedit.h</header>
    <container>0</container>
   </customwidget>
  </customwidgets>
