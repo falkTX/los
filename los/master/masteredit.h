@@ -12,12 +12,6 @@
 #include "noteinfo.h"
 #include "cobject.h"
 
-namespace Awl
-{
-    class SigEdit;
-};
-using Awl::SigEdit;
-
 class QCloseEvent;
 class QShowEvent;
 class QKeyEvent;
@@ -35,6 +29,7 @@ class TempoEdit;
 class PosLabel;
 class TempoLabel;
 class EditToolBar;
+class SigEdit;
 
 //---------------------------------------------------------
 //   MasterEdit

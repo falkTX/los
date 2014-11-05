@@ -5,7 +5,7 @@
 //  (C) Copyright 1999-2004 Werner Schweer (ws@seh.de)
 //=========================================================
 
-#include "awl/sigedit.h"
+#include "sigedit.h"
 
 #include "config.h"
 

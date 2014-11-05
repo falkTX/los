@@ -17,15 +17,14 @@
 
 #include <QTreeWidgetItem>
 
+class SigEdit;
 class SigEvent;
 
 namespace Awl
 {
     class PosEdit;
-    class SigEdit;
 };
 using Awl::PosEdit;
-using Awl::SigEdit;
 
 class QLineEdit;
 

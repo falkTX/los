@@ -5,7 +5,7 @@
 //  (C) Copyright 1999 Werner Schweer (ws@seh.de)
 //=========================================================
 
-#include "awl/sigedit.h"
+#include "sigedit.h"
 
 #include "masteredit.h"
 #include "mtscale.h"

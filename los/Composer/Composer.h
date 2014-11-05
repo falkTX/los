@@ -48,12 +48,7 @@ class TempoHeader;
 class CanvasNavigator;
 class TempoEdit;
 class DoubleSlider;
-
-namespace Awl
-{
-    class SigEdit;
-};
-using Awl::SigEdit;
+class SigEdit;
 
 static const int MIN_HEADER_WIDTH = 240;
 static const int MAX_HEADER_WIDTH = 400;

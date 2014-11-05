@@ -6,7 +6,7 @@
 //=========================================================
 
 #include "awl/posedit.h"
-#include "awl/sigedit.h"
+#include "sigedit.h"
 
 #include "lmaster.h"
 #include "xml.h"

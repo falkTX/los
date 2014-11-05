@@ -8,93 +8,42 @@
 #ifndef __SIGEDIT_H__
 #define __SIGEDIT_H__
 
-#include <QWidget>
+#include "../sig.h"
 
-#include "section.h"
-
-class QResizeEvent;
-class QTimerEvent;
-
-class SigEditor;
-class SpinBox;
-
-struct Sig
-{
-    int z;
-    int n;
-public:
-
-    Sig(int _z, int _n) : z(_z), n(_n)
-    {
-    }
-    bool isValid() const;
-};
+#include <QAbstractSpinBox>
 
 //---------------------------------------------------------
 //   SigEdit
 //---------------------------------------------------------
 
-class SigEdit : public QWidget
+class SigEdit : public QAbstractSpinBox
 {
     Q_OBJECT
-    void init();
 
-    QString sectionText(int sec);
-    Section sec[2];
+    TimeSignature _sig;
+    bool initialized;
 
-    bool adv;
-    bool overwrite;
-    int timerId;
-    bool typing;
-    bool changed;
-    SigEditor *ed;
-    SpinBox* controls;
-
-private slots:
-    void stepUp();
-    void stepDown();
+    virtual void paintEvent(QPaintEvent* event);
+    virtual void stepBy(int steps);
+    virtual StepEnabled stepEnabled() const;
+    virtual void fixup(QString& input) const;
+    virtual QValidator::State validate(QString&, int&) const;
+    void updateValue();
+    int curSegment() const;
+    virtual bool event(QEvent*);
 
 signals:
-    void valueChanged(int, int);
-    void returnPressed();
-
-protected:
-    bool event(QEvent *e);
-    void timerEvent(QTimerEvent* e);
-    void resizeEvent(QResizeEvent*);
-    QString sectionFormattedText(int sec);
-    void addNumber(int sec, int num);
-    void removeLastNumber(int sec);
-    bool setFocusSection(int s);
-
-    virtual bool outOfRange(int, int) const;
-    virtual void setSec(int, int);
-    friend class SigEditor;
-
-protected slots:
-    void updateButtons();
+    void valueChanged(const TimeSignature&);
+void returnPressed();
 
 public slots:
-    virtual void setValue(const Sig& sig);
+    void setValue(const TimeSignature&);
     void setValue(const QString& s);
 
 public:
-    SigEdit(QWidget*, const char* = 0);
+    SigEdit(QWidget* parent = 0);
     ~SigEdit();
-
-    QSize sizeHint() const;
-    Sig sig() const;
-
-    virtual void setAutoAdvance(bool advance)
-    {
-        adv = advance;
-    }
-
-    bool autoAdvance() const
-    {
-        return adv;
-    }
-    void enterPressed();
+    const TimeSignature& sig() { return _sig; }
 };
 
 #endif
