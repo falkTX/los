@@ -216,7 +216,6 @@ target_link_libraries(los
     core
 # all libs
     Composer
-    awl
     ctrl
     driver
     icons

@@ -203,7 +203,7 @@ include_directories(
 ##       are scanned before coming to share/locale
 ##
 
-subdirs(awl man los packaging utils share)
+subdirs(man los packaging utils share)
 
 ##
 ## set uninstall

@@ -32,7 +32,6 @@ add_custom_target(translations ALL DEPENDS ${QM_FILES})
 # If we are updating the translations, make sure that these targets are scanned first
 if (UPDATE_TRANSLATIONS)
     add_dependencies(translations
-        awl
         los
         Composer
         ctrl
