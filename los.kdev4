@@ -1,0 +1,9 @@
+[Project]
+Manager=KDevGenericManager
+Name=LOS
+
+[Filters]
+Excludes=*/.*,*/*~,*/*.a,*.o
+
+[Project]
+VersionControlSupport=kdevgit
