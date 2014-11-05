@@ -271,8 +271,6 @@ int main(int argc, char* argv[])
                 break;
             case 'l': locale_override = QString(optarg);
                 break;
-            case 'U': gJackSessionUUID = QString(optarg);
-                break;
             case 'h': usage(argv[0], argv[1]);
                 return -1;
             default: usage(argv[0], "bad argument");

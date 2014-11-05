@@ -31,17 +31,9 @@ class QTimer;
 class LOS;
 class TrackManager;
 
-extern const float denormalBias;
-
-extern int recFileNumber;
-
 extern int sampleRate;
 extern unsigned segmentSize;
 extern unsigned fifoLength; // inversely proportional to segmentSize
-extern int segmentCount;
-
-extern bool overrideAudioOutput;
-extern bool overrideAudioInput;
 
 extern QTimer* heartBeatTimer;
 
@@ -61,9 +53,6 @@ extern QString configPath;
 extern QString routePath;
 extern QString losInstruments;
 extern QString losUserInstruments;
-extern QString gJackSessionUUID;
-
-extern QString lastWavePath;
 extern QString lastMidiPath;
 
 extern bool debugMode;

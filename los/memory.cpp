@@ -9,7 +9,6 @@
 #include "memory.h"
 
 Pool audioRTmemoryPool;
-Pool midiRTmemoryPool;
 
 //---------------------------------------------------------
 //   Pool

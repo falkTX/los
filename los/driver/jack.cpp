@@ -870,29 +870,6 @@ int JackAudioDevice::framePos() const
     return (int) n;
 }
 
-#if 0
-//---------------------------------------------------------
-//   framesSinceCycleStart
-//---------------------------------------------------------
-
-int JackAudioDevice::framesSinceCycleStart() const
-{
-    jack_nframes_t n = jack_frames_since_cycle_start(client);
-    return (int) n;
-}
-
-//---------------------------------------------------------
-//   framesDelay
-//    TODO
-//---------------------------------------------------------
-
-int JackAudioDevice::frameDelay() const
-{
-    jack_nframes_t n = (segmentSize * (segmentCount - 1)) - jack_frames_since_cycle_start(client);
-    return (int) n;
-}
-#endif
-
 //---------------------------------------------------------
 //   outputPorts
 //---------------------------------------------------------

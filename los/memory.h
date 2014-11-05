@@ -96,7 +96,6 @@ inline void Pool::free(void* b, size_t n)
 }
 
 extern Pool audioRTmemoryPool;
-extern Pool midiRTmemoryPool;
 
 //---------------------------------------------------------
 //   audioRTalloc
@@ -177,88 +176,6 @@ public:
 };
 
 template <class T> audioRTalloc<T>::audioRTalloc()
-{
-}
-
-//---------------------------------------------------------
-//   midiRTalloc
-//---------------------------------------------------------
-
-template <class T> class midiRTalloc
-{
-public:
-    typedef T value_type;
-    typedef size_t size_type;
-    typedef ptrdiff_t difference_type;
-
-    typedef T* pointer;
-    typedef const T* const_pointer;
-
-    typedef T& reference;
-    typedef const T& const_reference;
-
-    pointer address(reference x) const
-    {
-        return &x;
-    }
-
-    const_pointer address(const_reference x) const
-    {
-        return &x;
-    }
-
-    midiRTalloc();
-
-    template <class U> midiRTalloc(const midiRTalloc<U>&)
-    {
-    }
-
-    ~midiRTalloc()
-    {
-    }
-
-    pointer allocate(size_type n, void * = 0)
-    {
-        return static_cast<T*> (midiRTmemoryPool.alloc(n * sizeof (T)));
-    }
-
-    void deallocate(pointer p, size_type n)
-    {
-        midiRTmemoryPool.free(p, n * sizeof (T));
-    }
-
-    midiRTalloc<T> & operator=(const midiRTalloc&)
-    {
-        return *this;
-    }
-
-    void construct(pointer p, const T& val)
-    {
-        new ((T*) p) T(val);
-    }
-
-    void destroy(pointer p)
-    {
-        p->~T();
-    }
-
-    size_type max_size() const
-    {
-        return size_t(-1);
-    }
-
-    template <class U> struct rebind
-    {
-        typedef midiRTalloc<U> other;
-    };
-
-    template <class U> midiRTalloc & operator=(const midiRTalloc<U>&)
-    {
-        return *this;
-    }
-};
-
-template <class T> midiRTalloc<T>::midiRTalloc()
 {
 }
 

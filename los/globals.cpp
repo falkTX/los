@@ -22,21 +22,10 @@
 #include "config.h"
 #include "TrackManager.h"
 
-int recFileNumber = 1;
-
-int sampleRate   = 44100;
-unsigned segmentSize  = 1024U;    // segmentSize in frames (set by JACK)
-unsigned fifoLength =  128;       // 131072/segmentSize
-                                  // 131072 - magic number that gives a sufficient buffer size
-int segmentCount = 2;
-
-// denormal bias value used to eliminate the manifestation of denormals by
-// lifting the zero level slightly above zero
-// denormal problems occur when values get extremely close to zero
-const float denormalBias=1e-18;
-
-bool overrideAudioOutput = false;
-bool overrideAudioInput = false;
+int sampleRate       = 44100;
+unsigned segmentSize = 1024U; // segmentSize in frames (set by JACK)
+unsigned fifoLength  = 128;   // 131072/segmentSize
+                              // 131072 - magic number that gives a sufficient buffer size
 
 QTimer* heartBeatTimer;
 
@@ -87,9 +76,6 @@ QString configName = configPath + QString("/LOS-").append(VERSION).append(".cfg"
 QString routePath = configPath + QString("/routes");
 QString losInstruments;
 QString losUserInstruments;
-QString gJackSessionUUID;
-
-QString lastWavePath(".");
 QString lastMidiPath(".");
 
 bool debugMode = false;
