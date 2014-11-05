@@ -55,7 +55,6 @@ extern QString losInstruments;
 extern QString losUserInstruments;
 extern QString lastMidiPath;
 
-extern bool debugMode;
 extern bool midiInputTrace;
 extern bool midiOutputTrace;
 extern bool debugMsg;

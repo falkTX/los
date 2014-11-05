@@ -98,7 +98,6 @@ static const char* infoPanicButton = QT_TRANSLATE_NOOP("@default", "send note of
 static QString* projectList[PROJECT_LIST_LEN];
 
 extern void exitJackAudio();
-extern void exitDummyAudio();
 
 int watchAudio, watchAudioPrefetch, watchMidi;
 
@@ -2118,10 +2117,6 @@ void LOS::closeEvent(QCloseEvent* event)
     if (debugMsg)
         printf("LOS: Exiting JackAudio\n");
     exitJackAudio();
-    if (debugMsg)
-        printf("LOS: Exiting DummyAudio\n");
-    exitDummyAudio();
-
 
     // Make sure to clear the menu, which deletes any sub menus.
     if (routingPopupMenu)

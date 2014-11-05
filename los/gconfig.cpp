@@ -678,8 +678,6 @@ GlobalConfigValues config = {
     false, // useOldStyleStopShortCut
     true, // moveArmedCheckBox
     false, // useOutputLimiter
-    44100, // Dummy audio preferred sample rate
-    512, // Dummy audio buffer size
     QString("./"), // projectBaseFolder
     true,	 // projectStoreInFolder
     false,	// useProjectSaveDialog

@@ -334,7 +334,7 @@ void MidiSeq::updatePollFd()
     if (timerFd == -1)
     {
         fprintf(stderr, "updatePollFd: no timer fd\n");
-        if (!debugMode)
+        if (!debugMsg)
             exit(-1);
     }
 

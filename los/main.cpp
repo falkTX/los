@@ -25,16 +25,12 @@
 #include "globals.h"
 #include "icons.h"
 
-extern bool initDummyAudio();
 extern void initIcons();
 extern void initToolbars();
 extern bool initJackAudio();
 extern void initMidiController();
 extern void initShortCuts();
 extern void readConfiguration();
-
-// used for plugins
-void set_last_error(const char* error);
 
 static QString locale_override;
 
@@ -47,6 +43,10 @@ static void printVersion(const char* prog)
     fprintf(stderr, "%s: Libre Octave Studio; Version %s\n", prog, VERSION);
 }
 
+//---------------------------------------------------------
+//   ladish stuff
+//---------------------------------------------------------
+
 bool g_ladish_l1_save_requested = false;
 
 static void ladish_l1_save(int sig)
@@ -57,7 +57,10 @@ static void ladish_l1_save(int sig)
     }
 }
 
-//Reconnect default project port state on SIGHUP
+//---------------------------------------------------------
+//   Reconnect default project port state on SIGHUP
+//---------------------------------------------------------
+
 bool los_reconnect_ports_requested = false;
 
 static void los_reconnect_default_ports(int sig)
@@ -206,7 +209,6 @@ static void usage(const char* prog, const char* txt)
 int main(int argc, char* argv[])
 {
     Q_INIT_RESOURCE(los);
-    int noAudio = false;
 
     losUser = QDir::homePath();//QString(getenv("HOME"));
     losGlobalLib = QString(LIBDIR);
@@ -250,12 +252,6 @@ int main(int argc, char* argv[])
             case 'v': printVersion(argv[0]);
                 return 0;
             case 'd':
-                debugMode = true;
-                realTimeScheduling = false;
-                break;
-            case 'a':
-                noAudio = true;
-                break;
             case 'D': debugMsg = true;
                 break;
             case 'm': midiInputTrace = true;
@@ -278,52 +274,20 @@ int main(int argc, char* argv[])
         }
     }
 
-    if (debugMode)
+    if (initJackAudio())
     {
-        initDummyAudio();
-        realTimeScheduling = false;
+        QMessageBox::critical(NULL, "LOS fatal error", "LOS <b>failed</b> to find a <b>Jack audio server</b>.<br><br>");
+        return 1;
     }
-    else if (noAudio)
-    {
-        initDummyAudio();
-        realTimeScheduling = true;
-    }
-    else if (initJackAudio())
-    {
-        if (!debugMode)
-        {
-            QMessageBox::critical(NULL, "LOS fatal error", "LOS <b>failed</b> to find a <b>Jack audio server</b>.<br><br>"
-                    "<i>LOS will continue without audio support (-a switch)!</i><br><br>"
-                    "If this was not intended check that Jack was started. "
-                    "If Jack <i>was</i> started check that it was\n"
-                    "started as the same user as LOS.\n");
 
-            initDummyAudio();
-            noAudio = true;
-            realTimeScheduling = true;
-            if (debugMode)
-            {
-                realTimeScheduling = false;
-            }
-        }
-        else
-        {
-            fprintf(stderr, "fatal error: no JACK audio server found\n");
-            fprintf(stderr, "no audio functions available\n");
-            fprintf(stderr, "*** experimental mode -- no play possible ***\n");
-            initDummyAudio();
-        }
-        realTimeScheduling = true;
-    }
-    else
-        realTimeScheduling = audioDevice->isRealtime();
+    realTimeScheduling = audioDevice->isRealtime();
 
     fifoLength = 131072 / segmentSize;
 
     argc -= optind;
     ++argc;
 
-    {//TODO: Change all these debugMsg/debugMode stuff to just use qDebug
+    {//TODO: Change all these debugMsg stuff to just use qDebug
         printf("global lib:       <%s>\n", losGlobalLib.toLatin1().constData());
         printf("global share:     <%s>\n", losGlobalShare.toLatin1().constData());
         printf("los home:         <%s>\n", losUser.toLatin1().constData());
@@ -381,7 +345,7 @@ int main(int argc, char* argv[])
     app.setLOS(los);
     los->setWindowIcon(*losIcon);
 
-    if (!debugMode)
+    if (!debugMsg)
     {
         if (mlockall(MCL_CURRENT | MCL_FUTURE))
             perror("WARNING: Cannot lock memory:");
@@ -389,7 +353,6 @@ int main(int argc, char* argv[])
 
     los->show();
     los->seqStart();
-    //Finally launch the server on port 8415
 
     // ladish L1
     signal(SIGUSR1, ladish_l1_save);
@@ -405,5 +368,4 @@ int main(int argc, char* argv[])
     if (debugMsg)
         printf("Finished! Exiting main, return value:%d\n", rv);
     return rv;
-
 }

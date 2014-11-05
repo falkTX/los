@@ -252,7 +252,7 @@ void Thread::loop()
 {
     // Changed by Tim. p3.3.17
 
-    if (!debugMode)
+    if (!debugMsg)
     {
         if (mlockall(MCL_CURRENT | MCL_FUTURE))
             perror("WARNING: Cannot lock memory:");
@@ -306,7 +306,7 @@ void Thread::loop()
 
     while (_running)
     {
-        if (debugMode) // DEBUG
+        if (debugMsg) // DEBUG
             _pollWait = 10; // ms
         else
             _pollWait = -1;

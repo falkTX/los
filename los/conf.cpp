@@ -746,10 +746,6 @@ void readConfiguration(Xml& xml, bool readOnlySequencer)/*{{{*/
                     config.freewheelMode = xml.parseInt();
                 else if (tag == "outputLimiter")
                     config.useOutputLimiter = xml.parseInt();
-                else if (tag == "dummyAudioSampleRate")
-                    config.dummyAudioSampleRate = xml.parseInt();
-                else if (tag == "dummyAudioBufSize")
-                    config.dummyAudioBufSize = xml.parseInt();
                 else if (tag == "guiRefresh")
                     config.guiRefresh = xml.parseInt();
                 else if (tag == "userInstrumentsDir")
@@ -810,7 +806,7 @@ bool readConfiguration()/*{{{*/
     FILE* f = fopen(configName.toLatin1().constData(), "r");
     if (f == 0)
     {
-        if (debugMsg || debugMode)
+        if (debugMsg)
             fprintf(stderr, "NO Config File <%s> found\n", configName.toLatin1().constData());
 
         if (config.userInstrumentsDir.isEmpty())
@@ -1009,8 +1005,6 @@ void LOS::writeGlobalConfiguration(int level, Xml& xml) const
     xml.doubleTag(level, "minSlider", config.minSlider);
     xml.intTag(level, "freewheelMode", config.freewheelMode);
     xml.intTag(level, "outputLimiter", config.useOutputLimiter);
-    xml.intTag(level, "dummyAudioBufSize", config.dummyAudioBufSize);
-    xml.intTag(level, "dummyAudioSampleRate", config.dummyAudioSampleRate);
 
     xml.intTag(level, "guiRefresh", config.guiRefresh);
     xml.strTag(level, "userInstrumentsDir", config.userInstrumentsDir);

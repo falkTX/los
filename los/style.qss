@@ -9,10 +9,6 @@ QFrame#transportToolButtons
 	padding: 0;
 	background-color:none;
 }
-QTableWidget#listSnap, QTableWidget#listQuant
-{
-	color: black;
-}
 QWidget#MRConfigBase, QWidget#MITTransposeBase
 {
 	background-color: #111111;
@@ -45,103 +41,14 @@ QTreeWidget#patchView
 {
 	margin-right: 6px;
 }
-QTabWidget#tabWidget3::pane
-{ /* The tab widget frame */
-    border-top: 0px solid #C2C7CB;
-	color: #d0d4d0;
-	background-color: #313131;
-	border-radius: 0px;
-}
-
-QTabWidget#tabWidget3::tab-bar
-{
-    left: 5px; /* move to the right by 5px */
-}
-
-/* Style the tab using the tab sub-control. Note that
-    it reads QTabBar _not_ QTabWidget */
-QTabWidget#tabWidget3 QTabBar::tab
-{
-	/*background-color: #47474d;*/
-	background-color: #47474d;
-	/*background-color: #FF0000;*/
-    border: 1px solid #a5a6a5;
-    border-bottom-color: #111111; /* same as the pane color */
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
-    border-bottom-left-radius: 0px;
-    min-width: 6ex;
-    padding-top: 0px;
-    padding-bottom: 0px;
-    padding-left: 0px;
-    padding-right: 0px;
-	color: #d6dfd6;
-	font-family: "fixed-width";
-	font-weight: bold;
-	font-size: 10px;
-}
-
-QTabWidget#tabWidget3 QTabBar::tab:selected
-{
-    background-color: #0b0b0b;
-	color: #cdd1cd;
-	font-family: "fixed-width";
-	font-weight: bold;
-	font-size: 10px;
-}
-
-QTabWidget#tabWidget3 QTabBar::tab:selected
-{
-    border-color: #9B9B9B;
-    border-bottom: 0px;
-    margin-top: 0px;
-    margin-left: 0px;
-}
-
-QTabWidget#tabWidget3 QTabBar::tab:!selected
-{
-    margin-top: 2px; /* make non-selected tabs look smaller */
-    margin-left: 0px;
-    border-bottom: 0px;
-}
-
-/* make use of negative margins for overlapping tabs */
-QTabWidget#tabWidget3 QTabBar::tab:selected
-{
-    /* expand/overlap to the left and right by 4px */
-    margin-top: 0px;
-    margin-left: 0px;
-}
-
-QTabWidget#tabWidget3 QTabBar::tab:first:selected
-{
-    /*margin-top: 0px;*/ /* the first selected tab has nothing to overlap with on the left */
-}
-
-QTabWidget#tabWidget3 QTabBar::tab:last:selected
-{
-    /*margin-bottom: 0px;*/ /* the last selected tab has nothing to overlap with on the right */
-}
-
-QTabWidget#tabWidget3 QTabBar::tab:only-one
-{
-    /*margin: 0px;*/ /* if there is only one tab, we don't want overlapping margins */
-}
-
-QTabWidget#tabWidget3 QTabBar::tab::disabled
-{
-    color: #8f9198;; /* if there is only one tab, we don't want overlapping margins */
-	border-color: #47474d;
-	background-color: #111111;
-}
 /*}}}*/
 
-QTabWidget#tabWidget3,  QWidget#patchesTab, QWidget#controllerTab, QWidget#sysExTab,
+QWidget#patchesTab, QWidget#controllerTab, QWidget#sysExTab,
 QFrame#propertiesFrame, QFrame#frame2, QSplitter#splitter5, QSplitter#splitter6, QSplitter#splitter2
 { /* The tab widget frame */
-    border-top: 0px solid #C2C7CB;
+        border-top: 0px solid #C2C7CB;
 	color: #d0d4d0;
-	background-color: #313131;
+	background-color: #303030;
 	border-radius: 0px;
 }
 QLabel#lblType, QLabel#lblTrack, QLabel#lblProp, QLabel#lblComments, QLabel#lblName, QLabel#lblGroup,
@@ -155,35 +62,26 @@ QLabel#AutomationMenuHeader, TrackEffects QLabel
 
 QFrame#propertyFrame, QFrame#trackListFrame, QFrame#commentFrame, QFrame#viewsFrame,
 QFrame#guiSettingsFrame, QFrame#myInputsFrame, QFrame#tickFrame, QFrame#mixerSettingsFrame,
-QFrame#crossfadeSettingsFrame, QFrame#dummyAudioBussBox, QFrame#startUpBox, QFrame#startSongBox,
+QFrame#crossfadeSettingsFrame, QFrame#startUpBox, QFrame#startSongBox,
 QFrame#trackOptionsFrame, QFrame#midiBoxFrame, QFrame#instrumentListFrame, QFrame#importerFrame,
 QFrame#audioExportFrame, QFrame#pluginFrame
 {
 	color: #d0d4d0;
-	background-color: #313131;
-	border-radius: 12px;
-    border: 0px;/* solid #4b4b4b;*/
+	background-color: #303030;
+	border-radius: 0px;
+        border: 1px solid #4b4b4b;
 }
 
-QFrame#tabFrame
-{
-	color: #d0d4d0;
-	background-color: #313131;
-	border-bottom-right-radius: 12px;
-	border-bottom-left-radius: 12px;
-    border: 0px;/* solid #4b4b4b;*/
-}
-
-QFrame#launchLabelFrame, QFrame#mixerLabelFrame, QFrame#myInputLabelFrame, QFrame#behaviorLabelFrame,
+QFrame#tabFrame, QFrame#launchLabelFrame, QFrame#mixerLabelFrame, QFrame#myInputLabelFrame, QFrame#behaviorLabelFrame,
 QFrame#songStartLabelFrame, QFrame#crossfadeLabelFrame, QFrame#dummyLabelFrame, QFrame#tickLabelFrame,
 QFrame#insPropLabelFrame, QFrame#topLabelFrame, QFrame#instrumentLabelFrame, QFrame#instrumentPropFrame,
 QFrame#importerLabelFrame, QFrame#audioExportLabelFrame, QFrame#pluginLabelFrame
 {
 	color: #d0d4d0;
-	background-color: #313131;
+	background-color: #303030;
 	border-top-left-radius: 12px;
 	border-top-right-radius: 12px;
-    border: 0px;/* solid #4b4b4b;*/
+        /*border: 1px solid #4b4b4b;*/
 }
 
 QFrame#addButtonFrame, QFrame#propLabelFrame, QFrame#trackLabelFrame, QFrame#midiBoxLabelFrame,
@@ -191,9 +89,9 @@ QFrame#propLabelFrame, QFrame#separatorFrame
 {
 	color: #d0d4d0;
 	/*background-color: #1e1e1e;*/
-	background-color: #313131;
+	background-color: #303030;
 	border-radius: 0px;
-    border: 0px;
+        border: 0px;
 }
 
 QFrame#m_playerFrame
@@ -201,7 +99,7 @@ QFrame#m_playerFrame
 	color: #d6dfd6;
 	 color: #848884;
 	/*background-color: #414141;*/
-	background-color: #313131;
+	background-color: #303030;
 	border-radius: 12px;
     border: 1px solid #1e1e1e;
 }
@@ -936,29 +834,6 @@ Dentry
 	 color: #b8b8b8;
 }
 
-QPushButton
-{
-	border-radius: 3px;
-	padding: 5px;
-    /*background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #b4b4b4, stop:1 #8f8f8f);*/
-	/*background-color: #393941;*/
-      background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                  stop: 0 #6d6d6d, stop:0.1 #6b6b6b, stop: 1.0 #5b5b5b);
-    border: 1px solid #393941;
-	font-family: "fixed-width";
-	font-weight: bold;
-	font-size: 11px;
-	color: #d0d4d0;
-}
-QPushButton:pressed, QPushButton::checked, QPushButton::hover
-{
-	color: #e2e5e5; border-radius: 3px; padding: 3px;
-	border: 1px solid #181819;
-	background-color: #393941;
-	/*background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-	                                           stop: 0 #a1a1ab, stop: 0.1 #5f5f69, stop: 2 #484854);*/
-
-}
 QToolButton
 {
 	border-radius: 0px; padding: 0px;
@@ -1070,12 +945,6 @@ QFrame#doubleSliderRight, QFrame#doubleSliderContainer
 	padding-top: -4px;
 	padding-bottom: -4px;
 }
-
-QFrame, QWidget#CCEditBase {
-border: 0px solid #111111;
-background-color: #111111;
-}
-
 
 MidiRack, EffectRack  {
 	background-color: #141414;
@@ -1326,219 +1195,6 @@ QObject#patchView{
 	 show-decoration-selected: 0;
 }
 /*///////////END CLIPLIST MANAGER///////////////}}}*/
-QWidget#MixerCenter { background-color: #111111 }
-QMainWindow { background-color: #111111 }
-QMainWindow::separator {
-	background-color: #2f2f2f;
-	width: 2px;
-}
-
-/* /////////////Internal Plugin GUI/////////// */
-QMainWindow#PluginGui, QWidget#PluginGuiBase { background-color: #111111 }
-
-/*{{{*/
-QTabWidget#tabControlCenter::pane
-{ /* The tab widget frame */
-    border-top: 0px solid #C2C7CB;
-}
-
-QTabWidget#tabControlCenter::tab-bar
-{
-    /*left: 5px;*/ /* move to the right by 5px */
-}
-
-/* Style the tab using the tab sub-control. Note that
-    it reads QTabBar _not_ QTabWidget */
-QTabWidget#tabControlCenter QTabBar::tab
-{
-	background-color: #47474d;
-    border: 1px solid #a5a6a5;
-    border-right-color: #5a5963; /* same as the pane color */
-    border-top-left-radius: 6px;
-    border-bottom-left-radius: 6px;
-    min-width: 3ex;
-    /*min-height: 15ex;*/
-    padding-top: 8px;
-    padding-bottom: 8px;
-    padding-left: 2px;
-    padding-right: 2px;
-	color: #d6dfd6;
-	font-family: "fixed-width";
-	font-weight: bold;
-	font-size: 11px;
-}
-
-QTabWidget#tabControlCenter QTabBar::tab:selected
-{
-    /*background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
-                                stop: 0 #fafafa, stop: 0.4 #f4f4f4,
-                                stop: 0.5 #e7e7e7, stop: 1.0 #fafafa);*/
-    background-color: #0b0b0b;
-	color: #cdd1cd;
-	font-family: "fixed-width";
-	font-weight: bold;
-	font-size: 11px;
-}
-
-QTabWidget#tabControlCenter QTabBar::tab:selected
-{
-    border-color: #9B9B9B;
-    border-bottom-color: #C2C7CB; /* same as pane color */
-}
-
-QTabWidget#tabControlCenter QTabBar::tab:!selected
-{
-    margin-left: 4px; /* make non-selected tabs look smaller */
-}
-
-/* make use of negative margins for overlapping tabs */
-QTabWidget#tabControlCenter QTabBar::tab:selected
-{
-    /* expand/overlap to the left and right by 4px */
-    margin-left: 2px;
-    /*margin-right: -4px;*/
-}
-
-QTabWidget#tabControlCenter QTabBar::tab:first:selected
-{
-    margin-top: 0; /* the first selected tab has nothing to overlap with on the left */
-}
-
-QTabWidget#tabControlCenter QTabBar::tab:last:selected
-{
-    margin-bottom: 0; /* the last selected tab has nothing to overlap with on the right */
-}
-
-QTabWidget#tabControlCenter QTabBar::tab:only-one
-{
-    margin: 0; /* if there is only one tab, we don't want overlapping margins */
-}
-QTabWidget#tabControlCenter QTabBar::tab::disabled
-{
-    color: #8f9198;; /* if there is only one tab, we don't want overlapping margins */
-	border-color: #47474d;
-	background-color: #111111;
-}
-/*}}}*/
-/*{{{*/
-QTabWidget::pane { /* The tab widget frame */
-    border-top: 1px solid #C2C7CB;
-}
-
-QTabWidget::tab-bar {
-    left: 5px; /* move to the right by 5px */
-}
-
-/* Style the tab using the tab sub-control. Note that
-    it reads QTabBar _not_ QTabWidget */
-QTabBar::tab {
-	background-color: #47474d;
-    border: 1px solid #a5a6a5;
-    border-bottom-color: #111111; /* same as the pane color */
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
-    min-width: 8ex;
-    padding-left: 10px;
-    padding-right: 10px;
-	color: #d6dfd6;
-	font-family: "fixed-width";
-	font-weight: bold;
-	font-size: 10px;
-}
-
-QTabBar::tab:selected, QTabBar::tab:hover {
-    background-color: #0b0b0b;
-	color: #cdd1cd;
-	font-family: "fixed-width";
-	font-weight: bold;
-	font-size: 10px;
-}
-
-QTabBar::tab:selected {
-    border-color: #9B9B9B;
-    border-bottom-color: #C2C7CB; /* same as pane color */
-}
-
-QTabBar::tab:!selected {
-    margin-top: 2px; /* make non-selected tabs look smaller */
-}
-/*}}}*/
-/*{{{*/
-QTabWidget#m_tabWidget::pane { /* The tab widget frame */
-    border-top: 0px solid #C2C7CB;
-}
-
-QTabWidget#m_tabWidget::tab-bar {
-    left: 5px; /* move to the right by 5px */
-}
-
-/* Style the tab using the tab sub-control. Note that
-    it reads QTabBar _not_ QTabWidget */
-QTabWidget#m_tabWidget QTabBar::tab {
-	/*background-color: #47474d;*/
-	background-color: #47474d;
-	/*background-color: #FF0000;*/
-    border: 1px solid #a5a6a5;
-    border-bottom-color: #111111; /* same as the pane color */
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
-    border-bottom-left-radius: 0px;
-    min-width: 6ex;
-    padding-top: 0px;
-    padding-bottom: 0px;
-    padding-left: 0px;
-    padding-right: 0px;
-	color: #d6dfd6;
-	font-family: "fixed-width";
-	font-weight: bold;
-	font-size: 10px;
-}
-
-QTabWidget#m_tabWidget QTabBar::tab:selected, QTabWidget#m_tabWidget QTabBar::tab:hover {
-    background-color: #0b0b0b;
-	color: #cdd1cd;
-	font-family: "fixed-width";
-	font-weight: bold;
-	font-size: 10px;
-}
-
-QTabWidget#m_tabWidget QTabBar::tab:selected {
-    border-color: #9B9B9B;
-    border-bottom: 0px;
-    margin-top: 0px;
-    margin-left: 0px;
-}
-
-QTabWidget#m_tabWidget QTabBar::tab:!selected {
-    margin-top: 2px; /* make non-selected tabs look smaller */
-    margin-left: 0px;
-    border-bottom: 0px;
-}
-
-/* make use of negative margins for overlapping tabs */
-QTabWidget#m_tabWidget QTabBar::tab:selected {
-    /* expand/overlap to the left and right by 4px */
-    margin-top: 0px;
-    margin-left: 0px;
-}
-
-QTabWidget#m_tabWidget QTabBar::tab:first:selected {
-    /*margin-top: 0px;*/ /* the first selected tab has nothing to overlap with on the left */
-}
-
-QTabWidget#m_tabWidget QTabBar::tab:last:selected {
-    /*margin-bottom: 0px;*/ /* the last selected tab has nothing to overlap with on the right */
-}
-
-QTabWidget#m_tabWidget QTabBar::tab:only-one {
-    /*margin: 0px;*/ /* if there is only one tab, we don't want overlapping margins */
-}
-QTabWidget#m_tabWidget QTabBar::tab::disabled {
-    color: #8f9198;; /* if there is only one tab, we don't want overlapping margins */
-	border-color: #47474d;
-	background-color: #111111;
-}
-/*}}}*/
 
 QToolTip {
     border: 1px solid #1e1e1e;
@@ -1655,10 +1311,6 @@ InstrumentTree/*{{{*/
 	/*selection-background-color:red;*//*this can be used to change the selection background color*/
 }/*}}}*/
 /*//////////////////////// MIDI INPUT PLUGINS ////////////////////////////{{{*/
-QWidget#mitPluginTranspose, QDialog#midiInputTransform, QDialog#midiFilterConfig, QWidget#midiRemoteConfig
-{
-	background-color: #111111;
-}
 QWidget#mitPluginTranspose QLabel#transposeLabel
 {
      border-image: url(:/images/frame.png) 4;
@@ -1703,8 +1355,6 @@ QTextEdit#commentEntry
 	padding: 8px;
 }
 /*////////////////////////////////////////////////////////////////////////}}}*/
-
-QMainWindow, Conductor, MidiStrip, AudioStrip, QMenu, Splitter, Spinner, DoubleRange, SliderBase, QDialog, QTabWidget, QMessageBox, QScrollArea, QLabel#TrackViewMenuLabel { background-color: #111111; color: #d0d4d0; }
 
 QTextEdit, QTextEdit#songInfoText
 {

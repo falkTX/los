@@ -106,8 +106,6 @@ struct GlobalConfigValues
     bool useOldStyleStopShortCut;
     bool moveArmedCheckBox;
     bool useOutputLimiter;
-    int dummyAudioSampleRate;
-    int dummyAudioBufSize;
     QString projectBaseFolder;
     bool projectStoreInFolder;
     bool useProjectSaveDialog;

@@ -78,7 +78,6 @@ QString losInstruments;
 QString losUserInstruments;
 QString lastMidiPath(".");
 
-bool debugMode = false;
 bool debugMsg = false;
 bool midiInputTrace = false;
 bool midiOutputTrace = false;

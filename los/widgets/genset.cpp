@@ -33,9 +33,6 @@ static int rtcResolutions[] = {
 static int divisions[] = {
     48, 96, 192, 384, 768, 1536, 3072, 6144, 12288
 };
-static int dummyAudioBufSizes[] = {
-    16, 32, 64, 128, 256, 512, 1024, 2048
-};
 
 //---------------------------------------------------------
 //   GlobalSettingsConfig
@@ -74,14 +71,6 @@ GlobalSettingsConfig::GlobalSettingsConfig(QWidget* parent)
             break;
         }
     }
-    for (unsigned i = 0; i < sizeof (dummyAudioBufSizes) / sizeof (*dummyAudioBufSizes); ++i)
-    {
-        if (dummyAudioBufSizes[i] == config.dummyAudioBufSize)
-        {
-            dummyAudioSize->setCurrentIndex(i);
-            break;
-        }
-    }
 
     m_inputsModel = new QStandardItemModel(this);
     inputView->setModel(m_inputsModel);
@@ -101,9 +90,6 @@ GlobalSettingsConfig::GlobalSettingsConfig(QWidget* parent)
     minMeterSelect->setValue(config.minMeter);
     freewheelCheckBox->setChecked(config.freewheelMode);
     outputLimiterCheckBox->setChecked(config.useOutputLimiter);
-    dummyAudioRate->setValue(config.dummyAudioSampleRate);
-
-    dummyAudioRealRate->setText(QString().setNum(sampleRate));
 
     startSongEntry->setText(config.startSong);
     startSongGroup->button(config.startMode)->setChecked(true);
@@ -199,23 +185,12 @@ void GlobalSettingsConfig::updateSettings()
             break;
         }
     }
-    for (unsigned i = 0; i < sizeof (dummyAudioBufSizes) / sizeof (*dummyAudioBufSizes); ++i)
-    {
-        if (dummyAudioBufSizes[i] == config.dummyAudioBufSize)
-        {
-            dummyAudioSize->setCurrentIndex(i);
-            break;
-        }
-    }
 
     guiRefreshSelect->setValue(config.guiRefresh);
     minSliderSelect->setValue(int(config.minSlider));
     minMeterSelect->setValue(config.minMeter);
     freewheelCheckBox->setChecked(config.freewheelMode);
     outputLimiterCheckBox->setChecked(config.useOutputLimiter);
-    dummyAudioRate->setValue(config.dummyAudioSampleRate);
-
-    dummyAudioRealRate->setText(QString().setNum(sampleRate));
 
     startSongEntry->setText(config.startSong);
     startSongGroup->button(config.startMode)->setChecked(true);
@@ -253,9 +228,6 @@ void GlobalSettingsConfig::apply()
     config.userInstrumentsDir = userInstrumentsPath->text();
     config.startSong = startSongEntry->text();
     config.startMode = startSongGroup->checkedId();
-    int das = dummyAudioSize->currentIndex();
-    config.dummyAudioBufSize = dummyAudioBufSizes[das];
-    config.dummyAudioSampleRate = dummyAudioRate->value();
 
     int div = midiDivisionSelect->currentIndex();
     config.division = divisions[div];

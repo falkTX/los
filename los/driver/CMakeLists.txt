@@ -26,7 +26,6 @@
 file (GLOB driver_source_files
     alsamidi.cpp
     alsatimer.cpp
-    dummyaudio.cpp
     jack.cpp
     jackmidi.cpp
 )
