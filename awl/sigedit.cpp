@@ -19,7 +19,6 @@
 //=============================================================================
 
 #include "globals.h"
-#include "awl.h"
 #include "sigedit.h"
 
 #include <QKeyEvent>

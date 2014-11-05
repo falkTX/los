@@ -24,7 +24,6 @@
 ##
 
 QT4_WRAP_CPP(awl_mocs
-    floatentry.h
     pitchedit.h
     pitchlabel.h
     posedit.h
@@ -38,8 +37,6 @@ QT4_WRAP_CPP(awl_mocs
 ##
 
 file(GLOB awl_source_files
-    awl.cpp
-    floatentry.cpp
     pitchedit.cpp
     pitchlabel.cpp
     posedit.cpp
