@@ -493,7 +493,6 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
     midiFileConfig = 0;
     midiFilterConfig = 0;
     midiInputTransform = 0;
-    midiRhythmGenerator = 0;
     globalSettingsConfig = 0;
     markerView = 0;
     midiTransformerDialog = 0;
@@ -754,9 +753,6 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
     midiInputTrfAction = new QAction(QIcon(*midi_inputplugins_midi_input_transformIcon), tr("Midi Input Transform"), this);
     midiInputFilterAction = new QAction(QIcon(*midi_inputplugins_midi_input_filterIcon), tr("Midi Input Filter"), this);
     midiRemoteAction = new QAction(QIcon(*midi_inputplugins_remote_controlIcon), tr("Midi Remote Control"), this);
-#ifdef BUILD_EXPERIMENTAL
-    midiRhythmAction = new QAction(QIcon(*midi_inputplugins_random_rhythm_generatorIcon), tr("Rhythm Generator"), this);
-#endif
     midiResetInstAction = new QAction(QIcon(*midi_reset_instrIcon), tr("Reset Instr."), this);
     midiInitInstActions = new QAction(QIcon(*midi_init_instrIcon), tr("Init Instr."), this);
     midiLocalOffAction = new QAction(QIcon(*midi_local_offIcon), tr("Local Off"), this);
@@ -886,11 +882,6 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
     midiPluginSignalMapper->setMapping(midiInputTrfAction, 1);
     midiPluginSignalMapper->setMapping(midiInputFilterAction, 2);
     midiPluginSignalMapper->setMapping(midiRemoteAction, 3);
-
-#ifdef BUILD_EXPERIMENTAL
-    connect(midiRhythmAction, SIGNAL(triggered()), midiPluginSignalMapper, SLOT(map()));
-    midiPluginSignalMapper->setMapping(midiRhythmAction, 4);
-#endif
 
     connect(midiPluginSignalMapper, SIGNAL(mapped(int)), this, SLOT(startMidiInputPlugin(int)));
 
@@ -1036,9 +1027,6 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
 
     menu_functions = menuBar()->addMenu(tr("&Midi"));
     menu_functions->addAction(midiEditInstAction);
-#ifdef BUILD_EXPERIMENTAL
-    midiInputPlugins->addAction(midiRhythmAction);
-#endif
 
     menu_functions->addSeparator();
     menu_functions->addAction(midiLocalOffAction);
@@ -3839,9 +3827,6 @@ void LOS::updateConfiguration()
     midiInputTrfAction->setShortcut(shortcuts[SHRT_MIDI_INPUT_TRANSFORM].key);
     midiInputFilterAction->setShortcut(shortcuts[SHRT_MIDI_INPUT_FILTER].key);
     midiRemoteAction->setShortcut(shortcuts[SHRT_MIDI_REMOTE_CONTROL].key);
-#ifdef BUILD_EXPERIMENTAL
-    midiRhythmAction->setShortcut(shortcuts[SHRT_RANDOM_RHYTHM_GENERATOR].key);
-#endif
 
     audioRestartAction->setShortcut(shortcuts[SHRT_AUDIO_RESTART].key);
 

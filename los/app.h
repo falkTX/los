@@ -56,7 +56,6 @@ class GlobalSettingsConfig;
 class MidiControllerEditDialog;
 class MidiInputTransformDialog;
 class MidiTransformerDialog;
-class RhythmGen;
 class MidiTrack;
 class MidiInstrument;
 class MidiPort;
@@ -134,9 +133,6 @@ class LOS : public QMainWindow
     // Midi Menu Actions
     QAction *midiEditInstAction, *midiResetInstAction, *midiInitInstActions, *midiLocalOffAction;
     QAction *midiTrpAction, *midiInputTrfAction, *midiInputFilterAction, *midiRemoteAction;
-#ifdef BUILD_EXPERIMENTAL
-    QAction *midiRhythmAction;
-#endif
 
     // Audio Menu Actions
     QAction *audioRestartAction;
@@ -178,7 +174,6 @@ class LOS : public QMainWindow
     MidiAssignDialog* midiAssignDialog;
     QWidget* midiPortConfig;
     MRConfig* midiRemoteConfig;
-    RhythmGen* midiRhythmGenerator;
     AudioConf* audioConfig;
     MidiFileConfig* midiFileConfig;
     GlobalSettingsConfig* globalSettingsConfig;
@@ -330,9 +325,6 @@ private slots:
     void hideMidiInputTransform();
     void hideMidiFilterConfig();
     void hideMidiRemoteConfig();
-#ifdef BUILD_EXPERIMENTAL
-    void hideMidiRhythmGenerator();
-#endif
     void globalCut();
     void globalInsert();
     void globalSplit();

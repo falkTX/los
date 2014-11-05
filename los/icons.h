@@ -427,7 +427,6 @@ extern QPixmap* midi_init_instrIcon;
 extern QPixmap* midi_inputpluginsIcon;
 extern QPixmap* midi_inputplugins_midi_input_filterIcon;
 extern QPixmap* midi_inputplugins_midi_input_transformIcon;
-extern QPixmap* midi_inputplugins_random_rhythm_generatorIcon;
 extern QPixmap* midi_inputplugins_remote_controlIcon;
 extern QPixmap* midi_inputplugins_transposeIcon;
 extern QPixmap* midi_local_offIcon;

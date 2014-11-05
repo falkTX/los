@@ -133,7 +133,6 @@ enum
     SHRT_MIDI_INPUT_FILTER, //Default: undefined
     SHRT_MIDI_INPUT_TRANSPOSE, //Default: undefined
     SHRT_MIDI_REMOTE_CONTROL, //Default: undefined
-    SHRT_RANDOM_RHYTHM_GENERATOR, //Default: undefined
     SHRT_MIDI_RESET, //Default: undefined
     SHRT_MIDI_INIT, //Default: undefined
     SHRT_MIDI_LOCAL_OFF, //Default: undefined

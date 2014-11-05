@@ -16,10 +16,6 @@
 #include "midifilterimpl.h"
 #include "mrconfig.h"
 
-#ifdef BUILD_EXPERIMENTAL
-#include "rhythm.h"
-#endif
-
 MITPluginList mitPlugins;
 
 //---------------------------------------------------------
@@ -81,20 +77,6 @@ void LOS::startMidiInputPlugin(int id)
 		w = midiRemoteConfig;
 		act = midiRemoteAction;
 	}
-#ifdef BUILD_EXPERIMENTAL
-	else if (id == 4)
-	{
-		if (!midiRhythmGenerator)
-		{
-			midiRhythmGenerator = new RhythmGen();
-			midiRhythmGenerator->setObjectName("midiRhythmGenerator");
-			connect(midiRhythmGenerator, SIGNAL(hideWindow()),
-					SLOT(hideMidiRhythmGenerator()));
-		}
-		w = midiRhythmGenerator;
-		act = midiRhythmAction;
-	}
-#endif
 	if (w)
 	{
 		flag = !w->isVisible();
@@ -125,13 +107,6 @@ void LOS::hideMidiRemoteConfig()
 {
 	midiRemoteAction->setChecked(false);
 }
-#ifdef BUILD_EXPERIMENTAL
-
-void LOS::hideMidiRhythmGenerator()
-{
-	midiRhythmAction->setChecked(false);
-}
-#endif
 
 //---------------------------------------------------------
 //   processMidiInputTransformPlugins

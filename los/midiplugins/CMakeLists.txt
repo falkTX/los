@@ -51,7 +51,6 @@ file(GLOB midiplugins_source_files
     mitplugin.cpp
     mittranspose.cpp
     mrconfig.cpp
-    random.cpp
 )
 
 ##

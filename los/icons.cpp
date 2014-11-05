@@ -24,7 +24,6 @@
 #include "xpm/midi_inputplugins_midi_input_transform.xpm"
 #include "xpm/midi_inputplugins_remote_control.xpm"
 #include "xpm/midi_inputplugins_transpose.xpm"
-#include "xpm/midi_inputplugins_random_rhythm_generator.xpm"
 #include "xpm/midi_local_off.xpm"
 #include "xpm/midi_reset_instr.xpm"
 #include "xpm/midi_thru_off3.xpm"
@@ -687,7 +686,6 @@ QPixmap* midi_init_instrIcon;
 QPixmap* midi_inputpluginsIcon;
 QPixmap* midi_inputplugins_midi_input_filterIcon;
 QPixmap* midi_inputplugins_midi_input_transformIcon;
-QPixmap* midi_inputplugins_random_rhythm_generatorIcon;
 QPixmap* midi_inputplugins_remote_controlIcon;
 QPixmap* midi_inputplugins_transposeIcon;
 QPixmap* midi_local_offIcon;
@@ -1396,7 +1394,6 @@ void initIcons()
     midi_inputpluginsIcon                         = new LOSPixmap(midi_inputplugins_xpm, nullptr);
     midi_inputplugins_midi_input_filterIcon       = new LOSPixmap(midi_inputplugins_midi_input_filter_xpm, nullptr);
     midi_inputplugins_midi_input_transformIcon    = new LOSPixmap(midi_inputplugins_midi_input_transform_xpm, nullptr);
-    midi_inputplugins_random_rhythm_generatorIcon = new LOSPixmap(midi_inputplugins_random_rhythm_generator_xpm, nullptr);
     midi_inputplugins_remote_controlIcon          = new LOSPixmap(midi_inputplugins_remote_control_xpm, nullptr);
     midi_inputplugins_transposeIcon               = new LOSPixmap(midi_inputplugins_transpose_xpm, nullptr);
     midi_local_offIcon                            = new LOSPixmap(midi_local_off_xpm, nullptr);
