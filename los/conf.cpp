@@ -728,8 +728,6 @@ void readConfiguration(Xml& xml, bool readOnlySequencer)/*{{{*/
                     readShortCuts(xml);
                 else if (tag == "division")
                     config.division = xml.parseInt();
-                else if (tag == "guiDivision")
-                    config.guiDivision = xml.parseInt();
                 else if (tag == "rtcTicks")
                     config.rtcTicks = xml.parseInt();
                 else if (tag == "guiRefresh")

@@ -654,7 +654,6 @@ GlobalConfigValues config = {
     true, // Split imported tracks into multiple parts.
     1, // startMode
     QString(""), // start song path
-    384, // gui division
     QRect(0, 0, 400, 300), // GeometryMain;
     QRect(0, 0, 200, 100), // GeometryTransport;
     QRect(0, 0, 600, 200), // GeometryBigTime;

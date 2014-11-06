@@ -80,7 +80,6 @@ struct GlobalConfigValues
     int startMode;
 
     QString startSong; // path for start song
-    int guiDivision; // division for tick display
 
     QRect geometryMain;
     QRect geometryTransport;

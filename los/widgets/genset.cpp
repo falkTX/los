@@ -63,14 +63,6 @@ GlobalSettingsConfig::GlobalSettingsConfig(QWidget* parent)
             break;
         }
     }
-    for (unsigned i = 0; i < sizeof (divisions) / sizeof (*divisions); ++i)
-    {
-        if (divisions[i] == config.guiDivision)
-        {
-            guiDivisionSelect->setCurrentIndex(i);
-            break;
-        }
-    }
 
     m_inputsModel = new QStandardItemModel(this);
     inputView->setModel(m_inputsModel);
@@ -171,14 +163,6 @@ void GlobalSettingsConfig::updateSettings()
             break;
         }
     }
-    for (unsigned i = 0; i < sizeof (divisions) / sizeof (*divisions); ++i)
-    {
-        if (divisions[i] == config.guiDivision)
-        {
-            guiDivisionSelect->setCurrentIndex(i);
-            break;
-        }
-    }
 
     guiRefreshSelect->setValue(config.guiRefresh);
 
@@ -216,9 +200,9 @@ void GlobalSettingsConfig::apply()
     config.startMode = startSongGroup->checkedId();
 
     int div = midiDivisionSelect->currentIndex();
+    if (div < 0 || div > 9)
+        div = 3;
     config.division = divisions[div];
-    div = guiDivisionSelect->currentIndex();
-    config.guiDivision = divisions[div];
 
     config.useOldStyleStopShortCut = oldStyleStopCheckBox->isChecked();
     config.moveArmedCheckBox = moveArmedCheckBox->isChecked();
