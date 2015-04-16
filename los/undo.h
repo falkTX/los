@@ -40,7 +40,7 @@ struct UndoOp
         AddTempo, DeleteTempo,
         AddSig, DeleteSig,
         SwapTrack,
-        /*ModifyClip,*/
+        ModifyClip,
         ModifyMarker,
         AddTrackView, DeleteTrackView, ModifyTrackView,
         AddAutomation, DeleteAutomation, ModifyAutomation,

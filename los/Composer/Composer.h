@@ -39,6 +39,7 @@ class LabelCombo;
 class Conductor;
 class SpinBox;
 class TrackViewDock;
+class AudioClipList;
 class CommentDock;
 class CItem;
 class HeaderList;
@@ -89,6 +90,7 @@ class Composer : public QWidget
     SpinBox* globalPitchSpinBox;
     QTabWidget* _rtabs;
     TrackViewDock* _tvdock;
+    AudioClipList* m_clipList;
     CommentDock* _commentdock;
     QWidget *central;
     QVBoxLayout *mlayout;

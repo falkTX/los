@@ -41,7 +41,7 @@ public:
 
     enum ToplevelType
     {
-        PIANO_ROLL, LISTE, DRUM, MASTER, LMASTER, MARKER
+        PIANO_ROLL, LISTE, DRUM, MASTER, LMASTER, CLIPLIST, MARKER
     };
 
     Toplevel(ToplevelType t, unsigned long obj, TopWin* cobj)

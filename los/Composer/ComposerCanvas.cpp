@@ -817,6 +817,19 @@ void ComposerCanvas::itemPopup(CItem* item, int n, const QPoint& pt)/*{{{*/
             Part* p = item->part();
             EventList* el = p->events();
             QString str = tr("Part name") + ": " + p->name() + "\n";
+ + tr("Files") + ":";
+            // THIS HAS TO DO WITH THE CLIP LIST
+            // It may be just audio, but double check
+/*            for (iEvent e = el->begin(); e != el->end(); ++e)
+            {
+                Event event = e->second;
+                SndFileR f = event.sndFile();
+                if (f.isNull())
+                    continue;
+                //str.append("\n" + f.path());
+                str.append(QString("\n@") + QString().setNum(event.tick()) + QString(" len:") +
+                        QString().setNum(event.lenTick()) + QString(" ") + f.path());
+            }*/
             QMessageBox::information(this, "File info", str, "Ok", 0);
             break;
         }
@@ -2424,6 +2437,21 @@ void ComposerCanvas::dragEnterEvent(QDragEnterEvent* event)
                 text.endsWith(".los", Qt::CaseInsensitive) ||
                 text.endsWith(".mid", Qt::CaseInsensitive))
         {
+            //THIS IS WHERE .MPT PARTS GET IMPORTED FROM THE CLIP LIST
+            //(Possibly also from file manager)
+            /*if(text.endsWith(".mpt", Qt::CaseInsensitive))
+            {
+            }
+            else
+            {
+                SndFile* f = getWave(text, true);
+                if(f)
+                {
+                    int samples = f->samples();
+                    //
+                }
+            }*/
+            //qDebug("ComposerCanvas::dragEnterEvent: Found Audio file");
             event->acceptProposedAction();
         }
         else

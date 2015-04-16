@@ -19,34 +19,46 @@
 #  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #=============================================================================
 
-file(GLOB TRANSLATIONS_FILES *.ts)
+##
+## Expand Qt macros in source files
+##
 
-if (UPDATE_TRANSLATIONS)
-    qt4_create_translation(QM_FILES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
-else (UPDATE_TRANSLATIONS)
-    qt4_add_translation(QM_FILES ${TRANSLATIONS_FILES})
-endif (UPDATE_TRANSLATIONS)
+QT4_WRAP_CPP(cliplist_mocs
+    cliplist.h
+)
 
-add_custom_target(translations ALL DEPENDS ${QM_FILES})
+##
+## List of source files to compile
+##
 
-# If we are updating the translations, make sure that these targets are scanned first
-if (UPDATE_TRANSLATIONS)
-    add_dependencies(translations
-        los
-        Composer
-        cliplist
-        ctrl
-        driver
-        instruments
-        liste
-        marker
-        master
-        midiedit
-        midiplugins
-        widgets
-    )
-endif (UPDATE_TRANSLATIONS)
+file(GLOB cliplist_source_files
+    cliplist.cpp
+)
 
-install(FILES ${QM_FILES}
-    DESTINATION ${LOS_SHARE_DIR}/locale
+##
+## Define target
+##
+
+add_library(cliplist STATIC
+    ${cliplist_source_files}
+    ${cliplist_mocs}
+)
+
+##
+## Append to the list of translations
+##
+
+set(FILES_TO_TRANSLATE
+    ${FILES_TO_TRANSLATE}
+    ${cliplist_source_files}
+    CACHE INTERNAL ""
+)
+
+##
+## Compilation flags and target name
+##
+
+set_target_properties(cliplist
+    PROPERTIES COMPILE_FLAGS "-include ${PROJECT_BINARY_DIR}/all.h -fPIC"
+    OUTPUT_NAME los_cliplist
 )

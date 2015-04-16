@@ -43,6 +43,7 @@
 #include "commentdock.h"
 #include "shortcuts.h"
 #include "toolbars/tools.h"
+#include "ClipList/AudioClipList.h"
 #include "TimeHeader.h"
 #include "TempoHeader.h"
 #include "tempolabel.h"
@@ -548,9 +549,29 @@ void Composer::currentTabChanged(int tab)
                 if(selected)
                     midiConductor->setTrack(selected);
             }
+            if(m_clipList)
+            {
+                m_clipList->setActive(false);
+            }
+        }
+        break;
+        case 2: //Clip List
+        {
+            if(m_clipList)
+            {
+                m_clipList->setActive(true);
+                m_clipList->refresh();
+                m_clipList->loadBookmarks();
+            }
         }
         break;
         default:
+        {
+            if(m_clipList)
+            {
+                m_clipList->setActive(false);
+            }
+        }
         break;
     }
 }
@@ -1098,9 +1119,15 @@ void Composer::createDockMembers()
 
     _tvdock = new TrackViewDock(this);
 
+    m_clipList = new AudioClipList(this);
+    //Set to true if this is the first cliplist viewable tab
+    //When false the directory watcher will not constantly update the view
+    m_clipList->setActive(false);
+
     _commentdock = new CommentDock(this);
     _rtabs->addTab(_tvdock, tr("   EPIC Views   "));
     _rtabs->addTab(midiConductor, tr("   Conductor   "));
+    _rtabs->addTab(m_clipList, tr("  Clips  "));
     _rtabs->addTab(_commentdock, tr("  Comments  "));
 
 }
