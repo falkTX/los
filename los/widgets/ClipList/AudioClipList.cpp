@@ -7,7 +7,7 @@
 
 #include "AudioClipList.h"
 #include "BookmarkList.h"
-#include "AudioPlayer.h"
+//#include "AudioPlayer.h"
 #include "config.h"
 #include "globals.h"
 #include "gconfig.h"
@@ -62,14 +62,13 @@ QMimeData *ClipListModel::mimeData(const QModelIndexList& indices) const
     return mdata;
 }
 
-static AudioPlayer player;
+//static AudioPlayer player;
 
 AudioClipList::AudioClipList(QWidget *parent)
  : QFrame(parent)
 {
     setupUi(this);
 
-    m_filters << "wav" << "ogg" << "mpt" << "mid" << "kar";
     m_watcher = new QFileSystemWatcher(this);
     m_active = true;
 
@@ -89,12 +88,13 @@ AudioClipList::AudioClipList(QWidget *parent)
 
     //btnForward->setIcon(QIcon(*forwardIconSet3));
 
-    btnStop->setIcon(QIcon(*stopIconSetLeft));
+    //btnStop->setIcon(QIcon(*stopIconSetLeft));
     //btnStop->setChecked(true);
 
-    btnPlay->setIcon(QIcon(*playIconSetRight));
+    //btnPlay->setIcon(QIcon(*playIconSetRight));
 
     //QColor sliderBgColor = g_trackColorList.value(3);
+/*
     QColor sliderBgColor = g_trackColorListSelected.value(3);
     m_slider = new Slider(this, "vol", Qt::Vertical, Slider::None, Slider::BgSlot, sliderBgColor, false);
     m_slider->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding));
@@ -105,7 +105,9 @@ AudioClipList::AudioClipList(QWidget *parent)
     m_slider->setIgnoreWheel(false);
     m_slider->setToolTip(tr("Volume"));
     playerLayout->insertWidget(1, m_slider);
+*/
 
+/*
     QColor seekSliderBgColor = g_trackColorList.value(5);
     m_seekSlider = new Slider(this, "seek", Qt::Horizontal, Slider::None, Slider::BgSlot, sliderBgColor, true);
     m_seekSlider->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed));
@@ -116,14 +118,16 @@ AudioClipList::AudioClipList(QWidget *parent)
     m_seekSlider->setFont(config.fonts[1]);
     m_seekSlider->setIgnoreWheel(false);
     controlBox->insertWidget(2, m_seekSlider);
+*/
 
-    connect(btnPlay, SIGNAL(toggled(bool)), this, SLOT(playClicked(bool)));
-    connect(btnStop, SIGNAL(toggled(bool)), this, SLOT(stopClicked(bool)));
+    //connect(btnPlay, SIGNAL(toggled(bool)), this, SLOT(playClicked(bool)));
+    //connect(btnStop, SIGNAL(toggled(bool)), this, SLOT(stopClicked(bool)));
     //connect(btnRewind, SIGNAL(clicked()), this, SLOT(rewindClicked()));
     //connect(btnForward, SIGNAL(clicked()), this, SLOT(forwardClicked()));
     //connect(btnHome, SIGNAL(clicked()), this, SLOT(homeClicked()));
     //connect(btnBookmark, SIGNAL(clicked()), this, SLOT(addBookmarkClicked()));
 
+/*
     connect(&player, SIGNAL(playbackStopped(bool)), this, SLOT(stopSlotCalled(bool)));
     connect(&player, SIGNAL(timeChanged(const QString&)), this, SLOT(updateTime(const QString&)));
     connect(&player, SIGNAL(timeChanged(int)), this, SLOT(updateSlider(int)));
@@ -133,6 +137,7 @@ AudioClipList::AudioClipList(QWidget *parent)
     connect(m_slider, SIGNAL(sliderMoved(double, int)), &player, SLOT(setVolume(double)));
     connect(m_seekSlider, SIGNAL(sliderMoved(int, int)), &player, SLOT(seek(int)));
     connect(m_seekSlider, SIGNAL(sliderMoved(int, int)), this, SLOT(offlineSeek(int)));
+*/
 
     connect(m_fileList, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(fileItemSelected(const QModelIndex&)));
     connect(m_fileList, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(fileItemContextMenu(const QPoint&)));
@@ -145,10 +150,10 @@ AudioClipList::AudioClipList(QWidget *parent)
 
     QByteArray state = tconfig().get_property("AudioClipList", "splitterState", "").toByteArray();
     splitter->restoreState(state);
-    double volume = tconfig().get_property("AudioClipList", "volume", fast_log10(0.60*20.0)).toDouble();
+//    double volume = tconfig().get_property("AudioClipList", "volume", fast_log10(0.60*20.0)).toDouble();
     //m_slider->setValue(fast_log10(0.60*20.0));
-    m_slider->setValue(volume);
-    player.setVolume(volume);
+//    m_slider->setValue(volume);
+//    player.setVolume(volume);
     loadBookmarks();
     //setDir(QDir::currentPath());
     setDir(losProject);
@@ -164,10 +169,10 @@ AudioClipList::~AudioClipList()
         out << QString::number(s);
     }
     tconfig().set_property("AudioClipList", "splitterState", splitter->saveState());
-    tconfig().set_property("AudioClipList", "volume", m_slider->value());
+//    tconfig().set_property("AudioClipList", "volume", m_slider->value());
     saveBookmarks();
     tconfig().save();
-    player.stop();
+//    player.stop();
 }
 
 void AudioClipList::saveBookmarks()
@@ -450,6 +455,7 @@ void AudioClipList::bookmarkItemSelected(const QModelIndex& index)
         }
     }
 }
+/*
 
 void AudioClipList::offlineSeek(int pos)
 {
@@ -539,7 +545,9 @@ static void doPlay(const QString& file)
     player.play(file);
 }
 
-void AudioClipList::playNextFile()/*{{{*/
+void AudioClipList::playNextFile()*/
+/*{{{*//*
+
 {
     if(m_playlist.size())
     {
@@ -552,9 +560,13 @@ void AudioClipList::playNextFile()/*{{{*/
         btnStop->setChecked(false);
         btnStop->blockSignals(false);
     }
-}/*}}}*/
+}*/
+/*}}}*//*
 
-void AudioClipList::playClicked(bool state)/*{{{*/
+
+void AudioClipList::playClicked(bool state)*/
+/*{{{*//*
+
 {
     //qDebug("AudioClipList::playClicked: state: %d", state);
 
@@ -630,9 +642,13 @@ void AudioClipList::playClicked(bool state)/*{{{*/
     {
         btnStop->setChecked(!state);
     }
-}/*}}}*/
+}*/
+/*}}}*//*
 
-void AudioClipList::stopSlotCalled(bool)/*{{{*/
+
+void AudioClipList::stopSlotCalled(bool)*/
+/*{{{*//*
+
 {
     btnStop->blockSignals(true);
     btnStop->setChecked(true);
@@ -641,9 +657,13 @@ void AudioClipList::stopSlotCalled(bool)/*{{{*/
     btnPlay->blockSignals(true);
     btnPlay->setChecked(false);
     btnPlay->blockSignals(false);
-}/*}}}*/
+}*/
+/*}}}*//*
 
-void AudioClipList::stopClicked(bool state)/*{{{*/
+
+void AudioClipList::stopClicked(bool state)*/
+/*{{{*//*
+
 {
     if(state)
     {
@@ -669,7 +689,10 @@ void AudioClipList::stopClicked(bool state)/*{{{*/
         btnStop->setChecked(true);
         btnStop->blockSignals(false);
     }
-}/*}}}*/
+}
+*/
+
+/*}}}*/
 
 void AudioClipList::homeClicked()
 {
