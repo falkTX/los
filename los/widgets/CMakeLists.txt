@@ -96,7 +96,7 @@ QT4_WRAP_CPP(widgets_mocs
     CreateTrackDialog.h
     ClipList/BookmarkList.h
     ClipList/AudioClipList.h
-    ClipList/AudioPlayer.h
+##    ClipList/AudioPlayer.h
     StretchDialog.h
     TimeHeader.h
     TrackInstrumentMenu.h
@@ -227,7 +227,7 @@ file(GLOB widgets_source_files
     CreateTrackDialog.cpp
     ClipList/BookmarkList.cpp
     ClipList/AudioClipList.cpp
-    ClipList/AudioPlayer.cpp
+##    ClipList/AudioPlayer.cpp
     StretchDialog.cpp
     TimeHeader.cpp
     TrackInstrumentMenu.cpp
