@@ -12,7 +12,7 @@
 #include "../cobject.h"
 #include "event.h"
 
-#include "ui_cliplisteditorbase.h"
+//#include "ui_cliplisteditorbase.h"
 
 class QCloseEvent;
 class QDialog;

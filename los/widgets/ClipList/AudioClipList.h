@@ -8,7 +8,7 @@
 #ifndef _OOM_AUDIO_CLIPLIST_
 #define _OOM_AUDIO_CLIPLIST_
 
-#include "ui_AudioClipListBase.h"
+//#include "ui_AudioClipListBase.h"
 #include <QFrame>
 #include <QStringList>
 #include <QModelIndex>
