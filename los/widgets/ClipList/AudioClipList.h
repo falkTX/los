@@ -59,8 +59,8 @@ signals:
 	void stopPlayback();
 
 private slots:
-	void playClicked(bool);
-	void stopClicked(bool);
+	//void playClicked(bool);
+	//void stopClicked(bool);
 	void homeClicked();
 	void forwardClicked();
 	void rewindClicked();
@@ -71,8 +71,8 @@ private slots:
 	void bookmarkItemSelected(const QModelIndex&);
 	void bookmarkContextMenu(const QPoint&);
 	
-	void updateTime(const QString&);
-	void updateSlider(int);
+	//void updateTime(const QString&);
+	//void updateSlider(int);
 
 	void updateNowPlaying(const QString&, int samples);
 	void playNextFile();

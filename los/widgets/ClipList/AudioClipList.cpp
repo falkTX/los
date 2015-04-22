@@ -82,6 +82,9 @@ AudioClipList::AudioClipList(QWidget *parent)
     m_listModel = new ClipListModel(this);
     m_fileList->setModel(m_listModel);
 
+/*
+    // This is stuff for the audio cliplist player
+
     //btnHome->setIcon(QIcon(*startIconSet3));
 
     //btnRewind->setIcon(QIcon(*rewindIconSet3));
@@ -94,7 +97,7 @@ AudioClipList::AudioClipList(QWidget *parent)
     //btnPlay->setIcon(QIcon(*playIconSetRight));
 
     //QColor sliderBgColor = g_trackColorList.value(3);
-/*
+
     QColor sliderBgColor = g_trackColorListSelected.value(3);
     m_slider = new Slider(this, "vol", Qt::Vertical, Slider::None, Slider::BgSlot, sliderBgColor, false);
     m_slider->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding));
@@ -105,9 +108,7 @@ AudioClipList::AudioClipList(QWidget *parent)
     m_slider->setIgnoreWheel(false);
     m_slider->setToolTip(tr("Volume"));
     playerLayout->insertWidget(1, m_slider);
-*/
 
-/*
     QColor seekSliderBgColor = g_trackColorList.value(5);
     m_seekSlider = new Slider(this, "seek", Qt::Horizontal, Slider::None, Slider::BgSlot, sliderBgColor, true);
     m_seekSlider->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed));
@@ -118,7 +119,7 @@ AudioClipList::AudioClipList(QWidget *parent)
     m_seekSlider->setFont(config.fonts[1]);
     m_seekSlider->setIgnoreWheel(false);
     controlBox->insertWidget(2, m_seekSlider);
-*/
+
 
     //connect(btnPlay, SIGNAL(toggled(bool)), this, SLOT(playClicked(bool)));
     //connect(btnStop, SIGNAL(toggled(bool)), this, SLOT(stopClicked(bool)));
@@ -127,7 +128,7 @@ AudioClipList::AudioClipList(QWidget *parent)
     //connect(btnHome, SIGNAL(clicked()), this, SLOT(homeClicked()));
     //connect(btnBookmark, SIGNAL(clicked()), this, SLOT(addBookmarkClicked()));
 
-/*
+
     connect(&player, SIGNAL(playbackStopped(bool)), this, SLOT(stopSlotCalled(bool)));
     connect(&player, SIGNAL(timeChanged(const QString&)), this, SLOT(updateTime(const QString&)));
     connect(&player, SIGNAL(timeChanged(int)), this, SLOT(updateSlider(int)));
@@ -157,7 +158,7 @@ AudioClipList::AudioClipList(QWidget *parent)
     loadBookmarks();
     //setDir(QDir::currentPath());
     setDir(losProject);
-    updateLabels();
+    //updateLabels();
 }
 
 AudioClipList::~AudioClipList()
@@ -437,8 +438,8 @@ void AudioClipList::fileItemSelected(const QModelIndex& index)
                 {
                     los->importMidi(f.filePath());
                 }
-                else
-                    playClicked(true);
+                //else
+                //    playClicked(true);
             }
         }
     }
@@ -545,8 +546,7 @@ static void doPlay(const QString& file)
     player.play(file);
 }
 
-void AudioClipList::playNextFile()*/
-/*{{{*//*
+void AudioClipList::playNextFile()
 
 {
     if(m_playlist.size())
@@ -560,12 +560,10 @@ void AudioClipList::playNextFile()*/
         btnStop->setChecked(false);
         btnStop->blockSignals(false);
     }
-}*/
-/*}}}*//*
+}
 
 
-void AudioClipList::playClicked(bool state)*/
-/*{{{*//*
+void AudioClipList::playClicked(bool state)
 
 {
     //qDebug("AudioClipList::playClicked: state: %d", state);
@@ -642,12 +640,9 @@ void AudioClipList::playClicked(bool state)*/
     {
         btnStop->setChecked(!state);
     }
-}*/
-/*}}}*//*
 
 
-void AudioClipList::stopSlotCalled(bool)*/
-/*{{{*//*
+void AudioClipList::stopSlotCalled(bool)
 
 {
     btnStop->blockSignals(true);
@@ -657,12 +652,9 @@ void AudioClipList::stopSlotCalled(bool)*/
     btnPlay->blockSignals(true);
     btnPlay->setChecked(false);
     btnPlay->blockSignals(false);
-}*/
-/*}}}*//*
+}
 
-
-void AudioClipList::stopClicked(bool state)*/
-/*{{{*//*
+void AudioClipList::stopClicked(bool state)
 
 {
     if(state)
@@ -691,8 +683,6 @@ void AudioClipList::stopClicked(bool state)*/
     }
 }
 */
-
-/*}}}*/
 
 void AudioClipList::homeClicked()
 {
