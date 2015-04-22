@@ -84,7 +84,7 @@
        </widget>
       </item>
       <item>
-       <widget class="Awl::PosEdit" name="start" native="true">
+       <widget class="PosEdit" name="start" native="true">
         <property name="smpte" stdset="0">
          <bool>true</bool>
         </property>
