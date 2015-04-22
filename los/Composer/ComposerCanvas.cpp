@@ -815,12 +815,12 @@ void ComposerCanvas::itemPopup(CItem* item, int n, const QPoint& pt)/*{{{*/
         case 17: // File info
         {
             Part* p = item->part();
+/*
             EventList* el = p->events();
-            QString str = tr("Part name") + ": " + p->name() + "\n";
- + tr("Files") + ":";
-            // THIS HAS TO DO WITH THE CLIP LIST
-            // It may be just audio, but double check
-/*            for (iEvent e = el->begin(); e != el->end(); ++e)
+            QString str = tr("Part name") + ": " + p->name() + "\n" + tr("Files") + ":";
+            // This is for the "File Info" option when right-clicking on
+            // an audio part in the multitrack view. (not used)
+            for (iEvent e = el->begin(); e != el->end(); ++e)
             {
                 Event event = e->second;
                 SndFileR f = event.sndFile();
@@ -829,9 +829,10 @@ void ComposerCanvas::itemPopup(CItem* item, int n, const QPoint& pt)/*{{{*/
                 //str.append("\n" + f.path());
                 str.append(QString("\n@") + QString().setNum(event.tick()) + QString(" len:") +
                         QString().setNum(event.lenTick()) + QString(" ") + f.path());
-            }*/
+            }
             QMessageBox::information(this, "File info", str, "Ok", 0);
             break;
+*/
         }
         case 18: // Select clones
         {

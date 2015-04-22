@@ -59,6 +59,6 @@ set(FILES_TO_TRANSLATE
 ##
 
 set_target_properties(cliplist
-    PROPERTIES COMPILE_FLAGS "-include ${PROJECT_BINARY_DIR}/all.h -fPIC"
-    OUTPUT_NAME los_cliplist
+    PROPERTIES OUTPUT_NAME los_cliplist
+    ## COMPILE_FLAGS "-include ${PROJECT_BINARY_DIR}/all.h -fPIC"
 )

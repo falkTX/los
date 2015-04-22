@@ -14,7 +14,7 @@
 #include "cliplist.h"
 #include "song.h"
 #include "globals.h"
-#include "wave.h"
+//#include "wave.h"
 #include "xml.h"
 #include "ui_cliplisteditorbase.h"
 

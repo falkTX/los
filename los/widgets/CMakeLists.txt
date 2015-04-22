@@ -179,7 +179,7 @@ file(GLOB widgets_source_files
     gcombo.cpp
     mmath.cpp
     conductor/Conductor.cpp
-    tvieweditor.cpp
+    tvieweditor.cppf
     tviewdock.cpp
     tracklistview.cpp
     trackheader.cpp
