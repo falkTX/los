@@ -812,13 +812,13 @@ void ComposerCanvas::itemPopup(CItem* item, int n, const QPoint& pt)/*{{{*/
             break;
         }
 
-        case 17: // File info
+        case 17: // Unused - Do something fun here
         {
             Part* p = item->part();
 /*
             EventList* el = p->events();
             QString str = tr("Part name") + ": " + p->name() + "\n" + tr("Files") + ":";
-            // This is for the "File Info" option when right-clicking on
+            // This was for the "File Info" option when right-clicking on
             // an audio part in the multitrack view. (not used)
             for (iEvent e = el->begin(); e != el->end(); ++e)
             {
