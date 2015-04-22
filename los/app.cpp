@@ -855,7 +855,7 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
     //-------- View connections
     connect(viewTransportAction, SIGNAL(toggled(bool)), SLOT(toggleTransport(bool)));
     connect(viewBigtimeAction, SIGNAL(toggled(bool)), SLOT(toggleBigTime(bool)));
-    connect(viewCliplistAction, SIGNAL(toggled(bool)), SLOT(startClipList(bool)));
+    //connect(viewCliplistAction, SIGNAL(toggled(bool)), SLOT(startClipList(bool)));
     connect(viewMarkerAction, SIGNAL(toggled(bool)), SLOT(toggleMarker(bool)));
 
     connect(viewToolbarOrchestra, SIGNAL(toggled(bool)), SLOT(showToolbarOrchestra(bool)));
@@ -2758,7 +2758,7 @@ void LOS::startSongInfo(bool editable)
 //---------------------------------------------------------
 //   startClipList
 //---------------------------------------------------------
-
+/*
 void LOS::startClipList(bool checked)
 {
     if (clipListEdit == 0)
@@ -2770,7 +2770,7 @@ void LOS::startClipList(bool checked)
     }
     clipListEdit->show();
     viewCliplistAction->setChecked(checked);
-}
+}*/
 
 //---------------------------------------------------------
 //   fileMenu
@@ -2835,10 +2835,6 @@ void LOS::toplevelDeleted(unsigned long tl)
                     // one instantiation:
                 case Toplevel::PIANO_ROLL:
                 case Toplevel::LISTE:
-                case Toplevel::DRUM:
-                case Toplevel::MASTER:
-                case Toplevel::WAVE:
-                case Toplevel::LMASTER:
                     break;
             }
             toplevels.erase(i);

@@ -303,7 +303,7 @@ private slots:
     void startMidiTransformer();
     void writeGlobalConfiguration() const;
     void startEditInstrument();
-    void startClipList(bool);
+    //void startClipList(bool);
 
     void openRecentMenu();
     void selectProject(QAction* act);

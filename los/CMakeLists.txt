@@ -24,7 +24,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 set(SubDirs
     midiplugins
     Composer
-    cliplist
+    ## cliplist
     ctrl
     driver
     instruments
@@ -200,7 +200,7 @@ set_target_properties(icons
 
 target_link_libraries(core
     Composer
-    cliplist
+    ## cliplist
     ctrl
     driver
     icons
@@ -218,7 +218,7 @@ target_link_libraries(los
     core
 # all libs
     Composer
-    cliplist
+    ## cliplist
     ctrl
     driver
     icons
