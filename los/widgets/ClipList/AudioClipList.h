@@ -18,7 +18,7 @@
 class QListView;
 class QMimeData;
 class QPoint;
-class QResizeEvent;
+//class QResizeEvent;
 class AudioPlayer;
 class Slider;
 class QFileSystemWatcher;
@@ -53,7 +53,7 @@ class AudioClipList : public QFrame, public Ui::AudioClipListBase {
 	void updateLabels();
 
 protected:
-	virtual void resizeEvent(QResizeEvent*);
+	//virtual void resizeEvent(QResizeEvent*);
 
 signals:
 	void stopPlayback();
@@ -74,10 +74,10 @@ private slots:
 	//void updateTime(const QString&);
 	//void updateSlider(int);
 
-	void updateNowPlaying(const QString&, int samples);
-	void playNextFile();
-	void stopSlotCalled(bool); 
-	void offlineSeek(int);
+	//void updateNowPlaying(const QString&, int samples);
+	//void playNextFile();
+	//void stopSlotCalled(bool); 
+	//void offlineSeek(int);
 
 public slots:
 	void refresh();
