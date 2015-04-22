@@ -33,7 +33,7 @@
 #include "audioprefetch.h"
 #include "bigtime.h"
 #include "conf.h"
-#include "cliplist/cliplist.h"
+//#include "cliplist/cliplist.h"
 #include "debug.h"
 #include "filedialog.h"
 #include "gatetime.h"
@@ -1015,7 +1015,7 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
     master->addAction(masterListAction);
     menuView->addAction(viewTransportAction);
     menuView->addAction(viewBigtimeAction);
-    menuView->addAction(viewCliplistAction);
+    //menuView->addAction(viewCliplistAction);
     menuView->addAction(viewMarkerAction);
 
     menuView->addSeparator();
@@ -2825,10 +2825,10 @@ void LOS::toplevelDeleted(unsigned long tl)
             {
                 case Toplevel::MARKER:
                     break;
-                case Toplevel::CLIPLIST:
+                //case Toplevel::CLIPLIST:
                     // ORCAN: This needs to be verified. aid2 used to correspond to Cliplist:
                     //menu_audio->setItemChecked(aid2, false);
-                    viewCliplistAction->setChecked(false);
+                    //viewCliplistAction->setChecked(false);
                     return;
                     //break;
                     // the followin editors can exist in more than
