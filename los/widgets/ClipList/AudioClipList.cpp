@@ -146,7 +146,8 @@ AudioClipList::AudioClipList(QWidget *parent)
 
     connect(m_bookmarkList, SIGNAL(clicked(const QModelIndex&)), this, SLOT(bookmarkItemSelected(const QModelIndex&)));
     connect(m_bookmarkList, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(bookmarkContextMenu(const QPoint&)));
-    connect(m_bookmarkModel, SIGNAL(bookmarkAdded()), this, SLOT(saveBookmarks()));
+    connect(m_bookmarkModel, SIGNAL(bookmarkAdded()), this, SLOT(saveBookmarks())); // I don't think this does anything now
+    connect(m_bookmarkList, SIGNAL(bookmarkAdded()), this, SLOT(saveBookmarks()));
 
     connect(m_watcher, SIGNAL(directoryChanged(const QString)), this, SLOT(refresh()));
 
@@ -179,6 +180,7 @@ AudioClipList::~AudioClipList()
 
 void AudioClipList::saveBookmarks()
 {
+    qDebug("saveBookmarks is being called");
     QStringList out;
     for(int i = 0; i < m_bookmarkModel->rowCount(); ++i)
     {
@@ -684,7 +686,6 @@ void AudioClipList::stopClicked(bool state)
         btnStop->blockSignals(false);
     }
 }
-*/
 
 void AudioClipList::homeClicked()
 {
@@ -701,3 +702,4 @@ void AudioClipList::forwardClicked()
     qDebug("AudioClipList::forwardClicked");
 }
 
+*/

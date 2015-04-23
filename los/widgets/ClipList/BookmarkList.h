@@ -35,6 +35,11 @@ public:
 //Subclass for the bookmark list
 class BookmarkList : public QListView
 {
+	Q_OBJECT
+
+signals:
+	void bookmarkAdded();
+
 protected:
 	void dragEnterEvent(QDragEnterEvent *event);
 	void dragMoveEvent(QDragMoveEvent *event);

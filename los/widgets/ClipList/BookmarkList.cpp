@@ -50,6 +50,7 @@ bool BookmarkListModel::dropMimeData(const QMimeData *data, Qt::DropAction actio
 		else
 			appendRow(it);
 		emit bookmarkAdded();
+
 	}/*}}}*/
 	return true;
 }
@@ -100,6 +101,7 @@ void BookmarkList::dropEvent(QDropEvent *event)
 				it->setIcon(QIcon(":/images/icons/clip-folder-bookmark.png"));
 				it->setDropEnabled(true);
 				mod->appendRow(it);
+				emit bookmarkAdded();
 			}
 		}
 	}
