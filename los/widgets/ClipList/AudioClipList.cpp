@@ -16,7 +16,7 @@
 #include "icons.h"
 #include "track.h"
 #include "traverso_shared/TConfig.h"
-#include "slider.h"
+//#include "slider.h"
 #include "meter.h"
 #include "CreateTrackDialog.h"
 
@@ -75,17 +75,17 @@ AudioClipList::AudioClipList(QWidget *parent)
     m_bookmarkModel = new BookmarkListModel(this);
     m_bookmarkList->setModel(m_bookmarkModel);
     m_bookmarkList->setAcceptDrops(true);
-    //m_bookmarkList->viewport()->setAcceptDrops(true);
+    m_bookmarkList->viewport()->setAcceptDrops(true);
     m_fileList->setContextMenuPolicy(Qt::CustomContextMenu);
     m_bookmarkList->setContextMenuPolicy(Qt::CustomContextMenu);
 
     m_listModel = new ClipListModel(this);
     m_fileList->setModel(m_listModel);
 
-/*
-    // This is stuff for the audio cliplist player
 
-    //btnHome->setIcon(QIcon(*startIconSet3));
+
+/*
+    // This is stuff for the audio portion of the cliplist player
 
     //btnRewind->setIcon(QIcon(*rewindIconSet3));
 
@@ -125,8 +125,6 @@ AudioClipList::AudioClipList(QWidget *parent)
     //connect(btnStop, SIGNAL(toggled(bool)), this, SLOT(stopClicked(bool)));
     //connect(btnRewind, SIGNAL(clicked()), this, SLOT(rewindClicked()));
     //connect(btnForward, SIGNAL(clicked()), this, SLOT(forwardClicked()));
-    //connect(btnHome, SIGNAL(clicked()), this, SLOT(homeClicked()));
-    //connect(btnBookmark, SIGNAL(clicked()), this, SLOT(addBookmarkClicked()));
 
 
     connect(&player, SIGNAL(playbackStopped(bool)), this, SLOT(stopSlotCalled(bool)));
@@ -139,6 +137,9 @@ AudioClipList::AudioClipList(QWidget *parent)
     connect(m_seekSlider, SIGNAL(sliderMoved(int, int)), &player, SLOT(seek(int)));
     connect(m_seekSlider, SIGNAL(sliderMoved(int, int)), this, SLOT(offlineSeek(int)));
 */
+    //btnHome->setIcon(QIcon(*startIconSet3));
+    //connect(btnHome, SIGNAL(clicked()), this, SLOT(homeClicked()));
+    //connect(btnBookmark, SIGNAL(clicked()), this, SLOT(addBookmarkClicked()));
 
     connect(m_fileList, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(fileItemSelected(const QModelIndex&)));
     connect(m_fileList, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(fileItemContextMenu(const QPoint&)));
@@ -413,6 +414,7 @@ void AudioClipList::bookmarkContextMenu(const QPoint& pos)/*{{{*/
                 if(data == 1)
                 {
                     m_bookmarkModel->removeRow(item->row());
+                    saveBookmarks();
                 }
             }
         }
