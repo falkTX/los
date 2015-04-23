@@ -68,7 +68,7 @@ AudioClipList::AudioClipList(QWidget *parent)
  : QFrame(parent)
 {
     setupUi(this);
-
+    m_filters << "mpt" << "mid" << "kar";
     m_watcher = new QFileSystemWatcher(this);
     m_active = true;
 
@@ -180,7 +180,6 @@ AudioClipList::~AudioClipList()
 
 void AudioClipList::saveBookmarks()
 {
-    qDebug("saveBookmarks is being called");
     QStringList out;
     for(int i = 0; i < m_bookmarkModel->rowCount(); ++i)
     {
@@ -192,6 +191,7 @@ void AudioClipList::saveBookmarks()
     }
     if(out.size())
         tconfig().set_property("AudioClipList", "bookmarks", out.join(","));
+    //qDebug("Cliplist Bookmarks are saved");
 }
 
 void AudioClipList::loadBookmarks()/*{{{*/
