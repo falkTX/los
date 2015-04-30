@@ -95,7 +95,7 @@ QT4_WRAP_CPP(widgets_mocs
     ccedit.h
     CreateTrackDialog.h
     ClipList/BookmarkList.h
-    ClipList/AudioClipList.h
+    ClipList/MidiClipList.h
 ##    ClipList/AudioPlayer.h
     StretchDialog.h
     TimeHeader.h
@@ -139,7 +139,7 @@ file(GLOB widgets_ui_files
     midiassignbase.ui
     cceditbase.ui
     createtrackbase.ui
-    ClipList/AudioClipListBase.ui
+    ClipList/MidiClipListBase.ui
     stretchdialog.ui
 )
 
@@ -226,7 +226,7 @@ file(GLOB widgets_source_files
     ccedit.cpp
     CreateTrackDialog.cpp
     ClipList/BookmarkList.cpp
-    ClipList/AudioClipList.cpp
+    ClipList/MidiClipList.cpp
 ##    ClipList/AudioPlayer.cpp
     StretchDialog.cpp
     TimeHeader.cpp

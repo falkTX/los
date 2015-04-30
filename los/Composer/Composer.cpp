@@ -43,7 +43,7 @@
 #include "commentdock.h"
 #include "shortcuts.h"
 #include "toolbars/tools.h"
-#include "ClipList/AudioClipList.h"
+#include "ClipList/MidiClipList.h"
 #include "TimeHeader.h"
 #include "TempoHeader.h"
 #include "tempolabel.h"
@@ -1119,7 +1119,7 @@ void Composer::createDockMembers()
 
     _tvdock = new TrackViewDock(this);
 
-    m_clipList = new AudioClipList(this);
+    m_clipList = new MidiClipList(this);
     //Set to true if this is the first cliplist viewable tab
     //When false the directory watcher will not constantly update the view
     m_clipList->setActive(false);

@@ -8,7 +8,7 @@
 #ifndef _OOM_AUDIO_CLIPLIST_
 #define _OOM_AUDIO_CLIPLIST_
 
-#include "ui_AudioClipListBase.h"
+#include "ui_MidiClipListBase.h"
 #include <QFrame>
 #include <QStringList>
 #include <QModelIndex>
@@ -34,7 +34,7 @@ public:
 };
 
 
-class AudioClipList : public QFrame, public Ui::AudioClipListBase {
+class MidiClipList : public QFrame, public Ui::MidiClipListBase {
 	Q_OBJECT
 	
 	ClipListModel *m_listModel;
@@ -88,8 +88,8 @@ public slots:
 	}
 
 public:
-	AudioClipList(QWidget *parent = 0);
-	~AudioClipList();
+	MidiClipList(QWidget *parent = 0);
+	~MidiClipList();
 	void setDir(const QString& path);
 	bool active()
 	{

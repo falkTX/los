@@ -5,7 +5,7 @@
 //  (C) Copyright 2010 Andrew Williams and Christopher Cherrett
 //=========================================================
 
-#include "AudioClipList.h"
+#include "MidiClipList.h"
 #include "BookmarkList.h"
 //#include "AudioPlayer.h"
 #include "config.h"
@@ -64,7 +64,7 @@ QMimeData *ClipListModel::mimeData(const QModelIndexList& indices) const
 
 //static AudioPlayer player;
 
-AudioClipList::AudioClipList(QWidget *parent)
+MidiClipList::MidiClipList(QWidget *parent)
  : QFrame(parent)
 {
     setupUi(this);
@@ -151,9 +151,9 @@ AudioClipList::AudioClipList(QWidget *parent)
 
     connect(m_watcher, SIGNAL(directoryChanged(const QString)), this, SLOT(refresh()));
 
-    QByteArray state = tconfig().get_property("AudioClipList", "splitterState", "").toByteArray();
+    QByteArray state = tconfig().get_property("MidiClipList", "splitterState", "").toByteArray();
     splitter->restoreState(state);
-//    double volume = tconfig().get_property("AudioClipList", "volume", fast_log10(0.60*20.0)).toDouble();
+//    double volume = tconfig().get_property("MidiClipList", "volume", fast_log10(0.60*20.0)).toDouble();
     //m_slider->setValue(fast_log10(0.60*20.0));
 //    m_slider->setValue(volume);
 //    player.setVolume(volume);
@@ -163,7 +163,7 @@ AudioClipList::AudioClipList(QWidget *parent)
     //updateLabels();
 }
 
-AudioClipList::~AudioClipList()
+MidiClipList::~MidiClipList()
 {
     QList<int> sizes = splitter->sizes();
     QStringList out;
@@ -171,14 +171,14 @@ AudioClipList::~AudioClipList()
     {
         out << QString::number(s);
     }
-    tconfig().set_property("AudioClipList", "splitterState", splitter->saveState());
-//    tconfig().set_property("AudioClipList", "volume", m_slider->value());
+    tconfig().set_property("MidiClipList", "splitterState", splitter->saveState());
+//    tconfig().set_property("MidiClipList", "volume", m_slider->value());
     saveBookmarks();
     tconfig().save();
 //    player.stop();
 }
 
-void AudioClipList::saveBookmarks()
+void MidiClipList::saveBookmarks()
 {
     QStringList out;
     for(int i = 0; i < m_bookmarkModel->rowCount(); ++i)
@@ -190,15 +190,15 @@ void AudioClipList::saveBookmarks()
         }
     }
     if(out.size())
-        tconfig().set_property("AudioClipList", "bookmarks", out.join(","));
+        tconfig().set_property("MidiClipList", "bookmarks", out.join(","));
     //qDebug("Cliplist Bookmarks are saved");
 }
 
-void AudioClipList::loadBookmarks()/*{{{*/
+void MidiClipList::loadBookmarks()/*{{{*/
 {
     m_bookmarkModel->clear();
     QString defDir = QDir::homePath();
-    QString str = tconfig().get_property("AudioClipList", "bookmarks", defDir).toString();
+    QString str = tconfig().get_property("MidiClipList", "bookmarks", defDir).toString();
     QStringList sl = str.split(QString(","), QString::SkipEmptyParts);
     foreach (QString s, sl)
     {
@@ -206,7 +206,7 @@ void AudioClipList::loadBookmarks()/*{{{*/
     }
 }/*}}}*/
 
-void AudioClipList::addBookmark(const QString &dir)/*{{{*/
+void MidiClipList::addBookmark(const QString &dir)/*{{{*/
 {
     QFileInfo f(dir);
     QList<QStandardItem*> items = m_bookmarkModel->findItems(f.fileName());
@@ -221,7 +221,7 @@ void AudioClipList::addBookmark(const QString &dir)/*{{{*/
     }
 }/*}}}*/
 
-void AudioClipList::setDir(const QString &path)/*{{{*/
+void MidiClipList::setDir(const QString &path)/*{{{*/
 {
     QDir dir(path, "*", QDir::DirsFirst|QDir::LocaleAware, QDir::AllEntries | QDir::Readable|QDir::NoDotAndDotDot);
     m_listModel->clear();
@@ -266,7 +266,7 @@ void AudioClipList::setDir(const QString &path)/*{{{*/
     }
 }/*}}}*/
 
-void AudioClipList::refresh()/*{{{*/
+void MidiClipList::refresh()/*{{{*/
 {
     if(!m_active)
         return;
@@ -282,12 +282,12 @@ void AudioClipList::refresh()/*{{{*/
     }
 }/*}}}*/
 
-bool AudioClipList::isSupported(const QString& suffix)
+bool MidiClipList::isSupported(const QString& suffix)
 {
     return m_filters.contains(suffix);
 }
 
-void AudioClipList::fileItemContextMenu(const QPoint& pos)/*{{{*/
+void MidiClipList::fileItemContextMenu(const QPoint& pos)/*{{{*/
 {
     QModelIndex index = m_fileList->indexAt(pos);
     if(index.isValid())
@@ -398,7 +398,7 @@ void AudioClipList::fileItemContextMenu(const QPoint& pos)/*{{{*/
     }
 }/*}}}*/
 
-void AudioClipList::bookmarkContextMenu(const QPoint& pos)/*{{{*/
+void MidiClipList::bookmarkContextMenu(const QPoint& pos)/*{{{*/
 {
     QModelIndex index = m_bookmarkList->indexAt(pos);
     if(index.isValid() && index.row())//Dont remove the Home bookmark
@@ -423,7 +423,7 @@ void AudioClipList::bookmarkContextMenu(const QPoint& pos)/*{{{*/
     }
 }/*}}}*/
 
-void AudioClipList::fileItemSelected(const QModelIndex& index)
+void MidiClipList::fileItemSelected(const QModelIndex& index)
 {
     if(index.isValid())
     {
@@ -449,7 +449,7 @@ void AudioClipList::fileItemSelected(const QModelIndex& index)
     }
 }
 
-void AudioClipList::bookmarkItemSelected(const QModelIndex& index)
+void MidiClipList::bookmarkItemSelected(const QModelIndex& index)
 {
     if(index.isValid())
     {
@@ -462,7 +462,7 @@ void AudioClipList::bookmarkItemSelected(const QModelIndex& index)
 }
 /*
 
-void AudioClipList::offlineSeek(int pos)
+void MidiClipList::offlineSeek(int pos)
 {
     if(!player.isPlaying() && !m_currentSong.isEmpty())
     {
@@ -470,7 +470,7 @@ void AudioClipList::offlineSeek(int pos)
     }
 }
 
-void AudioClipList::updateTime(const QString& time)
+void MidiClipList::updateTime(const QString& time)
 {
     //timeLabel->setVisible(true);
     timeLabel->setText(time);
@@ -489,14 +489,14 @@ void AudioClipList::updateTime(const QString& time)
     }
 }
 
-void AudioClipList::updateSlider(int pos)
+void MidiClipList::updateSlider(int pos)
 {
     m_seekSlider->setValue(pos);
 }
 
-void AudioClipList::updateNowPlaying(const QString& val, int samples)
+void MidiClipList::updateNowPlaying(const QString& val, int samples)
 {
-    //qDebug("AudioClipList::updateNowPlaying: samples: %d", samples);
+    //qDebug("MidiClipList::updateNowPlaying: samples: %d", samples);
     QStringList values = val.split("@--,--@");
     if(values.size())
     {
@@ -518,7 +518,7 @@ void AudioClipList::updateNowPlaying(const QString& val, int samples)
     }
 }
 
-void AudioClipList::updateLabels()
+void MidiClipList::updateLabels()
 {
     if(m_currentSong.isEmpty())
     {
@@ -537,7 +537,7 @@ void AudioClipList::updateLabels()
     timeLabel->setText("00:00:00");
 }
 
-void AudioClipList::resizeEvent(QResizeEvent* event)
+void MidiClipList::resizeEvent(QResizeEvent* event)
 {
     QFrame::resizeEvent(event);
     if(!m_currentSong.isEmpty())
@@ -550,7 +550,7 @@ static void doPlay(const QString& file)
     player.play(file);
 }
 
-void AudioClipList::playNextFile()
+void MidiClipList::playNextFile()
 
 {
     if(m_playlist.size())
@@ -567,10 +567,10 @@ void AudioClipList::playNextFile()
 }
 
 
-void AudioClipList::playClicked(bool state)
+void MidiClipList::playClicked(bool state)
 
 {
-    //qDebug("AudioClipList::playClicked: state: %d", state);
+    //qDebug("MidiClipList::playClicked: state: %d", state);
 
     if(state)
     {
@@ -646,7 +646,7 @@ void AudioClipList::playClicked(bool state)
     }
 
 
-void AudioClipList::stopSlotCalled(bool)
+void MidiClipList::stopSlotCalled(bool)
 
 {
     btnStop->blockSignals(true);
@@ -658,7 +658,7 @@ void AudioClipList::stopSlotCalled(bool)
     btnPlay->blockSignals(false);
 }
 
-void AudioClipList::stopClicked(bool state)
+void MidiClipList::stopClicked(bool state)
 
 {
     if(state)
@@ -687,19 +687,19 @@ void AudioClipList::stopClicked(bool state)
     }
 }
 
-void AudioClipList::homeClicked()
+void MidiClipList::homeClicked()
 {
-    qDebug("AudioClipList::homeClicked");
+    qDebug("MidiClipList::homeClicked");
 }
 
-void AudioClipList::rewindClicked()
+void MidiClipList::rewindClicked()
 {
-    qDebug("AudioClipList::rewindClicked");
+    qDebug("MidiClipList::rewindClicked");
 }
 
-void AudioClipList::forwardClicked()
+void MidiClipList::forwardClicked()
 {
-    qDebug("AudioClipList::forwardClicked");
+    qDebug("MidiClipList::forwardClicked");
 }
 
 */
