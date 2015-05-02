@@ -812,13 +812,27 @@ void ComposerCanvas::itemPopup(CItem* item, int n, const QPoint& pt)/*{{{*/
             break;
         }
 
-        case 17: // File info
+        case 17: // Unused - Do something fun here
         {
             Part* p = item->part();
+/*
             EventList* el = p->events();
-            QString str = tr("Part name") + ": " + p->name() + "\n";
+            QString str = tr("Part name") + ": " + p->name() + "\n" + tr("Files") + ":";
+            // This was for the "File Info" option when right-clicking on
+            // an audio part in the multitrack view. (not used)
+            for (iEvent e = el->begin(); e != el->end(); ++e)
+            {
+                Event event = e->second;
+                SndFileR f = event.sndFile();
+                if (f.isNull())
+                    continue;
+                //str.append("\n" + f.path());
+                str.append(QString("\n@") + QString().setNum(event.tick()) + QString(" len:") +
+                        QString().setNum(event.lenTick()) + QString(" ") + f.path());
+            }
             QMessageBox::information(this, "File info", str, "Ok", 0);
             break;
+*/
         }
         case 18: // Select clones
         {
@@ -2424,6 +2438,21 @@ void ComposerCanvas::dragEnterEvent(QDragEnterEvent* event)
                 text.endsWith(".los", Qt::CaseInsensitive) ||
                 text.endsWith(".mid", Qt::CaseInsensitive))
         {
+            //THIS IS WHERE .MPT PARTS GET IMPORTED FROM THE CLIP LIST
+            //(Possibly also from file manager)
+            /*if(text.endsWith(".mpt", Qt::CaseInsensitive))
+            {
+            }
+            else
+            {
+                SndFile* f = getWave(text, true);
+                if(f)
+                {
+                    int samples = f->samples();
+                    //
+                }
+            }*/
+            //qDebug("ComposerCanvas::dragEnterEvent: Found Audio file");
             event->acceptProposedAction();
         }
         else

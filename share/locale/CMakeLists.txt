@@ -34,6 +34,7 @@ if (UPDATE_TRANSLATIONS)
     add_dependencies(translations
         los
         Composer
+        cliplist
         ctrl
         driver
         instruments
