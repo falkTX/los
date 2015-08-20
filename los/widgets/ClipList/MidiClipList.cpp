@@ -216,8 +216,7 @@ void MidiClipList::addBookmark(const QString &dir)/*{{{*/
         item->setText(f.fileName());
         item->setData(dir);
         item->setDropEnabled(true);
-        // Qt >= 4.6 allows us to select icons from the theme
-	#if QT_VERSION >= 0x040600
+#if QT_VERSION >= 0x040600
 	// Todo: Use a "favorites folder" icon instead
 	item->setIcon(*globalIcon);
 	#else

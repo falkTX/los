@@ -73,6 +73,9 @@ Composer::Composer(QMainWindow* parent, const char* name)
 
     cursVal = MAXINT;
 
+    //Fix ToolTip weirdness
+    setAttribute(Qt::WA_AlwaysShowToolTips, true);
+
     m_tempoStart = tconfig().get_property("TempoRange", "start", "80.0").toDouble();
     m_tempoEnd = tconfig().get_property("TempoRange", "end", "180.0").toDouble();
     m_startTempo = 0;

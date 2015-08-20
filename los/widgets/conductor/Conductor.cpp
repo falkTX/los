@@ -112,6 +112,10 @@ Conductor::Conductor(QWidget* parent, MidiTrack* sel_track) : QFrame(parent)//QW
     m_globalState = false;
     m_eventPart = 0;
 
+    //Fix ToolTip weirdness
+    setAttribute(Qt::WA_AlwaysShowToolTips, true);
+
+
     //Hide nonsense
     frame->hide();
     textLabel1->hide();
