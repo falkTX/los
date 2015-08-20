@@ -43,7 +43,12 @@ bool BookmarkListModel::dropMimeData(const QMimeData *data, Qt::DropAction actio
 		QStandardItem *it = new QStandardItem();
 		it->setText(f.fileName());
 		it->setData(path);
+#if QT_VERSION >= 0x040600
+				// Todo: Use a "favorites folder" icon instead
+		it->setIcon(*globalIcon);
+#else
 		it->setIcon(QIcon(":/images/icons/clip-folder-bookmark.png"));
+#endif	
 		it->setDropEnabled(true);
 		if(row)
 			insertRow(irow, it);
@@ -98,7 +103,12 @@ void BookmarkList::dropEvent(QDropEvent *event)
 				QStandardItem *it = new QStandardItem();
 				it->setText(f.fileName());
 				it->setData(path);
+#if QT_VERSION >= 0x040600
+				// Todo: Use a "favorites folder" icon instead
+				it->setIcon(*globalIcon);
+#else
 				it->setIcon(QIcon(":/images/icons/clip-folder-bookmark.png"));
+#endif	
 				it->setDropEnabled(true);
 				mod->appendRow(it);
 				emit bookmarkAdded();

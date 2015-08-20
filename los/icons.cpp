@@ -1504,7 +1504,6 @@ void initIcons()
     globalIcon      = new LOSIcon(global_xpm, nullptr);//"folder");
     userIcon        = new LOSIcon(user_xpm, nullptr);//"user-home");
     projectIcon     = new LOSIcon(project_xpm, nullptr);//"folder-sound");
-
     sineIcon        = new LOSPixmap(sine_xpm, nullptr);
     sawIcon         = new LOSPixmap(saw_xpm, nullptr);
 }

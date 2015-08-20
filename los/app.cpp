@@ -484,6 +484,9 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
     setFocusPolicy(Qt::WheelFocus);
     los = this; // hack
 
+    //Fix ToolTip weirdness
+    setAttribute(Qt::WA_AlwaysShowToolTips, true);
+
     //Initialize the trackManager
     trackManager = new TrackManager;
     clipListEdit = 0;
