@@ -1814,6 +1814,9 @@ void ComposerCanvas::drawItem(QPainter& p, const CItem* item, const QRect& rect)
 
     QRect r = item->bbox();
 
+    //Qrect vv = r::getCoords(int * x1, int * y1, int * x2, int * y2) const;
+    //QRect::getCoords(int * x1, int * y1, int * x2, int * y2) const;
+
     //printf("ComposerCanvas::drawItem %s evRefs:%d pTick:%d pLen:%d\nbb.x:%d bb.y:%d bb.w:%d bb.h:%d\n"
     //       "rect.x:%d rect.y:%d rect.w:%d rect.h:%d\nr.x:%d r.y:%d r.w:%d r.h:%d\n",
     //  part->name().toLatin1().constData(), part->events()->arefCount(), pTick, part->lenTick(),
@@ -1846,19 +1849,29 @@ void ComposerCanvas::drawItem(QPainter& p, const CItem* item, const QRect& rect)
         if (mp)
             p.setPen(partWaveColor);
     }
-    // Make clones look unique
-    if ((part->events()->arefCount() > 1))
+    // Draw clones with slanted corners
+    if ((part->events()->arefCount() > 1)) // True if part is a clone
     {
-        // rounded rectangles look like crap because their radius changes based on the size of the rectangle
-        //p.drawRoundedRect(QRect(r.x(), r.y(), r.width(), mp ? r.height()-2 : r.height()-1), 0, 25 );
-        //QPointF polygon(QPointF(r.x(), r.y()-10),QPointF(r.x()+10, r.y()), QPointF(r.x()+r.width()), QPointF(r.mp ? r.height()-2 : r.height()-1), 5 );
+        // VIKTOR - ALMOST THERE!
+        // doing math on x() doesn't work because it moves with the zoom level!
+        // y() stays the same though since you can't zoom horizontally. Hmm...
+
+        // Idea: use the tick (probably won't work for same reason)
+
+        // Idea: do geometry at a 45 degree angle from
+
         QPolygon polygon;
-        polygon << QPoint(r.x(), r.y()-10) << QPoint(r.x()+10, r.y()) << QPoint(r.x()+r.width(), r.height()-2) << QPoint(r.x(), r.y()-r.height()-2);
+        polygon << QPoint(item->x(), item->y() +8)
+                << QPoint(item->x() + 80, item->y())
+                << QPoint(item->x() + item->width(), item->y())
+                << QPoint(item->x() + item->width(), item->y() + item->height())
+                << QPoint(item->x(), item->y() + item->height());
+
 //        QPolygon polygon;
 //        p.drawPolygon(QPoint * points, 5);
         p.drawPolygon(polygon, Qt::OddEvenFill);
     }
-    else
+    else // Part is not a clone, so draw a normal rectangle
     {
         p.drawRect(QRect(r.x(), r.y(), r.width(), mp ? r.height()-2 : r.height()-1));
     }
