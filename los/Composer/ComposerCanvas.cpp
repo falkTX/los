@@ -1861,10 +1861,11 @@ void ComposerCanvas::drawItem(QPainter& p, const CItem* item, const QRect& rect)
         // Idea: do geometry at a 45 degree angle from
 
         QPolygon polygon;
-        polygon << QPoint(item->x(), item->y() +8)
-                << QPoint(item->x() + 80, item->y())
+        polygon << QPoint(item->x(), item->y() +6)
+                << QPoint(item->x() - 6 * xmag, item->y())      // Keeps the angled corner consistent regardless of zoom level
                 << QPoint(item->x() + item->width(), item->y())
-                << QPoint(item->x() + item->width(), item->y() + item->height())
+                << QPoint(item->x() + item->width(), item->y() + item->height() - 6)
+                << QPoint(item->x() + item->width() + 6 * xmag, item->y() + item->height())
                 << QPoint(item->x(), item->y() + item->height());
 
 //        QPolygon polygon;
