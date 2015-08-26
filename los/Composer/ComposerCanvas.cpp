@@ -1849,33 +1849,48 @@ void ComposerCanvas::drawItem(QPainter& p, const CItem* item, const QRect& rect)
         if (mp)
             p.setPen(partWaveColor);
     }
-    // Draw clones with slanted corners
-    if ((part->events()->arefCount() > 1)) // True if part is a clone
+    
+    // Draw clones with slanted corners. 
+    
+    if ((part->events()->arefCount() > 1)) // Part is a clone, so draw a polygon
     {
-        // VIKTOR - ALMOST THERE!
-        // doing math on x() doesn't work because it moves with the zoom level!
-        // y() stays the same though since you can't zoom horizontally. Hmm...
+        int slant;
+        if (xmag < -500)
+        {
+            slant = 4;
+        }
+        else
+        {
+            slant = 7;
+        }
 
-        // Idea: use the tick (probably won't work for same reason)
+        // TODO: Don't  draw a slant that extends beyond the width of the actual part
+        // while (slant >= item->width()) // (this doesn't quite work, math is off)
+        // {
+        //     slant = slant - 1;
+        // }
 
-        // Idea: do geometry at a 45 degree angle from
+        // Random debugging stuff to get my bearings
+        // printf("Item Width: ");
+        // printf("%g\n", item->width());
+        // printf("H-Zoom Level (xmag): ");
+        // printf("%g\n", xmag);
+        // printf(" ")
 
-        QPolygon polygon;
-        polygon << QPoint(item->x(), item->y() +6)
-                << QPoint(item->x() - 6 * xmag, item->y())      // Keeps the angled corner consistent regardless of zoom level
+        QPolygon polygon;            
+        polygon << QPoint(item->x(), item->y() + slant)
+                << QPoint(item->x() - slant * xmag, item->y())      
                 << QPoint(item->x() + item->width(), item->y())
-                << QPoint(item->x() + item->width(), item->y() + item->height() - 6)
-                << QPoint(item->x() + item->width() + 6 * xmag, item->y() + item->height())
+                << QPoint(item->x() + item->width(), item->y() + item->height() - slant)
+                << QPoint(item->x() + item->width() + slant * xmag, item->y() + item->height())
                 << QPoint(item->x(), item->y() + item->height());
-
-//        QPolygon polygon;
-//        p.drawPolygon(QPoint * points, 5);
         p.drawPolygon(polygon, Qt::OddEvenFill);
     }
     else // Part is not a clone, so draw a normal rectangle
     {
         p.drawRect(QRect(r.x(), r.y(), r.width(), mp ? r.height()-2 : r.height()-1));
     }
+    
     if (part->mute() || part->track()->mute())
     {
         QBrush muteBrush;
