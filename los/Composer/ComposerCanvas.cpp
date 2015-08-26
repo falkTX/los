@@ -1846,7 +1846,48 @@ void ComposerCanvas::drawItem(QPainter& p, const CItem* item, const QRect& rect)
         if (mp)
             p.setPen(partWaveColor);
     }
-    p.drawRect(QRect(r.x(), r.y(), r.width(), mp ? r.height()-2 : r.height()-1));
+    
+    // Draw clones with slanted corners. 
+    
+    if ((part->events()->arefCount() > 1)) // Part is a clone, so draw a polygon
+    {
+        int slant;
+        if (xmag < -500)
+        {
+            slant = 4;
+        }
+        else
+        {
+            slant = 7;
+        }
+
+        // TODO: Don't  draw a slant that extends beyond the width of the actual part
+        // while (slant >= item->width()) // (this doesn't quite work, math is off)
+        // {
+        //     slant = slant - 1;
+        // }
+
+        // Random debugging stuff to get my bearings
+        // printf("Item Width: ");
+        // printf("%g\n", item->width());
+        // printf("H-Zoom Level (xmag): ");
+        // printf("%g\n", xmag);
+        // printf(" ")
+
+        QPolygon polygon;            
+        polygon << QPoint(item->x(), item->y() + slant)
+                << QPoint(item->x() - slant * xmag, item->y())      
+                << QPoint(item->x() + item->width(), item->y())
+                << QPoint(item->x() + item->width(), item->y() + item->height() - slant)
+                << QPoint(item->x() + item->width() + slant * xmag, item->y() + item->height())
+                << QPoint(item->x(), item->y() + item->height());
+        p.drawPolygon(polygon, Qt::OddEvenFill);
+    }
+    else // Part is not a clone, so draw a normal rectangle
+    {
+        p.drawRect(QRect(r.x(), r.y(), r.width(), mp ? r.height()-2 : r.height()-1));
+    }
+    
     if (part->mute() || part->track()->mute())
     {
         QBrush muteBrush;
