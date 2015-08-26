@@ -1814,9 +1814,6 @@ void ComposerCanvas::drawItem(QPainter& p, const CItem* item, const QRect& rect)
 
     QRect r = item->bbox();
 
-    //Qrect vv = r::getCoords(int * x1, int * y1, int * x2, int * y2) const;
-    //QRect::getCoords(int * x1, int * y1, int * x2, int * y2) const;
-
     //printf("ComposerCanvas::drawItem %s evRefs:%d pTick:%d pLen:%d\nbb.x:%d bb.y:%d bb.w:%d bb.h:%d\n"
     //       "rect.x:%d rect.y:%d rect.w:%d rect.h:%d\nr.x:%d r.y:%d r.w:%d r.h:%d\n",
     //  part->name().toLatin1().constData(), part->events()->arefCount(), pTick, part->lenTick(),
