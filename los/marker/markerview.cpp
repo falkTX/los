@@ -169,7 +169,7 @@ MarkerView::MarkerView(QWidget* parent)
 
     QStringList columnnames;
     columnnames << tr("Bar:Beat:Tick")
-            << tr("Hr:Mn:Sc:Fr:Sf")
+//            << tr("Hr:Mn:Sc:Fr:Sf")
             << tr("Lock")
             << tr("Text");
 
