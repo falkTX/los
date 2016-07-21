@@ -516,7 +516,7 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
     g_trackColorListSelected.insert(0, QColor(1,230,238));
     g_trackDragImageList.insert(0, *dragMidiIcon);
 
-    appName = QString("The Composer - LOS-").append(VERSION).append("     ");
+    appName = QString("LOS - v.").append(VERSION).append("     ");
     setWindowTitle(appName);
 
     qRegisterMetaType<CCInfo>("CCInfo");
@@ -1552,7 +1552,8 @@ void LOS::loadProjectFile1(const QString& name, bool songTemplate, bool loadAll)
     if (!songTemplate)
     {
         addProject(project.absoluteFilePath());
-        setWindowTitle(QString("The Composer - LOS-").append(VERSION).append(":     ") + project.completeBaseName() + QString("     "));
+        //setWindowTitle(QString("The Composer - LOS-").append(VERSION).append(":     ") + project.completeBaseName() + QString("     "));
+        setWindowTitle(QString("LOS -      ") + project.completeBaseName() + QString("     "));
     }
     song->dirty = false;
 
@@ -1596,12 +1597,13 @@ void LOS::loadProjectFile1(const QString& name, bool songTemplate, bool loadAll)
 void LOS::setUntitledProject()
 {
     setConfigDefaults();
-    QString name("untitled");
+    QString name("untitled*");
     losProject = "./"; //QFileInfo(name).absolutePath();
     project.setFile(name);
     losProjectFile = project.filePath();
     //setWindowTitle(tr("LOS: Song: ") + project.completeBaseName());
-    setWindowTitle(QString("The Composer - LOS-").append(VERSION).append(":     ") + project.completeBaseName() + QString("     "));
+    //setWindowTitle(QString("The Composer - LOS-").append(VERSION).append(":     ") + project.completeBaseName() + QString("     "));
+    setWindowTitle(QString("LOS -      ") + project.completeBaseName() + QString("     "));
 }
 
 //---------------------------------------------------------
@@ -2552,7 +2554,8 @@ bool LOS::saveAs()
             project.setFile(name);
             losProjectFile = project.filePath();
             //setWindowTitle(tr("LOS: Song: ") + project.completeBaseName());
-            setWindowTitle(QString("The Composer - LOS-").append(VERSION).append(":     ") + project.completeBaseName() + QString("     "));
+            //setWindowTitle(QString("The Composer - LOS-").append(VERSION).append(":     ") + project.completeBaseName() + QString("     "));
+            setWindowTitle(QString("LOS -      ") + project.completeBaseName() + QString("     "));
             addProject(name);
         }
         else
