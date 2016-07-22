@@ -158,12 +158,39 @@ void ComposerCanvas::returnPressed()
     {
         lineEditor->hide();
         Part* oldPart = editPart->part();
-        Part* newPart = oldPart->clone();
+        //Part* newPart = oldPart->clone();
+        Part* renamedPart = editPart->part();
 
-        newPart->setName(lineEditor->text());
-        // Indicate do undo, and do port controller values but not clone parts.
-        audio->msgChangePart(oldPart, newPart, true, true, false);
-        song->update(SC_PART_MODIFIED);
+        //-- RENAME ALL CLONES IF A CLONE IS RENAMED ----------------------------------
+        // Traverse and process the clone chain ring until we arrive at the same part again.
+        // The loop is a safety net.
+        Part* p = renamedPart;
+        int j = renamedPart->cevents()->arefCount();
+        if (j > 1) // We have clones. Rename them all
+        {
+            for (int i = 0; i < j; ++i)
+            {
+                p->setName(lineEditor->text());
+                p = p->nextClone();
+                if (p == renamedPart)
+                    break;
+            }
+            // TODO: Fix undo for renaming cloned parts by making a new function to handle it.
+            // See undo.cpp and "UndoOp"
+            // Possibly the color could use the same function with different args
+            song->update();
+        }
+        else
+        {
+            // Do it the old way if there are no clones, so undo still works:
+            // Indicate do undo, and do port controller values but not clone parts.
+            // (This does not work with cloned parts, and also causes lockups)
+            Part* newPart = oldPart->clone();
+            newPart->setName(lineEditor->text());
+            audio->msgChangePart(oldPart, newPart, true, true, false);
+            song->update(SC_PART_MODIFIED);
+        }
+
     }
     editMode = false;
 }
@@ -741,7 +768,7 @@ void ComposerCanvas::itemPopup(CItem* item, int n, const QPoint& pt)/*{{{*/
             lineEditor->show();
             lineEditor->setGeometry(r);
             editMode = true;
-        }
+            }
             break;
         case 1: // delete
             deleteItem(item);
