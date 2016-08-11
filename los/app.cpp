@@ -524,7 +524,7 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
     editSignalMapper = new QSignalMapper(this);
     midiPluginSignalMapper = new QSignalMapper(this);
     followSignalMapper = new QSignalMapper(this);
-    _resourceDock = new QDockWidget(tr("The Orchestra Pit"), this);
+    _resourceDock = new QDockWidget(tr(""), this);
     _resourceDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     _resourceDock->setObjectName("dockResourceCenter");
     addDockWidget(Qt::LeftDockWidgetArea, _resourceDock);
@@ -732,7 +732,7 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
     viewMarkerAction->setCheckable(true);
 
     viewToolbars = new QMenu(tr("Toolbars"), this);
-    viewToolbarOrchestra = new QAction(tr("The Orchestra Pit"), this);
+    viewToolbarOrchestra = new QAction(tr("Sidebar"), this);
     viewToolbarOrchestra->setCheckable(true);
     viewToolbarComposerSettings = new QAction(tr("The Composer Settings"), this);
     viewToolbarComposerSettings->setCheckable(true);

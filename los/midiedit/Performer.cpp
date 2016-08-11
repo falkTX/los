@@ -106,7 +106,7 @@ Performer::Performer(PartList* pl, QWidget* parent, const char* name, unsigned i
     // Configure Dock widget
     //-------------------------------------------------------
 
-    m_prDock = new QDockWidget(tr("The Orchestra Pit"), this);
+    m_prDock = new QDockWidget(tr("Sidebar"), this);
     m_prDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     m_prDock->setObjectName("dockResourceCenter");
     m_prDock->setMinimumWidth(275);
