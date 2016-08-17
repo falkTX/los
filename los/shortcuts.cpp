@@ -66,7 +66,7 @@ void initShortCuts()
     defShrt(SHRT_QUIT, Qt::CTRL + Qt::Key_Q, "File: Quit LOS", ARRANG_SHRT, "quit");
     //defShrt(SHRT_DESEL_PARTS,           Qt::CTRL + Qt::Key_B, "Deselect all parts", ARRANG_SHRT, "deselect_parts");
     defShrt(SHRT_SELECT_PRTSTRACK, Qt::CTRL + Qt::ALT + Qt::Key_P, "Edit: Select parts on track", ARRANG_SHRT, "select_parts_on_track");
-    defShrt(SHRT_OPEN_PIANO, Qt::Key_Return, "Open The Performer", ARRANG_SHRT, "open_performer");
+    defShrt(SHRT_OPEN_PIANO, Qt::Key_Return, "Open piano roll", ARRANG_SHRT, "open_pianoroll");
     defShrt(SHRT_OPEN_LIST, Qt::CTRL + Qt::Key_L, "Open listeditor", ARRANG_SHRT, "open_listedit");
     defShrt(SHRT_OPEN_GRAPHIC_MASTER, Qt::CTRL + Qt::Key_T, "Open graphical mastertrack editor", ARRANG_SHRT, "open_graph_master");
     defShrt(SHRT_OPEN_LIST_MASTER, Qt::CTRL + Qt::SHIFT + Qt::Key_T, "Open list mastertrack editor", ARRANG_SHRT, "open_list_master");
@@ -175,7 +175,7 @@ void initShortCuts()
     defShrt(SHRT_FIXED_LEN, Qt::ALT + Qt::Key_L, "Edit: Set Fixed Length on Midi Events", PROLL_SHRT, "midi_fixed_len");
 
     //-----------------------------------------------------------
-    //Performer:
+    //Pianoroll:
     //-----------------------------------------------------------
 
     defShrt(SHRT_OVER_QUANTIZE, Qt::ALT + Qt::Key_E, "Quantize: Over Quantize", PROLL_SHRT, "midi_over_quant");
@@ -224,7 +224,7 @@ void initShortCuts()
     defShrt(SHRT_TOOL_POINTER, Qt::Key_A, "Tool: Pointer", ARRANG_SHRT + PROLL_SHRT, "pointer_tool");
     defShrt(SHRT_TOOL_PENCIL, Qt::Key_D, "Tool: Pencil", ARRANG_SHRT + PROLL_SHRT, "pencil_tool");
     defShrt(SHRT_TOOL_RUBBER, Qt::Key_B, "Tool: Eraser", ARRANG_SHRT + PROLL_SHRT, "eraser_tool");
-    // Performer & drum editor
+    // Pianoroll & drum editor
     defShrt(SHRT_TOOL_LINEDRAW, Qt::Key_F, "Tool: Line Draw", PROLL_SHRT, "line_draw_tool");
     // Composer
     defShrt(SHRT_TOOL_SCISSORS, Qt::Key_J, "Tool: Scissor", ARRANG_SHRT, "scissor_tool");
@@ -306,7 +306,7 @@ void initShortCuts()
 const shortcut_cg shortcut_category[SHRT_NUM_OF_CATEGORIES] = {
     { GLOBAL_SHRT, "Global"},
     { ARRANG_SHRT, "Composer"},
-    { PROLL_SHRT, "Performer"},
+    { PROLL_SHRT, "Pianoroll"},
     { LEDIT_SHRT, "Event List Editor"},
     { LMEDIT_SHRT, "Tempo List Editor"},
     { ALL_SHRT, "All categories"}

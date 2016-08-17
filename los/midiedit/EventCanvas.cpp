@@ -58,7 +58,7 @@ EventCanvas::EventCanvas(AbstractMidiEditor* pr, QWidget* parent, int sx, int sy
 
     _curPart = (MidiPart*) (editor->parts()->begin()->second);
     _curPartId = _curPart->sn();
-    bool pl = tconfig().get_property("PerformerEdit", "partLines", true).toBool();
+    bool pl = tconfig().get_property("PianorollEdit", "partLines", true).toBool();
     _drawPartLines = true;
     _drawPartEndLine = pl;
     //setDrawPartLines(pl);
@@ -949,7 +949,7 @@ QMimeData* EventCanvas::getTextDrag()
     struct stat f_stat;
     if (fstat(fileno(tmp), &f_stat) == -1)
     {
-        fprintf(stderr, "PerformerCanvas::copy() fstat failes:<%s>\n",
+        fprintf(stderr, "PianorollCanvas::copy() fstat failes:<%s>\n",
                 strerror(errno));
         fclose(tmp);
         return 0;

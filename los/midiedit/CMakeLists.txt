@@ -26,8 +26,8 @@
 QT4_WRAP_CPP(midiedit_mocs
     EventCanvas.h
     Piano.h
-    Performer.h
-    PerformerCanvas.h
+    Pianoroll.h
+    PianorollCanvas.h
     quantconfig.h
 )
 
@@ -38,8 +38,8 @@ QT4_WRAP_CPP(midiedit_mocs
 file(GLOB midiedit_source_files
     EventCanvas.cpp
     Piano.cpp
-    Performer.cpp
-    PerformerCanvas.cpp
+    Pianoroll.cpp
+    PianorollCanvas.cpp
     quantconfig.cpp
 )
 

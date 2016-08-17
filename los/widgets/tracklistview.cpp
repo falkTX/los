@@ -64,7 +64,7 @@ TrackListView::TrackListView(AbstractMidiEditor* editor, QWidget* parent)
 
     m_chkSnapToPart = new QCheckBox(tr("Snap To Part"), this);
     m_chkSnapToPart->setToolTip(tr("Move Playback cursor to the first note in a part when changing parts."));
-    bool snap = tconfig().get_property("PerformerEdit", "snaptopart", true).toBool();
+    bool snap = tconfig().get_property("PianorollEdit", "snaptopart", true).toBool();
     m_chkSnapToPart->setChecked(snap);
 
     m_btnRefresh = new QToolButton(this);
@@ -93,7 +93,7 @@ TrackListView::TrackListView(AbstractMidiEditor* editor, QWidget* parent)
 
 TrackListView::~TrackListView()
 {
-    tconfig().set_property("PerformerEdit", "snaptopart", m_chkSnapToPart->isChecked());
+    tconfig().set_property("PianorollEdit", "snaptopart", m_chkSnapToPart->isChecked());
     tconfig().save();
 }
 
@@ -104,7 +104,7 @@ void TrackListView::showEvent(QShowEvent*)
 
 void TrackListView::snapToPartChanged(int state)/*{{{*/
 {
-    tconfig().set_property("PerformerEdit", "snaptopart", state);
+    tconfig().set_property("PianorollEdit", "snaptopart", state);
     tconfig().save();
 }/*}}}*/
 

@@ -725,8 +725,8 @@ QMenu* ComposerCanvas::genItemPopup(CItem* item)/*{{{*/
 
     {
         {
-            QAction *act_performer = partPopup->addAction(QIcon(*pianoIconSet), tr("Performer"));
-            act_performer->setData(10);
+            QAction *act_pianoroll = partPopup->addAction(QIcon(*pianoIconSet), tr("Pianoroll"));
+            act_pianoroll->setData(10);
             QAction *act_mlist = partPopup->addAction(QIcon(*edit_listIcon), tr("List"));
             act_mlist->setData(12);
             QAction *act_mexport = partPopup->addAction(tr("Export"));
@@ -786,7 +786,7 @@ void ComposerCanvas::itemPopup(CItem* item, int n, const QPoint& pt)/*{{{*/
         case 5:
             copy(pl);
             break;
-        case 10: // performer edit
+        case 10: // pianoroll edit
             emit startEditor(pl, 0);
             return;
         case 12: // list edit

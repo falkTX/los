@@ -1,7 +1,7 @@
 //=========================================================
 //  LOS
 //  Libre Octave Studio
-//    $Id: Performer.h,v 1.5.2.4 2009/11/16 11:29:33 lunar_shuttle Exp $
+//    $Id: Pianoroll.h,v 1.5.2.4 2009/11/16 11:29:33 lunar_shuttle Exp $
 //  (C) Copyright 1999 Werner Schweer (ws@seh.de)
 //=========================================================
 
@@ -26,7 +26,7 @@ class TimeLabel;
 class PitchLabel;
 class PosLabel;
 class QLabel;
-class PerformerCanvas;
+class PianorollCanvas;
 class MTScale;
 class PCScale;
 class SigScale;
@@ -57,10 +57,10 @@ class QHBoxLayout;
 class QVBoxLayout;
 
 //---------------------------------------------------------
-//   Performer
+//   Pianoroll
 //---------------------------------------------------------
 
-class Performer : public AbstractMidiEditor
+class Pianoroll : public AbstractMidiEditor
 {
     Q_OBJECT
 
@@ -277,8 +277,8 @@ public slots:
     void updateControllerSizes();
 
 public:
-    Performer(PartList*, QWidget* parent = 0, const char* name = 0, unsigned initPos = MAXINT);
-    ~Performer();
+    Pianoroll(PartList*, QWidget* parent = 0, const char* name = 0, unsigned initPos = MAXINT);
+    ~Pianoroll();
     //void setSolo(bool val);
     bool isCurrentPatch(int, int, int);
     bool isGlobalEdit();

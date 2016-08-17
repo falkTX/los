@@ -9,7 +9,7 @@
 #define __PCSCALE_H__
 
 #include "view.h"
-#include "Performer.h"
+#include "Pianoroll.h"
 #include "midictrl.h"
 //#include "audio.h"
 
@@ -34,7 +34,7 @@ struct ProgramChangeObject {
 class PCScale : public View
 {
     Q_OBJECT
-    Performer* currentEditor;
+    Pianoroll* currentEditor;
     int* raster;
     unsigned pos[4];
     int button;
@@ -73,15 +73,15 @@ public slots:
     //void setAudio(Audio*);
 
 public:
-    PCScale(int* raster, QWidget* parent, Performer* editor, int xscale, bool f = false);
+    PCScale(int* raster, QWidget* parent, Pianoroll* editor, int xscale, bool f = false);
 
     void setBarLocator(bool f)
     {
 	barLocator = f;
     }
-    void setEditor(Performer*);
+    void setEditor(Pianoroll*);
 
-    Performer* getEditor()
+    Pianoroll* getEditor()
     {
 	return currentEditor;
     }

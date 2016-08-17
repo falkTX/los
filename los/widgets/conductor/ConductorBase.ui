@@ -321,7 +321,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QFrame" name="performerToolsFrame">
+    <widget class="QFrame" name="pianorollToolsFrame">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
        <horstretch>0</horstretch>

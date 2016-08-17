@@ -67,7 +67,7 @@ class QDocWidget;
 class MidiAssignDialog;
 class MidiPlayEvent;
 class VirtualTrack;
-class Performer;
+class Pianoroll;
 class CarlaStyle;
 
 #define OOCMD_PORT 8415
@@ -155,7 +155,7 @@ class LOS : public QMainWindow
     Transport* transport;
     BigTime* bigtime;
     EditInstrument* editInstrument;
-    Performer* performer;
+    Pianoroll* pianoroll;
 
     QToolBar* toolbarComposerSettings;
     QToolBar* toolbarSnap;
@@ -294,8 +294,8 @@ private slots:
     void startDrumEditor();
     void startDrumEditor(PartList* /*pl*/, bool /*showDefaultCtrls*/ = false);
     void startEditor();
-    void startPerformer();
-    void startPerformer(PartList* /*pl*/, bool /*showDefaultCtrls*/ = false);
+    void startPianoroll();
+    void startPianoroll(PartList* /*pl*/, bool /*showDefaultCtrls*/ = false);
     void startWaveEditor();
     void startWaveEditor(PartList*);
     void startSongInfo(bool editable = true);
@@ -343,7 +343,7 @@ private slots:
     void execDeliveredScript(int);
     void execUserScript(int);
 
-    void performerClosed();
+    void pianorollClosed();
     void loadInitialProject();
     void lsStartupFailed();
 

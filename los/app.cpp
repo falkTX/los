@@ -49,7 +49,7 @@
 #include "midiport.h"
 #include "mididev.h"
 #include "driver/jackmidi.h"
-#include "midiedit/Performer.h"
+#include "midiedit/Pianoroll.h"
 #include "popupmenu.h"
 #include "shortcuts.h"
 #include "shortcutconfig.h"
@@ -102,7 +102,7 @@ extern void exitJackAudio();
 
 int watchAudio, watchAudioPrefetch, watchMidi;
 
-//static int performerTools = PointerTool | PencilTool | RubberTool | CutTool | GlueTool | DrawTool;
+//static int pianorollTools = PointerTool | PencilTool | RubberTool | CutTool | GlueTool | DrawTool;
 
 //---------------------------------------------------------
 //   sleep function
@@ -508,7 +508,7 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
     routingDialog = 0;
     firstrun = true;
     m_externalCall = false;
-    performer = 0;
+    pianoroll = 0;
     m_rasterVal = 0;
 
     g_trackColorListLine.insert(0, QColor(1,230,238));
@@ -701,7 +701,7 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
     editAllPartsAction = new QAction(QIcon(*select_all_parts_on_trackIcon), tr("All &Parts on Track"), this);
     editSelectAllTracksAction = new QAction(QIcon(*select_allIcon), tr("Select All &Tracks"), this);
 
-    startPianoEditAction = new QAction(*pianoIconSet, tr("Performer"), this);
+    startPianoEditAction = new QAction(*pianoIconSet, tr("Pianoroll"), this);
     startListEditAction = new QAction(QIcon(*edit_listIcon), tr("List"), this);
 
     master = new QMenu(tr("Tempo Editor"), this);
@@ -844,7 +844,7 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
 
     connect(editSignalMapper, SIGNAL(mapped(int)), this, SLOT(cmd(int)));
 
-    connect(startPianoEditAction, SIGNAL(triggered()), SLOT(startPerformer()));
+    connect(startPianoEditAction, SIGNAL(triggered()), SLOT(startPianoroll()));
     connect(startListEditAction, SIGNAL(triggered()), SLOT(startListEditor()));
 
     connect(masterGraphicAction, SIGNAL(triggered()), SLOT(startMasterEditor()));
@@ -2061,10 +2061,10 @@ void LOS::quitDoc(bool external)
 
 void LOS::closeEvent(QCloseEvent* event)
 {
-    if(performer)
+    if(pianoroll)
     {
-        performer->hide();
-        delete performer;
+        pianoroll->hide();
+        delete pianoroll;
     }
     song->setStop(true);
     //
@@ -2573,7 +2573,7 @@ void LOS::startEditor(PartList* pl, int type)
 {
     switch (type)
     {
-        case 0: startPerformer(pl, true);
+        case 0: startPianoroll(pl, true);
             break;
         case 1: startListEditor(pl);
             break;
@@ -2588,7 +2588,7 @@ void LOS::startEditor(PartList* pl, int type)
 
 void LOS::startEditor()
 {
-    startPerformer();
+    startPianoroll();
 }
 
 //---------------------------------------------------------
@@ -2607,10 +2607,10 @@ PartList* LOS::getMidiPartsToEdit()
 }
 
 //---------------------------------------------------------
-//   startPerformer
+//   startPianoroll
 //---------------------------------------------------------
 
-void LOS::startPerformer()
+void LOS::startPianoroll()
 {
     if(composer->isEditing())
     {
@@ -2620,46 +2620,46 @@ void LOS::startPerformer()
     PartList* pl = getMidiPartsToEdit();
     if (pl == 0)
         return;
-    startPerformer(pl, true);
+    startPianoroll(pl, true);
 }
 
-void LOS::performerClosed()
+void LOS::pianorollClosed()
 {
-    if(performer)
-        delete performer;
-    performer = 0;
+    if(pianoroll)
+        delete pianoroll;
+    pianoroll = 0;
 }
 
-void LOS::startPerformer(PartList* pl, bool /*showDefaultCtrls*/)
+void LOS::startPianoroll(PartList* pl, bool /*showDefaultCtrls*/)
 {
-    if(!performer)
+    if(!pianoroll)
     {
-        performer = new Performer(pl, this, 0, composer->cursorValue());
-        performer->setWindowRole("performer");
+        pianoroll = new Pianoroll(pl, this, 0, composer->cursorValue());
+        pianoroll->setWindowRole("pianoroll");
         // Be able to open the List Editor from the Piano Roll
         // with the application global shortcut to open the L.E.
-        performer->addAction(startListEditAction);
+        pianoroll->addAction(startListEditAction);
         // same for save shortcut
-        performer->addAction(fileSaveAction);
-        //performer->addAction(playAction);
+        pianoroll->addAction(fileSaveAction);
+        //pianoroll->addAction(playAction);
 
-        //performer->restoreState(tconfig().get_property("PerformerEdit", "windowstate", "").toByteArray());
-        performer->show();
+        //pianoroll->restoreState(tconfig().get_property("PianorollEdit", "windowstate", "").toByteArray());
+        pianoroll->show();
         Song::movePlaybackToPart(pl->begin()->second);
 
-        connect(performer, SIGNAL(deleted()), SLOT(performerClosed()));
-        connect(los, SIGNAL(configChanged()), performer, SLOT(configChanged()));
+        connect(pianoroll, SIGNAL(deleted()), SLOT(pianorollClosed()));
+        connect(los, SIGNAL(configChanged()), pianoroll, SLOT(configChanged()));
     }
     else
     {
-        //Add part list to performer, Should the list already there be cleared?
-        if(performer->isMinimized())
-            performer->showNormal();
-        performer->addParts(pl);
-        performer->setCurCanvasPart(pl->begin()->second);
+        //Add part list to pianoroll, Should the list already there be cleared?
+        if(pianoroll->isMinimized())
+            pianoroll->showNormal();
+        pianoroll->addParts(pl);
+        pianoroll->setCurCanvasPart(pl->begin()->second);
         Song::movePlaybackToPart(pl->begin()->second);
-        performer->activateWindow();
-        performer->raise();
+        pianoroll->activateWindow();
+        pianoroll->raise();
     }
 
 }
@@ -3760,11 +3760,11 @@ bool LOS::clearSong()
         }
     }
     toplevels.clear();
-    if(performer)
+    if(pianoroll)
     {
-        performer->hide();
-        delete performer;
-        performer = 0;
+        pianoroll->hide();
+        delete pianoroll;
+        pianoroll = 0;
     }
     //printf("LOS::clearSong() TopLevel.size(%d) \n", (int)toplevels.size());
     microSleep(100000);

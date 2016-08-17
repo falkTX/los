@@ -41,7 +41,7 @@ CtrlEdit::CtrlEdit(QWidget* parent, AbstractMidiEditor* e, int xmag, int height)
 	connect(handle, SIGNAL(resizeEnded()), this, SIGNAL(resizeEnded()));
 	connect(handle, SIGNAL(resizeStarted()), this, SIGNAL(resizeStarted()));
 
-	//Set a high number because we allways set the height when we instantiate in the Performer
+	//Set a high number because we allways set the height when we instantiate in the Pianoroll
 	//This will be updated as soon as you resize, so it should present no issues
 	m_collapsedHeight = height;
 	m_collapsed = false;

@@ -1580,7 +1580,7 @@ True range: Min: -8192 Max: 8191 (bias 0)</string>
 
 If a default value is chosen, the value will be sent
  to the controller when the controller is added to
- the song (in Performer or event editor). When
+ the song (in Pianoroll or event editor). When
  the song is re-loaded, the value is sent again.
 Otherwise the controller remains at its last value.
 Controllers are also automatically added to a
@@ -1589,7 +1589,7 @@ Controllers are also automatically added to a
 Caution! Watch out for controllers such as
  'Sustain' and 'ResetAllController' with default
  values. You should probably turn 'off' their
- default (in Performer or drum edit, and
+ default (in Pianoroll or drum edit, and
  instrument editor).</string>
                         </property>
                         <property name="specialValueText">

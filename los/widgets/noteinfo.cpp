@@ -83,13 +83,13 @@ NoteInfo::NoteInfo(QWidget* parent)
 	m_renderAlpha = new QSpinBox();
 	m_renderAlpha->setRange(0, 255);
 	m_renderAlpha->setSingleStep(1);
-	int alpha = tconfig().get_property("PerformerEdit", "renderalpha", 50).toInt();
+	int alpha = tconfig().get_property("PianorollEdit", "renderalpha", 50).toInt();
 	m_renderAlpha->setValue(alpha);
 
 	addTool(tr("BG Brightness"), m_renderAlpha);
 
 	m_partLines = new QCheckBox(this);
-	bool pl = tconfig().get_property("PerformerEdit", "partLines", true).toBool();
+	bool pl = tconfig().get_property("PianorollEdit", "partLines", true).toBool();
 	m_partLines->setChecked(pl);
 	addTool(tr("Part End Marker"), m_partLines);
 
@@ -187,13 +187,13 @@ void NoteInfo::addTool(QString label, QWidget *tool)
 //---------------------------------------------------------
 void NoteInfo::alphaChanged(int alpha)
 {
-	tconfig().set_property("PerformerEdit", "renderalpha", alpha);
+	tconfig().set_property("PianorollEdit", "renderalpha", alpha);
 	tconfig().save();
 	emit alphaChanged();
 }
 void NoteInfo::partLinesChanged(bool checked)
 {
-	tconfig().set_property("PerformerEdit", "partLines", m_partLines->isChecked());
+	tconfig().set_property("PianorollEdit", "partLines", m_partLines->isChecked());
 	tconfig().save();
 	emit enablePartLines(checked);
 }

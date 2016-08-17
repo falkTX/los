@@ -84,7 +84,7 @@ struct GlobalConfigValues
     QRect geometryMain;
     QRect geometryTransport;
     QRect geometryBigTime;
-    QRect geometryPerformer;
+    QRect geometryPianoroll;
     QRect geometryDrumedit;
     bool transportVisible;
     bool bigTimeVisible;

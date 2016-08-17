@@ -1118,7 +1118,7 @@ void Composer::createDockMembers()
     {
         obj->installEventFilter(this);
     }
-    midiConductor->performerToolsFrame->hide();
+    midiConductor->pianorollToolsFrame->hide();
 
     _tvdock = new TrackViewDock(this);
 

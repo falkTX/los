@@ -15,7 +15,7 @@
 #include "transport.h"
 #include "icons.h"
 #include "globals.h"
-#include "midiedit/Performer.h"
+#include "midiedit/Pianoroll.h"
 #include "master/masteredit.h"
 #include "bigtime.h"
 #include "Composer/Composer.h"

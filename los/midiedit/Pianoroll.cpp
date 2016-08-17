@@ -1,7 +1,7 @@
 //=========================================================
 //  LOS
 //  Libre Octave Studio
-//    $Id: Performer.cpp,v 1.25.2.15 2009/11/16 11:29:33 lunar_shuttle Exp $
+//    $Id: Pianoroll.cpp,v 1.25.2.15 2009/11/16 11:29:33 lunar_shuttle Exp $
 //  (C) Copyright 1999 Werner Schweer (ws@seh.de)
 //=========================================================
 
@@ -16,8 +16,8 @@
 #include "mtscale.h"
 #include "pcscale.h"
 #include "sigscale.h"
-#include "PerformerCanvas.h"
-#include "Performer.h"
+#include "PianorollCanvas.h"
+#include "Pianoroll.h"
 #include "poslabel.h"
 #include "pitchlabel.h"
 #include "scrollscale.h"
@@ -53,20 +53,20 @@
 #include <QClipboard>
 #include <QMimeData>
 
-int Performer::_quantInit = 96;
-int Performer::_rasterInit = 96;
-int Performer::_widthInit = 600;
-int Performer::_heightInit = 400;
-int Performer::_quantStrengthInit = 80; // 1 - 100%
-int Performer::_quantLimitInit = 50; // tick value
-bool Performer::_quantLenInit = false;
-int Performer::_toInit = 0;
-int Performer::colorModeInit = 2;
+int Pianoroll::_quantInit = 96;
+int Pianoroll::_rasterInit = 96;
+int Pianoroll::_widthInit = 600;
+int Pianoroll::_heightInit = 400;
+int Pianoroll::_quantStrengthInit = 80; // 1 - 100%
+int Pianoroll::_quantLimitInit = 50; // tick value
+bool Pianoroll::_quantLenInit = false;
+int Pianoroll::_toInit = 0;
+int Pianoroll::colorModeInit = 2;
 
 static const int xscale = -10;
 static const int yscale = 1;
 static const int pianoWidth = 40;
-static int performerTools = PointerTool | PencilTool | RubberTool | DrawTool;
+static int PianorollTools = PointerTool | PencilTool | RubberTool | DrawTool;
 
 static int rasterTable[] = {
     //-9----8-  7    6     5     4    3(1/4)     2   1
@@ -78,10 +78,10 @@ static int rasterTable[] = {
 static const QString DEFAULT_CONTROLLERS("MainVolume:0:80::Velocity:0:60::Modulation:0:80");
 
 //---------------------------------------------------------
-//   Performer
+//   Pianoroll
 //---------------------------------------------------------
 
-Performer::Performer(PartList* pl, QWidget* parent, const char* name, unsigned initPos)
+Pianoroll::Pianoroll(PartList* pl, QWidget* parent, const char* name, unsigned initPos)
 : AbstractMidiEditor(_quantInit, _rasterInit, pl, parent, name)
 {
     setAttribute(Qt::WA_DeleteOnClose);
@@ -99,7 +99,7 @@ Performer::Performer(PartList* pl, QWidget* parent, const char* name, unsigned i
     _quantLimit = _quantLimitInit;
     _quantLen = _quantLenInit;
     _to = _toInit;
-    colorMode = tconfig().get_property("PerformerEdit", "colormode", colorModeInit).toInt();
+    colorMode = tconfig().get_property("PianorollEdit", "colormode", colorModeInit).toInt();
     _stepQwerty = false;
 
     //-------------------------------------------------------
@@ -219,7 +219,7 @@ Performer::Performer(PartList* pl, QWidget* parent, const char* name, unsigned i
     cursorBar->setMovable(false);
     cursorBar->setAllowedAreas(Qt::BottomToolBarArea);
 
-    editTools = new EditToolBar(this, performerTools);
+    editTools = new EditToolBar(this, PianorollTools);
 
     editToolbar = new QToolBar(tr("Edit Tools"));
     editToolbar->setObjectName("PREditToolBar");
@@ -324,14 +324,14 @@ Performer::Performer(PartList* pl, QWidget* parent, const char* name, unsigned i
 
     piano = new Piano(this, yscale, this);
     piano->setFixedWidth(pianoWidth);
-    canvas = new PerformerCanvas(this, this, xscale, yscale);
+    canvas = new PianorollCanvas(this, this, xscale, yscale);
     //canvas->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     vscroll = new ScrollScale(-1, 7, yscale, KH * 75, Qt::Vertical, this);
 
 
     int offset = -(config.division / 4);
     canvas->setOrigin(offset, 0);
-    canvas->setCanvasTools(performerTools);
+    canvas->setCanvasTools(PianorollTools);
     canvas->setFocus();
     connect(canvas, SIGNAL(toolChanged(int)), editTools, SLOT(set(int)));
 
@@ -508,7 +508,7 @@ Performer::Performer(PartList* pl, QWidget* parent, const char* name, unsigned i
     connect(song, SIGNAL(punchoutChanged(bool)), canvas, SLOT(update()));
     connect(song, SIGNAL(loopChanged(bool)), canvas, SLOT(update()));
 
-    setWindowTitle("The Performer:     " + canvas->getCaption());
+    setWindowTitle("Piano roll:     " + canvas->getCaption());
 
     updateHScrollRange();
     // connect to toolbar
@@ -565,7 +565,7 @@ Performer::Performer(PartList* pl, QWidget* parent, const char* name, unsigned i
     if (pos > MAXINT)
       pos = MAXINT;
 
-    bool showcomment = tconfig().get_property("PerformerEdit", "showcomments", false).toBool();
+    bool showcomment = tconfig().get_property("PianorollEdit", "showcomments", false).toBool();
     //printf("Canvas show comments: %d\n", showcomment);
     midiConductor->updateCommentState(showcomment, false);
 
@@ -584,17 +584,17 @@ Performer::Performer(PartList* pl, QWidget* parent, const char* name, unsigned i
 //   so that the play cursor is in the center of the viewport?
 //---------------------------------------------------------
 
-void Performer::showEvent(QShowEvent *)/*{{{*/
+void Pianoroll::showEvent(QShowEvent *)/*{{{*/
 {
 
-    //int dockwidth = tconfig().get_property("PerformerEdit", "dockwidth", 300).toInt();
-    restoreState(tconfig().get_property("PerformerEdit", "windowstate", "").toByteArray());
-    restoreGeometry(tconfig().get_property("PerformerEdit", "geometry", "").toByteArray());
+    //int dockwidth = tconfig().get_property("PianorollEdit", "dockwidth", 300).toInt();
+    restoreState(tconfig().get_property("PianorollEdit", "windowstate", "").toByteArray());
+    restoreGeometry(tconfig().get_property("PianorollEdit", "geometry", "").toByteArray());
 
     //lets try to size the
     restoreDockWidget(m_prDock);
-    /*int w = tconfig().get_property("PerformerEdit", "widgetwidth", 924).toInt();
-    int h = tconfig().get_property("PerformerEdit", "widgetheigth", 650).toInt();
+    /*int w = tconfig().get_property("PianorollEdit", "widgetwidth", 924).toInt();
+    int h = tconfig().get_property("PianorollEdit", "widgetheigth", 650).toInt();
     int dw = qApp->desktop()->width();
     int dh = qApp->desktop()->height();
     if(h <= dh && w <= dw)
@@ -617,9 +617,9 @@ void Performer::showEvent(QShowEvent *)/*{{{*/
     // half the canvas width so the cursor is centered.
 
     hscroll->setPos(hscroll->pos() - (canvas->width() / 2));
-    int hScale = tconfig().get_property("PerformerEdit", "hscale", 346).toInt();
-    int vScale = tconfig().get_property("PerformerEdit", "yscale", 286).toInt();
-    int yPos = tconfig().get_property("PerformerEdit", "ypos", 0).toInt();
+    int hScale = tconfig().get_property("PianorollEdit", "hscale", 346).toInt();
+    int vScale = tconfig().get_property("PianorollEdit", "yscale", 286).toInt();
+    int yPos = tconfig().get_property("PianorollEdit", "ypos", 0).toInt();
     hscroll->setMag(hScale);
     vscroll->setMag(vScale);
     vscroll->setPos(yPos);
@@ -628,22 +628,22 @@ void Performer::showEvent(QShowEvent *)/*{{{*/
 }/*}}}*/
 
 //---------------------------------------------------------
-//   ~Performer
+//   ~Pianoroll
 //---------------------------------------------------------
 
-Performer::~Performer()
+Pianoroll::~Pianoroll()
 {
     // store widget size to global config
-    tconfig().set_property("PerformerEdit", "widgetwidth", width());
-    tconfig().set_property("PerformerEdit", "widgetheigth", height());
-    tconfig().set_property("PerformerEdit", "geometry", saveGeometry());
-    tconfig().set_property("PerformerEdit", "hscale", hscroll->mag());
-    tconfig().set_property("PerformerEdit", "yscale", vscroll->mag());
-    tconfig().set_property("PerformerEdit", "ypos", vscroll->pos());
-    tconfig().set_property("PerformerEdit", "colormode", colorMode);
-    tconfig().set_property("PerformerEdit", "showcomments", canvas->showComments());
-    tconfig().set_property("PerformerEdit", "windowstate", saveState());
-    tconfig().set_property("PerformerEdit", "dockwidth", m_prDock->width());
+    tconfig().set_property("PianorollEdit", "widgetwidth", width());
+    tconfig().set_property("PianorollEdit", "widgetheigth", height());
+    tconfig().set_property("PianorollEdit", "geometry", saveGeometry());
+    tconfig().set_property("PianorollEdit", "hscale", hscroll->mag());
+    tconfig().set_property("PianorollEdit", "yscale", vscroll->mag());
+    tconfig().set_property("PianorollEdit", "ypos", vscroll->pos());
+    tconfig().set_property("PianorollEdit", "colormode", colorMode);
+    tconfig().set_property("PianorollEdit", "showcomments", canvas->showComments());
+    tconfig().set_property("PianorollEdit", "windowstate", saveState());
+    tconfig().set_property("PianorollEdit", "dockwidth", m_prDock->width());
     tconfig().save();
 
     //Delete all the controll lists
@@ -663,7 +663,7 @@ Performer::~Performer()
 // Create and populate all menu finctions
 //---------------------------------------------------------
 
-void Performer::initFunctions()/*{{{*/
+void Pianoroll::initFunctions()/*{{{*/
 {
     mapper = new QSignalMapper(this);
     functionMapper = new QSignalMapper(this);
@@ -678,21 +678,21 @@ void Performer::initFunctions()/*{{{*/
     menuEdit->addSeparator();
 
     editCutAction = menuEdit->addAction(QIcon(*editcutIconSet), tr("C&ut"));
-    mapper->setMapping(editCutAction, PerformerCanvas::CMD_CUT);
+    mapper->setMapping(editCutAction, PianorollCanvas::CMD_CUT);
     connect(editCutAction, SIGNAL(triggered()), mapper, SLOT(map()));
 
     editCopyAction = menuEdit->addAction(QIcon(*editcopyIconSet), tr("&Copy"));
-    mapper->setMapping(editCopyAction, PerformerCanvas::CMD_COPY);
+    mapper->setMapping(editCopyAction, PianorollCanvas::CMD_COPY);
     connect(editCopyAction, SIGNAL(triggered()), mapper, SLOT(map()));
 
     editPasteAction = menuEdit->addAction(QIcon(*editpasteIconSet), tr("&Paste"));
-    mapper->setMapping(editPasteAction, PerformerCanvas::CMD_PASTE);
+    mapper->setMapping(editPasteAction, PianorollCanvas::CMD_PASTE);
     connect(editPasteAction, SIGNAL(triggered()), mapper, SLOT(map()));
 
     menuEdit->addSeparator();
 
     editDelEventsAction = menuEdit->addAction(tr("Delete &Events"));
-    mapper->setMapping(editDelEventsAction, PerformerCanvas::CMD_DEL);
+    mapper->setMapping(editDelEventsAction, PianorollCanvas::CMD_DEL);
     connect(editDelEventsAction, SIGNAL(triggered()), mapper, SLOT(map()));
 
     menuEdit->addSeparator();
@@ -700,34 +700,34 @@ void Performer::initFunctions()/*{{{*/
     menuSelect = menuEdit->addMenu(QIcon(*selectIcon), tr("&Select"));
 
     selectAllAction = menuSelect->addAction(QIcon(*select_allIcon), tr("Select &All"));
-    mapper->setMapping(selectAllAction, PerformerCanvas::CMD_SELECT_ALL);
+    mapper->setMapping(selectAllAction, PianorollCanvas::CMD_SELECT_ALL);
     connect(selectAllAction, SIGNAL(triggered()), mapper, SLOT(map()));
 
     selectNoneAction = menuSelect->addAction(QIcon(*select_deselect_allIcon), tr("&Deselect All"));
-    mapper->setMapping(selectNoneAction, PerformerCanvas::CMD_SELECT_NONE);
+    mapper->setMapping(selectNoneAction, PianorollCanvas::CMD_SELECT_NONE);
     connect(selectNoneAction, SIGNAL(triggered()), mapper, SLOT(map()));
 
     selectInvertAction = menuSelect->addAction(QIcon(*select_invert_selectionIcon), tr("Invert &Selection"));
-    mapper->setMapping(selectInvertAction, PerformerCanvas::CMD_SELECT_INVERT);
+    mapper->setMapping(selectInvertAction, PianorollCanvas::CMD_SELECT_INVERT);
     connect(selectInvertAction, SIGNAL(triggered()), mapper, SLOT(map()));
 
     menuSelect->addSeparator();
 
     selectInsideLoopAction = menuSelect->addAction(QIcon(*select_inside_loopIcon), tr("&Inside Loop"));
-    mapper->setMapping(selectInsideLoopAction, PerformerCanvas::CMD_SELECT_ILOOP);
+    mapper->setMapping(selectInsideLoopAction, PianorollCanvas::CMD_SELECT_ILOOP);
     connect(selectInsideLoopAction, SIGNAL(triggered()), mapper, SLOT(map()));
 
     selectOutsideLoopAction = menuSelect->addAction(QIcon(*select_outside_loopIcon), tr("&Outside Loop"));
-    mapper->setMapping(selectOutsideLoopAction, PerformerCanvas::CMD_SELECT_OLOOP);
+    mapper->setMapping(selectOutsideLoopAction, PianorollCanvas::CMD_SELECT_OLOOP);
     connect(selectOutsideLoopAction, SIGNAL(triggered()), mapper, SLOT(map()));
 
     menuSelect->addSeparator();
 
     selectPrevPartAction = menuSelect->addAction(QIcon(*previousIconSet3), tr("&Previous Part"), mapper, SLOT(map()), shortcuts[SHRT_SELECT_PREV_PART].key);
-    mapper->setMapping(selectPrevPartAction, PerformerCanvas::CMD_SELECT_PREV_PART);
+    mapper->setMapping(selectPrevPartAction, PianorollCanvas::CMD_SELECT_PREV_PART);
 
     selectNextPartAction = menuSelect->addAction(QIcon(*nextIconSet3), tr("&Next Part"), mapper, SLOT(map()), shortcuts[SHRT_SELECT_NEXT_PART].key);
-    mapper->setMapping(selectNextPartAction, PerformerCanvas::CMD_SELECT_NEXT_PART);
+    mapper->setMapping(selectNextPartAction, PianorollCanvas::CMD_SELECT_NEXT_PART);
 
     menuConfig = menuBar()->addMenu(tr("&Config"));
 
@@ -764,19 +764,19 @@ void Performer::initFunctions()/*{{{*/
     menuFunctions->setTearOffEnabled(true);
 
     funcOverQuantAction = menuFunctions->addAction(tr("Over Quantize"));
-    mapper->setMapping(funcOverQuantAction, PerformerCanvas::CMD_OVER_QUANTIZE);
+    mapper->setMapping(funcOverQuantAction, PianorollCanvas::CMD_OVER_QUANTIZE);
     connect(funcOverQuantAction, SIGNAL(triggered()), mapper, SLOT(map()));
 
     funcNoteOnQuantAction = menuFunctions->addAction(tr("Note On Quantize"));
-    mapper->setMapping(funcNoteOnQuantAction, PerformerCanvas::CMD_ON_QUANTIZE);
+    mapper->setMapping(funcNoteOnQuantAction, PianorollCanvas::CMD_ON_QUANTIZE);
     connect(funcNoteOnQuantAction, SIGNAL(triggered()), mapper, SLOT(map()));
 
     funcNoteOnOffQuantAction = menuFunctions->addAction(tr("Note On/Off Quantize"));
-    mapper->setMapping(funcNoteOnOffQuantAction, PerformerCanvas::CMD_ONOFF_QUANTIZE);
+    mapper->setMapping(funcNoteOnOffQuantAction, PianorollCanvas::CMD_ONOFF_QUANTIZE);
     connect(funcNoteOnOffQuantAction, SIGNAL(triggered()), mapper, SLOT(map()));
 
     funcIterQuantAction = menuFunctions->addAction(tr("Iterative Quantize"));
-    mapper->setMapping(funcIterQuantAction, PerformerCanvas::CMD_ITERATIVE_QUANTIZE);
+    mapper->setMapping(funcIterQuantAction, PianorollCanvas::CMD_ITERATIVE_QUANTIZE);
     connect(funcIterQuantAction, SIGNAL(triggered()), mapper, SLOT(map()));
 
     menuFunctions->addSeparator();
@@ -787,69 +787,69 @@ void Performer::initFunctions()/*{{{*/
     menuFunctions->addSeparator();
 
     funcGateTimeAction = menuFunctions->addAction(tr("Modify Gate Time"));
-    mapper->setMapping(funcGateTimeAction, PerformerCanvas::CMD_MODIFY_GATE_TIME);
+    mapper->setMapping(funcGateTimeAction, PianorollCanvas::CMD_MODIFY_GATE_TIME);
     connect(funcGateTimeAction, SIGNAL(triggered()), mapper, SLOT(map()));
 
     funcModVelAction = menuFunctions->addAction(tr("Modify Velocity"));
-    mapper->setMapping(funcModVelAction, PerformerCanvas::CMD_MODIFY_VELOCITY);
+    mapper->setMapping(funcModVelAction, PianorollCanvas::CMD_MODIFY_VELOCITY);
     connect(funcModVelAction, SIGNAL(triggered()), mapper, SLOT(map()));
 /*
     funcCrescendoAction = menuFunctions->addAction(tr("Crescendo"));//{{{
-    mapper->setMapping(funcCrescendoAction, PerformerCanvas::CMD_CRESCENDO);
+    mapper->setMapping(funcCrescendoAction, PianorollCanvas::CMD_CRESCENDO);
     funcCrescendoAction->setEnabled(false);
     connect(funcCrescendoAction, SIGNAL(triggered()), mapper, SLOT(map()));
 
     funcTransposeAction = menuFunctions->addAction(tr("Transpose"));
-    mapper->setMapping(funcTransposeAction, PerformerCanvas::CMD_TRANSPOSE);
+    mapper->setMapping(funcTransposeAction, PianorollCanvas::CMD_TRANSPOSE);
     funcTransposeAction->setEnabled(false);
     connect(funcTransposeAction, SIGNAL(triggered()), mapper, SLOT(map()));
 
     funcThinOutAction = menuFunctions->addAction(tr("Thin Out"));
-    mapper->setMapping(funcThinOutAction, PerformerCanvas::CMD_THIN_OUT);
+    mapper->setMapping(funcThinOutAction, PianorollCanvas::CMD_THIN_OUT);
     funcThinOutAction->setEnabled(false);
     connect(funcThinOutAction, SIGNAL(triggered()), mapper, SLOT(map()));
 
     funcEraseEventAction = menuFunctions->addAction(tr("Erase Event"));
-    mapper->setMapping(funcEraseEventAction, PerformerCanvas::CMD_ERASE_EVENT);
+    mapper->setMapping(funcEraseEventAction, PianorollCanvas::CMD_ERASE_EVENT);
     funcEraseEventAction->setEnabled(false);
     connect(funcEraseEventAction, SIGNAL(triggered()), mapper, SLOT(map()));
 
     funcNoteShiftAction = menuFunctions->addAction(tr("Note Shift"));
-    mapper->setMapping(funcNoteShiftAction, PerformerCanvas::CMD_NOTE_SHIFT);
+    mapper->setMapping(funcNoteShiftAction, PianorollCanvas::CMD_NOTE_SHIFT);
     funcNoteShiftAction->setEnabled(false);
     connect(funcNoteShiftAction, SIGNAL(triggered()), mapper, SLOT(map()));
 
     funcMoveClockAction = menuFunctions->addAction(tr("Move Clock"));
-    mapper->setMapping(funcMoveClockAction, PerformerCanvas::CMD_MOVE_CLOCK);
+    mapper->setMapping(funcMoveClockAction, PianorollCanvas::CMD_MOVE_CLOCK);
     funcMoveClockAction->setEnabled(false);
     connect(funcMoveClockAction, SIGNAL(triggered()), mapper, SLOT(map()));
 
     funcCopyMeasureAction = menuFunctions->addAction(tr("Copy Measure"));
-    mapper->setMapping(funcCopyMeasureAction, PerformerCanvas::CMD_COPY_MEASURE);
+    mapper->setMapping(funcCopyMeasureAction, PianorollCanvas::CMD_COPY_MEASURE);
     funcCopyMeasureAction->setEnabled(false);
     connect(funcCopyMeasureAction, SIGNAL(triggered()), mapper, SLOT(map()));
 
     funcEraseMeasureAction = menuFunctions->addAction(tr("Erase Measure"));
-    mapper->setMapping(funcEraseMeasureAction, PerformerCanvas::CMD_ERASE_MEASURE);
+    mapper->setMapping(funcEraseMeasureAction, PianorollCanvas::CMD_ERASE_MEASURE);
     funcEraseMeasureAction->setEnabled(false);
     connect(funcEraseMeasureAction, SIGNAL(triggered()), mapper, SLOT(map()));
 
     funcDelMeasureAction = menuFunctions->addAction(tr("Delete Measure"));
-    mapper->setMapping(funcDelMeasureAction, PerformerCanvas::CMD_DELETE_MEASURE);
+    mapper->setMapping(funcDelMeasureAction, PianorollCanvas::CMD_DELETE_MEASURE);
     funcDelMeasureAction->setEnabled(false);
     connect(funcDelMeasureAction, SIGNAL(triggered()), mapper, SLOT(map()));
 
     funcCreateMeasureAction = menuFunctions->addAction(tr("Create Measure"));
-    mapper->setMapping(funcCreateMeasureAction, PerformerCanvas::CMD_CREATE_MEASURE);
+    mapper->setMapping(funcCreateMeasureAction, PianorollCanvas::CMD_CREATE_MEASURE);
     funcCreateMeasureAction->setEnabled(false);
     connect(funcCreateMeasureAction, SIGNAL(triggered()), mapper, SLOT(map()));//}}}
 */
     funcSetFixedLenAction = menuFunctions->addAction(tr("Set Fixed Length"));
-    mapper->setMapping(funcSetFixedLenAction, PerformerCanvas::CMD_FIXED_LEN);
+    mapper->setMapping(funcSetFixedLenAction, PianorollCanvas::CMD_FIXED_LEN);
     connect(funcSetFixedLenAction, SIGNAL(triggered()), mapper, SLOT(map()));
 
     funcDelOverlapsAction = menuFunctions->addAction(tr("Delete Overlaps"));
-    mapper->setMapping(funcDelOverlapsAction, PerformerCanvas::CMD_DELETE_OVERLAPS);
+    mapper->setMapping(funcDelOverlapsAction, PianorollCanvas::CMD_DELETE_OVERLAPS);
     connect(funcDelOverlapsAction, SIGNAL(triggered()), mapper, SLOT(map()));
 
     menuPlugins = menuBar()->addMenu(tr("Plugins"));
@@ -902,13 +902,13 @@ void Performer::initFunctions()/*{{{*/
     functionMapper->setMapping(funcGotoSelNoteAction, GOTO_SEL_NOTE);
 
     funcAddProgramChangeAction = menuFunctions->addAction(QIcon(*plusIconSet3), tr("Add Program Change at Cursor"), mapper, SLOT(map()), shortcuts[SHRT_ADD_PROGRAM].key);
-    mapper->setMapping(funcAddProgramChangeAction, PerformerCanvas::CMD_ADD_PROGRAM);
+    mapper->setMapping(funcAddProgramChangeAction, PianorollCanvas::CMD_ADD_PROGRAM);
 
     funcDelProgramChangeAction = menuFunctions->addAction(QIcon(*garbageIconSet3), tr("Delele Program Change at Cursor"), mapper, SLOT(map()), shortcuts[SHRT_DEL_PROGRAM].key);
-    mapper->setMapping(funcDelProgramChangeAction, PerformerCanvas::CMD_DELETE_PROGRAM);
+    mapper->setMapping(funcDelProgramChangeAction, PianorollCanvas::CMD_DELETE_PROGRAM);
 
     funcCopyProgramChangeAction = menuFunctions->addAction(QIcon(*duplicateIconSet3), tr("Copy Selected Program Change"), mapper, SLOT(map()), shortcuts[SHRT_COPY_PROGRAM].key);
-    mapper->setMapping(funcCopyProgramChangeAction, PerformerCanvas::CMD_COPY_PROGRAM);
+    mapper->setMapping(funcCopyProgramChangeAction, PianorollCanvas::CMD_COPY_PROGRAM);
     //funcPasteProgramChangeAction = menuFunctions->addAction(tr("Paste Program Change at Cursor"), functionMapper, SLOT(map()), shortcuts[SHRT_GOTO_SEL_NOTE].key);
 
     /*shortcuts[SHRT_OCTAVE_QWERTY_0].key
@@ -971,7 +971,7 @@ void Performer::initFunctions()/*{{{*/
 //   viewKeyPressEvent
 //---------------------------------------------------------
 
-void Performer::keyPressEvent(QKeyEvent* event)/*{{{*/
+void Pianoroll::keyPressEvent(QKeyEvent* event)/*{{{*/
 {
 
     // Force left/right arrow key events to move the focus
@@ -1018,7 +1018,7 @@ void Performer::keyPressEvent(QKeyEvent* event)/*{{{*/
 
 
 
-    PerformerCanvas* pc = (PerformerCanvas*) canvas;
+    PianorollCanvas* pc = (PianorollCanvas*) canvas;
 
     if (_stepQwerty && pc->steprec())
     {
@@ -1431,7 +1431,7 @@ void Performer::keyPressEvent(QKeyEvent* event)/*{{{*/
 //   initShortcuts
 //---------------------------------------------------------
 
-void Performer::initShortcuts()/*{{{*/
+void Pianoroll::initShortcuts()/*{{{*/
 {
     editCutAction->setShortcut(shortcuts[SHRT_CUT].key);
     editCopyAction->setShortcut(shortcuts[SHRT_COPY].key);
@@ -1495,7 +1495,7 @@ void Performer::initShortcuts()/*{{{*/
 
 }/*}}}*/
 
-void Performer::toggleMuteCurrentPart(bool mute)
+void Pianoroll::toggleMuteCurrentPart(bool mute)
 {
     if(canvas)
     {
@@ -1508,7 +1508,7 @@ void Performer::toggleMuteCurrentPart(bool mute)
     }
 }
 
-void Performer::checkPartLengthForRecord(bool rec)/*{{{*/
+void Pianoroll::checkPartLengthForRecord(bool rec)/*{{{*/
 {
     if(!rec)
         return;
@@ -1536,11 +1536,11 @@ void Performer::checkPartLengthForRecord(bool rec)/*{{{*/
     }
 }/*}}}*/
 
-void Performer::setCurCanvasPart(Part* part)
+void Pianoroll::setCurCanvasPart(Part* part)
 {
     if (canvas)
     {
-        //printf("Performer::setCurCanvasPart\n");
+        //printf("Pianoroll::setCurCanvasPart\n");
         canvas->setCurrentPart(part);
         m_muteAction->blockSignals(true);
         m_muteAction->setChecked(part->mute());
@@ -1558,7 +1558,7 @@ void Performer::setCurCanvasPart(Part* part)
 //   songChanged1
 //---------------------------------------------------------
 
-void Performer::songChanged1(int bits)/*{{{*/
+void Pianoroll::songChanged1(int bits)/*{{{*/
 {
 
     //if (bits & SC_SOLO)
@@ -1594,17 +1594,17 @@ void Performer::songChanged1(int bits)/*{{{*/
     }
 }/*}}}*/
 
-void Performer::selectPrevPart()
+void Pianoroll::selectPrevPart()
 {
-    cmd(PerformerCanvas::CMD_SELECT_PREV_PART);
+    cmd(PianorollCanvas::CMD_SELECT_PREV_PART);
 }
 
-void Performer::selectNextPart()
+void Pianoroll::selectNextPart()
 {
-    cmd(PerformerCanvas::CMD_SELECT_NEXT_PART);
+    cmd(PianorollCanvas::CMD_SELECT_NEXT_PART);
 }
 
-void Performer::dockAreaChanged(Qt::DockWidgetArea area)/*{{{*/
+void Pianoroll::dockAreaChanged(Qt::DockWidgetArea area)/*{{{*/
 {
     switch(area)
     {
@@ -1623,7 +1623,7 @@ void Performer::dockAreaChanged(Qt::DockWidgetArea area)/*{{{*/
 //   configChanged
 //---------------------------------------------------------
 
-void Performer::configChanged()
+void Pianoroll::configChanged()
 {
     initShortcuts();
     //midiConductor->updateConductor();
@@ -1633,7 +1633,7 @@ void Performer::configChanged()
 //   updateHScrollRange
 //---------------------------------------------------------
 
-void Performer::updateHScrollRange()/*{{{*/
+void Pianoroll::updateHScrollRange()/*{{{*/
 {
     int s, e;
     canvas->range(&s, &e);
@@ -1649,7 +1649,7 @@ void Performer::updateHScrollRange()/*{{{*/
         hscroll->setRange(s, e);
 }/*}}}*/
 
-void Performer::updateConductor()/*{{{*/
+void Pianoroll::updateConductor()/*{{{*/
 {
     if(selected != curCanvasPart()->track())
     {
@@ -1669,7 +1669,7 @@ void Performer::updateConductor()/*{{{*/
 //   follow
 //---------------------------------------------------------
 
-void Performer::follow(int pos)/*{{{*/
+void Pianoroll::follow(int pos)/*{{{*/
 {
     int s, e;
     canvas->range(&s, &e);
@@ -1684,7 +1684,7 @@ void Performer::follow(int pos)/*{{{*/
 //   setTime
 //---------------------------------------------------------
 
-void Performer::setTime(unsigned tick)/*{{{*/
+void Pianoroll::setTime(unsigned tick)/*{{{*/
 {
     if (tick != MAXINT)
         posLabel->setValue(tick);
@@ -1699,7 +1699,7 @@ void Performer::setTime(unsigned tick)/*{{{*/
     }
 }/*}}}*/
 
-void Performer::setTimeFromSig(unsigned tick)/*{{{*/
+void Pianoroll::setTimeFromSig(unsigned tick)/*{{{*/
 {
     if (tick != MAXINT)
         posLabel->setValue(tick);
@@ -1718,11 +1718,11 @@ void Performer::setTimeFromSig(unsigned tick)/*{{{*/
 //    pulldown menu commands
 //---------------------------------------------------------
 
-void Performer::cmd(int cmd)/*{{{*/
+void Pianoroll::cmd(int cmd)/*{{{*/
 {
     switch(cmd)
     {
-        case PerformerCanvas::CMD_ADD_PROGRAM:
+        case PianorollCanvas::CMD_ADD_PROGRAM:
         {
             unsigned utick = song->cpos() + rasterStep(song->cpos());
             if(m_globalKeyAction->isChecked())
@@ -1739,7 +1739,7 @@ void Performer::cmd(int cmd)/*{{{*/
             }
         }
         break;
-        case PerformerCanvas::CMD_DELETE_PROGRAM:
+        case PianorollCanvas::CMD_DELETE_PROGRAM:
         {
             int x = song->cpos();
             if(m_globalKeyAction->isChecked())
@@ -1804,18 +1804,18 @@ void Performer::cmd(int cmd)/*{{{*/
             pcbar->update();
         }
         break;
-        case PerformerCanvas::CMD_COPY_PROGRAM:
+        case PianorollCanvas::CMD_COPY_PROGRAM:
         {
             pcbar->copySelected(true);
         }
         break;
         default:
-            ((PerformerCanvas*) canvas)->cmd(cmd, _quantStrength, _quantLimit, _quantLen, _to);
+            ((PianorollCanvas*) canvas)->cmd(cmd, _quantStrength, _quantLimit, _quantLen, _to);
         break;
     }
 }/*}}}*/
 
-void Performer::toggleMultiPartSelection(bool toggle)
+void Pianoroll::toggleMultiPartSelection(bool toggle)
 {
     if(toggle)
     {
@@ -1824,7 +1824,7 @@ void Performer::toggleMultiPartSelection(bool toggle)
     }
 }
 
-void Performer::toggleEpicEdit(bool toggle)
+void Pianoroll::toggleEpicEdit(bool toggle)
 {
     if(toggle)
         multiPartSelectionAction->setChecked(!toggle);
@@ -1835,7 +1835,7 @@ void Performer::toggleEpicEdit(bool toggle)
 //    update Info Line
 //---------------------------------------------------------
 
-void Performer::setSelection(int tick, Event& e, Part* p)/*{{{*/
+void Pianoroll::setSelection(int tick, Event& e, Part* p)/*{{{*/
 {
     int selections = canvas->selectionSize();
 
@@ -1881,7 +1881,7 @@ void Performer::setSelection(int tick, Event& e, Part* p)/*{{{*/
 //    edit currently selected Event
 //---------------------------------------------------------
 
-void Performer::noteinfoChanged(NoteInfo::ValType type, int val)/*{{{*/
+void Pianoroll::noteinfoChanged(NoteInfo::ValType type, int val)/*{{{*/
 {
     int selections = canvas->selectionSize();
 
@@ -1948,7 +1948,7 @@ void Performer::noteinfoChanged(NoteInfo::ValType type, int val)/*{{{*/
     }
 }/*}}}*/
 
-void Performer::updateCanvas()/*{{{*/
+void Pianoroll::updateCanvas()/*{{{*/
 {
     foreach(CtrlEdit* edit, ctrlEditList)
     {
@@ -1962,7 +1962,7 @@ void Performer::updateCanvas()/*{{{*/
 //   ctrlPopup
 //---------------------------------------------------------
 
-void Performer::ctrlPopup()/*{{{*/
+void Pianoroll::ctrlPopup()/*{{{*/
 {
     //---------------------------------------------------
     // build list of midi controllers for current
@@ -2103,7 +2103,7 @@ void Performer::ctrlPopup()/*{{{*/
 //   addCtrl
 //---------------------------------------------------------
 
-CtrlEdit* Performer::addCtrl(QString name, bool collapse, int height)/*{{{*/
+CtrlEdit* Pianoroll::addCtrl(QString name, bool collapse, int height)/*{{{*/
 {
     CtrlEdit* ctrlEdit = new CtrlEdit(this, this, xscale, height);
     ctrlEdit->setType(name);
@@ -2142,7 +2142,7 @@ CtrlEdit* Performer::addCtrl(QString name, bool collapse, int height)/*{{{*/
 //   removeCtrl
 //---------------------------------------------------------
 
-void Performer::removeCtrl(CtrlEdit* ctrl)/*{{{*/
+void Pianoroll::removeCtrl(CtrlEdit* ctrl)/*{{{*/
 {
     if(ctrlEditList.isEmpty())
         return;
@@ -2155,11 +2155,11 @@ void Performer::removeCtrl(CtrlEdit* ctrl)/*{{{*/
 //   updateControllerSizes
 //---------------------------------------------------------
 
-void Performer::updateControllerSizes()/*{{{*/
+void Pianoroll::updateControllerSizes()/*{{{*/
 {
     QRect crect = mainw->contentsRect();
     int h = crect.height();
-    //qDebug("Performer::updateControllerSizes: contentHeight: %d", h);
+    //qDebug("Pianoroll::updateControllerSizes: contentHeight: %d", h);
     h -= 200;
 
     foreach(CtrlEdit* edit, ctrlEditList)
@@ -2172,12 +2172,12 @@ void Performer::updateControllerSizes()/*{{{*/
                 h -= edit->expandedHeight();
         }
     }
-    //qDebug("Performer::updateControllerSizes: new Max Height: %d", h);
+    //qDebug("Pianoroll::updateControllerSizes: new Max Height: %d", h);
     //Just emit a signal and let them update themselves
     emit controllerMaxHeightChanged(h);
 }/*}}}*/
 
-void Performer::updateControllerForInstrument(qint64 trackId)/*{{{*/
+void Pianoroll::updateControllerForInstrument(qint64 trackId)/*{{{*/
 {
     bool setDefaults = true;
     Track* track = song->findTrackById(trackId);
@@ -2189,10 +2189,10 @@ void Performer::updateControllerForInstrument(qint64 trackId)/*{{{*/
         if(port)
         {
             QString instrument = port->instrument()->iname();
-            //qDebug("Performer::updateControllerForInstrument: Found MIDI port, Checking instrument: %s", instrument.toUtf8().constData());
+            //qDebug("Pianoroll::updateControllerForInstrument: Found MIDI port, Checking instrument: %s", instrument.toUtf8().constData());
             if(m_currentInstrument.isEmpty() || m_currentInstrument != instrument)
             {
-                //qDebug("Performer::updateControllerForInstrument: Instrument changed: \"%s\", Updating controllers", instrument.toUtf8().constData());
+                //qDebug("Pianoroll::updateControllerForInstrument: Instrument changed: \"%s\", Updating controllers", instrument.toUtf8().constData());
                 //save the current controller state and remove them
                 saveInstrumentControllerState();
                 while(ctrlEditList.size())
@@ -2217,7 +2217,7 @@ void Performer::updateControllerForInstrument(qint64 trackId)/*{{{*/
     }
     if(setDefaults)
     {
-        //qDebug("Performer::updateControllerForInstrument: No Instrument or MIDI port found, Using default");
+        //qDebug("Pianoroll::updateControllerForInstrument: No Instrument or MIDI port found, Using default");
         saveInstrumentControllerState();
         while(ctrlEditList.size())
             delete ctrlEditList.takeFirst();
@@ -2236,7 +2236,7 @@ void Performer::updateControllerForInstrument(qint64 trackId)/*{{{*/
     updateControllerSizes();
 }/*}}}*/
 
-void Performer::saveInstrumentControllerState()/*{{{*/
+void Pianoroll::saveInstrumentControllerState()/*{{{*/
 {
     if(m_currentInstrument.isEmpty())
         return;
@@ -2258,7 +2258,7 @@ void Performer::saveInstrumentControllerState()/*{{{*/
     tconfig().save();
 }/*}}}*/
 
-void Performer::toggleCollapseAllControllers(bool val)/*{{{*/
+void Pianoroll::toggleCollapseAllControllers(bool val)/*{{{*/
 {
     foreach(CtrlEdit* edit, ctrlEditList)
     {
@@ -2271,17 +2271,17 @@ void Performer::toggleCollapseAllControllers(bool val)/*{{{*/
 //   closeEvent
 //---------------------------------------------------------
 
-void Performer::closeEvent(QCloseEvent* e)/*{{{*/
+void Pianoroll::closeEvent(QCloseEvent* e)/*{{{*/
 {
-    /*tconfig().set_property("PerformerEdit", "widgetwidth", width());
-    tconfig().set_property("PerformerEdit", "widgetheigth", height());
-    tconfig().set_property("PerformerEdit", "hscale", hscroll->mag());
-    tconfig().set_property("PerformerEdit", "yscale", vscroll->mag());
-    tconfig().set_property("PerformerEdit", "ypos", vscroll->pos());
-    tconfig().set_property("PerformerEdit", "colormode", colorMode);
-    tconfig().set_property("PerformerEdit", "showcomments", canvas->showComments());
-    tconfig().set_property("PerformerEdit", "dockwidth", m_prDock->width());
-    //tconfig().set_property("PerformerEdit", "showghostpart", noteAlphaAction->isChecked());
+    /*tconfig().set_property("PianorollEdit", "widgetwidth", width());
+    tconfig().set_property("PianorollEdit", "widgetheigth", height());
+    tconfig().set_property("PianorollEdit", "hscale", hscroll->mag());
+    tconfig().set_property("PianorollEdit", "yscale", vscroll->mag());
+    tconfig().set_property("PianorollEdit", "ypos", vscroll->pos());
+    tconfig().set_property("PianorollEdit", "colormode", colorMode);
+    tconfig().set_property("PianorollEdit", "showcomments", canvas->showComments());
+    tconfig().set_property("PianorollEdit", "dockwidth", m_prDock->width());
+    //tconfig().set_property("PianorollEdit", "showghostpart", noteAlphaAction->isChecked());
     //printf("Canvas show comments: %d\n", canvas->showComments());
     tconfig().save();*/
     e->accept();
@@ -2292,7 +2292,7 @@ void Performer::closeEvent(QCloseEvent* e)/*{{{*/
 //   readConfiguration
 //---------------------------------------------------------
 
-void Performer::readConfiguration(Xml& xml)/*{{{*/
+void Pianoroll::readConfiguration(Xml& xml)/*{{{*/
 {
     for (;;)
     {
@@ -2322,10 +2322,10 @@ void Performer::readConfiguration(Xml& xml)/*{{{*/
             else if (tag == "height")
                 _heightInit = xml.parseInt();
             else
-                xml.unknown("Performer");
+                xml.unknown("Pianoroll");
             break;
         case Xml::TagEnd:
-            if (tag == "performer")
+            if (tag == "Pianoroll")
                 return;
         default:
             break;
@@ -2337,9 +2337,9 @@ void Performer::readConfiguration(Xml& xml)/*{{{*/
 //   writeConfiguration
 //---------------------------------------------------------
 
-void Performer::writeConfiguration(int level, Xml& xml)/*{{{*/
+void Pianoroll::writeConfiguration(int level, Xml& xml)/*{{{*/
 {
-    xml.tag(level++, "performer");
+    xml.tag(level++, "Pianoroll");
     xml.intTag(level, "quant", _quantInit);
     xml.intTag(level, "raster", _rasterInit);
     xml.intTag(level, "quantStrength", _quantStrengthInit);
@@ -2349,7 +2349,7 @@ void Performer::writeConfiguration(int level, Xml& xml)/*{{{*/
     xml.intTag(level, "width", _widthInit);
     xml.intTag(level, "height", _heightInit);
     xml.intTag(level, "colormode", colorModeInit);
-    xml.etag(--level, "performer");
+    xml.etag(--level, "Pianoroll");
 }/*}}}*/
 
 //---------------------------------------------------------
@@ -2357,7 +2357,7 @@ void Performer::writeConfiguration(int level, Xml& xml)/*{{{*/
 //    signal from solo button
 //---------------------------------------------------------
 
-void Performer::soloChanged(bool flag)/*{{{*/
+void Pianoroll::soloChanged(bool flag)/*{{{*/
 {
     audio->msgSetSolo(canvas->track(), flag);
     song->update(SC_SOLO);
@@ -2367,7 +2367,7 @@ void Performer::soloChanged(bool flag)/*{{{*/
 //   setRaster
 //---------------------------------------------------------
 
-void Performer::setRaster(int val)/*{{{*/
+void Pianoroll::setRaster(int val)/*{{{*/
 {
     _rasterInit = val;
     AbstractMidiEditor::setRaster(val);
@@ -2381,7 +2381,7 @@ void Performer::setRaster(int val)/*{{{*/
 //   setQuant
 //---------------------------------------------------------
 
-void Performer::setQuant(int val)
+void Pianoroll::setQuant(int val)
 {
     _quantInit = val;
     AbstractMidiEditor::setQuant(val);
@@ -2392,10 +2392,10 @@ void Performer::setQuant(int val)
 //   writeStatus
 //---------------------------------------------------------
 
-void Performer::writeStatus(int level, Xml& xml) const/*{{{*/
+void Pianoroll::writeStatus(int level, Xml& xml) const/*{{{*/
 {
     writePartList(level, xml);
-    xml.tag(level++, "performer");
+    xml.tag(level++, "Pianoroll");
     AbstractMidiEditor::writeStatus(level, xml);
     //splitter->writeStatus(level, xml);
 
@@ -2410,14 +2410,14 @@ void Performer::writeStatus(int level, Xml& xml) const/*{{{*/
     xml.intTag(level, "xmag", hscroll->mag());
     xml.intTag(level, "ypos", vscroll->pos());
     xml.intTag(level, "ymag", vscroll->mag());
-    xml.tag(--level, "/performer");
+    xml.tag(--level, "/Pianoroll");
 }/*}}}*/
 
 //---------------------------------------------------------
 //   readStatus
 //---------------------------------------------------------
 
-void Performer::readStatus(Xml& xml)/*{{{*/
+void Pianoroll::readStatus(Xml& xml)/*{{{*/
 {
     printf("readstatus\n");
     for (;;)
@@ -2470,10 +2470,10 @@ void Performer::readStatus(Xml& xml)/*{{{*/
             else if (tag == "ypos")
                 vscroll->setPos(xml.parseInt());
             else
-                xml.unknown("Performer");
+                xml.unknown("Pianoroll");
             break;
             case Xml::TagEnd:
-            if (tag == "pianoroll" || tag == "performer")
+            if (tag == "pianoroll" || tag == "Pianoroll")
             {
                 _quantInit = _quant;
                 _rasterInit = _raster;
@@ -2488,12 +2488,12 @@ void Performer::readStatus(Xml& xml)/*{{{*/
     }
 }/*}}}*/
 
-bool Performer::isGlobalEdit()
+bool Pianoroll::isGlobalEdit()
 {
     return m_globalKeyAction->isChecked();
 }
 
-bool Performer::eventFilter(QObject *obj, QEvent *event)/*{{{*/
+bool Pianoroll::eventFilter(QObject *obj, QEvent *event)/*{{{*/
 {
     // Force left/right arrow key events to move the focus
     // back on the canvas if it doesn't have the focus.
@@ -2587,19 +2587,19 @@ bool Performer::eventFilter(QObject *obj, QEvent *event)/*{{{*/
         }/*}}}*/
         else if (key == shortcuts[SHRT_POS_INC].key)
         {
-            PerformerCanvas* pc = (PerformerCanvas*) canvas;
+            PianorollCanvas* pc = (PianorollCanvas*) canvas;
             pc->pianoCmd(CMD_RIGHT);
             return true;
         }
         else if (key == shortcuts[SHRT_POS_DEC].key)
         {
-            PerformerCanvas* pc = (PerformerCanvas*) canvas;
+            PianorollCanvas* pc = (PianorollCanvas*) canvas;
             pc->pianoCmd(CMD_LEFT);
             return true;
         }
         else if (key == shortcuts[SHRT_ADD_REST].key)
         {
-            PerformerCanvas* pc = (PerformerCanvas*) canvas;
+            PianorollCanvas* pc = (PianorollCanvas*) canvas;
             pc->pianoCmd(CMD_RIGHT);
             return true;
         }
@@ -2613,7 +2613,7 @@ bool Performer::eventFilter(QObject *obj, QEvent *event)/*{{{*/
 //   configQuant
 //---------------------------------------------------------
 
-void Performer::configQuant()
+void Pianoroll::configQuant()
 {
     if (!quantConfig)
     {
@@ -2629,7 +2629,7 @@ void Performer::configQuant()
 //   setSteprec
 //---------------------------------------------------------
 
-void Performer::setSteprec(bool flag)
+void Pianoroll::setSteprec(bool flag)
 {
     canvas->setSteprec(flag);
     //if (flag == false)
@@ -2640,19 +2640,19 @@ void Performer::setSteprec(bool flag)
 //   eventColorModeChanged
 //---------------------------------------------------------
 
-void Performer::eventColorModeChanged(int mode)
+void Pianoroll::eventColorModeChanged(int mode)
 {
     colorMode = mode;
     colorModeInit = colorMode;
 
-    ((PerformerCanvas*) (canvas))->setColorMode(colorMode);
+    ((PianorollCanvas*) (canvas))->setColorMode(colorMode);
 }
 
 //---------------------------------------------------------
 //   setEventColorMode
 //---------------------------------------------------------
 
-void Performer::setEventColorMode(int mode)
+void Pianoroll::setEventColorMode(int mode)
 {
     colorMode = mode;
     colorModeInit = colorMode;
@@ -2664,14 +2664,14 @@ void Performer::setEventColorMode(int mode)
     evColorPitchAction->setChecked(mode == 1);
     evColorVelAction->setChecked(mode == 2);
 
-    ((PerformerCanvas*) (canvas))->setColorMode(colorMode);
+    ((PianorollCanvas*) (canvas))->setColorMode(colorMode);
 }
 
 //---------------------------------------------------------
 //   clipboardChanged
 //---------------------------------------------------------
 
-void Performer::clipboardChanged()
+void Pianoroll::clipboardChanged()
 {
     editPasteAction->setEnabled(QApplication::clipboard()->mimeData()->hasFormat(QString("text/x-los-eventlist")));
 }
@@ -2680,7 +2680,7 @@ void Performer::clipboardChanged()
 //   selectionChanged
 //---------------------------------------------------------
 
-void Performer::selectionChanged()
+void Pianoroll::selectionChanged()
 {
     bool flag = canvas->selectionSize() > 0;
     editCutAction->setEnabled(flag);
@@ -2692,14 +2692,14 @@ void Performer::selectionChanged()
 //   setSpeaker
 //---------------------------------------------------------
 
-void Performer::setSpeaker(bool val)
+void Pianoroll::setSpeaker(bool val)
 {
     _playEvents = val;
     canvas->playEvents(_playEvents);
 }
 
 
-void Performer::setKeyBindings(Patch* p)/*{{{*/
+void Pianoroll::setKeyBindings(Patch* p)/*{{{*/
 {
     //if(!audio->isPlaying())
     //{
@@ -2710,9 +2710,9 @@ void Performer::setKeyBindings(Patch* p)/*{{{*/
     //}
 }/*}}}*/
 
-bool Performer::isCurrentPatch(int hbank, int lbank, int prog)/*{{{*/
+bool Pianoroll::isCurrentPatch(int hbank, int lbank, int prog)/*{{{*/
 {
-    printf("entering Performer::isCurrentPatch\n");
+    printf("entering Pianoroll::isCurrentPatch\n");
     if(!selected)
         return false;
     MidiTrack *tr = (MidiTrack*)selected;
@@ -2740,7 +2740,7 @@ bool Performer::isCurrentPatch(int hbank, int lbank, int prog)/*{{{*/
         pr = 0;
 
 
-    printf("leaving Performer::isCurrentPatch\n");
+    printf("leaving Pianoroll::isCurrentPatch\n");
 
     return (hb == hbank && lb == lbank && pr == prog);
 
@@ -2750,7 +2750,7 @@ bool Performer::isCurrentPatch(int hbank, int lbank, int prog)/*{{{*/
 //   resizeEvent
 //---------------------------------------------------------
 
-void Performer::resizeEvent(QResizeEvent* ev)
+void Pianoroll::resizeEvent(QResizeEvent* ev)
 {
     QWidget::resizeEvent(ev);
     _widthInit = ev->size().width();
@@ -2762,7 +2762,7 @@ void Performer::resizeEvent(QResizeEvent* ev)
 //   execDeliveredScript
 //---------------------------------------------------------
 
-void Performer::execDeliveredScript(int id)
+void Pianoroll::execDeliveredScript(int id)
 {
     //QString scriptfile = QString(INSTPREFIX) + SCRIPTSSUFFIX + deliveredScriptNames[id];
     QString scriptfile = song->getScriptPath(id, true);
@@ -2773,7 +2773,7 @@ void Performer::execDeliveredScript(int id)
 //   execUserScript
 //---------------------------------------------------------
 
-void Performer::execUserScript(int id)
+void Pianoroll::execUserScript(int id)
 {
     QString scriptfile = song->getScriptPath(id, false);
     song->executeScript(scriptfile.toUtf8().data(), parts(), quant(), true);

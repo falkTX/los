@@ -13,7 +13,7 @@
 #include "song.h"
 #include "Composer.h"
 #include "cobject.h"
-#include "Performer.h"
+#include "Pianoroll.h"
 #include "globals.h"
 #include "gconfig.h"
 #include "xml.h"

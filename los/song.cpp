@@ -3062,7 +3062,7 @@ void Song::toggleFeedback(bool f)
 
 void Song::movePlaybackToPart(Part* part)/*{{{*/
 {
-    bool snap = tconfig().get_property("PerformerEdit", "snaptopart", true).toBool();
+    bool snap = tconfig().get_property("PianorollEdit", "snaptopart", true).toBool();
     if(audio->isPlaying() || !snap)
         return;
     if(part)

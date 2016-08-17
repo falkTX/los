@@ -17,7 +17,7 @@
 #include "icons.h"
 #include "gconfig.h"
 #include "globals.h"
-#include "PerformerCanvas.h"
+#include "PianorollCanvas.h"
 #include "audio.h"
 #include "midiport.h"
 #include "conductor/Conductor.h"
@@ -28,7 +28,7 @@
 //    Midi Time Scale
 //---------------------------------------------------------
 
-PCScale::PCScale(int* r, QWidget* parent, Performer* editor, int xs, bool _mode)
+PCScale::PCScale(int* r, QWidget* parent, Pianoroll* editor, int xs, bool _mode)
 : View(parent, xs, 1)
 {
     //audio = 0;
@@ -447,7 +447,7 @@ void PCScale::leaveEvent(QEvent*)
     //emit timeChanged(MAXINT);
 }
 
-void PCScale::setEditor(Performer* editor)
+void PCScale::setEditor(Pianoroll* editor)
 {
     currentEditor = editor;
 }

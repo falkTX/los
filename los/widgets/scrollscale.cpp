@@ -477,7 +477,7 @@ int ScrollScale::mag() const
 }
 
 /**
- * Hardcoded hackish function that corresponds to the values used for the scrollscales in Performer and DrumEditor
+ * Hardcoded hackish function that corresponds to the values used for the scrollscales in Pianoroll and DrumEditor
  * since I couldn't easily create any inverse function from the [0,1024]-range to detect where a zoom actually occurs
  * (mg)
  */
@@ -499,7 +499,7 @@ int ScrollScale::getQuickZoomLevel(int mag)
 }
 
 /**
- * Function returning the boundary values for a zoom change, hardcoded corresponding to the values used in Performer 
+ * Function returning the boundary values for a zoom change, hardcoded corresponding to the values used in Pianoroll 
  * and DrumEditor
  */
 int ScrollScale::convertQuickZoomLevelToMag(int zoomlevel)

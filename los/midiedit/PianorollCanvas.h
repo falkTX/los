@@ -1,7 +1,7 @@
 //=========================================================
 //  LOS
 //  Libre Octave Studio
-//    $Id: PerformerCanvas.h,v 1.5.2.6 2009/11/16 11:29:33 lunar_shuttle Exp $
+//    $Id: PianorollCanvas.h,v 1.5.2.6 2009/11/16 11:29:33 lunar_shuttle Exp $
 //  (C) Copyright 1999 Werner Schweer (ws@seh.de)
 //=========================================================
 
@@ -9,7 +9,7 @@
 #define __PERFORMERCANVAS_H__
 
 #include "EventCanvas.h"
-#include "Performer.h"
+#include "Pianoroll.h"
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QMouseEvent>
@@ -30,14 +30,14 @@ public:
 };
 
 class ScrollScale;
-class Performer;
+class Pianoroll;
 class QRect;
 
 //---------------------------------------------------------
-//   PerformerCanvas
+//   PianorollCanvas
 //---------------------------------------------------------
 
-class PerformerCanvas : public EventCanvas
+class PianorollCanvas : public EventCanvas
 {
     Q_OBJECT
 
@@ -124,7 +124,7 @@ public:
 	CMD_FIXED_LEN, CMD_DELETE_OVERLAPS, CMD_ADD_PROGRAM, CMD_DELETE_PROGRAM, CMD_COPY_PROGRAM
     };
 
-    PerformerCanvas(AbstractMidiEditor*, QWidget*, int, int);
+    PianorollCanvas(AbstractMidiEditor*, QWidget*, int, int);
     void cmd(int, int, int, bool, int);
     int stepInputQwerty(QKeyEvent* event);
 
