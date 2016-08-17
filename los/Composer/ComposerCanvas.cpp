@@ -725,11 +725,11 @@ QMenu* ComposerCanvas::genItemPopup(CItem* item)/*{{{*/
 
     {
         {
-            QAction *act_pianoroll = partPopup->addAction(QIcon(*pianoIconSet), tr("Pianoroll"));
+            QAction *act_pianoroll = partPopup->addAction(QIcon(*pianoIconSet), tr("Piano roll"));
             act_pianoroll->setData(10);
-            QAction *act_mlist = partPopup->addAction(QIcon(*edit_listIcon), tr("List"));
+            QAction *act_mlist = partPopup->addAction(QIcon(*edit_listIcon), tr("List editor"));
             act_mlist->setData(12);
-            QAction *act_mexport = partPopup->addAction(tr("Export"));
+            QAction *act_mexport = partPopup->addAction(tr("Export part"));
             act_mexport->setData(16);
         }
     }
