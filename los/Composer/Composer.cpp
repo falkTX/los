@@ -1128,7 +1128,7 @@ void Composer::createDockMembers()
     m_clipList->setActive(false);
 
     _commentdock = new CommentDock(this);
-    _rtabs->addTab(_tvdock, tr("   EPIC Views   "));
+    _rtabs->addTab(_tvdock, tr("  Track Views  "));
     _rtabs->addTab(midiConductor, tr("   Conductor   "));
     _rtabs->addTab(m_clipList, tr("  Clips  "));
     _rtabs->addTab(_commentdock, tr("  Comments  "));

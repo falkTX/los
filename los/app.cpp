@@ -561,11 +561,11 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
     // Canvas Actions
     //---------------------------------------------------
     noteAlphaAction = new QAction(QIcon(*multiDisplayIconSet3), tr("multipart"), this);
-    noteAlphaAction->setToolTip(tr("EPIC: Toggle Display of multiple parts"));
+    noteAlphaAction->setToolTip(tr("Track Views: Toggle Display of multiple parts"));
     noteAlphaAction->setCheckable(true);
 
     multiPartSelectionAction = new QAction(QIcon(*selectMultiIconSet3), tr("multiselection"), this);
-    multiPartSelectionAction->setToolTip(tr("EPIC: Toggle ability to select multiple part notes"));
+    multiPartSelectionAction->setToolTip(tr("Track Views: Toggle ability to select multiple part notes"));
     multiPartSelectionAction->setCheckable(true);
 
     //---------------------------------------------------

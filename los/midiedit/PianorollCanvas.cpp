@@ -1880,7 +1880,7 @@ void PianorollCanvas::midiNote(int pitch, int velo)/*{{{*/
         //	tpitch = tpitch + ctrack->transposition;
 
         unsigned tick = _pos[0]; //CDW
-        //Process all parts if in EPIC mode
+        //Process all parts if in Track Views/EPIC mode
         if(m_globalKey)
         {
             PartList* pl = editor->parts();

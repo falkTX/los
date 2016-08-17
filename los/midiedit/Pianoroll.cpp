@@ -178,12 +178,12 @@ Pianoroll::Pianoroll(PartList* pl, QWidget* parent, const char* name, unsigned i
 
 
     m_globalKeyAction = new QAction(this);
-    m_globalKeyAction->setToolTip(tr("EPIC: Enable editing across all parts"));
+    m_globalKeyAction->setToolTip(tr("Track Views: Enable editing across all parts"));
     m_globalKeyAction->setIcon(*globalKeysIconSet3);
     m_globalKeyAction->setCheckable(true);
 
     m_globalArmAction = new QAction(this);
-    m_globalArmAction->setToolTip(tr("EPIC: Globally record arm all parts"));
+    m_globalArmAction->setToolTip(tr("Track Views: Globally record arm all parts"));
     m_globalArmAction->setIcon(*globalArmIconSet3);
 
     m_mutePart = new QToolButton();
