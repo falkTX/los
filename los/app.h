@@ -126,7 +126,7 @@ class LOS : public QMainWindow
 
     // View Menu actions
     QAction *viewTransportAction, *viewBigtimeAction, *viewCliplistAction, *viewMarkerAction;
-    QAction *viewToolbarOrchestra, *viewToolbarComposerSettings, *viewToolbarSnap, *viewToolbarTransport;
+    QAction *viewToolbarSidebar, *viewToolbarComposerSettings, *viewToolbarSnap, *viewToolbarTransport;
 
     // Structure Menu actions
     QAction *strGlobalCutAction, *strGlobalInsertAction, *strGlobalSplitAction, *strCopyRangeAction, *strCutEventsAction;
@@ -277,7 +277,7 @@ private slots:
     void toggleMarker(bool);
     void toggleBigTime(bool);
 
-    void showToolbarOrchestra(bool);
+    void showToolbarSidebar(bool);
     void showToolbarComposerSettings(bool);
     void showToolbarSnap(bool);
     void showToolbarTransport(bool);

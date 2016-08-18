@@ -732,8 +732,8 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
     viewMarkerAction->setCheckable(true);
 
     viewToolbars = new QMenu(tr("Toolbars"), this);
-    viewToolbarOrchestra = new QAction(tr("Sidebar"), this);
-    viewToolbarOrchestra->setCheckable(true);
+    viewToolbarSidebar = new QAction(tr("Sidebar"), this);
+    viewToolbarSidebar->setCheckable(true);
     viewToolbarComposerSettings = new QAction(tr("The Composer Settings"), this);
     viewToolbarComposerSettings->setCheckable(true);
     viewToolbarSnap = new QAction(tr("Snap"), this);
@@ -861,7 +861,7 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
     //connect(viewCliplistAction, SIGNAL(toggled(bool)), SLOT(startClipList(bool)));
     connect(viewMarkerAction, SIGNAL(toggled(bool)), SLOT(toggleMarker(bool)));
 
-    connect(viewToolbarOrchestra, SIGNAL(toggled(bool)), SLOT(showToolbarOrchestra(bool)));
+    connect(viewToolbarSidebar, SIGNAL(toggled(bool)), SLOT(showToolbarSidebar(bool)));
     connect(viewToolbarComposerSettings, SIGNAL(toggled(bool)), SLOT(showToolbarComposerSettings(bool)));
     connect(viewToolbarSnap, SIGNAL(toggled(bool)), SLOT(showToolbarSnap(bool)));
     connect(viewToolbarTransport, SIGNAL(toggled(bool)), SLOT(showToolbarTransport(bool)));
@@ -1023,7 +1023,7 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
 
     menuView->addSeparator();
     menuView->addMenu(viewToolbars);
-    viewToolbars->addAction(viewToolbarOrchestra);
+    viewToolbars->addAction(viewToolbarSidebar);
     //viewToolbars->addSeparator();
     viewToolbars->addAction(viewToolbarComposerSettings);
     viewToolbars->addAction(viewToolbarSnap);
@@ -4033,7 +4033,7 @@ TrackView* LOS::findInstrumentTemplateById(qint64 id) const
 // View Toolbars code
 //---------------------------------------------------------
 
-void LOS::showToolbarOrchestra(bool yesno)
+void LOS::showToolbarSidebar(bool yesno)
 {
     if (_resourceDock)
         _resourceDock->setVisible(yesno);
@@ -4061,11 +4061,11 @@ void LOS::updateViewToolbarMenu()
 {
     if (_resourceDock)
     {
-        viewToolbarOrchestra->setEnabled(true);
-        viewToolbarOrchestra->setChecked(_resourceDock->isVisible());
+        viewToolbarSidebar->setEnabled(true);
+        viewToolbarSidebar->setChecked(_resourceDock->isVisible());
     }
     else
-        viewToolbarOrchestra->setEnabled(false);
+        viewToolbarSidebar->setEnabled(false);
 
     if (toolbarComposerSettings)
     {
