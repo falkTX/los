@@ -213,7 +213,7 @@ class Pianoroll : public AbstractMidiEditor
 private slots:
     void toggleMuteCurrentPart(bool);
     void toggleMultiPartSelection(bool);
-    void toggleEpicEdit(bool);
+    void toggleTrackViewEdit(bool);
     void setSelection(int, Event&, Part*);
     void noteinfoChanged(NoteInfo::ValType, int);
     void soloChanged(bool flag);

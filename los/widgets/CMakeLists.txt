@@ -26,7 +26,7 @@
 QT4_WRAP_CPP(widgets_mocs
     toolbars/transporttools.h
     toolbars/edittools.h
-    toolbars/epictools.h
+    toolbars/trackviewtools.h
     toolbars/looptools.h
     toolbars/misctools.h
     toolbars/feedbacktools.h
@@ -153,7 +153,7 @@ file(GLOB widgets_source_files
     toolbars/tools.cpp
     toolbars/transporttools.cpp
     toolbars/edittools.cpp
-    toolbars/epictools.cpp
+    toolbars/trackviewtools.cpp
     toolbars/looptools.cpp
     toolbars/misctools.cpp
     toolbars/feedbacktools.cpp

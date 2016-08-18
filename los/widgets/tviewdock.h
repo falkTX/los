@@ -45,7 +45,7 @@ class TrackViewDock : public QFrame, public Ui::TViewDockBase {
 
     public slots:
         virtual void trackviewChanged(QStandardItem*);
-        virtual void autoTrackviewChanged(QStandardItem*);
+        virtual void autoTrackViewChanged(QStandardItem*);
         virtual void populateTable(int, bool s = false);
         void toggleButtons(bool);
 

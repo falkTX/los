@@ -39,7 +39,7 @@
 #include "tracklistview.h"
 #include "toolbars/transporttools.h"
 #include "toolbars/edittools.h"
-#include "toolbars/epictools.h"
+#include "toolbars/trackviewtools.h"
 #include "toolbars/looptools.h"
 #include "toolbars/misctools.h"
 
@@ -251,12 +251,12 @@ Pianoroll::Pianoroll(PartList* pl, QWidget* parent, const char* name, unsigned i
     spacer555->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     spacer555->setMaximumWidth(15);
     editToolbar->addWidget(spacer555);
-    QList<QAction*> epicList;
-    epicList.append(m_globalKeyAction);
-    epicList.append(m_globalArmAction);
+    QList<QAction*> trackviewList;
+    trackviewList.append(m_globalKeyAction);
+    trackviewList.append(m_globalArmAction);
 
-    EpicToolbar* epicBar = new EpicToolbar(epicList, this);
-    editToolbar->addWidget(epicBar);
+    TrackViewToolbar* trackviewBar = new TrackViewToolbar(trackviewList, this);
+    editToolbar->addWidget(trackviewBar);
     noteAlphaAction->setChecked(true);
     QWidget* spacer5555 = new QWidget();
     spacer5555->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -481,7 +481,7 @@ Pianoroll::Pianoroll(PartList* pl, QWidget* parent, const char* name, unsigned i
     connect(m_globalArmAction, SIGNAL(triggered()), canvas, SLOT(recordArmAll()));
     connect(m_globalKeyAction, SIGNAL(toggled(bool)), canvas, SLOT(setGlobalKey(bool)));
     connect(m_globalKeyAction, SIGNAL(toggled(bool)), midiConductor, SLOT(setGlobalState(bool)));
-    connect(m_globalKeyAction, SIGNAL(toggled(bool)), this, SLOT(toggleEpicEdit(bool)));
+    connect(m_globalKeyAction, SIGNAL(toggled(bool)), this, SLOT(toggleTrackViewEdit(bool)));
 
     connect(multiPartSelectionAction, SIGNAL(toggled(bool)), this, SLOT(toggleMultiPartSelection(bool)));
 
@@ -1824,7 +1824,7 @@ void Pianoroll::toggleMultiPartSelection(bool toggle)
     }
 }
 
-void Pianoroll::toggleEpicEdit(bool toggle)
+void Pianoroll::toggleTrackViewEdit(bool toggle)
 {
     if(toggle)
         multiPartSelectionAction->setChecked(!toggle);

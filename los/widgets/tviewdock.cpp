@@ -54,7 +54,7 @@ TrackViewDock::TrackViewDock(QWidget* parent) : QFrame(parent)
     connect(_tableModel, SIGNAL(rowsInserted(QModelIndex, int, int)), SLOT(trackviewInserted(QModelIndex, int, int)));
     connect(_tableModel, SIGNAL(rowsRemoved(QModelIndex, int, int)), SLOT(trackviewRemoved(QModelIndex, int, int)));
     connect(_tableModel, SIGNAL(itemChanged(QStandardItem*)), SLOT(trackviewChanged(QStandardItem*)));
-    connect(_autoTableModel, SIGNAL(itemChanged(QStandardItem*)), SLOT(autoTrackviewChanged(QStandardItem*)));
+    connect(_autoTableModel, SIGNAL(itemChanged(QStandardItem*)), SLOT(autoTrackViewChanged(QStandardItem*)));
     connect(tableView, SIGNAL(customContextMenuRequested(QPoint)), SLOT(contextPopupMenu(QPoint)));
     connect(templateView, SIGNAL(customContextMenuRequested(QPoint)), SLOT(templateContextPopupMenu(QPoint)));
     connect(m_tabWidget, SIGNAL(currentChanged(int)), this, SLOT(currentTabChanged(int)));
@@ -220,7 +220,7 @@ void TrackViewDock::trackviewChanged(QStandardItem *item)/*{{{*/
     }
 }/*}}}*/
 
-void TrackViewDock::autoTrackviewChanged(QStandardItem *item)/*{{{*/
+void TrackViewDock::autoTrackViewChanged(QStandardItem *item)/*{{{*/
 {
     if(item)
     {
@@ -228,7 +228,7 @@ void TrackViewDock::autoTrackviewChanged(QStandardItem *item)/*{{{*/
         TrackView* tv = tvlist->value(item->data().toLongLong());//song->findAutoTrackView(tname->text());
         if(tv)
         {
-            //qDebug("TrackViewDock::autoTrackviewChanged found track view: %s", item->text().toUtf8().constData());
+            //qDebug("TrackViewDock::autoTrackViewChanged found track view: %s", item->text().toUtf8().constData());
             tv->setSelected(item->checkState() == Qt::Checked);
             song->updateTrackViews();
         }

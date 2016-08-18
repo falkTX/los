@@ -1,5 +1,5 @@
-#ifndef _EPICTOOLS_H_
-#define _EPICTOOLS_H_
+#ifndef _TRACKVIEWTOOLS_H_
+#define _TRACKVIEWTOOLS_H_
 #include <QFrame>
 #include <QList>
 
@@ -7,7 +7,7 @@ class QHBoxLayout;
 class QToolButton;
 class QAction;
 
-class EpicToolbar : public QFrame
+class TrackViewToolbar : public QFrame
 {
 	Q_OBJECT
 	QHBoxLayout* m_layout;
@@ -20,8 +20,8 @@ private slots:
 	void songChanged(int);
 public slots:
 public:
-	EpicToolbar(QList<QAction*> actions, QWidget* parent = 0);
-	virtual ~EpicToolbar(){}
+    TrackViewToolbar(QList<QAction*> actions, QWidget* parent = 0);
+    virtual ~TrackViewToolbar(){}
 	//void setSoloAction(QAction*);
 	//void setMuteAction(QAction*);
 };

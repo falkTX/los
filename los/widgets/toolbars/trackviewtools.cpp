@@ -4,16 +4,16 @@
 #include "globals.h"
 #include "app.h"
 #include "song.h"
-#include "epictools.h"
+#include "trackviewtools.h"
 
 #include <QToolButton>
 
-EpicToolbar::EpicToolbar(QList<QAction*> actions, QWidget* parent)
+TrackViewToolbar::TrackViewToolbar(QList<QAction*> actions, QWidget* parent)
 : QFrame(parent)	
 {
 	setMouseTracking(true);
 	setAttribute(Qt::WA_Hover);
- 	setObjectName("epicToolButtons");
+    setObjectName("trackviewToolButtons");
 	m_layout = new QHBoxLayout(this);
 	m_layout->setSpacing(0);
 	m_layout->setContentsMargins(0,0,0,0);
@@ -52,7 +52,7 @@ EpicToolbar::EpicToolbar(QList<QAction*> actions, QWidget* parent)
 	//m_layout->addItem(new QSpacerItem(4, 2, QSizePolicy::Expanding, QSizePolicy::Minimum));
 }
 
-void EpicToolbar::songChanged(int)
+void TrackViewToolbar::songChanged(int)
 {
 }
 /*

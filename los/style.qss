@@ -253,7 +253,7 @@ AudioClipList QLabel#lengthLabel
  {
  	background-color: #2f2f2f;
  }
-/*Trackview editor styles*/
+/*TrackView editor styles*/
 TrackViewEditor QListView, TrackViewEditor QTextField, QTableView, AudioClipList QListView, GlobalSettingsConfig QListView, QListView#AutomationMenuList, QListView#TrackInstrumentMenuList
 {
 	border: 1px solid #29292a;

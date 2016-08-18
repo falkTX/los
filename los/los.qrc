@@ -237,18 +237,18 @@
     <file>images/icons/globe_over.png</file>
     <file>images/icons/comment.png</file>
     <file>images/icons/arrow_switch.png</file>
-    <file>images/icons/epicSelect_new_on.png</file>
-    <file>images/icons/epicSelect_new_off.png</file>
-    <file>images/icons/epicSelect_new_over.png</file>
-    <file>images/icons/epicDraw_new_on.png</file>
-    <file>images/icons/epicDraw_new_off.png</file>
-    <file>images/icons/epicDraw_new_over.png</file>
-    <file>images/icons/epicRecord_new_on.png</file>
-    <file>images/icons/epicRecord_new_off.png</file>
-    <file>images/icons/epicRecord_new_over.png</file>
-    <file>images/icons/epicParts_new_on.png</file>
-    <file>images/icons/epicParts_new_off.png</file>
-    <file>images/icons/epicParts_new_over.png</file>
+    <file>images/icons/trackviewSelect_new_on.png</file>
+    <file>images/icons/trackviewSelect_new_off.png</file>
+    <file>images/icons/trackviewSelect_new_over.png</file>
+    <file>images/icons/trackviewDraw_new_on.png</file>
+    <file>images/icons/trackviewDraw_new_off.png</file>
+    <file>images/icons/trackviewDraw_new_over.png</file>
+    <file>images/icons/trackviewRecord_new_on.png</file>
+    <file>images/icons/trackviewRecord_new_off.png</file>
+    <file>images/icons/trackviewRecord_new_over.png</file>
+    <file>images/icons/trackviewParts_new_on.png</file>
+    <file>images/icons/trackviewParts_new_off.png</file>
+    <file>images/icons/trackviewParts_new_over.png</file>
     <file>images/icons/loop_new_on.png</file>
     <file>images/icons/loop_new_off.png</file>
     <file>images/icons/loop_new_over.png</file>

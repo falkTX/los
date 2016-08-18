@@ -729,7 +729,7 @@ CItem* PianorollCanvas::newItem(const QPoint& p, int)/*{{{*/
     e.setVelo(curVelo);
     e.setLenTick(len);
     int transp = ((MidiTrack*)_curPart->track())->getTransposition();
-    //Populate epic mode showdow notes
+    //Populate Track View mode showdow notes
     if(editor->isGlobalEdit())
     {
         //printf("Populating list for new Items\n");

@@ -1031,17 +1031,17 @@ void initIcons()
     stretchIconSet3->addPixmap(*stretchIconOff, QIcon::Normal, QIcon::Off);
     stretchIconSet3->addPixmap(*stretchIconOver, QIcon::Active);
 
-    multiDisplayIconOn = new LOSPixmap(":/images/icons/epicParts_new_on.png", nullptr);
-    multiDisplayIconOff= new LOSPixmap(":/images/icons/epicParts_new_off.png", nullptr);
-    multiDisplayIconOver= new LOSPixmap(":/images/icons/epicParts_new_over.png", nullptr);
+    multiDisplayIconOn = new LOSPixmap(":/images/icons/trackviewParts_new_on.png", nullptr);
+    multiDisplayIconOff= new LOSPixmap(":/images/icons/trackviewParts_new_off.png", nullptr);
+    multiDisplayIconOver= new LOSPixmap(":/images/icons/trackviewParts_new_over.png", nullptr);
     multiDisplayIconSet3         = new QIcon();
     multiDisplayIconSet3->addPixmap(*multiDisplayIconOn, QIcon::Normal, QIcon::On);
     multiDisplayIconSet3->addPixmap(*multiDisplayIconOff, QIcon::Normal, QIcon::Off);
     multiDisplayIconSet3->addPixmap(*multiDisplayIconOver, QIcon::Active);
 
-    selectMultiIconOn = new LOSPixmap(":/images/icons/epicSelect_new_on.png", nullptr);
-    selectMultiIconOff= new LOSPixmap(":/images/icons/epicSelect_new_off.png", nullptr);
-    selectMultiIconOver= new LOSPixmap(":/images/icons/epicSelect_new_over.png", nullptr);
+    selectMultiIconOn = new LOSPixmap(":/images/icons/trackviewSelect_new_on.png", nullptr);
+    selectMultiIconOff= new LOSPixmap(":/images/icons/trackviewSelect_new_off.png", nullptr);
+    selectMultiIconOver= new LOSPixmap(":/images/icons/trackviewSelect_new_over.png", nullptr);
     selectMultiIconSet3         = new QIcon();
     selectMultiIconSet3->addPixmap(*selectMultiIconOn, QIcon::Normal, QIcon::On);
     selectMultiIconSet3->addPixmap(*selectMultiIconOff, QIcon::Normal, QIcon::Off);
@@ -1063,9 +1063,9 @@ void initIcons()
     feedbackIconSet3->addPixmap(*feedbackIconOff, QIcon::Normal, QIcon::Off);
     feedbackIconSet3->addPixmap(*feedbackIconOver, QIcon::Active);
 
-    globalKeysIconOn = new LOSPixmap(":/images/icons/epicDraw_new_on.png", nullptr);
-    globalKeysIconOff= new LOSPixmap(":/images/icons/epicDraw_new_off.png", nullptr);
-    globalKeysIconOver= new LOSPixmap(":/images/icons/epicDraw_new_over.png", nullptr);
+    globalKeysIconOn = new LOSPixmap(":/images/icons/trackviewDraw_new_on.png", nullptr);
+    globalKeysIconOff= new LOSPixmap(":/images/icons/trackviewDraw_new_off.png", nullptr);
+    globalKeysIconOver= new LOSPixmap(":/images/icons/trackviewDraw_new_over.png", nullptr);
     globalKeysIconSet3         = new QIcon();
     globalKeysIconSet3->addPixmap(*globalKeysIconOn, QIcon::Normal, QIcon::On);
     globalKeysIconSet3->addPixmap(*globalKeysIconOff, QIcon::Normal, QIcon::Off);
@@ -1158,8 +1158,8 @@ void initIcons()
     speakerIconSet3->addPixmap(*speakerIconOff, QIcon::Normal, QIcon::Off);
     speakerIconSet3->addPixmap(*speakerIconOver, QIcon::Active);
 
-    globalArmIconOver = new LOSPixmap(":/images/icons/epicRecord_new_over.png", nullptr);
-    globalArmIconOff= new LOSPixmap(":/images/icons/epicRecord_new_off.png", nullptr);
+    globalArmIconOver = new LOSPixmap(":/images/icons/trackviewRecord_new_over.png", nullptr);
+    globalArmIconOff= new LOSPixmap(":/images/icons/trackviewRecord_new_off.png", nullptr);
     globalArmIconSet3         = new QIcon();
     globalArmIconSet3->addPixmap(*globalArmIconOff, QIcon::Normal, QIcon::Off);
     globalArmIconSet3->addPixmap(*globalArmIconOver, QIcon::Active);
