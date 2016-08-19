@@ -9,11 +9,11 @@
     <midiFilterCtrl2>0</midiFilterCtrl2>
     <midiFilterCtrl3>0</midiFilterCtrl3>
     <midiFilterCtrl4>0</midiFilterCtrl4>
-    <composer>
+    <arranger>
       <xpos>15</xpos>
       <xmag>266</xmag>
       <ypos>0</ypos>
-    </composer>
+    </arranger>
     <sequencer>
     </sequencer>
   </configuration>

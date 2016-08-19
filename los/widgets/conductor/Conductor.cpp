@@ -322,7 +322,7 @@ void Conductor::heartBeat()/*{{{*/
                 {
                     if (program != CTRL_VAL_UNKNOWN)
                     {
-                        //printf("Composer::midiConductorHeartBeat setting program to unknown\n");
+                        //printf("Arranger::midiConductorHeartBeat setting program to unknown\n");
 
                         program = CTRL_VAL_UNKNOWN;
                         if (iHBank->value() != 0)

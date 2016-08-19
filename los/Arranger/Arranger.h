@@ -1,18 +1,18 @@
 //=========================================================
 //  LOS
 //  Libre Octave Studio
-//    $Id: Composer.h,v 1.17.2.15 2009/11/14 03:37:48 terminator356 Exp $
+//    $Id: Arranger.h,v 1.17.2.15 2009/11/14 03:37:48 terminator356 Exp $
 //  (C) Copyright 1999 Werner Schweer (ws@seh.de)
 //=========================================================
 
-#ifndef __COMPOSER_H__
-#define __COMPOSER_H__
+#ifndef __ARRANGER_H__
+#define __ARRANGER_H__
 
 #include <vector>
 
 #include "CanvasNavigator.h"
 #include "AbstractMidiEditor.h"
-#include "ComposerCanvas.h"
+#include "ArrangerCanvas.h"
 
 class QAction;
 class QCheckBox;
@@ -55,15 +55,15 @@ static const int MIN_HEADER_WIDTH = 240;
 static const int MAX_HEADER_WIDTH = 400;
 
 //---------------------------------------------------------
-//   Composer
+//   Arranger
 //---------------------------------------------------------
 
-class Composer : public QWidget
+class Arranger : public QWidget
 {
     Q_OBJECT
 
     int _quant, _raster;
-    ComposerCanvas* canvas;
+    ArrangerCanvas* canvas;
     ScrollScale* hscroll;
     QScrollBar* vscroll;
     HeaderList* m_trackheader;
@@ -123,7 +123,7 @@ private slots:
     void splitterMoved(int, int);
     void resourceDockAreaChanged(Qt::DockWidgetArea);
     void currentTabChanged(int);
-    void composerViewChanged();
+    void arrangerViewChanged();
     void updateScroll(int, int);
     void headerTabChanged(int);
     void setStartTempo(double);
@@ -170,10 +170,10 @@ public:
     CMD_SELECT_ALL_AUTOMATION
     };
 
-    Composer(QMainWindow* parent, const char* name = 0);
-    ~Composer();
+    Arranger(QMainWindow* parent, const char* name = 0);
+    ~Arranger();
 
-    ComposerCanvas* getCanvas()
+    ArrangerCanvas* getCanvas()
     {
         return canvas;
     }

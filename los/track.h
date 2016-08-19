@@ -107,7 +107,7 @@ protected:
     double _peak[kMaxAudioChannels];
 
     int _y;
-    int _height; // visual height in Composer
+    int _height; // visual height in Arranger
 
     bool _locked;
     bool _selected;

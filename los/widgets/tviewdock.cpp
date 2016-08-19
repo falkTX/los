@@ -14,7 +14,7 @@
 #include "tviewmenu.h"
 #include "trackview.h"
 #include "tvieweditor.h"
-#include "Composer.h"
+#include "Arranger.h"
 #include "TrackManager.h"
 
 #include "icons.h"
@@ -317,7 +317,7 @@ void TrackViewDock::contextPopupMenu(QPoint pos)/*{{{*/
                 MidiTrack* track = song->findTrackById(tid);
                 if(track)
                 {
-                    los->composer->addCanvasPart(track);
+                    los->arranger->addCanvasPart(track);
                     song->updateTrackViews();
                 }
                 else
@@ -334,7 +334,7 @@ void TrackViewDock::contextPopupMenu(QPoint pos)/*{{{*/
                             MidiTrack* track = song->findTrackById(id);
                             if(track)
                             {
-                                los->composer->addCanvasPart(track);
+                                los->arranger->addCanvasPart(track);
                                 song->updateTrackViews();
                             }
                             tv->removeTrack(tvt);

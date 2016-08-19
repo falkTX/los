@@ -26,7 +26,7 @@
 #include "AbstractMidiEditor.h"
 #include "EventCanvas.h"
 #include "app.h"
-#include "Composer.h"
+#include "Arranger.h"
 #include "song.h"
 #include "event.h"
 #include "shortcuts.h"
@@ -495,7 +495,7 @@ void EventCanvas::viewMousePressEvent(QMouseEvent* event)/*{{{*/
                     if(actnum >= 20) //Nome of the tools have a higher number than 9
                     {
                         editor->updateCanvas();
-                        los->composer->updateCanvas();
+                        los->arranger->updateCanvas();
                     }
                 }
                 delete _canvasPopupMenu;
@@ -654,7 +654,7 @@ void EventCanvas::itemPopup(CItem* item, int n, const QPoint&)/*{{{*/
                 item->part()->setColorIndex(curColorIndex);
 
             editor->updateCanvas();
-            los->composer->updateCanvas();
+            los->arranger->updateCanvas();
             song->update(SC_PART_COLOR_MODIFIED);
             redraw();
             break;

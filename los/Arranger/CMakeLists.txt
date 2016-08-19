@@ -23,9 +23,9 @@
 # Expand Qt macros
 #
 
-QT4_WRAP_CPP(composer_mocs
-    Composer.h
-    ComposerCanvas.h
+QT4_WRAP_CPP(arranger_mocs
+    Arranger.h
+    ArrangerCanvas.h
     HeaderList.h
     CanvasNavigator.h
 )
@@ -34,9 +34,9 @@ QT4_WRAP_CPP(composer_mocs
 # List of source files to compile
 #
 
-file(GLOB composer_source_files
-    Composer.cpp
-    ComposerCanvas.cpp
+file(GLOB arranger_source_files
+    Arranger.cpp
+    ArrangerCanvas.cpp
     HeaderList.cpp
     CanvasNavigator.cpp
 )
@@ -45,9 +45,9 @@ file(GLOB composer_source_files
 # Define target
 #
 
-add_library(Composer STATIC
-    ${composer_source_files}
-    ${composer_mocs}
+add_library(Arranger STATIC
+    ${arranger_source_files}
+    ${arranger_mocs}
 )
 
 #
@@ -56,7 +56,7 @@ add_library(Composer STATIC
 
 set(FILES_TO_TRANSLATE
     ${FILES_TO_TRANSLATE}
-    ${composer_source_files}
+    ${arranger_source_files}
     CACHE INTERNAL ""
 )
 
@@ -64,6 +64,6 @@ set(FILES_TO_TRANSLATE
 # Compilation flags and target name
 #
 
-set_target_properties(Composer
-    PROPERTIES OUTPUT_NAME los_composer
+set_target_properties(Arranger
+    PROPERTIES OUTPUT_NAME los_arranger
 )

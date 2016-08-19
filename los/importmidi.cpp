@@ -20,7 +20,7 @@
 #include "midifile.h"
 #include "midiport.h"
 #include "transport.h"
-#include "Composer.h"
+#include "Arranger.h"
 #include "mpevent.h"
 #include "event.h"
 #include "midictrl.h"
@@ -261,8 +261,8 @@ bool LOS::importMidi(const QString name, bool merge)/*{{{*/
 
         song->updatePos();
 
-        composer->reset();
-        ///composer->setMode(int(song->midiType())); // p4.0.7 Tim
+        arranger->reset();
+        ///arranger->setMode(int(song->midiType())); // p4.0.7 Tim
     }
     else
     {
@@ -442,7 +442,7 @@ bool LOS::importMidi(const QString name, bool merge)/*{{{*/
 
         song->updatePos();
 
-        composer->reset();
+        arranger->reset();
     }
     else
     {
@@ -629,7 +629,7 @@ bool LOS::importMidi(const QString name, bool merge)/*{{{*/
 
         song->updatePos();
 
-        composer->reset();
+        arranger->reset();
     }
     else
     {

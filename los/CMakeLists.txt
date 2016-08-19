@@ -23,7 +23,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 set(SubDirs
     midiplugins
-    Composer
+    Arranger
     ## cliplist
     ctrl
     driver
@@ -161,7 +161,7 @@ set(FILES_TO_TRANSLATE
 ##
 
 include_directories(
-    Composer
+    Arranger
     driver
     instruments
     liste
@@ -199,7 +199,7 @@ set_target_properties(icons
 ##
 
 target_link_libraries(core
-    Composer
+    Arranger
     ## cliplist
     ctrl
     driver
@@ -217,7 +217,7 @@ target_link_libraries(los
 # core
     core
 # all libs
-    Composer
+    Arranger
     ## cliplist
     ctrl
     driver

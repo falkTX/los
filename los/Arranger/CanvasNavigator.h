@@ -15,7 +15,7 @@ class QGraphicsScene;
 class QResizeEvent;
 class QGraphicsSceneMouseEvent;
 class QGraphicsSceneWheelEvent;
-class ComposerCanvas;
+class ArrangerCanvas;
 class Part;
 
 class PartItem : public QGraphicsRectItem
@@ -48,7 +48,7 @@ class CanvasNavigator : public QWidget
 {
 	Q_OBJECT
 
-	ComposerCanvas* m_canvas;
+	ArrangerCanvas* m_canvas;
 	QGraphicsView* m_view;
 	NavigatorScene* m_scene;
 	//QGraphicsLineItem* m_playhead;
@@ -88,7 +88,7 @@ signals:
 	void updateScroll(int, int);
 public:
 	CanvasNavigator(QWidget* parent = 0);
-	void setCanvas(ComposerCanvas* c);
+	void setCanvas(ArrangerCanvas* c);
 	static double calcSize(int);
 	static int sceneToTick(int);
 	static int sceneToCanvas(int);

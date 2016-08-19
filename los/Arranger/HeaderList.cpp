@@ -21,12 +21,12 @@
 #include "song.h"
 #include "audio.h"
 #include "app.h"
-#include "Composer.h"
+#include "Arranger.h"
 #include "gconfig.h"
 #include "event.h"
 #include "config.h"
 #include "midimonitor.h"
-#include "ComposerCanvas.h"
+#include "ArrangerCanvas.h"
 #include "trackheader.h"
 #include "CreateTrackDialog.h"
 
@@ -53,10 +53,10 @@ HeaderList::HeaderList(QWidget* parent, const char* name)
     setFocusPolicy(Qt::StrongFocus);
 
     connect(song, SIGNAL(songChanged(int)), SLOT(songChanged(int)));
-    connect(song, SIGNAL(composerViewChanged()), SLOT(composerViewChanged()));
+    connect(song, SIGNAL(arrangerViewChanged()), SLOT(arrangerViewChanged()));
 }
 
-void HeaderList::composerViewChanged()
+void HeaderList::arrangerViewChanged()
 {
     updateTrackList(true);
 }
@@ -479,7 +479,7 @@ void HeaderList::moveSelectedTrack(int dir)/*{{{*/
                     int dTrack = song->visibletracks()->index(t);
                     audio->msgMoveTrack(i, dTrack);
                     //The selection event should be harmless enough to call here to update
-                    los->composer->verticalScrollSetYpos(los->composer->getCanvas()->track2Y(src));
+                    los->arranger->verticalScrollSetYpos(los->arranger->getCanvas()->track2Y(src));
                 }
                 else
                     return;
@@ -498,7 +498,7 @@ void HeaderList::moveSelectedTrack(int dir)/*{{{*/
                     int dTrack = song->visibletracks()->index(t);
                     audio->msgMoveTrack(i, dTrack);
                     //The selection event should be harmless enough to call here to update
-                    los->composer->verticalScrollSetYpos(los->composer->getCanvas()->track2Y(t));
+                    los->arranger->verticalScrollSetYpos(los->arranger->getCanvas()->track2Y(t));
                 }
                 else
                     return;

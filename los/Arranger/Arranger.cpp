@@ -1,7 +1,7 @@
 //=========================================================
 //  LOS
 //  Libre Octave Studio
-//    $Id: Composer.cpp,v 1.33.2.21 2009/11/17 22:08:22 terminator356 Exp $
+//    $Id: Arranger.cpp,v 1.33.2.21 2009/11/17 22:08:22 terminator356 Exp $
 //  (C) Copyright 1999-2004 Werner Schweer (ws@seh.de)
 //=========================================================
 
@@ -12,14 +12,14 @@
 #include <stdio.h>
 #include <values.h>
 
-#include "Composer.h"
+#include "Arranger.h"
 #include "song.h"
 #include "app.h"
 #include "mtscale.h"
 #include "sigscale.h"
 //#include "sigedit.h"
 #include "scrollscale.h"
-#include "ComposerCanvas.h"
+#include "ArrangerCanvas.h"
 #include "xml.h"
 #include "lcombo.h"
 #include "conductor/Conductor.h"
@@ -59,11 +59,11 @@ static int rasterTable[] = {
 };
 
 //---------------------------------------------------------
-//   Composer
+//   Arranger
 //    is the central widget in app
 //---------------------------------------------------------
 
-Composer::Composer(QMainWindow* parent, const char* name)
+Arranger::Arranger(QMainWindow* parent, const char* name)
 : QWidget(parent)
 {
     setObjectName(name);
@@ -92,8 +92,8 @@ Composer::Composer(QMainWindow* parent, const char* name)
     //---------------------------------------------------
 
     parent->addToolBarBreak();
-    QToolBar* toolbar = parent->addToolBar(tr("The Composer Settings"));
-    toolbar->setObjectName("tbComposer");
+    QToolBar* toolbar = parent->addToolBar(tr("Arranger Settings"));
+    toolbar->setObjectName("tbArranger");
     toolbar->setMovable(false);
     toolbar->setFloatable(false);
     QToolBar* toolbar2 = new QToolBar(tr("Snap"));
@@ -102,7 +102,7 @@ Composer::Composer(QMainWindow* parent, const char* name)
     toolbar2->setMovable(false);
     toolbar2->setFloatable(false);
     toolbar2->setFixedHeight(24);
-    ((LOS*)parent)->setComposerAndSnapToolbars(toolbar, toolbar2);
+    ((LOS*)parent)->setArrangerAndSnapToolbars(toolbar, toolbar2);
 
     _rtabs = new QTabWidget(los->resourceDock());
     _rtabs->setObjectName("tabControlCenter");
@@ -122,7 +122,7 @@ Composer::Composer(QMainWindow* parent, const char* name)
     /*cursorPos = new PosLabel(0);
     cursorPos->setEnabled(false);
     cursorPos->setFixedHeight(22);
-    cursorPos->setObjectName("composerCursor");
+    cursorPos->setObjectName("arrangerCursor");
     toolbar2->addWidget(cursorPos);*/
 
     const char* rastval[] = {
@@ -134,7 +134,7 @@ Composer::Composer(QMainWindow* parent, const char* name)
         raster->insertItem(i, tr(rastval[i]));
     raster->setCurrentIndex(1);
     // Set the audio record part snapping. Set to 0 (bar), the same as this combo box intial raster.
-    song->setComposerRaster(0);
+    song->setArrangerRaster(0);
     toolbar2->addWidget(raster);
     connect(raster, SIGNAL(activated(int)), SLOT(_setRaster(int)));
     connect(raster, SIGNAL(currentIndexChanged(int)), SLOT(_setRaster(int)));
@@ -254,7 +254,7 @@ Composer::Composer(QMainWindow* parent, const char* name)
     connect(song, SIGNAL(posChanged(int, unsigned, bool)), m_timeHeader, SLOT(setPos(int, unsigned, bool)));
     connect(song, SIGNAL(posChanged(int, unsigned, bool)), this, SLOT(posChanged(int, unsigned, bool)));
 
-    edittools = new EditToolBar(this, composerTools, true);
+    edittools = new EditToolBar(this, arrangerTools, true);
     edittools->setFixedHeight(32);
     connect(edittools, SIGNAL(toolChanged(int)), this, SLOT(setTool(int)));
     connect(edittools, SIGNAL(toolChanged(int)), SIGNAL(updateFooterTool(int)));
@@ -316,9 +316,9 @@ Composer::Composer(QMainWindow* parent, const char* name)
     m_sigRuler = new SigScale(&_raster, this, xscale);
     m_sigRuler->setOrigin(-offset, 0);
 
-    canvas = new ComposerCanvas(&_raster, this, xscale, yscale);
+    canvas = new ArrangerCanvas(&_raster, this, xscale, yscale);
     canvas->setBg(config.partCanvasBg);
-    canvas->setCanvasTools(composerTools);
+    canvas->setCanvasTools(arrangerTools);
     canvas->setOrigin(-offset, 0);
     canvas->setFocus();
 
@@ -395,7 +395,7 @@ Composer::Composer(QMainWindow* parent, const char* name)
 
     connect(song, SIGNAL(markerChanged(int)), SLOT(markerChanged(int)));
     connect(song, SIGNAL(songChanged(int)), SLOT(songChanged(int)));
-    connect(song, SIGNAL(composerViewChanged()), SLOT(composerViewChanged()));
+    connect(song, SIGNAL(arrangerViewChanged()), SLOT(arrangerViewChanged()));
     connect(song, SIGNAL(punchinChanged(bool)), canvas, SLOT(update()));
     connect(song, SIGNAL(punchoutChanged(bool)), canvas, SLOT(update()));
     connect(song, SIGNAL(loopChanged(bool)), canvas, SLOT(update()));
@@ -419,23 +419,23 @@ Composer::Composer(QMainWindow* parent, const char* name)
 
     QList<int> vl;
     vl << MIN_HEADER_WIDTH << 200;
-    QByteArray state = tconfig().get_property("composerSettings", "splitterState", "").toByteArray();
+    QByteArray state = tconfig().get_property("arrangerSettings", "splitterState", "").toByteArray();
     if(state.isNull() || state.isEmpty())
         split->setSizes(vl);
     else
         split->restoreState(state);
 }
 
-Composer::~Composer()
+Arranger::~Arranger()
 {
-    tconfig().set_property("composerSettings", "spliterState", split->saveState());
+    tconfig().set_property("arrangerSettings", "spliterState", split->saveState());
     tconfig().set_property("TempoRange", "start", m_tempoStart);
     tconfig().set_property("TempoRange", "end", m_tempoEnd);
 
     tconfig().save();
 }
 
-QWidget* Composer::headerCornerWidget(int tab)
+QWidget* Arranger::headerCornerWidget(int tab)
 {
     m_headerToolBox = new QStackedWidget(this);
     m_headerToolBox->addWidget(new QLabel());
@@ -485,13 +485,13 @@ QWidget* Composer::headerCornerWidget(int tab)
     return m_headerToolBox;
 }
 
-void Composer::headerTabChanged(int tab)
+void Arranger::headerTabChanged(int tab)
 {
     if(m_headerToolBox)
         m_headerToolBox->setCurrentIndex(tab);
 }
 
-void Composer::setStartTempo(double tempo)
+void Arranger::setStartTempo(double tempo)
 {
     if(tempo >= m_tempoEnd)
     {
@@ -502,7 +502,7 @@ void Composer::setStartTempo(double tempo)
         m_tempoStart = tempo;
 }
 
-void Composer::setEndTempo(double tempo)
+void Arranger::setEndTempo(double tempo)
 {
     if(tempo <= m_tempoStart)
     {
@@ -513,7 +513,7 @@ void Composer::setEndTempo(double tempo)
         m_tempoEnd = tempo;
 }
 
-void Composer::posChanged(int idx, unsigned val, bool)
+void Arranger::posChanged(int idx, unsigned val, bool)
 {
     if (idx == 0)
     {
@@ -534,12 +534,12 @@ void Composer::posChanged(int idx, unsigned val, bool)
     //m_sigRuler->setPos(3, val, false);
 }
 
-void Composer::heartBeat()
+void Arranger::heartBeat()
 {
     virtualScroll.advancePlayhead();
 }
 
-void Composer::currentTabChanged(int tab)
+void Arranger::currentTabChanged(int tab)
 {
     switch(tab)
     {
@@ -583,7 +583,7 @@ void Composer::currentTabChanged(int tab)
 //   setTime
 //---------------------------------------------------------
 
-void Composer::setTime(unsigned tick)/*{{{*/
+void Arranger::setTime(unsigned tick)/*{{{*/
 {
     /*if (tick == MAXINT)
         return;
@@ -598,7 +598,7 @@ void Composer::setTime(unsigned tick)/*{{{*/
     //}
 }/*}}}*/
 
-void Composer::setTimeFromSig(unsigned tick)/*{{{*/
+void Arranger::setTimeFromSig(unsigned tick)/*{{{*/
 {
     //if (tick == MAXINT)
     //	return;
@@ -616,7 +616,7 @@ void Composer::setTimeFromSig(unsigned tick)/*{{{*/
 //   toolChange
 //---------------------------------------------------------
 
-void Composer::setTool(int t)
+void Arranger::setTool(int t)
 {
     canvas->setTool(t);
 }
@@ -625,7 +625,7 @@ void Composer::setTool(int t)
 //   dclickPart
 //---------------------------------------------------------
 
-void Composer::dclickPart(MidiTrack* t)
+void Arranger::dclickPart(MidiTrack* t)
 {
     emit editPart(t);
 }
@@ -634,20 +634,20 @@ void Composer::dclickPart(MidiTrack* t)
 //   configChanged
 //---------------------------------------------------------
 
-void Composer::configChanged()
+void Arranger::configChanged()
 {
-    //printf("Composer::configChanged\n");
+    //printf("Arranger::configChanged\n");
 
     if (config.canvasBgPixmap.isEmpty())
     {
         canvas->setBg(config.partCanvasBg);
         canvas->setBg(QPixmap());
-        //printf("Composer::configChanged - no bitmap!\n");
+        //printf("Arranger::configChanged - no bitmap!\n");
     }
     else
     {
 
-        //printf("Composer::configChanged - bitmap %s!\n", config.canvasBgPixmap.ascii());
+        //printf("Arranger::configChanged - bitmap %s!\n", config.canvasBgPixmap.ascii());
         canvas->setBg(QPixmap(config.canvasBgPixmap));
     }
     ///midiConductor->setFont(config.fonts[2]);
@@ -658,14 +658,14 @@ void Composer::configChanged()
 //   songlenChanged
 //---------------------------------------------------------
 
-void Composer::songlenChanged(int n)
+void Arranger::songlenChanged(int n)
 {
     int newLen = sigmap.bar2tick(n, 0, 0);
     //printf("New Song Length: %d - %d \n", n, newLen);
     song->setLen(newLen);
 }
 
-void Composer::composerViewChanged()
+void Arranger::arrangerViewChanged()
 {
     updateAll();
     canvas->trackViewChanged();
@@ -673,7 +673,7 @@ void Composer::composerViewChanged()
     virtualScroll.updateParts();
 }
 
-void Composer::updateAll()
+void Arranger::updateAll()
 {
     unsigned endTick = song->len();
     int offset = sigmap.ticksMeasure(endTick);
@@ -707,7 +707,7 @@ void Composer::updateAll()
 //   songChanged
 //---------------------------------------------------------
 
-void Composer::songChanged(int type)
+void Arranger::songChanged(int type)
 {
     // Is it simply a midi controller value adjustment? Forget it.
     if (type != SC_MIDI_CONTROLLER)
@@ -750,7 +750,7 @@ void Composer::songChanged(int type)
     updateConductor(type);
 }
 
-void Composer::markerChanged(int flag)
+void Arranger::markerChanged(int flag)
 {
     switch(flag)
     {
@@ -769,7 +769,7 @@ void Composer::markerChanged(int flag)
     }
 }
 
-void Composer::splitterMoved(int pos, int)
+void Arranger::splitterMoved(int pos, int)
 {
     if(pos > listScroll->maximumSize().width())
     {
@@ -784,7 +784,7 @@ void Composer::splitterMoved(int pos, int)
 //   trackSelectionChanged
 //---------------------------------------------------------
 
-void Composer::trackSelectionChanged()
+void Arranger::trackSelectionChanged()
 {
     MidiTrackList* tracks = song->visibletracks();
     MidiTrack* track = 0;
@@ -820,7 +820,7 @@ void Composer::trackSelectionChanged()
     }
 }
 
-CItem* Composer::addCanvasPart(MidiTrack* t)
+CItem* Arranger::addCanvasPart(MidiTrack* t)
 {
     CItem* item = canvas->addPartAtCursor(t);
     canvas->newItem(item, false);
@@ -831,7 +831,7 @@ CItem* Composer::addCanvasPart(MidiTrack* t)
 //   modeChange
 //---------------------------------------------------------
 
-void Composer::modeChange(int mode)
+void Arranger::modeChange(int mode)
 {
     song->setMidiType(MidiType(mode));
     updateConductor(-1);
@@ -841,7 +841,7 @@ void Composer::modeChange(int mode)
 //   setMode
 //---------------------------------------------------------
 
-void Composer::setMode(int mode)
+void Arranger::setMode(int mode)
 {
     typeBox->blockSignals(true); //
     // This will only set if different.
@@ -849,13 +849,13 @@ void Composer::setMode(int mode)
     typeBox->blockSignals(false); //
 }
 
-void Composer::showTrackViews()
+void Arranger::showTrackViews()
 {
     TrackViewEditor* ted = new TrackViewEditor(this);
     ted->show();
 }
 
-void Composer::resourceDockAreaChanged(Qt::DockWidgetArea area)
+void Arranger::resourceDockAreaChanged(Qt::DockWidgetArea area)
 {
     switch(area)
     {
@@ -874,23 +874,23 @@ void Composer::resourceDockAreaChanged(Qt::DockWidgetArea area)
 //   writeStatus
 //---------------------------------------------------------
 
-void Composer::writeStatus(int level, Xml& xml)
+void Arranger::writeStatus(int level, Xml& xml)
 {
-    xml.tag(level++, "composer");
+    xml.tag(level++, "arranger");
     //split->writeStatus(level, xml);
     xml.intTag(level, "xpos", hscroll->pos());
     xml.intTag(level, "xmag", hscroll->mag());
     xml.intTag(level, "ypos", vscroll->value());
-    xml.etag(--level, "composer");
+    xml.etag(--level, "arranger");
 }
 
 //---------------------------------------------------------
 //   readStatus
 //---------------------------------------------------------
 
-void Composer::readStatus(Xml& xml)
+void Arranger::readStatus(Xml& xml)
 {
-    //printf("Composer::readStatus() entering\n");
+    //printf("Arranger::readStatus() entering\n");
     for (;;)
     {
         Xml::Token token(xml.parse());
@@ -919,30 +919,30 @@ void Composer::readStatus(Xml& xml)
                 else if (tag == "ypos")
                     vscroll->setValue(xml.parseInt());
                 else
-                    xml.unknown("Composer");
+                    xml.unknown("Arranger");
                 break;
             case Xml::TagEnd:
-                if (tag == "composer")
+                if (tag == "arranger")
                 {
-                    //printf("Composer::readStatus() leaving end tag\n");
+                    //printf("Arranger::readStatus() leaving end tag\n");
                     return;
                 }
             default:
                 break;
         }
     }
-    //printf("Composer::readStatus() leaving\n");
+    //printf("Arranger::readStatus() leaving\n");
 }
 
 //---------------------------------------------------------
 //   setRaster
 //---------------------------------------------------------
 
-void Composer::_setRaster(int index, bool setDefault)
+void Arranger::_setRaster(int index, bool setDefault)
 {
     _raster = rasterTable[index];
     // Set the audio record part snapping.
-    song->setComposerRaster(_raster);
+    song->setArrangerRaster(_raster);
     if(selected && setDefault)
     {
         config.midiRaster = index;;
@@ -954,7 +954,7 @@ void Composer::_setRaster(int index, bool setDefault)
 //   reset
 //---------------------------------------------------------
 
-void Composer::reset()
+void Arranger::reset()
 {
     canvas->setXPos(0);
     canvas->setYPos(0);
@@ -965,7 +965,7 @@ void Composer::reset()
     m_sigRuler->setXPos(0);
 }
 
-void Composer::updateScroll(int x, int y)
+void Arranger::updateScroll(int x, int y)
 {
     hscroll->setPos(x);
     vscroll->setValue(y);
@@ -975,46 +975,46 @@ void Composer::updateScroll(int x, int y)
 //   cmd
 //---------------------------------------------------------
 
-void Composer::cmd(int cmd)
+void Arranger::cmd(int cmd)
 {
     int ncmd;
     switch (cmd)
     {
         case CMD_CUT_PART:
-            ncmd = ComposerCanvas::CMD_CUT_PART;
+            ncmd = ArrangerCanvas::CMD_CUT_PART;
             break;
         case CMD_COPY_PART:
-            ncmd = ComposerCanvas::CMD_COPY_PART;
+            ncmd = ArrangerCanvas::CMD_COPY_PART;
             break;
         case CMD_PASTE_PART:
-            ncmd = ComposerCanvas::CMD_PASTE_PART;
+            ncmd = ArrangerCanvas::CMD_PASTE_PART;
             break;
         case CMD_PASTE_CLONE_PART:
-            ncmd = ComposerCanvas::CMD_PASTE_CLONE_PART;
+            ncmd = ArrangerCanvas::CMD_PASTE_CLONE_PART;
             break;
         case CMD_PASTE_PART_TO_TRACK:
-            ncmd = ComposerCanvas::CMD_PASTE_PART_TO_TRACK;
+            ncmd = ArrangerCanvas::CMD_PASTE_PART_TO_TRACK;
             break;
         case CMD_PASTE_CLONE_PART_TO_TRACK:
-            ncmd = ComposerCanvas::CMD_PASTE_CLONE_PART_TO_TRACK;
+            ncmd = ArrangerCanvas::CMD_PASTE_CLONE_PART_TO_TRACK;
             break;
         case CMD_INSERT_PART:
-            ncmd = ComposerCanvas::CMD_INSERT_PART;
+            ncmd = ArrangerCanvas::CMD_INSERT_PART;
             break;
         case CMD_INSERT_EMPTYMEAS:
-            ncmd = ComposerCanvas::CMD_INSERT_EMPTYMEAS;
+            ncmd = ArrangerCanvas::CMD_INSERT_EMPTYMEAS;
             break;
         case CMD_REMOVE_SELECTED_AUTOMATION_NODES:
-            ncmd = ComposerCanvas::CMD_REMOVE_SELECTED_AUTOMATION_NODES;
+            ncmd = ArrangerCanvas::CMD_REMOVE_SELECTED_AUTOMATION_NODES;
             break;
         case CMD_COPY_AUTOMATION_NODES:
-            ncmd = ComposerCanvas::CMD_COPY_AUTOMATION_NODES;
+            ncmd = ArrangerCanvas::CMD_COPY_AUTOMATION_NODES;
             break;
         case CMD_PASTE_AUTOMATION_NODES:
-            ncmd = ComposerCanvas::CMD_PASTE_AUTOMATION_NODES;
+            ncmd = ArrangerCanvas::CMD_PASTE_AUTOMATION_NODES;
             break;
         case CMD_SELECT_ALL_AUTOMATION:
-            ncmd = ComposerCanvas::CMD_SELECT_ALL_AUTOMATION;
+            ncmd = ArrangerCanvas::CMD_SELECT_ALL_AUTOMATION;
         break;
         default:
             return;
@@ -1026,7 +1026,7 @@ void Composer::cmd(int cmd)
 //   globalPitchChanged
 //---------------------------------------------------------
 
-void Composer::globalPitchChanged(int val)
+void Arranger::globalPitchChanged(int val)
 {
     song->setGlobalPitchShift(val);
 }
@@ -1035,7 +1035,7 @@ void Composer::globalPitchChanged(int val)
 //   globalTempoChanged
 //---------------------------------------------------------
 
-void Composer::globalTempoChanged(int val)
+void Arranger::globalTempoChanged(int val)
 {
     audio->msgSetGlobalTempo(val);
     song->tempoChanged();
@@ -1045,7 +1045,7 @@ void Composer::globalTempoChanged(int val)
 //   setTempo50
 //---------------------------------------------------------
 
-void Composer::setTempo50()
+void Arranger::setTempo50()
 {
     setGlobalTempo(50);
 }
@@ -1054,7 +1054,7 @@ void Composer::setTempo50()
 //   setTempo100
 //---------------------------------------------------------
 
-void Composer::setTempo100()
+void Arranger::setTempo100()
 {
     setGlobalTempo(100);
 }
@@ -1063,7 +1063,7 @@ void Composer::setTempo100()
 //   setTempo200
 //---------------------------------------------------------
 
-void Composer::setTempo200()
+void Arranger::setTempo200()
 {
     setGlobalTempo(200);
 }
@@ -1072,7 +1072,7 @@ void Composer::setTempo200()
 //   setGlobalTempo
 //---------------------------------------------------------
 
-void Composer::setGlobalTempo(int val)
+void Arranger::setGlobalTempo(int val)
 {
     if (val != globalTempoSpinBox->value())
         globalTempoSpinBox->setValue(val);
@@ -1082,7 +1082,7 @@ void Composer::setGlobalTempo(int val)
 //   verticalScrollSetYpos
 //---------------------------------------------------------
 
-void Composer::verticalScrollSetYpos(unsigned ypos)
+void Arranger::verticalScrollSetYpos(unsigned ypos)
 {
     vscroll->setValue(ypos);
 }
@@ -1091,7 +1091,7 @@ void Composer::verticalScrollSetYpos(unsigned ypos)
 //   clear
 //---------------------------------------------------------
 
-void Composer::clear()
+void Arranger::clear()
 {
     selected = 0;
     midiConductor->setTrack(0);
@@ -1102,7 +1102,7 @@ void Composer::clear()
     m_trackheader->clear();
 }
 
-void Composer::wheelEvent(QWheelEvent* ev)
+void Arranger::wheelEvent(QWheelEvent* ev)
 {
     emit redirectWheelEvent(ev);
 }
@@ -1111,7 +1111,7 @@ void Composer::wheelEvent(QWheelEvent* ev)
 //  createDockMembers
 //---------------------------------------------------------
 
-void Composer::createDockMembers()
+void Arranger::createDockMembers()
 {
     midiConductor = new Conductor(this);
     foreach(QObject* obj, los->resourceDock()->children())
@@ -1139,7 +1139,7 @@ void Composer::createDockMembers()
 //   updateConductor
 //---------------------------------------------------------
 
-void Composer::updateConductor(int flags)
+void Arranger::updateConductor(int flags)
 {
     _commentdock->setTrack(selected);
     if (selected == 0)
@@ -1165,7 +1165,7 @@ void Composer::updateConductor(int flags)
 //   updateTabs
 //---------------------------------------------------------
 
-void Composer::updateTabs()/*{{{*/
+void Arranger::updateTabs()/*{{{*/
 {
     midiConductor->update();
     if(selected)
@@ -1182,19 +1182,19 @@ void Composer::updateTabs()/*{{{*/
     }
 }/*}}}*/
 
-void Composer::preloadControllers()
+void Arranger::preloadControllers()
 {
     QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
     audio->preloadControllers();
     QApplication::restoreOverrideCursor();
 }
 
-bool Composer::isEditing()
+bool Arranger::isEditing()
 {
     return (m_trackheader->isEditing() || canvas->isEditing());
 }
 
-void Composer::endEditing()
+void Arranger::endEditing()
 {
     /*if(m_trackheader->isEditing())
     {
@@ -1206,7 +1206,7 @@ void Composer::endEditing()
     }
 }
 
-bool Composer::eventFilter(QObject *obj, QEvent *event)
+bool Arranger::eventFilter(QObject *obj, QEvent *event)
 {
     // Force left/right arrow key events to move the focus
     // back on the canvas if it doesn't have the focus.

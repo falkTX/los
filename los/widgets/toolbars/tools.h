@@ -33,8 +33,8 @@ enum Tool {
     MasterTool=2048
 };
 
-//const int composerTools = PointerTool | PencilTool | RubberTool | CutTool | GlueTool | StretchTool | MuteTool | AutomationTool;
-const int composerTools = PointerTool | PencilTool | RubberTool | CutTool | GlueTool | MuteTool | AutomationTool;
+//const int arrangerTools = PointerTool | PencilTool | RubberTool | CutTool | GlueTool | StretchTool | MuteTool | AutomationTool;
+const int arrangerTools = PointerTool | PencilTool | RubberTool | CutTool | GlueTool | MuteTool | AutomationTool;
 const int masterTools = PointerTool | PencilTool | RubberTool | MasterTool;
 
 struct ToolB {

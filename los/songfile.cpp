@@ -11,7 +11,7 @@
 
 #include "app.h"
 #include "song.h"
-#include "Composer.h"
+#include "Arranger.h"
 #include "cobject.h"
 #include "Pianoroll.h"
 #include "globals.h"
@@ -683,7 +683,7 @@ void Song::write(int level, Xml& xml) const
     QList<qint64> added;
     // XXX investigate
 
-    // then write Composer visible tracks since the track view will maintain order for itself
+    // then write Arranger visible tracks since the track view will maintain order for itself
     for (ciMidiTrack i = _artracks.begin(); i != _artracks.end(); ++i)
     {
         if(!added.contains((*i)->id()))

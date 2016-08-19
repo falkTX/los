@@ -28,10 +28,10 @@
 #include "midictrl.h"
 #include "comment.h"
 #include "instruments/minstrument.h"
-#include "Composer.h"
+#include "Arranger.h"
 #include "event.h"
 #include "midimonitor.h"
-#include "ComposerCanvas.h"
+#include "ArrangerCanvas.h"
 #include "trackheader.h"
 #include "slider.h"
 #include "meter.h"
@@ -495,17 +495,17 @@ void TrackHeader::generatePopupMenu()/*{{{*/
             if(m_track->getDefaultPartColor() == i)
             {
                 colorname = QString(config.partColorNames[i]);
-                colorPopup->setIcon(ComposerCanvas::colorRect(config.partColors[i], config.partWaveColors[i], 80, 80, true));
+                colorPopup->setIcon(ArrangerCanvas::colorRect(config.partColors[i], config.partWaveColors[i], 80, 80, true));
                 colorPopup->setTitle(colorSub->title()+": "+colorname);
 
                 colorname = QString("* "+config.partColorNames[i]);
-                QAction *act_color = colorSub->addAction(ComposerCanvas::colorRect(config.partColors[i], config.partWaveColors[i], 80, 80, true), colorname);
+                QAction *act_color = colorSub->addAction(ArrangerCanvas::colorRect(config.partColors[i], config.partWaveColors[i], 80, 80, true), colorname);
                 act_color->setData(20 + i);
             }
             else
             {
                 colorname = QString("     "+config.partColorNames[i]);
-                QAction *act_color = colorSub->addAction(ComposerCanvas::colorRect(config.partColors[i], config.partWaveColors[i], 80, 80), colorname);
+                QAction *act_color = colorSub->addAction(ArrangerCanvas::colorRect(config.partColors[i], config.partWaveColors[i], 80, 80), colorname);
                 act_color->setData(20 + i);
             }
         }
@@ -553,7 +553,7 @@ void TrackHeader::generatePopupMenu()/*{{{*/
     {
         currentTrackHeightString += tr("6");
     }
-    if (m_track->height() == los->composer->getCanvas()->height())
+    if (m_track->height() == los->arranger->getCanvas()->height())
     {
         currentTrackHeightString += tr("Full Screen");
     }
@@ -718,39 +718,39 @@ void TrackHeader::generatePopupMenu()/*{{{*/
             }
             case 12:
             {
-                int canvasHeight = los->composer->getCanvas()->height();
+                int canvasHeight = los->arranger->getCanvas()->height();
 
                 if (multipleSelectedTracks)
                 {
                     song->setTrackHeights(selectedTracksList, canvasHeight);
                     MidiTrack* firstSelectedTrack = *selectedTracksList.begin();
-                    los->composer->verticalScrollSetYpos(los->composer->getCanvas()->track2Y(firstSelectedTrack));
+                    los->arranger->verticalScrollSetYpos(los->arranger->getCanvas()->track2Y(firstSelectedTrack));
 
                 }
                 else
                 {
                     m_track->setHeight(canvasHeight);
                     song->update(SC_TRACK_MODIFIED);
-                    los->composer->verticalScrollSetYpos(los->composer->getCanvas()->track2Y(m_track));
+                    los->arranger->verticalScrollSetYpos(los->arranger->getCanvas()->track2Y(m_track));
                 }
                 emit trackHeightChanged();
                 break;
             }
             case 13:
             {
-                int canvasHeight = los->composer->getCanvas()->height();
+                int canvasHeight = los->arranger->getCanvas()->height();
                 if (multipleSelectedTracks)
                 {
                     song->setTrackHeights(selectedTracksList, canvasHeight / selectedTracksList.size());
                     MidiTrack* firstSelectedTrack = *selectedTracksList.begin();
-                    los->composer->verticalScrollSetYpos(los->composer->getCanvas()->track2Y(firstSelectedTrack));
+                    los->arranger->verticalScrollSetYpos(los->arranger->getCanvas()->track2Y(firstSelectedTrack));
 
                 }
                 else
                 {
                     m_track->setHeight(canvasHeight);
                     song->update(SC_TRACK_MODIFIED);
-                    los->composer->verticalScrollSetYpos(los->composer->getCanvas()->track2Y(m_track));
+                    los->arranger->verticalScrollSetYpos(los->arranger->getCanvas()->track2Y(m_track));
                 }
                 emit trackHeightChanged();
                 break;

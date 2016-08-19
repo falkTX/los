@@ -14,7 +14,7 @@
 #include "part.h"
 #include "AbstractMidiEditor.h"
 #include "citem.h"
-#include "Composer.h"
+#include "Arranger.h"
 #include "event.h"
 #include "traverso_shared/TConfig.h"
 #include "icons.h"
@@ -290,7 +290,7 @@ void TrackListView::contextPopupMenu(QPoint pos)/*{{{*/
             {
                 case 1:
                 {
-                    CItem *citem = los->composer->addCanvasPart(track);
+                    CItem *citem = los->arranger->addCanvasPart(track);
                     if(citem)
                     {
                         Part* mp = citem->part();
@@ -335,7 +335,7 @@ void TrackListView::contextPopupMenu(QPoint pos)/*{{{*/
                 break;
                 case 2:
                 {
-                    CItem* citem = los->composer->addCanvasPart(track);
+                    CItem* citem = los->arranger->addCanvasPart(track);
                     if(citem)
                     {
                         Part* mp = citem->part();

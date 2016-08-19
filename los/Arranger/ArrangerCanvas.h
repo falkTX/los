@@ -6,8 +6,8 @@
 //  (C) Copyright 2011 Andrew Williams & Christopher Cherrett
 //=========================================================
 
-#ifndef __COMPOSERCANVAS_H__
-#define __COMPOSERCANVAS_H__
+#ifndef __ARRANGERCANVAS_H__
+#define __ARRANGERCANVAS_H__
 
 #include "song.h"
 #include "canvas.h"
@@ -68,10 +68,10 @@ class CtrlList;
 class CurveNodeSelection;
 
 //---------------------------------------------------------
-//   ComposerCanvas
+//   ArrangerCanvas
 //---------------------------------------------------------
 
-class ComposerCanvas : public Canvas
+class ArrangerCanvas : public Canvas
 {
     Q_OBJECT
 
@@ -176,7 +176,7 @@ public:
     CMD_SELECT_ALL_AUTOMATION
     };
 
-    ComposerCanvas(int* raster, QWidget* parent, int, int);
+    ArrangerCanvas(int* raster, QWidget* parent, int, int);
     void partsChanged();
     void cmd(int);
     int track2Y(MidiTrack*) const;

@@ -8,7 +8,7 @@ CMakeLists.txt.user
 .directory
 debug_build.sh
 oostudio/html/m7ir48.html
-oom/Composer/AutomationMove.cpp
-oom/Composer/AutomationMove.h
-oom/Composer/AutomationMoveBase.ui
+oom/Arranger/AutomationMove.cpp
+oom/Arranger/AutomationMove.h
+oom/Arranger/AutomationMoveBase.ui
 .idea/

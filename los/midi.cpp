@@ -708,7 +708,7 @@ void Audio::panic()
 //---------------------------------------------------------
 //   initDevices
 //    - called on seek to position 0
-//    - called from Composer pulldown menu
+//    - called from Arranger pulldown menu
 //---------------------------------------------------------
 
 void Audio::initDevices()

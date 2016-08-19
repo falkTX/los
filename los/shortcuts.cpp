@@ -50,7 +50,7 @@ void initShortCuts()
     defShrt(SHRT_DELETE, Qt::Key_Delete, "Edit: Delete", INVIS_SHRT, "delete");
 
     //-----------------------------------------------------------
-    // Composer:
+    // Arranger:
     defShrt(SHRT_NEW, Qt::CTRL + Qt::Key_N, "File: New project", ARRANG_SHRT, "new_project");
     defShrt(SHRT_OPEN, Qt::CTRL + Qt::Key_O, "File: Open from disk", ARRANG_SHRT, "open_project");
     defShrt(SHRT_SAVE, Qt::CTRL + Qt::Key_S, "File: Save project", ARRANG_SHRT, "save_project");
@@ -226,7 +226,7 @@ void initShortCuts()
     defShrt(SHRT_TOOL_RUBBER, Qt::Key_B, "Tool: Eraser", ARRANG_SHRT + PROLL_SHRT, "eraser_tool");
     // Pianoroll & drum editor
     defShrt(SHRT_TOOL_LINEDRAW, Qt::Key_F, "Tool: Line Draw", PROLL_SHRT, "line_draw_tool");
-    // Composer
+    // Arranger
     defShrt(SHRT_TOOL_SCISSORS, Qt::Key_J, "Tool: Scissor", ARRANG_SHRT, "scissor_tool");
     defShrt(SHRT_TOOL_GLUE, Qt::Key_G, "Tool: Glue", ARRANG_SHRT, "glue_tool");
     defShrt(SHRT_TOOL_MUTE, 0, "Tool: Mute", ARRANG_SHRT, "mute_tool");
@@ -251,8 +251,8 @@ void initShortCuts()
     defShrt(SHRT_MOVE_TRACK_DOWN, Qt::CTRL + Qt::ALT + Qt::Key_Down, "Track: Move selected tracks down", GLOBAL_SHRT, "move_track_down");
 
 
-    //Increase/decrease current position, is going to be in Composer & drumeditor as well
-    // p4.0.10 Editors and Composer handle these by themselves, otherwise global handler will now use them, too.
+    //Increase/decrease current position, is going to be in Arranger & drumeditor as well
+    // p4.0.10 Editors and Arranger handle these by themselves, otherwise global handler will now use them, too.
     defShrt(SHRT_POS_INC, Qt::CTRL + Qt::Key_Right, "Transport: Increase current position", GLOBAL_SHRT, "curpos_increase");
     defShrt(SHRT_POS_DEC, Qt::CTRL + Qt::Key_Left, "Transport: Decrease current position", GLOBAL_SHRT, "curpos_decrease");
     defShrt(SHRT_ADD_REST, Qt::Key_Plus, "Step Record: Add Rest", GLOBAL_SHRT, "add_rest");
@@ -305,7 +305,7 @@ void initShortCuts()
 
 const shortcut_cg shortcut_category[SHRT_NUM_OF_CATEGORIES] = {
     { GLOBAL_SHRT, "Global"},
-    { ARRANG_SHRT, "Composer"},
+    { ARRANG_SHRT, "Arranger"},
     { PROLL_SHRT, "Pianoroll"},
     { LEDIT_SHRT, "Event List Editor"},
     { LMEDIT_SHRT, "Tempo List Editor"},

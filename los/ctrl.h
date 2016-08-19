@@ -131,7 +131,7 @@ private:
     QColor _displayColor;
 	QPainterPath m_curvePath;
     bool _visible;
-    bool _dontShow; // when this is true the control exists but is not compatible with viewing in the Composer
+    bool _dontShow; // when this is true the control exists but is not compatible with viewing in the Arranger
 	bool _selected;
     void initColor(int i);
 

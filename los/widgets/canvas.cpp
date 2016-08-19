@@ -24,7 +24,7 @@
 #include "config.h"
 #include "globals.h"
 #include "gconfig.h"
-#include "Composer.h"
+#include "Arranger.h"
 #include "song.h"
 #include "event.h"
 #include "citem.h"
@@ -187,11 +187,11 @@ void Canvas::draw(QPainter& p, const QRect& rect)/*{{{*/
         iCItem to(_items.lower_bound(x2));
 
         // Draw items from other parts behind all others.
-        // Only for items with events (not Composer parts).
+        // Only for items with events (not Arranger parts).
         QList<CItem*> sortedByZValue;
 
         // Draw items from other parts behind all others.
-        // Only for items with events (not Composer parts).
+        // Only for items with events (not Arranger parts).
         for (iCItem i = _items.begin(); i != to; ++i)
         {
             sortedByZValue.append(i->second);
@@ -268,7 +268,7 @@ void Canvas::draw(QPainter& p, const QRect& rect)/*{{{*/
         //---------------------------------------------------
 
         // Draw items from other parts behind all others.
-        // Only for items with events (not Composer parts).
+        // Only for items with events (not Arranger parts).
         for (iCItem i = _items.begin(); i != _items.end(); ++i)
         {
             CItem* ci = i->second;
@@ -728,8 +728,8 @@ void Canvas::viewMousePressEvent(QMouseEvent* event)/*{{{*/
                 Track* ctrack = _curItem->part()->track();
                 if(ctrack)
                 {
-                    los->composer->_setRaster(config.midiRaster, false);
-                    //los->composer->raster->setCurrentIndex(config.midiRaster);
+                    los->arranger->_setRaster(config.midiRaster, false);
+                    //los->arranger->raster->setCurrentIndex(config.midiRaster);
                 }
                 if (_curItem->part() != _curPart)
                 {
@@ -787,8 +787,8 @@ void Canvas::viewMousePressEvent(QMouseEvent* event)/*{{{*/
                 Track* ctrack = _curItem->part()->track();
                 if(ctrack)
                 {
-                    los->composer->_setRaster(config.midiRaster, false);
-                    los->composer->raster->setCurrentIndex(config.midiRaster);
+                    los->arranger->_setRaster(config.midiRaster, false);
+                    los->arranger->raster->setCurrentIndex(config.midiRaster);
                 }
 #if 0
                 if(shift && ctrack->type() == Track::WAVE)

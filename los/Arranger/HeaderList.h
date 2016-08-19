@@ -54,7 +54,7 @@ protected:
 private slots:
     void songChanged(int flags);
     void updateSelection(MidiTrack*, bool);
-    void composerViewChanged();
+    void arrangerViewChanged();
     void newTrackAdded(qint64);
 
 signals:

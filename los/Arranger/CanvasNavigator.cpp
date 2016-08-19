@@ -1,6 +1,6 @@
 
 #include "CanvasNavigator.h"
-#include "ComposerCanvas.h"
+#include "ArrangerCanvas.h"
 #include "config.h"
 #include "globals.h"
 #include "gconfig.h"
@@ -109,7 +109,7 @@ CanvasNavigator::CanvasNavigator(QWidget* parent)
     connect(m_scene, SIGNAL(updatePlayhead(int)), this, SLOT(updatePlayheadPosition(int)));
 }
 
-void CanvasNavigator::setCanvas(ComposerCanvas* c)
+void CanvasNavigator::setCanvas(ArrangerCanvas* c)
 {
     m_canvas = c;
     createCanvasBox();

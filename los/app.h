@@ -40,7 +40,7 @@ class Part;
 class PartList;
 class Transport;
 class BigTime;
-class Composer;
+class Arranger;
 class Instrument;
 class PopupMenu;
 class PopupView;
@@ -126,7 +126,7 @@ class LOS : public QMainWindow
 
     // View Menu actions
     QAction *viewTransportAction, *viewBigtimeAction, *viewCliplistAction, *viewMarkerAction;
-    QAction *viewToolbarSidebar, *viewToolbarComposerSettings, *viewToolbarSnap, *viewToolbarTransport;
+    QAction *viewToolbarSidebar, *viewToolbarArrangerSettings, *viewToolbarSnap, *viewToolbarTransport;
 
     // Structure Menu actions
     QAction *strGlobalCutAction, *strGlobalInsertAction, *strGlobalSplitAction, *strCopyRangeAction, *strCutEventsAction;
@@ -157,7 +157,7 @@ class LOS : public QMainWindow
     EditInstrument* editInstrument;
     Pianoroll* pianoroll;
 
-    QToolBar* toolbarComposerSettings;
+    QToolBar* toolbarArrangerSettings;
     QToolBar* toolbarSnap;
 
     QMenu *menu_file, *menuView, *menuSettings, *menu_help;
@@ -278,7 +278,7 @@ private slots:
     void toggleBigTime(bool);
 
     void showToolbarSidebar(bool);
-    void showToolbarComposerSettings(bool);
+    void showToolbarArrangerSettings(bool);
     void showToolbarSnap(bool);
     void showToolbarTransport(bool);
     void updateViewToolbarMenu();
@@ -381,7 +381,7 @@ public slots:
 public:
     LOS(int argc, char** argv);
     ~LOS();
-    Composer* composer;
+    Arranger* arranger;
     //FIXME: Hack to make projects loaded from the commandline not start PR
     //I need to track where and what is cause it to crash
     bool firstrun;
@@ -408,7 +408,7 @@ public:
 
     QDockWidget* resourceDock() { return _resourceDock; }
     void addTransportToolbar();
-    void setComposerAndSnapToolbars(QToolBar*, QToolBar*);
+    void setArrangerAndSnapToolbars(QToolBar*, QToolBar*);
     bool saveRouteMapping(QString, QString note = "Untitled");
     bool loadRouteMapping(QString);
     bool updateRouteMapping(QString, QString);

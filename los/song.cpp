@@ -80,7 +80,7 @@ Song::Song(QUndoStack* stack, const char* name)
 : QObject(0)
 {
     setObjectName(name);
-    _composerRaster = 0; // Set to measure, the same as Composer intial value. Composer snap combo will set this.
+    _arrangerRaster = 0; // Set to measure, the same as Arranger intial value. Arranger snap combo will set this.
     noteFifoSize = 0;
     noteFifoWindex = 0;
     noteFifoRindex = 0;
@@ -601,13 +601,13 @@ void Song::cmdAddRecordedEvents(MidiTrack* mt, EventList* events, unsigned start
 
         // Changed by Tim. p3.3.8
 
-        // Honour the Composer snap settings. (Set to bar by default).
+        // Honour the Arranger snap settings. (Set to bar by default).
         //startTick = roundDownBar(startTick);
         //endTick   = roundUpBar(endTick);
-        // Round the start down using the Composer part snap raster value.
-        startTick = sigmap.raster1(startTick, composerRaster());
-        // Round the end up using the Composer part snap raster value.
-        endTick = sigmap.raster2(endTick, composerRaster());
+        // Round the start down using the Arranger part snap raster value.
+        startTick = sigmap.raster1(startTick, arrangerRaster());
+        // Round the end up using the Arranger part snap raster value.
+        endTick = sigmap.raster2(endTick, arrangerRaster());
 
         part->setTick(startTick);
         part->setLenTick(endTick - startTick);
@@ -644,8 +644,8 @@ void Song::cmdAddRecordedEvents(MidiTrack* mt, EventList* events, unsigned start
         }
         // Added by Tim. p3.3.8
 
-        // Round the end up (again) using the Composer part snap raster value.
-        endTick = sigmap.raster2(endTick, composerRaster());
+        // Round the end up (again) using the Arranger part snap raster value.
+        endTick = sigmap.raster2(endTick, arrangerRaster());
 
         // Remove all of the part's port controller values. Indicate do not do clone parts.
         removePortCtrlEvents(part, false);
@@ -1197,7 +1197,7 @@ void Song::update(int flags)
     }
     /*if(flags & SC_VIEW_CHANGED)
     {
-        emit composerViewChanged();
+        emit arrangerViewChanged();
     }*/
     if(!invalid)
         emit songChanged(flags);
@@ -1864,9 +1864,9 @@ void Song::clear(bool signal)
 
     m_tracks.clear();
     m_trackIndex.clear();
-    m_composerTracks.clear();
+    m_arrangerTracks.clear();
     m_trackViewIndex.clear();
-    m_composerTrackIndex.clear();
+    m_arrangerTrackIndex.clear();
     _tviews.clear();
     _tracks.clear();
     _artracks.clear();
@@ -2001,9 +2001,9 @@ void Song::cleanupForQuit()
 
     m_tracks.clear();
     m_trackIndex.clear();
-    m_composerTracks.clear();
+    m_arrangerTracks.clear();
     m_trackViewIndex.clear();
-    m_composerTrackIndex.clear();
+    m_arrangerTrackIndex.clear();
     _tracks.clear();
     _artracks.clear();
     _viewtracks.clear();
@@ -2374,7 +2374,7 @@ void Song::stopRolling()
 
 //---------------------------------------------------------
 // insertTrackView
-//    add a new trackview for the Composer
+//    add a new trackview for the Arranger
 //---------------------------------------------------------
 
 void Song::insertTrackView(TrackView* tv, int idx)
@@ -2397,7 +2397,7 @@ void Song::cmdRemoveTrackView(qint64 id)
 
 //---------------------------------------------------------
 // removeTrackView
-//    add a new trackview for the Composer
+//    add a new trackview for the Arranger
 //---------------------------------------------------------
 
 void Song::removeTrackView(qint64 id)
@@ -2410,7 +2410,7 @@ void Song::removeTrackView(qint64 id)
 
 //---------------------------------------------------------
 // addNewTrackView
-//    add a new trackview for the Composer
+//    add a new trackview for the Arranger
 //---------------------------------------------------------
 
 TrackView* Song::addNewTrackView()
@@ -2503,14 +2503,14 @@ void Song::updateTrackViews()
     //printf("Song::updateTrackViews()\n");
     _viewtracks.clear();
     m_trackIndex.clear();
-    m_composerTracks.clear();
+    m_arrangerTracks.clear();
     m_viewTracks.clear();
     //Create omnipresent Master track at top of all list.
     MidiTrack* master = findTrack("Master");
     if(master)
     {
         _viewtracks.push_back(master);
-        m_composerTracks[master->id()] = master;
+        m_arrangerTracks[master->id()] = master;
         m_viewTracks[master->id()] = master;
         m_trackIndex.insert(0, master->id());
     }
@@ -2644,7 +2644,7 @@ void Song::updateTrackViews()
     //printf("Song::updateTrackViews() took %f seconds to run\n", end-start);
     disarmAllTracks();
     if(!invalid)
-        emit composerViewChanged();
+        emit arrangerViewChanged();
 }
 
 //---------------------------------------------------------
@@ -2685,8 +2685,8 @@ void Song::insertTrackRealtime(MidiTrack* track, int idx)
             ia = _artracks.index2iterator(idx);
             _artracks.insert(ia, track);
             addPortCtrlEvents(((MidiTrack*) track));
-            m_composerTracks[track->id()] = track;
-            m_composerTrackIndex.insert(idx, track->id());
+            m_arrangerTracks[track->id()] = track;
+            m_arrangerTrackIndex.insert(idx, track->id());
             _autotviews.value(m_workingViewId)->addTrack(track->id());
     }
 
@@ -2764,7 +2764,7 @@ void Song::removeTrackRealtime(MidiTrack* track)
 
             _midis.erase(track);
             _artracks.erase(track);
-            m_composerTracks.erase(m_composerTracks.find(track->id()));
+            m_arrangerTracks.erase(m_arrangerTracks.find(track->id()));
             _autotviews.value(m_workingViewId)->removeTrack(track->id());
     }
     _tracks.erase(track);

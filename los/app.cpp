@@ -27,7 +27,7 @@
 
 #include "app.h"
 #include "master/lmaster.h"
-#include "Composer/Composer.h"
+#include "Arranger/Arranger.h"
 #include "audio.h"
 #include "driver/audiodev.h"
 #include "audioprefetch.h"
@@ -532,7 +532,7 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
     m_undoStack = new QUndoStack(this);
     m_undoView = 0;
 
-    toolbarComposerSettings = 0;
+    toolbarArrangerSettings = 0;
     toolbarSnap = 0;
 
     song = new Song(m_undoStack, "song");
@@ -734,8 +734,8 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
     viewToolbars = new QMenu(tr("Toolbars"), this);
     viewToolbarSidebar = new QAction(tr("Sidebar"), this);
     viewToolbarSidebar->setCheckable(true);
-    viewToolbarComposerSettings = new QAction(tr("The Composer Settings"), this);
-    viewToolbarComposerSettings->setCheckable(true);
+    viewToolbarArrangerSettings = new QAction(tr("Arranger Settings"), this);
+    viewToolbarArrangerSettings->setCheckable(true);
     viewToolbarSnap = new QAction(tr("Snap"), this);
     viewToolbarSnap->setCheckable(true);
     viewToolbarTransport = new QAction(tr("Transport Tools"), this);
@@ -862,7 +862,7 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
     connect(viewMarkerAction, SIGNAL(toggled(bool)), SLOT(toggleMarker(bool)));
 
     connect(viewToolbarSidebar, SIGNAL(toggled(bool)), SLOT(showToolbarSidebar(bool)));
-    connect(viewToolbarComposerSettings, SIGNAL(toggled(bool)), SLOT(showToolbarComposerSettings(bool)));
+    connect(viewToolbarArrangerSettings, SIGNAL(toggled(bool)), SLOT(showToolbarArrangerSettings(bool)));
     connect(viewToolbarSnap, SIGNAL(toggled(bool)), SLOT(showToolbarSnap(bool)));
     connect(viewToolbarTransport, SIGNAL(toggled(bool)), SLOT(showToolbarTransport(bool)));
     connect(viewToolbars, SIGNAL(aboutToShow()), SLOT(updateViewToolbarMenu()));
@@ -1025,7 +1025,7 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
     menuView->addMenu(viewToolbars);
     viewToolbars->addAction(viewToolbarSidebar);
     //viewToolbars->addSeparator();
-    viewToolbars->addAction(viewToolbarComposerSettings);
+    viewToolbars->addAction(viewToolbarArrangerSettings);
     viewToolbars->addAction(viewToolbarSnap);
     viewToolbars->addAction(viewToolbarTransport);
 
@@ -1077,19 +1077,19 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
     //    Central Widget
     //---------------------------------------------------
 
-    composer = new Composer(this, "composer");
-    setCentralWidget(composer);
+    arranger = new Arranger(this, "arranger");
+    setCentralWidget(arranger);
     addTransportToolbar();
 
-    connect(heartBeatTimer, SIGNAL(timeout()), composer, SLOT(heartBeat()));
-    connect(composer, SIGNAL(editPart(MidiTrack*)), SLOT(startEditor()));
-    connect(composer, SIGNAL(dropSongFile(const QString&)), SLOT(loadProjectFile(const QString&)));
-    connect(composer, SIGNAL(dropMidiFile(const QString&)), SLOT(importMidi(const QString&)));
-    connect(composer, SIGNAL(startEditor(PartList*, int)), SLOT(startEditor(PartList*, int)));
-    connect(this, SIGNAL(configChanged()), composer, SLOT(configChanged()));
-    connect(pcloaderAction, SIGNAL(triggered()), composer, SLOT(preloadControllers()));
+    connect(heartBeatTimer, SIGNAL(timeout()), arranger, SLOT(heartBeat()));
+    connect(arranger, SIGNAL(editPart(MidiTrack*)), SLOT(startEditor()));
+    connect(arranger, SIGNAL(dropSongFile(const QString&)), SLOT(loadProjectFile(const QString&)));
+    connect(arranger, SIGNAL(dropMidiFile(const QString&)), SLOT(importMidi(const QString&)));
+    connect(arranger, SIGNAL(startEditor(PartList*, int)), SLOT(startEditor(PartList*, int)));
+    connect(this, SIGNAL(configChanged()), arranger, SLOT(configChanged()));
+    connect(pcloaderAction, SIGNAL(triggered()), arranger, SLOT(preloadControllers()));
 
-    connect(composer, SIGNAL(setUsedTool(int)), SLOT(setUsedTool(int)));
+    connect(arranger, SIGNAL(setUsedTool(int)), SLOT(setUsedTool(int)));
 
     //---------------------------------------------------
     //  read list of "Recent Projects"
@@ -1127,7 +1127,7 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
     QClipboard* cb = QApplication::clipboard();
     connect(cb, SIGNAL(dataChanged()), SLOT(clipboardChanged()));
     connect(cb, SIGNAL(selectionChanged()), SLOT(clipboardChanged()));
-    connect(composer, SIGNAL(selectionChanged()), SLOT(selectionChanged()));
+    connect(arranger, SIGNAL(selectionChanged()), SLOT(selectionChanged()));
 
     //---------------------------------------------------
     //  load project
@@ -1240,14 +1240,14 @@ void LOS::showUndoView()
 
 Tool LOS::getCurrentTool()
 {
-    if (composer && composer->getCanvas())
-        return composer->getCanvas()->tool();
+    if (arranger && arranger->getCanvas())
+        return arranger->getCanvas()->tool();
     // return an invalid tool
     return (Tool)0;
 }
 
 /**
- * Called from within the after Composer Constructor
+ * Called from within the after Arranger Constructor
  */
 void LOS::addTransportToolbar()
 {
@@ -1283,13 +1283,13 @@ void LOS::addTransportToolbar()
     tspacer->setMaximumWidth(15);
     tools->addWidget(tspacer);
 
-    tools1 = new EditToolBar(this, composerTools);
+    tools1 = new EditToolBar(this, arrangerTools);
     //addToolBar(Qt::BottomToolBarArea, tools1);
     tools1->setObjectName("tbEditTools");
-    connect(tools1, SIGNAL(toolChanged(int)), composer, SLOT(setTool(int)));
-    connect(tools1, SIGNAL(toolChanged(int)), composer, SIGNAL(updateHeaderTool(int)));
-    connect(composer, SIGNAL(toolChanged(int)), tools1, SLOT(set(int)));
-    connect(composer, SIGNAL(updateFooterTool(int)), tools1, SLOT(set(int)));
+    connect(tools1, SIGNAL(toolChanged(int)), arranger, SLOT(setTool(int)));
+    connect(tools1, SIGNAL(toolChanged(int)), arranger, SIGNAL(updateHeaderTool(int)));
+    connect(arranger, SIGNAL(toolChanged(int)), tools1, SLOT(set(int)));
+    connect(arranger, SIGNAL(updateFooterTool(int)), tools1, SLOT(set(int)));
     //toolByHeaderChanged
     tools->addWidget(tools1);
     QWidget* tspacer2 = new QWidget();
@@ -1316,12 +1316,12 @@ void LOS::addTransportToolbar()
 }
 
 //---------------------------------------------------------
-//   setComposerAndSnapToolbars
+//   setArrangerAndSnapToolbars
 //---------------------------------------------------------
 
-void LOS::setComposerAndSnapToolbars(QToolBar* comp, QToolBar* snap)
+void LOS::setArrangerAndSnapToolbars(QToolBar* comp, QToolBar* snap)
 {
-    toolbarComposerSettings = comp;
+    toolbarArrangerSettings = comp;
     toolbarSnap = snap;
 }
 
@@ -1433,7 +1433,7 @@ void LOS::loadProjectFile(const QString& name, bool songTemplate, bool loadAll)
 
 void LOS::loadProjectFile1(const QString& name, bool songTemplate, bool loadAll)
 {
-    composer->clear(); // clear track info
+    arranger->clear(); // clear track info
     //Clear the ID based losMidiPorts hash, it will be repopulated when the song loads
     losMidiPorts.clear();
     if (clearSong())
@@ -1552,7 +1552,7 @@ void LOS::loadProjectFile1(const QString& name, bool songTemplate, bool loadAll)
     if (!songTemplate)
     {
         addProject(project.absoluteFilePath());
-        //setWindowTitle(QString("The Composer - LOS-").append(VERSION).append(":     ") + project.completeBaseName() + QString("     "));
+        //setWindowTitle(QString("The Arranger - LOS-").append(VERSION).append(":     ") + project.completeBaseName() + QString("     "));
         setWindowTitle(QString("LOS -      ") + project.completeBaseName() + QString("     "));
     }
     song->dirty = false;
@@ -1602,7 +1602,7 @@ void LOS::setUntitledProject()
     project.setFile(name);
     losProjectFile = project.filePath();
     //setWindowTitle(tr("LOS: Song: ") + project.completeBaseName());
-    //setWindowTitle(QString("The Composer - LOS-").append(VERSION).append(":     ") + project.completeBaseName() + QString("     "));
+    //setWindowTitle(QString("The Arranger - LOS-").append(VERSION).append(":     ") + project.completeBaseName() + QString("     "));
     setWindowTitle(QString("LOS -      ") + project.completeBaseName() + QString("     "));
 }
 
@@ -2179,7 +2179,7 @@ void LOS::showMarker(bool flag)
 
         // Removed p3.3.43
         // Song::addMarker() already emits a 'markerChanged'.
-        //connect(composer, SIGNAL(addMarker(int)), markerView, SLOT(addMarker(int)));
+        //connect(arranger, SIGNAL(addMarker(int)), markerView, SLOT(addMarker(int)));
 
         connect(markerView, SIGNAL(closed()), SLOT(markerClosed()));
         toplevels.push_back(Toplevel(Toplevel::MARKER, (unsigned long) (markerView), markerView));
@@ -2554,7 +2554,7 @@ bool LOS::saveAs()
             project.setFile(name);
             losProjectFile = project.filePath();
             //setWindowTitle(tr("LOS: Song: ") + project.completeBaseName());
-            //setWindowTitle(QString("The Composer - LOS-").append(VERSION).append(":     ") + project.completeBaseName() + QString("     "));
+            //setWindowTitle(QString("The Arranger - LOS-").append(VERSION).append(":     ") + project.completeBaseName() + QString("     "));
             setWindowTitle(QString("LOS -      ") + project.completeBaseName() + QString("     "));
             addProject(name);
         }
@@ -2612,9 +2612,9 @@ PartList* LOS::getMidiPartsToEdit()
 
 void LOS::startPianoroll()
 {
-    if(composer->isEditing())
+    if(arranger->isEditing())
     {
-        composer->endEditing();
+        arranger->endEditing();
         return;
     }
     PartList* pl = getMidiPartsToEdit();
@@ -2634,7 +2634,7 @@ void LOS::startPianoroll(PartList* pl, bool /*showDefaultCtrls*/)
 {
     if(!pianoroll)
     {
-        pianoroll = new Pianoroll(pl, this, 0, composer->cursorValue());
+        pianoroll = new Pianoroll(pl, this, 0, arranger->cursorValue());
         pianoroll->setWindowRole("pianoroll");
         // Be able to open the List Editor from the Piano Roll
         // with the application global shortcut to open the L.E.
@@ -2857,8 +2857,8 @@ void LOS::toplevelDeleted(unsigned long tl)
 
 void LOS::keyPressEvent(QKeyEvent* event)
 {
-    // Pass it on to composer part canvas.
-    composer->getCanvas()->redirKeypress(event);
+    // Pass it on to arranger part canvas.
+    arranger->getCanvas()->redirKeypress(event);
 }
 
 bool LOS::eventFilter(QObject *obj, QEvent *event)
@@ -2948,14 +2948,14 @@ void LOS::kbAccel(int key)
         // p4.0.10 Tim. Normally each editor window handles these, to inc by the editor's raster snap value.
         // But users were asking for a global version - "they don't work when I'm in mixer or transport".
         // Since no editor claimed the key event, we don't know a specific editor's snap setting,
-        //  so adopt a policy where the composer is the 'main' raster reference, I guess...
+        //  so adopt a policy where the arranger is the 'main' raster reference, I guess...
     else if (key == shortcuts[SHRT_POS_DEC].key)
     {
         int spos = song->cpos();
         if (spos > 0)
         {
             spos -= 1; // Nudge by -1, then snap down with raster1.
-            spos = sigmap.raster1(spos, song->composerRaster());
+            spos = sigmap.raster1(spos, song->arrangerRaster());
         }
         if (spos < 0)
             spos = 0;
@@ -2965,14 +2965,14 @@ void LOS::kbAccel(int key)
     }
     else if (key == shortcuts[SHRT_POS_INC].key)
     {
-        int spos = sigmap.raster2(song->cpos() + 1, song->composerRaster()); // Nudge by +1, then snap up with raster2.
+        int spos = sigmap.raster2(song->cpos() + 1, song->arrangerRaster()); // Nudge by +1, then snap up with raster2.
         Pos p(spos, true);
         song->setPos(0, p, true, true, true); //CDW
         return;
     }
     else if (key == shortcuts[SHRT_POS_DEC_NOSNAP].key)
     {
-        int spos = song->cpos() - sigmap.rasterStep(song->cpos(), song->composerRaster());
+        int spos = song->cpos() - sigmap.rasterStep(song->cpos(), song->arrangerRaster());
         if (spos < 0)
             spos = 0;
         Pos p(spos, true);
@@ -2981,7 +2981,7 @@ void LOS::kbAccel(int key)
     }
     else if (key == shortcuts[SHRT_POS_INC_NOSNAP].key)
     {
-        Pos p(song->cpos() + sigmap.rasterStep(song->cpos(), song->composerRaster()), true);
+        Pos p(song->cpos() + sigmap.rasterStep(song->cpos(), song->arrangerRaster()), true);
         song->setPos(0, p, true, true, true);
         return;
     }
@@ -3070,58 +3070,58 @@ void LOS::cmd(int cmd)
     switch (cmd)
     {
         case CMD_CUT:
-            composer->cmd(Composer::CMD_CUT_PART);
+            arranger->cmd(Arranger::CMD_CUT_PART);
             break;
         case CMD_COPY:
         {
-            //TODO: Hook right here and get the current tool from the composer
+            //TODO: Hook right here and get the current tool from the arranger
             //copy automation if the automation tool is selected.
-            ComposerCanvas *canvas = composer->getCanvas();
+            ArrangerCanvas *canvas = arranger->getCanvas();
             if(canvas && canvas->tool() == AutomationTool)
             {
                 //printf("Automation copy\n");
-                composer->cmd(Composer::CMD_COPY_AUTOMATION_NODES);
+                arranger->cmd(Arranger::CMD_COPY_AUTOMATION_NODES);
             }
             else
             {
-                composer->cmd(Composer::CMD_COPY_PART);
+                arranger->cmd(Arranger::CMD_COPY_PART);
             }
         }
             break;
         case CMD_PASTE:
         {
             //TODO: Same as above
-            ComposerCanvas *canvas = composer->getCanvas();
+            ArrangerCanvas *canvas = arranger->getCanvas();
             if(canvas && canvas->tool() == AutomationTool)
             {
                 //printf("Automation paste\n");
-                composer->cmd(Composer::CMD_PASTE_AUTOMATION_NODES);
+                arranger->cmd(Arranger::CMD_PASTE_AUTOMATION_NODES);
             }
             else
             {
-                composer->cmd(Composer::CMD_PASTE_PART);
+                arranger->cmd(Arranger::CMD_PASTE_PART);
             }
         }
             break;
         case CMD_PASTE_CLONE:
-            composer->cmd(Composer::CMD_PASTE_CLONE_PART);
+            arranger->cmd(Arranger::CMD_PASTE_CLONE_PART);
             break;
         case CMD_PASTE_TO_TRACK:
-            composer->cmd(Composer::CMD_PASTE_PART_TO_TRACK);
+            arranger->cmd(Arranger::CMD_PASTE_PART_TO_TRACK);
             break;
         case CMD_PASTE_CLONE_TO_TRACK:
-            composer->cmd(Composer::CMD_PASTE_CLONE_PART_TO_TRACK);
+            arranger->cmd(Arranger::CMD_PASTE_CLONE_PART_TO_TRACK);
             break;
         case CMD_INSERT:
-            composer->cmd(Composer::CMD_INSERT_PART);
+            arranger->cmd(Arranger::CMD_INSERT_PART);
             break;
         case CMD_INSERTMEAS:
-            composer->cmd(Composer::CMD_INSERT_EMPTYMEAS);
+            arranger->cmd(Arranger::CMD_INSERT_EMPTYMEAS);
             break;
         case CMD_DELETE:
-            if (composer->getCanvas()->tool() == AutomationTool)
+            if (arranger->getCanvas()->tool() == AutomationTool)
             {
-                composer->cmd(Composer::CMD_REMOVE_SELECTED_AUTOMATION_NODES);
+                arranger->cmd(Arranger::CMD_REMOVE_SELECTED_AUTOMATION_NODES);
             }
             else
             {
@@ -3180,11 +3180,11 @@ void LOS::cmd(int cmd)
         case CMD_SELECT_ILOOP:
         case CMD_SELECT_OLOOP:
         {
-            ComposerCanvas *canvas = composer->getCanvas();
+            ArrangerCanvas *canvas = arranger->getCanvas();
             if(canvas && canvas->tool() == AutomationTool)
             {
                 //printf("Automation copy\n");
-                composer->cmd(Composer::CMD_SELECT_ALL_AUTOMATION);
+                arranger->cmd(Arranger::CMD_SELECT_ALL_AUTOMATION);
             }
             else
             {
@@ -3277,8 +3277,8 @@ void LOS::clipboardChanged()
 
 void LOS::selectionChanged()
 {
-    //bool flag = composer->isSingleSelection();  // -- Hmm, why only single?
-    bool flag = true;//composer->selectionSize() > 0; // -- Test OK cut and copy. For los2. Tim.
+    //bool flag = arranger->isSingleSelection();  // -- Hmm, why only single?
+    bool flag = true;//arranger->selectionSize() > 0; // -- Test OK cut and copy. For los2. Tim.
     editCutAction->setEnabled(flag);
     editCopyAction->setEnabled(flag);
 }
@@ -3980,7 +3980,7 @@ void LOS::configMidiAssign(int tab)
 void LOS::execDeliveredScript(int id)
 {
     //QString scriptfile = QString(INSTPREFIX) + SCRIPTSSUFFIX + deliveredScriptNames[id];
-    song->executeScript(song->getScriptPath(id, true).toLatin1().constData(), song->getSelectedMidiParts(), 0, false); // TODO: get quant from composer
+    song->executeScript(song->getScriptPath(id, true).toLatin1().constData(), song->getSelectedMidiParts(), 0, false); // TODO: get quant from arranger
 }
 //---------------------------------------------------------
 //   execUserScript
@@ -3988,7 +3988,7 @@ void LOS::execDeliveredScript(int id)
 
 void LOS::execUserScript(int id)
 {
-    song->executeScript(song->getScriptPath(id, false).toLatin1().constData(), song->getSelectedMidiParts(), 0, false); // TODO: get quant from composer
+    song->executeScript(song->getScriptPath(id, false).toLatin1().constData(), song->getSelectedMidiParts(), 0, false); // TODO: get quant from arranger
 }
 
 //---------------------------------------------------------
@@ -4039,10 +4039,10 @@ void LOS::showToolbarSidebar(bool yesno)
         _resourceDock->setVisible(yesno);
 }
 
-void LOS::showToolbarComposerSettings(bool yesno)
+void LOS::showToolbarArrangerSettings(bool yesno)
 {
-    if (toolbarComposerSettings)
-        toolbarComposerSettings->setVisible(yesno);
+    if (toolbarArrangerSettings)
+        toolbarArrangerSettings->setVisible(yesno);
 }
 
 void LOS::showToolbarSnap(bool yesno)
@@ -4067,13 +4067,13 @@ void LOS::updateViewToolbarMenu()
     else
         viewToolbarSidebar->setEnabled(false);
 
-    if (toolbarComposerSettings)
+    if (toolbarArrangerSettings)
     {
-        viewToolbarComposerSettings->setEnabled(true);
-        viewToolbarComposerSettings->setChecked(toolbarComposerSettings->isVisible());
+        viewToolbarArrangerSettings->setEnabled(true);
+        viewToolbarArrangerSettings->setChecked(toolbarArrangerSettings->isVisible());
     }
     else
-        viewToolbarComposerSettings->setEnabled(false);
+        viewToolbarArrangerSettings->setEnabled(false);
 
     if (toolbarSnap)
     {

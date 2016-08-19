@@ -18,7 +18,7 @@
 #include "midiedit/Pianoroll.h"
 #include "master/masteredit.h"
 #include "bigtime.h"
-#include "Composer/Composer.h"
+#include "Arranger/Arranger.h"
 #include "conf.h"
 #include "gconfig.h"
 #include "pitchedit.h"
@@ -1150,7 +1150,7 @@ void LOS::writeConfiguration(int level, Xml& xml) const
     xml.intTag(level, "midiFilterCtrl3", midiFilterCtrl3);
     xml.intTag(level, "midiFilterCtrl4", midiFilterCtrl4);
 
-    composer->writeStatus(level, xml);
+    arranger->writeStatus(level, xml);
     writeSeqConfiguration(level, xml, true);
 
     writeMidiTransforms(level, xml);

@@ -31,7 +31,7 @@
 //
 static const int splitWidth = 6;
 
-// Composer:
+// Arranger:
 static const int trackRowHeight = 24;
 static const int minTrackHeight = trackRowHeight + splitWidth + 1;
 static const int defaultTrackHeight = minTrackHeight;

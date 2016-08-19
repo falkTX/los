@@ -147,7 +147,7 @@ private:
     int updateFlags;
 
     QHash<qint64, MidiTrack*> m_tracks; //New indexed list of tracks
-    QHash<qint64, MidiTrack*> m_composerTracks;
+    QHash<qint64, MidiTrack*> m_arrangerTracks;
     QHash<qint64, MidiTrack*> m_viewTracks;
 
     qint64 m_workingViewId;
@@ -157,7 +157,7 @@ private:
 
     //For maintaining the track order and track view order
     QList<qint64> m_trackIndex;
-    QList<qint64> m_composerTrackIndex;
+    QList<qint64> m_arrangerTrackIndex;
     QList<qint64> m_trackViewIndex;
     QList<qint64> m_autoTrackViewIndex;
 
@@ -167,9 +167,9 @@ private:
     QStringList m_tracknames;
 
     MidiTrackList _tracks; // tracklist as seen by globally
-    MidiTrackList _artracks; // tracklist as seen by Composer
+    MidiTrackList _artracks; // tracklist as seen by Arranger
 
-    TrackViewList _tviews; // trackviewlist as seen by Composer
+    TrackViewList _tviews; // trackviewlist as seen by Arranger
     TrackViewList _autotviews;
 
     MidiTrackList _midis;
@@ -193,7 +193,7 @@ private:
     int _cycleMode;
     //bool _click;
     bool _quantize;
-    int _composerRaster; // Used for audio rec new part snapping. Set by Composer snap combo box.
+    int _arrangerRaster; // Used for audio rec new part snapping. Set by Arranger snap combo box.
     unsigned _len; // song len in ticks
     FollowMode _follow;
     int _globalPitchShift;
@@ -414,13 +414,13 @@ public:
     void cmdRemovePart(Part* part);
     void cmdAddPart(Part* part);
 
-    int composerRaster() {
-        return _composerRaster;
+    int arrangerRaster() {
+        return _arrangerRaster;
     } // Used by Song::cmdAddRecordedWave to snap new wave parts
 
-    void setComposerRaster(int r) {
-        _composerRaster = r;
-    } // Used by Composer snap combo box
+    void setArrangerRaster(int r) {
+        _arrangerRaster = r;
+    } // Used by Arranger snap combo box
 
     //-----------------------------------------
     //   track manipulations
@@ -680,7 +680,7 @@ signals:
     void trackViewChanged();
     void trackViewAdded();
     void trackViewDeleted();
-    void composerViewChanged();
+    void arrangerViewChanged();
     void segmentSizeChanged(int);
     void trackOrderChanged();
     void trackModified(qint64);

@@ -20,7 +20,7 @@
 #include "audiodev.h"
 #include "alsamidi.h"
 #include "audio.h"
-#include "Composer/Composer.h"
+#include "Arranger/Arranger.h"
 #include "driver/jackmidi.h"
 
 //---------------------------------------------------------

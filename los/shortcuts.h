@@ -22,7 +22,7 @@
 //#define DEDIT_SHRT       2  // Drumedit shortcut
 #define LEDIT_SHRT       4  // Listedit shortcut
 //#define SCORE_SHRT       8  // Score shortcut
-#define ARRANG_SHRT     16  // Composer shortcut
+#define ARRANG_SHRT     16  // Arranger shortcut
 #define TRANSP_SHRT     32  // Transport shortcut
 //#define WAVE_SHRT       64  // Waveedit shortcut
 #define GLOBAL_SHRT    128  // Global shortcuts
@@ -145,7 +145,7 @@ enum
     SHRT_OPEN_HELP, //F1
     SHRT_START_WHATSTHIS, //Shift-F1
 
-    //Composer, parts:
+    //Arranger, parts:
     SHRT_EDIT_PART, //Enter
     SHRT_SEL_ABOVE, //Up
     SHRT_SEL_ABOVE_ADD, //move up and add to selection
@@ -160,7 +160,7 @@ enum
     SHRT_PASTE_CLONE_TO_TRACK, //CTRL+SHIFT+Key_B
     SHRT_INSERT_PART, //Ctrl+Insert
 
-    //Composer tracks
+    //Arranger tracks
     SHRT_SEL_TRACK_BELOW,
     SHRT_SEL_TRACK_ABOVE,
     SHRT_SEL_TRACK_ABOVE_ADD,
@@ -168,7 +168,7 @@ enum
     SHRT_RENAME_TRACK, //Ctrl+R
     SHRT_SEL_ALL_TRACK, //(Windows Key)Mod4+A
 
-    //To be in Composer, pianoroll & drumeditor. p4.0.10 now globally handled, too.
+    //To be in Arranger, pianoroll & drumeditor. p4.0.10 now globally handled, too.
     SHRT_SELECT_ALL, //Ctrl+A
     SHRT_SELECT_NONE, //
     SHRT_SELECT_ALL_NODES, //Ctrl+Shift+A
@@ -192,7 +192,7 @@ enum
     SHRT_TOGGLE_SOUND,
     SHRT_TOGGLE_ENABLE,
 
-    SHRT_LOCATORS_TO_SELECTION, //Alt+P, currently in Composer & pianoroll
+    SHRT_LOCATORS_TO_SELECTION, //Alt+P, currently in Arranger & pianoroll
     SHRT_INSERT_AT_LOCATION, //Shift+CrsrRight
     SHRT_INCREASE_LEN,
     SHRT_DECREASE_LEN,
@@ -283,7 +283,7 @@ enum
     // pianoroll and drum editor
     SHRT_TOOL_LINEDRAW,
 
-    // Composer
+    // Arranger
     SHRT_TOOL_SCISSORS, // j
     SHRT_TOOL_GLUE,
     SHRT_TOOL_MUTE,

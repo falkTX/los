@@ -21,7 +21,7 @@
 #include "app.h"
 #include "icons.h"
 #include "globals.h"
-#include "Composer/Composer.h"
+#include "Arranger/Arranger.h"
 #include "midiport.h"
 #include "mididev.h"
 #include "xml.h"

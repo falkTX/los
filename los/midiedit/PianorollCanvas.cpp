@@ -831,7 +831,7 @@ void PianorollCanvas::newItem(CItem* item, bool noSnap)/*{{{*/
 
 void PianorollCanvas::resizeItem(CItem* item, bool noSnap) // experimental changes to try dynamically extending parts/*{{{*/
 {
-    //printf("ComposerCanvas::resizeItem!\n");
+    //printf("ArrangerCanvas::resizeItem!\n");
     NEvent* nevent = (NEvent*) item;
     Event event = nevent->event();
     Event newEvent = event.clone();
