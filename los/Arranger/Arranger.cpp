@@ -1129,7 +1129,7 @@ void Arranger::createDockMembers()
 
     _commentdock = new CommentDock(this);
     _rtabs->addTab(_tvdock, tr("  Track Views  "));
-    _rtabs->addTab(midiConductor, tr("   Conductor   "));
+    _rtabs->addTab(midiConductor, tr("  Instrument  "));
     _rtabs->addTab(m_clipList, tr("  Clips  "));
     _rtabs->addTab(_commentdock, tr("  Comments  "));
 

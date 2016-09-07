@@ -143,7 +143,7 @@ Pianoroll::Pianoroll(PartList* pl, QWidget* parent, const char* name, unsigned i
     info->setRaster(_rasterInit);
     info->setQuant(_quantInit);
 
-    m_tabs->addTab(midiConductor, tr("   Conductor   "));
+    m_tabs->addTab(midiConductor, tr("   Instrument   "));
     m_tabs->addTab(m_trackListView, tr("   Track List   "));
     m_tabs->addTab(info, tr("   Note Info   "));
 
