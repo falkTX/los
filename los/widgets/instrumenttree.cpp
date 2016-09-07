@@ -48,7 +48,7 @@ void InstrumentTree::updateHeader()/*{{{*/
 {
     //update the patchList headers as well
     QStandardItem* pid = new QStandardItem("");
-    QStandardItem* patch = new QStandardItem(tr("Select Patch"));
+    QStandardItem* patch = new QStandardItem(tr("Select Program"));
     patch->setTextAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
     _patchModel->setHorizontalHeaderItem(0, patch);
     _patchModel->setHorizontalHeaderItem(1, pid);

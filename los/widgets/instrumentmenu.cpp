@@ -46,7 +46,7 @@ QWidget* InstrumentMenu::createWidget(QWidget* parent)
     plabel->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
     plabel->setObjectName("KeyMapMenuLabel");
     layout->addWidget(plabel);
-    QPushButton *btnClear = new QPushButton(tr("Clear Patch"));
+    QPushButton *btnClear = new QPushButton(tr("Clear Program"));
     connect(btnClear, SIGNAL(clicked()), this, SLOT(clearPatch()));
     layout->addWidget(btnClear);
 
@@ -95,7 +95,7 @@ void InstrumentMenu::clearPatch()
 {
     //printf("InstrumentMenu::clearPatch() called\n");
     m_program = -1;
-    m_name = QString(tr("Select Patch"));
+    m_name = QString(tr("Select Program"));
     emit patchSelected(m_program, m_name);
     doClose();
 }

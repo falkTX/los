@@ -45,7 +45,7 @@ QWidget* KeyMapMenu::createWidget(QWidget* parent)
     QVBoxLayout* layout = new QVBoxLayout();
     QWidget* w = new QWidget(parent);
     w->setFixedHeight(500);
-    QString title(tr("Default Patch - Note: "));
+    QString title(tr("Default Program - Note: "));
     QLabel* plabel = new QLabel(title.append(song->key2note(m_keymap->key)));
     plabel->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
     plabel->setObjectName("KeyMapMenuLabel");
@@ -55,13 +55,13 @@ QWidget* KeyMapMenu::createWidget(QWidget* parent)
     m_kpatch = new QLineEdit();
     m_kpatch->setReadOnly(true);
     m_kpatch->setText(m_keymap->pname);
-    //printf("Patch name in menu: %s, program: %d\n", m_keymap->pname.toUtf8().constData(), m_keymap->program);
+    //printf("Program name in menu: %s, program: %d\n", m_keymap->pname.toUtf8().constData(), m_keymap->program);
     hbox->addWidget(m_kpatch);
 
     QPushButton *btnClear = new QPushButton();
     //btnClear->setFixedHeight(20);
     btnClear->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
-    btnClear->setToolTip(tr("Clear Patch"));
+    btnClear->setToolTip(tr("Clear Program"));
     btnClear->setIcon(*garbagePCIcon);
     btnClear->setIconSize(QSize(20, 20));
     btnClear->setFixedSize(QSize(24, 24));
@@ -95,7 +95,7 @@ QWidget* KeyMapMenu::createWidget(QWidget* parent)
     connect(m_comment, SIGNAL(textChanged(QString)), SLOT(updateComment()));
     connect(m_comment, SIGNAL(returnPressed()), SLOT(updateComment()));
 
-    QLabel* pclabel = new QLabel(tr("Patch Key Comments"));
+    QLabel* pclabel = new QLabel(tr("Program Key Comments"));
     pclabel->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
     pclabel->setObjectName("KeyMapMenuLabel");
     layout->addWidget(pclabel);
@@ -104,12 +104,12 @@ QWidget* KeyMapMenu::createWidget(QWidget* parent)
     m_patchcomment->setReadOnly(false);
     if(m_patch)
     {
-        //printf("Patch supplied, Name: %s\n", m_patch->name.toUtf8().constData());
+        //printf("Program supplied, Name: %s\n", m_patch->name.toUtf8().constData());
         m_patchcomment->setText(m_patch->comments.value(m_keymap->key));
     }
     connect(m_patchcomment, SIGNAL(textChanged(QString)), SLOT(updatePatchComment()));
     connect(m_patchcomment, SIGNAL(returnPressed()), SLOT(updatePatchComment()));
-    //printf("Patch name in menu: %s, program: %d\n", m_keymap->pname.toUtf8().constData(), m_keymap->program);
+    //printf("Program name in menu: %s, program: %d\n", m_keymap->pname.toUtf8().constData(), m_keymap->program);
     layout->addWidget(m_patchcomment);
 
     QPushButton *btnClose = new QPushButton(tr("Save Settings"));
@@ -124,7 +124,7 @@ void KeyMapMenu::clearPatch()
 {
     m_keymap->program = -1;
     m_keymap->hasProgram = false;
-    m_keymap->pname = tr("Select Patch");
+    m_keymap->pname = tr("Select Program");
     m_kpatch->setText(m_keymap->pname);
 }
 

@@ -543,11 +543,11 @@ void Arranger::currentTabChanged(int tab)
 {
     switch(tab)
     {
-        case 1: //patch sequencer
+        case 1: //Instrument
         {
             if(midiConductor)
             {
-                //printf("PatchSequencer Tab clicked\n");
+                //printf("Instrument Tab clicked\n");
                 midiConductor->update();
                 if(selected)
                     midiConductor->setTrack(selected);

@@ -317,7 +317,7 @@ void TrackViewEditor::cmbViewSelected(int ind)/*{{{*/
                         tname->setData(1, TrackSourceRole);
                         tname->setEditable(false);
                         QString tp("0");
-                        QString pname(tr("Select Patch"));
+                        QString pname(tr("Select Program"));
                         int prog = 0;
                         //Check if there are settings
                         if(tvt->hasSettings())
@@ -357,7 +357,7 @@ void TrackViewEditor::cmbViewSelected(int ind)/*{{{*/
                         tname->setData(0, TrackSourceRole);
                         tname->setEditable(false);
                         QString tp("0");
-                        QString pname(tr("Select Patch"));
+                        QString pname(tr("Select Program"));
                         int prog = 0;
                         //Check if there are settings
                         if(tvt->hasSettings())
@@ -687,7 +687,7 @@ void TrackViewEditor::btnAddTrack()/*{{{*/
                                 tname->setData(1, TrackSourceRole);
                                 tname->setEditable(false);
                                 QString tp("0");
-                                QString pname(tr("Select Patch"));
+                                QString pname(tr("Select Program"));
                                 int prog = 0;
                                 //Check if there are settings
 
@@ -725,7 +725,7 @@ void TrackViewEditor::btnAddTrack()/*{{{*/
                                     tname->setEditable(false);
                                     QStandardItem* transp = new QStandardItem(QString::number(0));
                                     transp->setEditable(true);
-                                    QStandardItem* patch = new QStandardItem(tr("Select Patch"));
+                                    QStandardItem* patch = new QStandardItem(tr("Select Program"));
                                     patch->setData(0, ProgramRole);
                                     {
                                         int outPort = ((MidiTrack*)trk)->outPort();
@@ -864,7 +864,7 @@ void TrackViewEditor::updateTableHeader()/*{{{*/
 {
     QStandardItem* tname = new QStandardItem(tr("Track"));
     QStandardItem* transp = new QStandardItem(tr("Transpose"));
-    QStandardItem* hpatch = new QStandardItem(tr("Patch"));
+    QStandardItem* hpatch = new QStandardItem(tr("Program"));
     m_model->setHorizontalHeaderItem(0, tname);
     m_model->setHorizontalHeaderItem(1, transp);
     m_model->setHorizontalHeaderItem(2, hpatch);

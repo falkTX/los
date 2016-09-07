@@ -349,7 +349,7 @@ void Conductor::heartBeat()/*{{{*/
 
                     if (nprogram == CTRL_VAL_UNKNOWN)
                     {
-                        const QString n(tr("Select Patch"));
+                        const QString n(tr("Select Program"));
                         emit updateCurrentPatch(n);
                     }
                     else
@@ -1386,7 +1386,7 @@ void Conductor::updateConductor(int flags)
         if (nprogram == CTRL_VAL_UNKNOWN)
         {
             emit patchChanged(new Patch);
-            emit updateCurrentPatch(tr("Select Patch"));
+            emit updateCurrentPatch(tr("Select Program"));
         }
         else
         {
@@ -1931,13 +1931,13 @@ void Conductor::movePatchUp(bool)
 
 void Conductor::updateTableHeader()/*{{{*/
 {
-    QStandardItem* hpatch = new QStandardItem(tr("Patch"));
+    QStandardItem* hpatch = new QStandardItem(tr("Program"));
     _tableModel->setHorizontalHeaderItem(0, hpatch);
     tableView->horizontalHeader()->setStretchLastSection(true);
 
     //update the patchList headers as well
     QStandardItem* pid = new QStandardItem("");
-    QStandardItem* patch = new QStandardItem(tr("Select Patch"));
+    QStandardItem* patch = new QStandardItem(tr("Select Program"));
     patch->setTextAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
     _patchModel->setHorizontalHeaderItem(0, patch);
     _patchModel->setHorizontalHeaderItem(1, pid);

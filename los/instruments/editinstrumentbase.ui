@@ -41,7 +41,16 @@
       <property name="spacing">
        <number>0</number>
       </property>
-      <property name="margin">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
        <number>0</number>
       </property>
       <item>
@@ -136,9 +145,18 @@
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_5">
          <property name="spacing">
-          <number>-1</number>
+          <number>9</number>
          </property>
-         <property name="margin">
+         <property name="leftMargin">
+          <number>16</number>
+         </property>
+         <property name="topMargin">
+          <number>16</number>
+         </property>
+         <property name="rightMargin">
+          <number>16</number>
+         </property>
+         <property name="bottomMargin">
           <number>16</number>
          </property>
          <item>
@@ -367,8 +385,17 @@
         <property name="frameShadow">
          <enum>QFrame::Raised</enum>
         </property>
-        <layout class="QHBoxLayout" name="horizontalLayout_9" stretch="1,0,0,0,0,0,0">
-         <property name="margin">
+        <layout class="QHBoxLayout" name="horizontalLayout_9" stretch="1,0,0,0,0">
+         <property name="leftMargin">
+          <number>16</number>
+         </property>
+         <property name="topMargin">
+          <number>16</number>
+         </property>
+         <property name="rightMargin">
+          <number>16</number>
+         </property>
+         <property name="bottomMargin">
           <number>16</number>
          </property>
          <item>
@@ -515,7 +542,7 @@
              <bool>true</bool>
             </property>
             <attribute name="title">
-             <string>    Pa&amp;tches    </string>
+             <string>    P&amp;rograms    </string>
             </attribute>
             <layout class="QVBoxLayout">
              <property name="leftMargin">
@@ -543,7 +570,7 @@
                  <string/>
                 </property>
                 <property name="whatsThis">
-                 <string>List of groups and patches.</string>
+                 <string>List of groups and programs</string>
                 </property>
                 <property name="alternatingRowColors">
                  <bool>true</bool>
@@ -556,7 +583,7 @@
                 </property>
                 <column>
                  <property name="text">
-                  <string>Group/Patch</string>
+                  <string>Group/Program</string>
                  </property>
                 </column>
                </widget>
@@ -580,7 +607,16 @@
                     <enum>QFrame::Raised</enum>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout">
-                    <property name="margin">
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="bottomMargin">
                      <number>0</number>
                     </property>
                     <item>
@@ -602,10 +638,10 @@
                        <item row="0" column="1" colspan="4">
                         <widget class="QLineEdit" name="patchNameEdit">
                          <property name="toolTip">
-                          <string>Group or patch name</string>
+                          <string>Group or program name</string>
                          </property>
                          <property name="whatsThis">
-                          <string>Group or patch name</string>
+                          <string>Group or program name</string>
                          </property>
                         </widget>
                        </item>
@@ -888,10 +924,10 @@ p, li { white-space: pre-wrap; }
                        <item row="11" column="1">
                         <widget class="QCheckBox" name="checkBoxDrum">
                          <property name="toolTip">
-                          <string>Drum patch</string>
+                          <string>Drum program</string>
                          </property>
                          <property name="whatsThis">
-                          <string>If set, the patch is available only for drum channels.</string>
+                          <string>If set, the program is available only for drum channels.</string>
                          </property>
                          <property name="text">
                           <string>Drum</string>
@@ -904,10 +940,10 @@ p, li { white-space: pre-wrap; }
                        <item row="11" column="2">
                         <widget class="QCheckBox" name="checkBoxGM">
                          <property name="toolTip">
-                          <string>GM patch</string>
+                          <string>GM Program</string>
                          </property>
                          <property name="whatsThis">
-                          <string>If set, the patch is available in a 'GM' or 'NO' midi song type.</string>
+                          <string>If set, the program is available in a 'GM' or 'NO' midi song type.</string>
                          </property>
                          <property name="text">
                           <string>GM</string>
@@ -920,10 +956,10 @@ p, li { white-space: pre-wrap; }
                        <item row="11" column="3">
                         <widget class="QCheckBox" name="checkBoxGS">
                          <property name="toolTip">
-                          <string>GS patch</string>
+                          <string>GS program</string>
                          </property>
                          <property name="whatsThis">
-                          <string>If set, the patch is available in a 'GS' or 'NO' midi song type.</string>
+                          <string>If set, the program is available in a 'GS' or 'NO' midi song type.</string>
                          </property>
                          <property name="text">
                           <string>GS</string>
@@ -933,10 +969,10 @@ p, li { white-space: pre-wrap; }
                        <item row="11" column="4">
                         <widget class="QCheckBox" name="checkBoxXG">
                          <property name="toolTip">
-                          <string>XG patch</string>
+                          <string>XG program</string>
                          </property>
                          <property name="whatsThis">
-                          <string>If set, the patch is available in an 'XG' or 'NO' midi song type.</string>
+                          <string>If set, the program is available in an 'XG' or 'NO' midi song type.</string>
                          </property>
                          <property name="text">
                           <string>XG</string>
@@ -979,7 +1015,7 @@ p, li { white-space: pre-wrap; }
                       </sizepolicy>
                      </property>
                      <property name="toolTip">
-                      <string>Delete group or patch</string>
+                      <string>Delete group or program</string>
                      </property>
                      <property name="text">
                       <string>&amp;Delete</string>
@@ -998,10 +1034,10 @@ p, li { white-space: pre-wrap; }
                       </sizepolicy>
                      </property>
                      <property name="toolTip">
-                      <string>New patch</string>
+                      <string>New program</string>
                      </property>
                      <property name="text">
-                      <string>New &amp;Patch</string>
+                      <string>New &amp;Program</string>
                      </property>
                      <property name="shortcut">
                       <string>Alt+P</string>
@@ -2087,7 +2123,7 @@ Typically, set to 127/127, or an unused
      <x>0</x>
      <y>0</y>
      <width>1000</width>
-     <height>24</height>
+     <height>26</height>
     </rect>
    </property>
    <property name="defaultUp">

@@ -326,7 +326,7 @@ Conductor QTableView::item:selected:!active
 	border: none;
 }
 
-/* Patch tree styles */
+/* Program tree styles */
 Conductor QWidget#patchSeqContents
 {
 	background-color: #111111;

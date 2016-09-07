@@ -26,7 +26,7 @@ class InstrumentCombo : public QComboBox
 	QString m_name;
     bool eventFilter(QObject *obj, QEvent *event);
 public:
-	InstrumentCombo(QWidget *parent = 0, MidiInstrument *instr = 0, int prog = 0, QString pname = "Select Patch");
+    InstrumentCombo(QWidget *parent = 0, MidiInstrument *instr = 0, int prog = 0, QString pname = "Select Program");
 	void setInstrument(MidiInstrument* instrument) { m_instrument = instrument; }
 	MidiInstrument* instrument() { return m_instrument; }
 

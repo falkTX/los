@@ -2216,7 +2216,7 @@ void EditInstrument::newPatchClicked()
     QString patchName;
     for (int i = 1;; ++i)
     {
-        patchName = QString("Patch-%1").arg(i);
+        patchName = QString("Program-%1").arg(i);
         bool found = false;
 
         for (iPatchGroup g = pg->begin(); g != pg->end(); ++g)

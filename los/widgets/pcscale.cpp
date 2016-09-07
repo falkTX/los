@@ -274,7 +274,7 @@ void PCScale::viewMousePressEvent(QMouseEvent* event)
             MidiInstrument* instr = midiPorts[outPort].instrument();
             if(instr)
             {
-                QMenu* menu2 = new QMenu(tr("Change Patch"), this);
+                QMenu* menu2 = new QMenu(tr("Change Program"), this);
                 InstrumentMenu *imenu = new InstrumentMenu(menu2, instr);
                 menu2->addAction(imenu);
                 connect(imenu, SIGNAL(patchSelected(int, QString)), this, SLOT(changeProgramChangeClicked(int, QString)));
