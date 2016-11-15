@@ -260,6 +260,7 @@ Arranger::Arranger(QMainWindow* parent, const char* name)
     connect(edittools, SIGNAL(toolChanged(int)), SIGNAL(updateFooterTool(int)));
     connect(this, SIGNAL(toolChanged(int)), edittools, SLOT(set(int)));
     connect(this, SIGNAL(updateHeaderTool(int)), edittools, SLOT(setNoUpdate(int)));
+
     trackLayout->addWidget(edittools);
 
     //trackLayout->addItem(new QSpacerItem(0, 32, QSizePolicy::Fixed, QSizePolicy::Fixed));
@@ -284,6 +285,18 @@ Arranger::Arranger(QMainWindow* parent, const char* name)
 
     connect(m_trackheader, SIGNAL(selectionChanged(MidiTrack*)), SLOT(trackSelectionChanged()));
     connect(m_trackheader, SIGNAL(selectionChanged(MidiTrack*)), midiConductor, SLOT(setTrack(MidiTrack*)));
+
+    //////////////////////////////////////////////////////////////////////////
+    // Sidebar Toggle Button
+    QPushButton* toggleSidebar = new QPushButton(this);
+    //toggleSidebar->setText(QString("Sidebar"));
+    toggleSidebar->setCheckable(true);
+    toggleSidebar->setFixedSize(10,98);
+    connect(toggleSidebar, SIGNAL(toggled(bool)), SLOT(viewToolbarSidebar(bool))); //This doesn't work yet
+    //connect(toggleSidebar, SIGNAL(checked(bool)), SLOT(LOS::viewToolbarSidebar(bool)));
+    //connect(toggleSidebar, SIGNAL(checked(bool)), SLOT(LOS::showToolbarSidebar(bool)));
+    //////////////////////////////////////////////////////////////////////////
+
 
     //---------------------------------------------------
     //    Editor

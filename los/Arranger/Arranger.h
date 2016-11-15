@@ -20,6 +20,7 @@ class QMainWindow;
 class QMenu;
 class QScrollArea;
 class QScrollBar;
+class QPushButton;
 class QToolButton;
 class QWheelEvent;
 class QKeyEvent;
@@ -144,6 +145,8 @@ signals:
     //void addMarker(int);
     void setUsedTool(int);
     void trackSelectionChanged(qint64);
+    void toggleSidebar(bool);
+
 
 
 protected:
