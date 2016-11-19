@@ -301,7 +301,7 @@ Arranger::Arranger(QMainWindow* parent, const char* name)
 
     //int offset = sigmap.ticksMeasure(0);
     int offset = -(config.division / 4);
-    hscroll = new ScrollScale(-1000, -10, xscale, song->len(), Qt::Horizontal, this, offset);
+    hscroll = new ScrollScale(-1000, -2, xscale, song->len(), Qt::Horizontal, this, offset);
     hscroll->setFocusPolicy(Qt::NoFocus);
 
     vscroll = new QScrollBar(Qt::Vertical, this);
