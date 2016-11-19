@@ -31,10 +31,10 @@ TimeHeader::TimeHeader(QWidget* parent)
     setFixedHeight(98);
 
     QHBoxLayout* timeBox = new QHBoxLayout;
-    timeBox->setContentsMargins(0,0,0,0);
+    timeBox->setContentsMargins(18,0,0,0);
     timeBox->setSpacing(0);
     QHBoxLayout* infoBox = new QHBoxLayout;
-    infoBox->setContentsMargins(0,0,0,0);
+    infoBox->setContentsMargins(18,0,0,0);
     infoBox->setSpacing(0);
 
     cursorPos = new PosLabel(this);
