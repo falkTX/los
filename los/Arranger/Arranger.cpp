@@ -294,6 +294,7 @@ Arranger::Arranger(QMainWindow* parent, const char* name)
     toggleSidebar->setCheckable(true);
     toggleSidebar->setFixedSize(20,98);
     toggleSidebar->setIcon(*expandIconSet3);
+    toggleSidebar->setToolTip("Show/hide Sidebar");
     connect(toggleSidebar, SIGNAL(toggled(bool)),los, SLOT(showToolbarSidebar(bool)));
 
     //---------------------------------------------------
