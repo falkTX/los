@@ -292,7 +292,8 @@ Arranger::Arranger(QMainWindow* parent, const char* name)
     QPushButton* toggleSidebar = new QPushButton(this);
     //toggleSidebar->setText(QString("Sidebar"));
     toggleSidebar->setCheckable(true);
-    toggleSidebar->setFixedSize(10,98);
+    toggleSidebar->setFixedSize(20,98);
+    toggleSidebar->setIcon(*expandIconSet3);
     connect(toggleSidebar, SIGNAL(toggled(bool)),los, SLOT(showToolbarSidebar(bool)));
 
     //---------------------------------------------------
