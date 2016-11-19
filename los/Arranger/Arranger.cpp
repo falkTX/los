@@ -286,17 +286,14 @@ Arranger::Arranger(QMainWindow* parent, const char* name)
     connect(m_trackheader, SIGNAL(selectionChanged(MidiTrack*)), SLOT(trackSelectionChanged()));
     connect(m_trackheader, SIGNAL(selectionChanged(MidiTrack*)), midiConductor, SLOT(setTrack(MidiTrack*)));
 
-    //////////////////////////////////////////////////////////////////////////
-    // Sidebar Toggle Button
+    //---------------------------------------------------
+    //   Toggle Sidebar Button
+    //---------------------------------------------------
     QPushButton* toggleSidebar = new QPushButton(this);
     //toggleSidebar->setText(QString("Sidebar"));
     toggleSidebar->setCheckable(true);
     toggleSidebar->setFixedSize(10,98);
-    connect(toggleSidebar, SIGNAL(toggled(bool)), SLOT(viewToolbarSidebar(bool))); //This doesn't work yet
-    //connect(toggleSidebar, SIGNAL(checked(bool)), SLOT(LOS::viewToolbarSidebar(bool)));
-    //connect(toggleSidebar, SIGNAL(checked(bool)), SLOT(LOS::showToolbarSidebar(bool)));
-    //////////////////////////////////////////////////////////////////////////
-
+    connect(toggleSidebar, SIGNAL(toggled(bool)),los, SLOT(showToolbarSidebar(bool)));
 
     //---------------------------------------------------
     //    Editor
