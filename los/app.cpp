@@ -527,6 +527,7 @@ LOS::LOS(int argc, char** argv) : QMainWindow()
     _resourceDock = new QDockWidget(tr(""), this);
     _resourceDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     _resourceDock->setObjectName("dockResourceCenter");
+    _resourceDock->setFeatures(QDockWidget::DockWidgetMovable); //This makes it ONLY movable
     addDockWidget(Qt::LeftDockWidgetArea, _resourceDock);
 
     m_undoStack = new QUndoStack(this);
