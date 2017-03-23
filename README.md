@@ -3,7 +3,7 @@ LOS  -  Libre Octave Studio
 
 Welcome to LOS, the open source MIDI sequencer.
 
-![LOS Screenshot(https://cloud.githubusercontent.com/assets/3234333/24226197/4fdcb72a-0f22-11e7-90dc-8fa5526d09b0.png)
+![LOS Screenshot](https://cloud.githubusercontent.com/assets/3234333/24226197/4fdcb72a-0f22-11e7-90dc-8fa5526d09b0.png)
 
 
 LOS is distributed under the GNU General Public License (GPL).
